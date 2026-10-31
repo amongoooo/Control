@@ -66,6 +66,14 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `--apph` = alto de la fila superior; se usa en `scroll-padding-top`, `.toc` y `.dtop`.
 - Pruebas: Playwright a 390×844 comparando con la original (pestañas, candados, acordeón, `.dtop`,
   consola sin errores).
+- **Hecho (v2): Sincronizar progreso** sin servidor. Botón `#abSync` en la barra → `dialog#syncDlg`
+  (Enviar: QR + copiar enlace/código + compartir; Recibir: pegar código o enlace → tabla "aquí ahora /
+  al combinar" → combinar y recargar). Claves sincronizadas: `lgdr-teoria-v1`, `lgdr-guias-v1`,
+  `lgdr-preguntas-v1` (no el tema ni la sección abierta). Código = JSON `{v:1,t,g,p}` comprimido con
+  `deflate-raw` en base64url con prefijo `1.` (o `0.` sin comprimir); enlace `?p=<código>`. Combinar =
+  unión de claves, máximo de números, OR de booleanos, el historial más largo; se limpian `__proto__` etc.
+  QR con `qrcode-generator` 1.4.4 (MIT) incluido en línea como `window.__lgdrQR` (sin CDN).
+  Progreso completo ≈ 550–700 caracteres. Probado con dos navegadores, decodificando el QR con jsQR.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
