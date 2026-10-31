@@ -39,8 +39,12 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
       Para actualizarlo: `Artifact` con `action: "read"` en ese link y volver a copiar el archivo guardado.
       No depende de nada exclusivo de claude.ai (solo usa `localStorage`).
 - [x] `.nojekyll` y `README.md`.
-- [ ] Push a `main` y activar Pages (lo activa el usuario en Settings → Pages).
-- [ ] Verificar el sitio.
+- [x] Push a la rama de trabajo y a `main` (commit 07c5618).
+- [ ] Activar Pages: **lo hace el usuario** en Settings → Pages. El proxy bloquea
+      `gh api .../pages` (403) y no hay herramienta MCP para Pages.
+- [ ] Verificar el sitio. El proxy también bloquea `*.github.io`; para comprobar el despliegue
+      revisar el workflow "pages build and deployment" con `mcp__github__actions_list`
+      o probar con WebFetch.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
