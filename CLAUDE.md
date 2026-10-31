@@ -8,6 +8,11 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Responder en **español**.
 - Indicar el **porcentaje de avance** de la tarea o del mensaje (por ejemplo, "Progreso: 40 %").
 - **Pushear siempre la rama** de trabajo después de cada commit (`git push -u origin <rama>`).
+- **Al terminar cada tarea**, recomendar:
+  1. si conviene **seguir en este chat o abrir uno nuevo** (y por qué);
+  2. el **modelo** a usar (Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1);
+  3. el **esfuerzo** recomendado (low / medium / high / xhigh / max);
+  4. el **prompt** listo para copiar y pegar, escrito con cortesía ("por favor").
 - El usuario muchas veces trabaja **solo desde el celular**: evitar pasos que requieran terminal o computadora;
   hacer todo lo posible desde la sesión en la nube.
 
