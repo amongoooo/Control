@@ -58,7 +58,16 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   con scroll horizontal: Resumen, Teoría, Simulador, P1–P7, Preguntas). Variables de color en `:root`
   (claro/oscuro automático). Fuentes: Archivo, IBM Plex Sans/Mono.
 - El rediseño modifica `index.html` (el usuario lo autoriza explícitamente solo para esta parte superior).
-  Mantener intactos el contenido y la lógica. Proponer primero y esperar el visto bueno.
+  Mantener intactos el contenido y la lógica.
+- **Hecho (v1):** barra de app fija `header.appbar#appbar` (logo, "Laboratorio LGDR", anillo de progreso
+  `#abProg`, botón de tema `#abTheme` guardado en `localStorage['lgdr-tema']`) con `nav#tabs` dentro como
+  chips. El encabezado grande solo se ve en Resumen; el párrafo `.lede` está plegado en `details.about`.
+  CSS al final del `<style>` principal ("barra de app") y JS al final del `<body>`, solo de presentación.
+  `--apph` = alto de la fila superior; se usa en `scroll-padding-top`, `.toc` y `.dtop`.
+- Pruebas: Playwright a 390×844 comparando con la original (pestañas, candados, acordeón, `.dtop`,
+  consola sin errores).
+- **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
+  rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 

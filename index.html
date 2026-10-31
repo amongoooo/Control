@@ -551,15 +551,69 @@ td .fxback{display:block}
 .fxtip{font-size:12.5px;color:var(--muted)}
 .fxm .katex .vlist,.fxt .katex .vlist,.fxm .katex .vlist-r,.fxt .katex .vlist-r{pointer-events:none}
 .fxm [data-ref],.fxt [data-ref],.fxm [data-ref] *,.fxt [data-ref] *{pointer-events:auto}
+/* ---- barra de app (rediseño de la parte superior) ---- */
+:root{--apph:52px}
+@media (min-width:821px){:root{--apph:56px}}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + var(--apph))}
+.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);background:color-mix(in srgb,var(--bg) 86%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid var(--line)}
+.appbar-in{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.abrow{height:var(--apph);display:flex;align-items:center;gap:8px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;margin-right:auto;color:var(--ink);text-decoration:none;border-radius:10px;-webkit-tap-highlight-color:transparent}
+.logo{flex:0 0 auto;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--accent);color:var(--surface);box-shadow:inset 0 -2px 0 rgba(0,0,0,.14)}
+.brand-tx{display:grid;min-width:0;line-height:1.15}
+.brand-tx b{font:700 18px var(--f-display);font-stretch:85%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-tx small{font:500 10.5px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abpill{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 12px 0 8px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:600 13px var(--f-body);font-variant-numeric:tabular-nums;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.abpill .ring{width:20px;height:20px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p,0)*1%),var(--line) 0);-webkit-mask:radial-gradient(circle,transparent 6px,#000 6.5px);mask:radial-gradient(circle,transparent 6px,#000 6.5px)}
+.abpill .abpl{color:var(--muted);font-weight:500}
+.abicon{flex:0 0 auto;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:transparent;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.abpill:hover,.abicon:hover{background:var(--accent-soft)}
+.abpill:active,.abicon:active{transform:scale(.95)}
+.abpill:focus-visible,.abicon:focus-visible,.brand:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.abicon .ic-sun{display:none}
+:root[data-theme="dark"] .abicon .ic-sun{display:block}
+:root[data-theme="dark"] .abicon .ic-moon{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .abicon .ic-sun{display:block}:root:not([data-theme="light"]) .abicon .ic-moon{display:none}}
+.appbar nav.tabs{position:static;margin:0;border:0;background:transparent;gap:6px;padding:2px 0 9px;scroll-snap-type:x proximity;scrollbar-width:none;--fl:0px;--fr:28px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--fl),#000 calc(100% - var(--fr)),transparent)}
+.appbar nav.tabs::-webkit-scrollbar{display:none}
+.appbar nav.tabs::after{content:"";flex:0 0 16px}
+.appbar nav.tabs.scrolled{--fl:22px}
+.appbar nav.tabs.at-end{--fr:0px}
+.appbar nav.tabs a{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-size:14.5px;scroll-snap-align:start;transition:background-color .15s,color .15s,border-color .15s;-webkit-tap-highlight-color:transparent}
+.appbar nav.tabs a:hover{color:var(--ink);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.appbar nav.tabs a[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.appbar nav.tabs a:active{transform:scale(.97)}
+.appbar nav.tabs a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.toc{top:calc(env(safe-area-inset-top,0px) + var(--apph) + 58px)}
+@media (max-width:820px){.dtop{top:calc(env(safe-area-inset-top,0px) + var(--apph) + var(--navh,46px) + 1px)}}
+.wrap{padding-top:20px}
+header.top{gap:8px}
+header.top h1{font-size:clamp(26px,6.4vw,38px)}
+body:has(#resumen[hidden]) .wrap>header.top{display:none}
+details.about{margin-top:2px}
+details.about>summary{list-style:none;display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:0 14px 0 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:500 13.5px var(--f-body);cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+details.about>summary::-webkit-details-marker{display:none}
+details.about>summary svg{color:var(--accent)}
+details.about>summary::after{content:"";width:7px;height:7px;border-right:1.8px solid currentColor;border-bottom:1.8px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .2s;margin-left:3px}
+details.about[open]>summary::after{transform:translateY(1px) rotate(-135deg)}
+details.about>summary:hover{background:var(--accent-soft)}
+details.about>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+details.about .lede{margin-top:10px}
+@media (max-width:400px){.brand-tx small,.abpill .abpl{display:none}}
+@media (prefers-reduced-motion:reduce){.appbar nav.tabs a,details.about>summary::after{transition:none}}
 </style>
 
-<div class="wrap">
-<header class="top">
-  <span class="eyebrow">Control · Nise, Sistemas de control para ingeniería · Cap. 8–9</span>
-  <h1>Laboratorio LGDR: de la ganancia al adelanto‑atraso</h1>
-  <p class="lede">Las 7 prácticas de la guía resueltas, verificadas con el modelo completo (no sólo la aproximación de 2º orden) y listas para que las reproduzcas en MATLAB. En cada práctica puedes mover <i>K</i> y ver cómo se desplazan los polos sobre el lugar geométrico y cómo cambia la respuesta. Empieza por <a href="#teoria">Teoría</a> si quieres el camino completo desde lo básico, experimenta en el <a href="#simulador">Simulador</a>, y cierra con <a href="#preguntas">Preguntas</a> para comprobar que lo dominas.</p>
-</header>
-
+<header class="appbar" id="appbar">
+<script>(function(){try{var t=localStorage.getItem('lgdr-tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<div class="appbar-in">
+  <div class="abrow">
+    <a class="brand" href="#resumen" aria-label="Laboratorio LGDR: ir al resumen">
+      <span class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 12h19" opacity=".45"/><path d="M8 12c4.5 0 6.5-3 8.5-8.5M8 12c4.5 0 6.5 3 8.5 8.5"/><path d="M5.8 9.8l4.4 4.4M10.2 9.8l-4.4 4.4"/></svg></span>
+      <span class="brand-tx"><b>Laboratorio LGDR</b><small>Control · Nise cap. 8–9</small></span>
+    </a>
+    <button type="button" class="abpill" id="abProg" hidden><span class="ring" aria-hidden="true"></span><span class="abpl">Teoría</span><span class="abpv">0 %</span></button>
+    <button type="button" class="abicon" id="abTheme" aria-label="Cambiar modo claro u oscuro"><svg class="ic-moon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
+  </div>
 <nav class="tabs" id="tabs" aria-label="Prácticas">
   <a href="#resumen">Resumen</a>
   <a href="#teoria">Teoría</a>
@@ -573,6 +627,18 @@ td .fxback{display:block}
   <a href="#p7">P7 <small>Adelanto‑atraso</small></a>
   <a href="#preguntas">Preguntas</a>
 </nav>
+</div>
+</header>
+
+<div class="wrap">
+<header class="top">
+  <span class="eyebrow">Control · Nise, Sistemas de control para ingeniería · Cap. 8–9</span>
+  <h1>Laboratorio LGDR: de la ganancia al adelanto‑atraso</h1>
+  <details class="about">
+    <summary><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>Acerca de este laboratorio</summary>
+    <p class="lede">Las 7 prácticas de la guía resueltas, verificadas con el modelo completo (no sólo la aproximación de 2º orden) y listas para que las reproduzcas en MATLAB. En cada práctica puedes mover <i>K</i> y ver cómo se desplazan los polos sobre el lugar geométrico y cómo cambia la respuesta. Empieza por <a href="#teoria">Teoría</a> si quieres el camino completo desde lo básico, experimenta en el <a href="#simulador">Simulador</a>, y cierra con <a href="#preguntas">Preguntas</a> para comprobar que lo dominas.</p>
+  </details>
+</header>
 
 <!-- ===================== RESUMEN ===================== -->
 <section class="page" id="resumen" data-page>
@@ -4388,6 +4454,42 @@ function init(){ document.querySelectorAll('[data-chk]').forEach(renderChk); doc
   buildAccordion(); refreshExams(); applyLocks(); }
 init();
 window.__CHK=CHK; window.__VAR=VAR; window.__versions=versions;
+})();
+</script>
+
+<script>
+/* ---------- barra de app: solo presentación (no cambia la lógica del laboratorio) ---------- */
+(function(){
+  const root=document.documentElement, mq=matchMedia('(prefers-color-scheme: dark)');
+  const isDark=()=>{ const t=root.getAttribute('data-theme'); return t?t==='dark':mq.matches; };
+  const tbtn=document.getElementById('abTheme');
+  let meta=document.querySelector('meta[name="theme-color"]');
+  if(!meta){ meta=document.createElement('meta'); meta.name='theme-color'; document.head.appendChild(meta); }
+  const sync=()=>{ const d=isDark(), l=d?'Cambiar a modo claro':'Cambiar a modo oscuro';
+    tbtn.setAttribute('aria-label',l); tbtn.title=l; meta.content=getComputedStyle(document.body).backgroundColor; };
+  tbtn.addEventListener('click',()=>{ const t=isDark()?'light':'dark'; root.setAttribute('data-theme',t);
+    try{ localStorage.setItem('lgdr-tema',t); }catch(e){} sync(); });
+  mq.addEventListener('change',sync); sync();
+
+  const pill=document.getElementById('abProg'), box=document.querySelector('[data-progress="compact"]');
+  const upd=()=>{ const v=box&&box.querySelector('.pkv'), m=v&&v.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+    if(!m){ pill.hidden=true; return; }
+    const a=+m[1], b=+m[2], pc=b?Math.round(100*a/b):0, nx=box.querySelector('[data-next]');
+    pill.hidden=false; pill.style.setProperty('--p',pc); pill.querySelector('.abpv').textContent=pc+' %';
+    const l=`Tu avance en la teoría: ${a} de ${b} preguntas correctas (${pc} %).`+(nx?` Toca para: ${nx.textContent.replace('→','').trim()}`:'');
+    pill.title=l; pill.setAttribute('aria-label',l); };
+  if(box) new MutationObserver(upd).observe(box,{childList:true,subtree:true,characterData:true});
+  upd();
+  pill.addEventListener('click',()=>{ const nx=box&&box.querySelector('[data-next]'); if(nx) nx.click(); else location.hash='#resumen'; });
+
+  const nav=document.getElementById('tabs');
+  const edges=()=>{ nav.classList.toggle('scrolled',nav.scrollLeft>4); nav.classList.toggle('at-end',nav.scrollLeft+nav.clientWidth>=nav.scrollWidth-4); };
+  const center=smooth=>{ const a=nav.querySelector('a[aria-current="page"]'); if(!a) return;
+    const nr=nav.getBoundingClientRect(), ar=a.getBoundingClientRect();
+    nav.scrollTo({left:Math.max(0,nav.scrollLeft+ar.left-nr.left-(nr.width-ar.width)/2),behavior:smooth?'smooth':'auto'}); };
+  nav.addEventListener('scroll',edges,{passive:true}); addEventListener('resize',edges);
+  addEventListener('hashchange',()=>requestAnimationFrame(()=>center(true)));
+  center(false); edges();
 })();
 </script>
 
