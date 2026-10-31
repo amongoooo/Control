@@ -8,6 +8,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Responder en **español**.
 - Indicar el **porcentaje de avance** de la tarea o del mensaje (por ejemplo, "Progreso: 40 %").
 - **Pushear siempre la rama** de trabajo después de cada commit (`git push -u origin <rama>`).
+- **Al terminar una tarea grande**, mandar siempre el link de la página: https://amongoooo.github.io/Control/
+  (Pages ya está activo desde `main` / raíz y el usuario confirmó que carga bien.)
 - **Al terminar cada tarea**, recomendar:
   1. si conviene **seguir en este chat o abrir uno nuevo** (y por qué);
   2. el **modelo** a usar (Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1);
@@ -45,11 +47,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
       No depende de nada exclusivo de claude.ai (solo usa `localStorage`).
 - [x] `.nojekyll` y `README.md`.
 - [x] Push a la rama de trabajo y a `main` (commit 07c5618).
-- [ ] Activar Pages: **lo hace el usuario** en Settings → Pages. El proxy bloquea
-      `gh api .../pages` (403) y no hay herramienta MCP para Pages.
-- [ ] Verificar el sitio. El proxy también bloquea `*.github.io`; para comprobar el despliegue
-      revisar el workflow "pages build and deployment" con `mcp__github__actions_list`
-      o probar con WebFetch.
+- [x] Pages activado por el usuario (main / raíz). Despliegue verificado: workflow
+      "pages build and deployment" en `success`; el usuario confirmó que la página carga.
+- Nota: el proxy bloquea `gh api .../pages` y `*.github.io`; para comprobar despliegues usar
+  `mcp__github__actions_list` (workflow "pages build and deployment").
+
+## Idea en curso: rediseño de la parte superior ("que parezca más una app")
+
+- Estructura actual: `header.top` (eyebrow + `h1` + `.lede` largo) y debajo `nav.tabs` (sticky, pestañas
+  con scroll horizontal: Resumen, Teoría, Simulador, P1–P7, Preguntas). Variables de color en `:root`
+  (claro/oscuro automático). Fuentes: Archivo, IBM Plex Sans/Mono.
+- El rediseño modifica `index.html` (el usuario lo autoriza explícitamente solo para esta parte superior).
+  Mantener intactos el contenido y la lógica. Proponer primero y esperar el visto bueno.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
