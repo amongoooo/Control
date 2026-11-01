@@ -79,6 +79,14 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   evaluación está abierta para no tapar "Calificar". Abre `dialog#fxDlg` (reutiliza estilos `dialog.sync`)
   con pestañas Parte I / II / III y las fórmulas de las secciones 1–20 en HTML (clases `.fr` fracción,
   `.rt` raíz). CSS antes de `</style>` y JS al final del `<body>`, solo presentación.
+  Al cerrar el formulario modal se restaura `scrollY` (antes saltaba al inicio; `html:has(dialog.sync[open])`
+  ya no aplica `overflow:hidden` a `dialog.fx`).
+- **Hecho (v4): Evaluación en pantalla completa.** Al tocar Empezar/Reiniciar/Intentar de nuevo (escucha en
+  captura, sin tocar la lógica) la `.exam` recibe `.exfull` (fija, cubre todo) y `html.exm`, con barra
+  `.exbar` (Salir · título · Formulario). El formulario se abre sin modal (`dialog.show()`, clase `.side`,
+  `html.fxside`): a la derecha en ≥700 px y abajo (46dvh) en celular. Calificar → vuelve a la página normal.
+  Salir (o Esc, o cambiar de pestaña) → confirma y borra las respuestas del intento (vacía `[data-body]`);
+  el progreso guardado (mejor resultado, desbloqueos) no se toca.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 

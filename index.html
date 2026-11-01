@@ -606,7 +606,7 @@ details.about .lede{margin-top:10px}
 .abicon{width:38px;height:38px}
 @media (max-width:430px){.abrow{gap:4px}.brand{gap:8px}.brand-tx b{font-size:16.5px}.logo{width:30px;height:30px;border-radius:9px}.abpill{padding:0 9px 0 7px;gap:6px}.abicon{width:36px;height:36px}}
 @media (max-width:370px){.logo{display:none}}
-html:has(dialog.sync[open]){overflow:hidden}
+html:has(dialog.sync:not(.fx)[open]){overflow:hidden}
 dialog.sync{border:0;padding:0;margin:auto auto 0;width:100%;max-width:520px;max-height:min(92dvh,780px);overflow:auto;overscroll-behavior:contain;border-radius:18px 18px 0 0;background:var(--surface);color:var(--ink);box-shadow:0 -12px 40px rgba(0,0,0,.28)}
 @media (min-width:600px){dialog.sync{margin:auto;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,.3)}}
 dialog.sync::backdrop{background:rgba(8,12,18,.55)}
@@ -674,6 +674,27 @@ table.fx-t th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spac
 .fx-scr{overflow-x:auto}
 .fx-s code{font:13px var(--f-mono)}
 @media (prefers-reduced-motion:reduce){.fx-fab{transition:none}}
+/* ---- evaluación en pantalla completa y formulario al lado (solo presentación) ---- */
+html.exm{overflow:hidden}
+html.exm .exam.exfull{position:fixed;inset:0;z-index:40;margin:0;border:0;border-radius:0;overflow:auto;overscroll-behavior:contain;grid-template-columns:min(100%,820px);justify-content:center;align-content:start;padding:0 max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));scroll-padding-top:64px}
+.exbar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:10px;margin:0 -16px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;background:var(--surface);border-bottom:1px solid var(--line)}
+.exbar b{font:600 15px var(--f-body);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.exbar button{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink);font:600 14px var(--f-body);cursor:pointer;flex:none}
+.exbar button:hover{border-color:var(--bad);color:var(--bad)}
+.exbar button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.exbar .exfx{border-color:var(--accent);color:var(--accent)}
+.exbar .exfx:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+html.exm .fx-fab{display:none}
+dialog.fx.side{position:fixed;z-index:41;margin:0;max-width:none;max-height:none;border-radius:0;box-shadow:none}
+@media (min-width:700px){
+  html.exm.fxside .exam.exfull{right:min(44%,460px)}
+  dialog.fx.side{inset:0 0 0 auto;width:min(44%,460px);height:100%;border-left:1px solid var(--line)}
+}
+@media (max-width:699.98px){
+  html.exm.fxside .exam.exfull{bottom:46dvh}
+  dialog.fx.side{inset:auto 0 0 0;width:100%;height:46dvh;border-top:2px solid var(--accent);border-radius:16px 16px 0 0}
+  dialog.fx.side .sy-in{padding-top:10px}
+}
 </style>
 
 <header class="appbar" id="appbar">
@@ -4740,24 +4761,66 @@ window.__lgdrQR=qrcode;
 </script>
 
 <script>
-/* ---------- formulario flotante: aparece cuando una evaluación está en pantalla (solo presentación) ---------- */
+/* ---------- formulario flotante y evaluación en pantalla completa (solo presentación) ----------
+   El botón aparece cuando una evaluación está en pantalla. Al empezar una evaluación, ésta ocupa toda la
+   pantalla y el formulario se abre a su lado; al calificar se vuelve a la página normal. Al salir sin
+   calificar se borran las respuestas de ese intento (no se toca el progreso guardado). */
 (function(){
-  const fab=document.getElementById('fxFab'), dlg=document.getElementById('fxDlg');
+  const fab=document.getElementById('fxFab'), dlg=document.getElementById('fxDlg'), root=document.documentElement;
   if(!fab||!dlg||typeof dlg.showModal!=='function'||!('IntersectionObserver' in window)){ if(fab) fab.remove(); return; }
-  const tabs=[...dlg.querySelectorAll('[data-fx-tab]')], panes=[...dlg.querySelectorAll('[data-fx-pane]')], inner=dlg.querySelector('.sy-in');
-  const vis=new Map(); let part='I';
+  const tabs=[...dlg.querySelectorAll('[data-fx-tab]')], panes=[...dlg.querySelectorAll('[data-fx-pane]')];
+  const vis=new Map(); let part='I', full=null;
   const pick=r=>{ tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.fxTab===r)); panes.forEach(p=>p.hidden=p.dataset.fxPane!==r); };
   const upd=()=>{ let best=null, h=0; vis.forEach((v,r)=>{ if(v>h){ h=v; best=r; } });
     const on=!!best; if(best) part=best;
-    fab.classList.toggle('off',!on); const ex=best&&document.querySelector(`[data-exam="${best}"] [data-body]`); fab.classList.toggle('up',!!(ex&&!ex.hidden)); fab.tabIndex=on?0:-1; fab.setAttribute('aria-hidden',!on);
+    fab.classList.toggle('off',!on); const ex=best&&document.querySelector(`[data-exam="${best}"] [data-body]`); fab.classList.toggle('up',!!(ex&&!ex.hidden));
+    fab.tabIndex=on?0:-1; fab.setAttribute('aria-hidden',!on);
     document.getElementById('fxFabP').textContent=part;
     const l=`Abrir el formulario de la Parte ${part}`; fab.title=l; fab.setAttribute('aria-label',l); };
   const io=new IntersectionObserver(es=>{ es.forEach(e=>{ const r=e.target.dataset.exam; if(e.isIntersecting) vis.set(r,e.intersectionRect.height); else vis.delete(r); }); upd(); },{threshold:[0,.1,.25,.5,.75,1]});
   document.querySelectorAll('[data-exam]').forEach(el=>{ io.observe(el); new MutationObserver(upd).observe(el,{attributes:true,subtree:true,attributeFilter:['hidden']}); });
-  fab.addEventListener('click',()=>{ pick(part); dlg.showModal(); inner.scrollTop=0; dlg.scrollTop=0; });
+
+  /* formulario: modal normal fuera de la evaluación, panel al lado dentro de ella */
+  function closeFx(){ if(dlg.open) dlg.close(); }
+  let keepY=null;
+  dlg.addEventListener('close',()=>{ if(keepY!==null&&!full){ const y=keepY; keepY=null; requestAnimationFrame(()=>{ if(Math.abs(scrollY-y)>2) scrollTo({top:y,behavior:'instant'}); }); } dlg.classList.remove('side'); root.classList.remove('fxside'); const b=full&&full.querySelector('.exfx'); if(b) b.setAttribute('aria-expanded','false'); });
+  function openFx(r){ pick(r||part); dlg.scrollTop=0;
+    if(full){ if(dlg.open) return; dlg.classList.add('side'); root.classList.add('fxside'); dlg.show(); const b=full.querySelector('.exfx'); if(b) b.setAttribute('aria-expanded','true'); }
+    else { keepY=scrollY; dlg.showModal(); } }
+  fab.addEventListener('click',()=>openFx(part));
   tabs.forEach(b=>b.addEventListener('click',()=>{ pick(b.dataset.fxTab); dlg.scrollTop=0; }));
-  dlg.querySelector('[data-fx-close]').addEventListener('click',()=>dlg.close());
-  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.close(); });
+  dlg.querySelector('[data-fx-close]').addEventListener('click',closeFx);
+  dlg.addEventListener('click',e=>{ if(e.target===dlg&&!full) dlg.close(); });
+
+  /* evaluación en pantalla completa */
+  const X='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function enter(box){ if(full===box) return; if(full) leave(false); closeFx();
+    full=box; const r=box.dataset.exam; part=r;
+    const bar=document.createElement('div'); bar.className='exbar';
+    bar.innerHTML=`<button type="button" class="exout" aria-label="Salir de la evaluación (se borran las respuestas)">${X}Salir</button><b>Evaluación · Parte ${r}</b><button type="button" class="exfx" aria-expanded="false" aria-controls="fxDlg"><span aria-hidden="true">∑</span> Formulario</button>`;
+    bar.querySelector('.exout').addEventListener('click',quit);
+    bar.querySelector('.exfx').addEventListener('click',()=>dlg.open?closeFx():openFx(r));
+    box.prepend(bar); box.classList.add('exfull'); root.classList.add('exm');
+    requestAnimationFrame(()=>{ box.scrollTop=0; }); setTimeout(()=>{ box.scrollTop=0; },450); }
+  function leave(discard){ const box=full; if(!box) return; full=null; closeFx();
+    const bar=box.querySelector(':scope>.exbar'); if(bar) bar.remove();
+    box.classList.remove('exfull'); root.classList.remove('exm');
+    if(discard){ const body=box.querySelector('[data-body]'), st=box.querySelector('[data-start]');
+      if(body){ body.hidden=true; body.innerHTML=''; delete body.dataset.graded; }
+      if(st) st.textContent='Empezar evaluación';
+      box.scrollIntoView({block:'start'}); }
+    upd(); }
+  function quit(){ if(!full) return;
+    const body=full.querySelector('[data-body]'), n=body?[...body.querySelectorAll('.qo[aria-pressed="true"],.cnum input')].filter(x=>x.tagName!=='INPUT'||x.value.trim()).length:0;
+    if(n&&!confirm(`¿Salir de la evaluación? Se borrará${n===1?' la respuesta':`n las ${n} respuestas`} de este intento.`)) return;
+    leave(true); }
+  /* se escucha en captura, antes que los botones de la evaluación, sin cambiar lo que hacen */
+  document.addEventListener('click',e=>{ const t=e.target.closest&&e.target.closest('[data-exam] [data-start],[data-exam] [data-retry],[data-exam] [data-grade]'); if(!t) return;
+    const box=t.closest('[data-exam]');
+    if(t.matches('[data-grade]')){ const body=box.querySelector('[data-body]'); if(full===box&&!(body&&body.dataset.graded)) leave(false); }
+    else enter(box); },true);
+  document.addEventListener('keydown',e=>{ if(e.key!=='Escape'||!full) return; e.preventDefault(); if(dlg.open) closeFx(); else quit(); });
+  addEventListener('hashchange',()=>{ if(full) leave(true); });
   upd();
 })();
 </script>
