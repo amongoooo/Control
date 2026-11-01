@@ -80,10 +80,12 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   con pestañas Parte I / II / III y las fórmulas de las secciones 1–20 en HTML (clases `.fr` fracción,
   `.rt` raíz). CSS antes de `</style>` y JS al final del `<body>`, solo presentación.
   Al cerrar el formulario modal se restaura `scrollY` (antes saltaba al inicio; `html:has(dialog.sync[open])`
-  ya no aplica `overflow:hidden` a `dialog.fx`).
+  ya no aplica `overflow:hidden` a `dialog.fxd`).
+  **Ojo:** la página ya usa la clase `.fx` (filas de fórmulas de las prácticas, `display:grid`); el diálogo se
+  llama `dialog.sync.fxd` para no chocar. Hay respaldo `dialog.sync:not([open]){display:none}`.
 - **Hecho (v4): Evaluación en pantalla completa.** Al tocar Empezar/Reiniciar/Intentar de nuevo (escucha en
   captura, sin tocar la lógica) la `.exam` recibe `.exfull` (fija, cubre todo) y `html.exm`, con barra
-  `.exbar` (Salir · título · Formulario). El formulario se abre sin modal (`dialog.show()`, clase `.side`,
+  `.exbar` (Salir · título · Formulario). El formulario se abre sin modal (`dialog.show()`, clase `.side` en `dialog.fxd`,
   `html.fxside`): a la derecha en ≥700 px y abajo (46dvh) en celular. Calificar → vuelve a la página normal.
   Salir (o Esc, o cambiar de pestaña) → confirma y borra las respuestas del intento (vacía `[data-body]`);
   el progreso guardado (mejor resultado, desbloqueos) no se toca.
