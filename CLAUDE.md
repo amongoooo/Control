@@ -74,6 +74,11 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   unión de claves, máximo de números, OR de booleanos, el historial más largo; se limpian `__proto__` etc.
   QR con `qrcode-generator` 1.4.4 (MIT) incluido en línea como `window.__lgdrQR` (sin CDN).
   Progreso completo ≈ 550–700 caracteres. Probado con dos navegadores, decodificando el QR con jsQR.
+- **Hecho (v3): Formulario flotante en las evaluaciones.** Botón `#fxFab` ("∑ Formulario") que aparece solo
+  cuando una evaluación `[data-exam]` está en pantalla (IntersectionObserver); sube (`.up`) cuando la
+  evaluación está abierta para no tapar "Calificar". Abre `dialog#fxDlg` (reutiliza estilos `dialog.sync`)
+  con pestañas Parte I / II / III y las fórmulas de las secciones 1–20 en HTML (clases `.fr` fracción,
+  `.rt` raíz). CSS antes de `</style>` y JS al final del `<body>`, solo presentación.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
