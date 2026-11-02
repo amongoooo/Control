@@ -104,6 +104,10 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (separando por `=` a profundidad de llaves 0) + flechitas; oculta `.fxm`/`.fxn`. Preferencia en
   `localStorage['lgdr-sim-vista']` = `{m:'c'|'f', g:0|1}` (por defecto compacto, sin gráficas). Salir con
   botón, Esc o al cambiar de pestaña.
+- **Hecho (v7): Flechita que cambia, más grande.** Al mover un deslizador `.grad` se guarda `act={x,dir}`
+  (listener propio de `input`); en el par de ese deslizador la flecha hacia donde va la variable lleva
+  `svg.g` (grande) y la contraria `svg.s` (chica, tenue); el par queda `.dap.on` y los de otros deslizadores
+  `.dap.off` (atenuados). 900 ms sin mover (o 700 ms tras `change`) → vuelve a normal.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 

@@ -709,6 +709,13 @@ dialog.fxd.side{position:fixed;z-index:41;margin:0;max-width:none;max-height:non
 .dap svg{display:block}
 .dlg-k{display:inline-block;width:22px;height:7px;border-radius:99px;background:linear-gradient(90deg,var(--g0),var(--g1));vertical-align:middle;margin-right:6px}
 .dleg{font-size:12.5px;color:var(--muted)}
+/* flechita que está cambiando mientras se mueve un deslizador */
+.dap svg{transition:width .15s,height .15s,opacity .15s}
+.dap svg.g{width:24px;height:17px}
+.dap svg.s{width:8px;height:6px;opacity:.5}
+.dap.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--accent-soft)}
+.dap.off{opacity:.35}
+@media (prefers-reduced-motion:reduce){.dap svg{transition:none}}
 /* ---- simulación en pantalla completa ---- */
 .dfs-b{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border:1px solid var(--accent);border-radius:999px;background:var(--surface);color:var(--accent);font:600 13px var(--f-body);cursor:pointer;align-self:center}
 .dfs-b:hover{background:var(--accent-soft)}
@@ -4871,7 +4878,7 @@ window.__lgdrQR=qrcode;
 (function(){
   const PAL=[['#e5484d','#30a46c'],['#8e4ec6','#f5a524'],['#0090ff','#e93d82'],['#a18072','#12a594']];
   const NAME=['rojo','verde','morado','ámbar','azul','rosa','café','turquesa'];
-  const arrow=(up,c)=>`<svg viewBox="0 0 10 7" width="13" height="9" aria-hidden="true"><path d="${up?'M5 0L10 7H0z':'M0 0h10L5 7z'}" fill="${c}"/></svg>`;
+  const arrow=(up,c,k='')=>`<svg class="${k}" viewBox="0 0 10 7" width="13" height="9" aria-hidden="true"><path d="${up?'M5 0L10 7H0z':'M0 0h10L5 7z'}" fill="${c}"/></svg>`;
   const num=t=>{ t=t.replace(/\\htmlData\{[^}]*\}/g,'').replace(/\\(?:text|mathrm)\s*\{[^}]*\}/g,' ').replace(/\\(?:quad|qquad|to|left|right|big|Big)\b|\\[,;:!]/g,' ').replace(/[{}]/g,' ');
     const parts=t.split(/=|\\approx/); if(parts.length<2) return NaN; let r=parts[parts.length-1];
     r=r.split(/<|>|\\le\b|\\ge\b|\\leq|\\geq|\\Rightarrow|\\iff/)[0];
@@ -4887,7 +4894,13 @@ window.__lgdrQR=qrcode;
     const ctl=(D.spec.ctl||[]).filter(c=>!c.sel&&!c.chk).map((c,i)=>({c,i,inp:el.querySelector(`[data-k="${c.k}"]`),col:PAL[i%PAL.length],nm:[NAME[(i%4)*2],NAME[(i%4)*2+1]],lbl:(c.label||c.k).replace(/<[^>]+>/g,'')}));
     if(!ctl.length) return;
     ctl.forEach(x=>{ if(!x.inp) return; x.inp.classList.add('grad'); x.inp.style.setProperty('--g0',x.col[0]); x.inp.style.setProperty('--g1',x.col[1]);
-      x.inp.title=`${x.lbl}: ${x.nm[0]} = valor mínimo · ${x.nm[1]} = valor máximo`; });
+      x.inp.title=`${x.lbl}: ${x.nm[0]} = valor mínimo · ${x.nm[1]} = valor máximo`;
+      /* mientras se mueve: recordar qué deslizador y hacia dónde, para agrandar la flechita que cambia */
+      x.prev=+x.inp.value;
+      x.inp.addEventListener('input',()=>{ const v=+x.inp.value, dv=Math.sign(v-x.prev); x.prev=v; if(dv) act={x,dir:dv}; else if(!act||act.x!==x) act={x,dir:1};
+        clearTimeout(idle); idle=setTimeout(()=>{ act=null; paint(); },900); });
+      x.inp.addEventListener('change',()=>{ clearTimeout(idle); idle=setTimeout(()=>{ act=null; paint(); },700); }); });
+    let act=null, idle=0;
     const leg=document.createElement('p'); leg.className='dleg';
     leg.innerHTML='Flechitas junto a los resultados: <b>▲</b> toma el color del lado del deslizador que hace <b>subir</b> ese valor y <b>▼</b> el del lado que lo hace <b>bajar</b> ('+ctl.map(x=>`<span class="dlg-k" style="--g0:${x.col[0]};--g1:${x.col[1]}"></span>${x.lbl}`).join(' · ')+').';
     read.parentNode.insertBefore(leg,read);
@@ -4907,8 +4920,9 @@ window.__lgdrQR=qrcode;
         const sp=document.createElement('span'); sp.className='dar'; sp.innerHTML=arr;
         m.appendChild(sp); }); busy=false; }
     function arrows(s){ return s.map(({x:c,d})=>{ const up=d>0?1:0, cu=c.col[up], cd=c.col[1-up], nu=c.nm[up], nd=c.nm[1-up];
+          const mv=act&&act.x===c?d*act.dir:0, cls=act?(act.x===c?' on':' off'):'';
           const tt=`Sube si mueves «${c.lbl}» hacia ${d>0?'la derecha':'la izquierda'} (${nu}); baja si lo mueves hacia ${d>0?'la izquierda':'la derecha'} (${nd}).`;
-          return `<span class="dap" role="img" title="${tt}" aria-label="${tt}">${arrow(1,cu)}${arrow(0,cd)}</span>`; }).join(''); }
+          return `<span class="dap${cls}" role="img" title="${tt}" aria-label="${tt}">${arrow(1,cu,mv>0?'g':mv<0?'s':'')}${arrow(0,cd,mv<0?'g':mv>0?'s':'')}</span>`; }).join(''); }
     function compute(){ const st=D.st, base=calc({...st}); if(!base) return; const out={};
       ctl.forEach(x=>{ const [fv,tv]=D.map(x.c); const p0=tv(st[x.c.k]); if(!Number.isFinite(p0)) return;
         for(const step of [20,80]){ let p=p0+step, dir=1; if(p>1000){ p=p0-step; dir=-1; } if(p<0) continue;
