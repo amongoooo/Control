@@ -723,7 +723,7 @@ dialog.fxd.side{position:fixed;z-index:41;margin:0;max-width:none;max-height:non
 html.dmode{overflow:hidden}
 .demo.dfull{position:fixed;inset:0;z-index:40;margin:0;border:0;border-radius:0;overflow:auto;overscroll-behavior:contain;align-content:start;grid-template-columns:minmax(0,1100px);justify-content:center;padding:0 max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
 .demo.dfull>.dtop{position:sticky;top:0;margin:0 -16px;border-radius:0;border-width:0 0 1px;padding:calc(8px + env(safe-area-inset-top,0px)) 16px 10px}
-.demo.dfull>.dhead,.demo.dfull .dfoot,.demo.dfull [data-guide],.demo.dfull .gcur,.demo.dfull .dleg{display:none}
+.demo.dfull>.dhead,.demo.dfull .dfoot,.demo.dfull .dleg,.demo.dfull:not(.dgd) [data-guide],.demo.dfull:not(.dgd) .gcur{display:none}
 .demo.dfull:not(.dplt)>.dplots{display:none}
 .dbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
 .dbar b{flex:1 1 120px;min-width:0;font:600 14.5px var(--f-body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -738,7 +738,7 @@ html.dmode{overflow:hidden}
 .demo.dfull.dcomp [data-read] .fxgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,155px),1fr))}
 .demo.dfull.dcomp [data-read] .fx{padding:7px 10px}
 .demo.dfull.dcomp [data-read] .fx.wide{grid-column:1/-1}
-@media (max-width:520px){.dbar b{flex-basis:100%;order:-1}.dbar .dbx{order:0}}
+@media (max-width:520px){.dbar{gap:6px}.dbar b{flex-basis:100%;order:-1}.dbar .dbx{order:0}.dbar button{padding:0 9px;font-size:12.5px;min-height:34px}.dbar .dseg button{padding:0 8px;min-height:30px}.dbar .dbx{font-size:0;gap:0;padding:0;width:34px;justify-content:center}.dbar .dbx svg{width:17px;height:17px}}
 </style>
 
 <header class="appbar" id="appbar">
@@ -4941,20 +4941,21 @@ window.__lgdrQR=qrcode;
   const root=document.documentElement; let cur=null;
   const FSI='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
   const XI='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
-  let pref={m:'c',g:0}; try{ const v=JSON.parse(localStorage.getItem('lgdr-sim-vista')||'null'); if(v&&(v.m==='c'||v.m==='f')) pref={m:v.m,g:v.g?1:0}; }catch(e){}
+  let pref={m:'c',g:0,r:1}; try{ const v=JSON.parse(localStorage.getItem('lgdr-sim-vista')||'null'); if(v&&(v.m==='c'||v.m==='f')) pref={m:v.m,g:v.g?1:0,r:v.r===0?0:1}; }catch(e){}
   const savePref=()=>{ try{ localStorage.setItem('lgdr-sim-vista',JSON.stringify(pref)); }catch(e){} };
-  function apply(el){ el.classList.toggle('dcomp',pref.m==='c'); el.classList.toggle('dplt',!!pref.g);
-    const bar=el.querySelector('.dbar'); if(bar){ bar.querySelectorAll('[data-dm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dm===pref.m)); bar.querySelector('[data-dg]').setAttribute('aria-pressed',!!pref.g); }
+  function apply(el){ el.classList.toggle('dcomp',pref.m==='c'); el.classList.toggle('dplt',!!pref.g); const hasG=!!el.querySelector('[data-guide] *,.gcur *'); el.classList.toggle('dgd',!!pref.r&&hasG);
+    const bar=el.querySelector('.dbar'); if(bar){ bar.querySelectorAll('[data-dm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.dm===pref.m)); bar.querySelector('[data-dg]').setAttribute('aria-pressed',!!pref.g); const rb=bar.querySelector('[data-dr]'); if(rb){ rb.hidden=!hasG; rb.setAttribute('aria-pressed',!!pref.r); } }
     el.__fs.paint(); }
   function enter(el){ if(!el.__fs) return; if(cur) leave(); cur=el;
     const ttl=(el.querySelector('.dhead b')||{}).textContent||'Simulación';
     const bar=document.createElement('div'); bar.className='dbar';
     bar.innerHTML=`<button type="button" class="dbx" aria-label="Salir de pantalla completa">${XI}Salir</button><b title="${ttl.replace(/"/g,'&quot;')}">${ttl}</b>
       <span class="dseg" role="group" aria-label="Vista de las variables"><button type="button" data-dm="c">Compacto</button><button type="button" data-dm="f">Completo</button></span>
-      <button type="button" class="dbg" data-dg aria-label="Mostrar u ocultar las gráficas">Gráficas</button>`;
+      <button type="button" class="dbg" data-dr aria-label="Mostrar u ocultar las indicaciones y retos">Retos</button><button type="button" class="dbg" data-dg aria-label="Mostrar u ocultar las gráficas">Gráficas</button>`;
     bar.querySelector('.dbx').addEventListener('click',leave);
     bar.querySelectorAll('[data-dm]').forEach(b=>b.addEventListener('click',()=>{ pref.m=b.dataset.dm; savePref(); apply(el); }));
     bar.querySelector('[data-dg]').addEventListener('click',()=>{ pref.g=pref.g?0:1; savePref(); apply(el); });
+    bar.querySelector('[data-dr]').addEventListener('click',()=>{ pref.r=pref.r?0:1; savePref(); apply(el); });
     el.__fs.top.prepend(bar); el.classList.add('dfull'); root.classList.add('dmode'); apply(el);
     el.scrollTop=0; const b=bar.querySelector('.dbx'); try{ b.focus({preventScroll:true}); }catch(e){} }
   function leave(){ const el=cur; if(!el) return; cur=null; const bar=el.querySelector('.dbar'); if(bar) bar.remove();

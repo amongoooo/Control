@@ -108,6 +108,10 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (listener propio de `input`); en el par de ese deslizador la flecha hacia donde va la variable lleva
   `svg.g` (grande) y la contraria `svg.s` (chica, tenue); el par queda `.dap.on` y los de otros deslizadores
   `.dap.off` (atenuados). 900 ms sin mover (o 700 ms tras `change`) → vuelve a normal.
+- **Hecho (v8): Indicaciones y retos en pantalla completa.** Botón «Retos» (`[data-dr]`) en `.dbar`; clase
+  `.dgd` en la demo muestra `.gcur` (dentro de `.dtop`, fijo) y `[data-guide]`. Preferencia `r` en
+  `lgdr-sim-vista` (por defecto 1). Botón oculto si la demo no tiene guía. En ≤520 px la barra se compacta
+  (Salir solo con ✕) para caber en una fila.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
