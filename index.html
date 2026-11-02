@@ -696,6 +696,19 @@ dialog.fxd.side{position:fixed;z-index:41;margin:0;max-width:none;max-height:non
   dialog.fxd.side{inset:auto 0 0 0;width:100%;height:46dvh;border-top:2px solid var(--accent);border-radius:16px 16px 0 0}
   dialog.fxd.side .sy-in{padding-top:10px}
 }
+/* ---- simulaciones: deslizadores fijos, con degradado, y flechitas de tendencia (solo presentación) ---- */
+.demo>.dtop{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--apph) + var(--navh,46px) + 1px);z-index:4;box-shadow:0 8px 14px -10px rgba(0,0,0,.35)}
+.sl input[type=range].grad{-webkit-appearance:none;appearance:none;background:transparent;height:26px;margin:0;cursor:pointer;accent-color:auto}
+.sl input[type=range].grad::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--g0),var(--g1))}
+.sl input[type=range].grad::-moz-range-track{height:8px;border-radius:99px;background:linear-gradient(90deg,var(--g0),var(--g1))}
+.sl input[type=range].grad::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;margin-top:-7px;border-radius:50%;background:var(--surface);border:2.5px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.sl input[type=range].grad::-moz-range-thumb{width:17px;height:17px;border-radius:50%;background:var(--surface);border:2.5px solid var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.sl input[type=range].grad:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:99px}
+.dar{display:inline-flex;align-items:center;gap:5px;margin-left:10px;vertical-align:middle;white-space:nowrap}
+.dap{display:inline-flex;flex-direction:column;align-items:center;gap:1px;padding:2px 3px;border-radius:6px;background:var(--surface);border:1px solid var(--line);cursor:help}
+.dap svg{display:block}
+.dlg-k{display:inline-block;width:22px;height:7px;border-radius:99px;background:linear-gradient(90deg,var(--g0),var(--g1));vertical-align:middle;margin-right:6px}
+.dleg{font-size:12.5px;color:var(--muted)}
 </style>
 
 <header class="appbar" id="appbar">
@@ -2858,6 +2871,7 @@ function build(el,spec){
   let raf=0; const redraw=()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(()=>{ try{ read.innerHTML=spec.draw(st,cvs)||''; }catch(e){ console.error(e); } G_.after(); }); };
   if(spec.pointer) spec.pointer(cvs,st,()=>{ G_.user(); redraw(); });
   new ResizeObserver(redraw).observe(cvs[0]);
+  el.__demo={spec,st,map}; if(window.__lgdrDemo) window.__lgdrDemo(el);   /* gancho de solo lectura para la presentación */
   return redraw;
 }
 const R=(label,val)=>`<span><em>${label}</em> <b>${val}</b></span>`;
@@ -4823,6 +4837,59 @@ window.__lgdrQR=qrcode;
   document.addEventListener('keydown',e=>{ if(e.key!=='Escape'||!full) return; e.preventDefault(); if(dlg.open) closeFx(); else quit(); });
   addEventListener('hashchange',()=>{ if(full) leave(true); });
   upd();
+})();
+</script>
+<script>
+/* ---------- simulaciones de teoría: degradado en los deslizadores y flechitas ▲▼ en los resultados ----------
+   Solo presentación. Para saber hacia dónde cambia cada resultado, vuelve a calcular las fórmulas con un
+   deslizador un poco movido (sobre una copia del estado y con lienzos sueltos que no se ven); no toca el
+   estado, los retos ni las indicaciones. ▲ toma el color del extremo del deslizador que hace SUBIR el valor
+   y ▼ el del extremo que lo hace BAJAR. */
+(function(){
+  const PAL=[['#e5484d','#30a46c'],['#8e4ec6','#f5a524'],['#0090ff','#e93d82'],['#a18072','#12a594']];
+  const NAME=['rojo','verde','morado','ámbar','azul','rosa','café','turquesa'];
+  const arrow=(up,c)=>`<svg viewBox="0 0 10 7" width="13" height="9" aria-hidden="true"><path d="${up?'M5 0L10 7H0z':'M0 0h10L5 7z'}" fill="${c}"/></svg>`;
+  const num=t=>{ t=t.replace(/\\htmlData\{[^}]*\}/g,'').replace(/\\(?:text|mathrm)\s*\{[^}]*\}/g,' ').replace(/\\(?:quad|qquad|to|left|right|big|Big)\b|\\[,;:!]/g,' ').replace(/[{}]/g,' ');
+    const parts=t.split(/=|\\approx/); if(parts.length<2) return NaN; let r=parts[parts.length-1];
+    r=r.split(/<|>|\\le\b|\\ge\b|\\leq|\\geq|\\Rightarrow|\\iff/)[0];
+    if(/\\pm|,/.test(r)) return NaN;
+    r=r.replace(/\^\s*\\circ/g,'').replace(/\\%/g,'').replace(/\\times\s*10\s*\^\s*(-?\d+)/g,'e$1').trim().replace(/^j\s*/,'');
+    const ns=r.match(/-?\d+(?:\.\d+)?(?:e-?\d+)?/g); if(!ns) return NaN;
+    if(r.replace(/-?\d+(?:\.\d+)?(?:e-?\d+)?/g,'').replace(/\b(?:s|rad|vs)\b|\.|\s/g,'')!=='') return NaN;
+    return +ns[ns.length-1]; };
+  const rowsOf=root=>{ const seen={}; return [...root.querySelectorAll('.fx')].map(r=>{ const l=(r.querySelector('.fxl')||{}).textContent||''; seen[l]=(seen[l]||0)+1;
+    const a=r.querySelector('.fxm annotation[encoding="application/x-tex"]'); return {r,key:l+'#'+seen[l],v:a?num(a.textContent):NaN}; }); };
+  function setup(el){ const D=el.__demo; if(!D||el.__dar) return; el.__dar=1;
+    const read=el.querySelector('[data-read]'); if(!read) return;
+    const ctl=(D.spec.ctl||[]).filter(c=>!c.sel&&!c.chk).map((c,i)=>({c,i,inp:el.querySelector(`[data-k="${c.k}"]`),col:PAL[i%PAL.length],nm:[NAME[(i%4)*2],NAME[(i%4)*2+1]],lbl:(c.label||c.k).replace(/<[^>]+>/g,'')}));
+    if(!ctl.length) return;
+    ctl.forEach(x=>{ if(!x.inp) return; x.inp.classList.add('grad'); x.inp.style.setProperty('--g0',x.col[0]); x.inp.style.setProperty('--g1',x.col[1]);
+      x.inp.title=`${x.lbl}: ${x.nm[0]} = valor mínimo · ${x.nm[1]} = valor máximo`; });
+    const leg=document.createElement('p'); leg.className='dleg';
+    leg.innerHTML='Flechitas junto a los resultados: <b>▲</b> toma el color del lado del deslizador que hace <b>subir</b> ese valor y <b>▼</b> el del lado que lo hace <b>bajar</b> ('+ctl.map(x=>`<span class="dlg-k" style="--g0:${x.col[0]};--g1:${x.col[1]}"></span>${x.lbl}`).join(' · ')+').';
+    read.parentNode.insertBefore(leg,read);
+    const dummy=(D.spec.plots||[0]).map(()=>document.createElement('canvas'));
+    const calc=st=>{ try{ const t=document.createElement('template'); t.innerHTML=D.spec.draw(st,dummy)||''; const o={}; rowsOf(t.content).forEach(x=>{ o[x.key]=x.v; }); return o; }catch(e){ return null; } };
+    let sig={}, tm=0, busy=false;
+    function paint(){ busy=true; rowsOf(read).forEach(x=>{ const m=x.r.querySelector('.fxm'); if(!m) return; const old=m.querySelector('.dar'); if(old) old.remove();
+        const s=sig[x.key]; if(!s||!s.length) return;
+        const sp=document.createElement('span'); sp.className='dar';
+        sp.innerHTML=s.map(({x:c,d})=>{ const up=d>0?1:0, cu=c.col[up], cd=c.col[1-up], nu=c.nm[up], nd=c.nm[1-up];
+          const tt=`Sube si mueves «${c.lbl}» hacia ${d>0?'la derecha':'la izquierda'} (${nu}); baja si lo mueves hacia ${d>0?'la izquierda':'la derecha'} (${nd}).`;
+          return `<span class="dap" role="img" title="${tt}" aria-label="${tt}">${arrow(1,cu)}${arrow(0,cd)}</span>`; }).join('');
+        m.appendChild(sp); }); busy=false; }
+    function compute(){ const st=D.st, base=calc({...st}); if(!base) return; const out={};
+      ctl.forEach(x=>{ const [fv,tv]=D.map(x.c); const p0=tv(st[x.c.k]); if(!Number.isFinite(p0)) return;
+        for(const step of [20,80]){ let p=p0+step, dir=1; if(p>1000){ p=p0-step; dir=-1; } if(p<0) continue;
+          const v=calc({...st,[x.c.k]:fv(p)}); if(!v) return; let any=false;
+          Object.keys(base).forEach(k=>{ const a=base[k], b=v[k]; if(!Number.isFinite(a)||!Number.isFinite(b)) return; const d=(b-a)*dir;
+            if(Math.abs(b-a)>1e-12*Math.max(1,Math.abs(a))){ any=true; if(!(out[k]||[]).some(q=>q.x===x)) (out[k]=out[k]||[]).push({x,d:Math.sign(d)}); } });
+          if(any) break; } });
+      sig=out; paint(); }
+    new MutationObserver(()=>{ if(busy) return; paint(); clearTimeout(tm); tm=setTimeout(compute,140); }).observe(read,{childList:true});
+    setTimeout(compute,60); }
+  window.__lgdrDemo=el=>setTimeout(()=>setup(el),0);
+  document.querySelectorAll('.demo').forEach(el=>{ if(el.__demo) setup(el); });
 })();
 </script>
 </body></html>

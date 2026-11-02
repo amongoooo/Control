@@ -89,6 +89,14 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `html.fxside`): a la derecha en ≥700 px y abajo (46dvh) en celular. Calificar → vuelve a la página normal.
   Salir (o Esc, o cambiar de pestaña) → confirma y borra las respuestas del intento (vacía `[data-body]`);
   el progreso guardado (mejor resultado, desbloqueos) no se toca.
+- **Hecho (v5): Simulaciones de teoría.** `.demo>.dtop` (deslizadores) fijo arriba en todas las anchuras
+  (antes solo ≤820 px). Cada deslizador de rango tiene degradado propio (`input.grad`, `--g0` mín → `--g1` máx;
+  paleta: rojo→verde, morado→ámbar, azul→rosa, café→turquesa). Junto a cada resultado (fila `.fx` cuyo
+  último término tras `=` es un solo número) van pares ▲▼ (`.dar > .dap`): ▲ = color del extremo que hace
+  subir el valor, ▼ = el que lo baja; un par por cada deslizador que lo afecta. Se calcula llamando
+  `spec.draw` con una copia del estado y lienzos sueltos (no toca estado, retos ni guías). Único cambio en la
+  lógica original: en `build()` se agregó `el.__demo={spec,st,map}; window.__lgdrDemo(el)` (solo lectura).
+  Nota `.dleg` antes de `[data-read]` explica los colores.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
