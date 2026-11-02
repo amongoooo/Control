@@ -97,6 +97,13 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `spec.draw` con una copia del estado y lienzos sueltos (no toca estado, retos ni guías). Único cambio en la
   lógica original: en `build()` se agregó `el.__demo={spec,st,map}; window.__lgdrDemo(el)` (solo lectura).
   Nota `.dleg` antes de `[data-read]` explica los colores.
+- **Hecho (v6): Simulación en pantalla completa.** Botón `.dfs-b` ("Pantalla completa") en `.dhead` de cada
+  simulación con deslizadores. Al entrar: `.demo.dfull` (fija) + `html.dmode`; barra `.dbar` dentro de `.dtop`
+  (Salir · título · Compacto/Completo · Gráficas). Se ocultan encabezado, guía, nota y pie; gráficas solo con
+  `.dplt`. Compacto (`.dcomp`): cada fila `.fx` muestra `.fxc` = KaTeX de «primer término = último término»
+  (separando por `=` a profundidad de llaves 0) + flechitas; oculta `.fxm`/`.fxn`. Preferencia en
+  `localStorage['lgdr-sim-vista']` = `{m:'c'|'f', g:0|1}` (por defecto compacto, sin gráficas). Salir con
+  botón, Esc o al cambiar de pestaña.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
