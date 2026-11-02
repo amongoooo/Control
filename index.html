@@ -739,6 +739,44 @@ html.dmode{overflow:hidden}
 .demo.dfull.dcomp [data-read] .fx{padding:7px 10px}
 .demo.dfull.dcomp [data-read] .fx.wide{grid-column:1/-1}
 @media (max-width:520px){.dbar{gap:6px}.dbar b{flex-basis:100%;order:-1}.dbar .dbx{order:0}.dbar button{padding:0 9px;font-size:12.5px;min-height:34px}.dbar .dseg button{padding:0 8px;min-height:30px}.dbar .dbx{font-size:0;gap:0;padding:0;width:34px;justify-content:center}.dbar .dbx svg{width:17px;height:17px}}
+/* ---------- diagrama de bloques (Simulink) dentro de «Código MATLAB» ---------- */
+.bd{border-top:1px solid var(--line);padding:16px 18px 18px;display:grid;gap:14px;min-width:0}
+.bd>*{min-width:0}
+details.code:has(.bd){min-width:0;max-width:100%}
+.bd .tablewrap{overflow-x:auto}
+.bd-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:4px 16px}
+.bd-head h4{margin:0;font:600 16px var(--f-display);font-stretch:90%}
+.bd p{margin:0;font-size:14px}
+.bd .bd-sub{font-size:13px;color:var(--muted)}
+.bd-ctl{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.bd-svg{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:6px;-webkit-overflow-scrolling:touch}
+.bd-svg svg{display:block;color:var(--ink);margin:0 auto}
+.bd svg text{font:12.5px var(--f-mono);fill:currentColor}
+.bd svg text.lb{font:600 12px var(--f-body)}
+.bd svg text.mu{font:11px var(--f-body);fill:var(--muted)}
+.bd svg text.sg{font:600 13px var(--f-body)}
+.bd svg .bx{fill:var(--surface);stroke:currentColor;stroke-width:1.4}
+.bd svg .cmp{stroke:var(--sw);stroke-width:2.2}
+.bd svg .ln{fill:none;stroke:currentColor;stroke-width:1.4}
+.bd svg .ic{fill:none;stroke:var(--accent);stroke-width:1.6}
+.bd svg .ah{fill:currentColor}
+.bd-swipe{display:none;font-size:12px;color:var(--muted);margin-top:-8px}
+@media (max-width:820px){.bd-swipe{display:block}}
+.bd table{border-collapse:collapse;width:100%;font-size:13.5px}
+.bd th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.03em;color:var(--muted);text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+.bd td{padding:7px 8px;border-bottom:1px solid var(--grid);vertical-align:top}
+.bd td:first-child{font-weight:600;white-space:nowrap}
+.bd td small{color:var(--muted);font-size:12px}
+.bd .pv{font:12.5px var(--f-mono);background:var(--codebg);padding:1px 6px;border-radius:4px;white-space:nowrap}
+.bd-res{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.bd-res div{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--surface);min-width:0}
+.bd-res span{display:block;font-size:12px;color:var(--muted)}
+.bd-res b{display:block;font:600 15px var(--f-mono);overflow-wrap:anywhere}
+.bd-res .wide{grid-column:1/-1}
+.bd .codebox{border:1px solid var(--line);border-radius:10px}
+.bd .codebox pre{border-radius:10px}
+.bd .note{margin:0}
+@media (max-width:600px){.bd table,.bd tbody,.bd tr,.bd td{display:block}.bd thead{display:none}.bd tr{border-bottom:1px solid var(--grid);padding:7px 0}.bd td{border:0;padding:1px 2px}.bd td:nth-child(2){font-size:12px;color:var(--muted);font-weight:400}.bd .codebox pre{padding-top:46px}}
 </style>
 
 <header class="appbar" id="appbar">
@@ -1705,7 +1743,7 @@ legend('3er orden (real)', '2º orden (aprox.)')
 
 <span class="cm">%% 5) Ajuste: K que da 10 % OS en el modelo completo</span>
 f = @(k) stepinfo(feedback(k*G,1)).Overshoot - OS;
-K_aj = fzero(f, [40 70])                    <span class="cm">% ≈ 49.38</span></pre></div></details>
+K_aj = fzero(f, [40 70])                    <span class="cm">% ≈ 49.38</span></pre></div><div class="bd" data-bd="p1"></div></details>
 </section>
 
 <!-- ===================== P2 ===================== -->
@@ -1840,7 +1878,7 @@ pole(Tc)                                    <span class="cm">% observa -0.0902 j
 figure; rlocus(G, Gc*G); sgrid(zeta,0); legend('sin comp.','PI')
 figure; step(Tu, Tc, 40); grid on; legend('sin comp.','PI')
 stepinfo(Tu), stepinfo(Tc)
-e_c = 1 - dcgain(Tc)                        <span class="cm">% 0</span></pre></div></details>
+e_c = 1 - dcgain(Tc)                        <span class="cm">% 0</span></pre></div><div class="bd" data-bd="p2"></div></details>
 </section>
 
 <!-- ===================== P3 ===================== -->
@@ -1958,7 +1996,7 @@ t = 0:0.001:15;
 cu = lsim(Tu, t, t);  cc = lsim(Tc, t, t);
 figure; plot(t, t'-cu, t, t'-cc); grid on
 xlabel('t (s)'); ylabel('e(t) = r(t) - c(t)'); legend('sin comp.','atraso')
-figure; step(Tu, Tc, 6); grid on; legend('sin comp.','atraso')</pre></div></details>
+figure; step(Tu, Tc, 6); grid on; legend('sin comp.','atraso')</pre></div><div class="bd" data-bd="p3"></div></details>
 </section>
 
 <!-- ===================== P4 ===================== -->
@@ -2083,7 +2121,7 @@ pole(Tc)                                    <span class="cm">% -3.613±6.194i, -
 zero(Tc)
 figure; rlocus(Gc*G); sgrid(zeta,0)
 figure; step(Tu, Tc, 5); grid on; legend('sin comp.','PD')
-stepinfo(Tu), stepinfo(Tc)</pre></div></details>
+stepinfo(Tu), stepinfo(Tc)</pre></div><div class="bd" data-bd="p4"></div></details>
 </section>
 
 <!-- ===================== P5 ===================== -->
@@ -2182,7 +2220,7 @@ stepinfo(Tc)                                <span class="cm">% %OS ≈ 21 % → 
 figure; step(Tu, Tc, 2); grid on; legend('sin comp.','adelanto')
 
 <span class="cm">%% 4) Ajuste: repite el paso 2 con zeta = 0.627 (mismo sig = 10.5)</span>
-<span class="cm">%    y comprueba con stepinfo que el %OS queda en 15 %.</span></pre></div></details>
+<span class="cm">%    y comprueba con stepinfo que el %OS queda en 15 %.</span></pre></div><div class="bd" data-bd="p5"></div></details>
 </section>
 
 <!-- ===================== P6 ===================== -->
@@ -2328,7 +2366,7 @@ Tpid = feedback(C*G, 1);
 pole(Tpid), zero(Tpid)
 stepinfo(Tpid)
 e_esc = 1 - dcgain(Tpid)                    <span class="cm">% 0</span>
-figure; step(Tu, Tpd, Tpid, 3); grid on; legend('sin comp.','PD','PID')</pre></div></details>
+figure; step(Tu, Tpd, Tpid, 3); grid on; legend('sin comp.','PD','PID')</pre></div><div class="bd" data-bd="p6"></div></details>
 </section>
 
 <!-- ===================== P7 ===================== -->
@@ -2441,7 +2479,7 @@ Tu = feedback(K*G,1);  Tl = feedback(Kl*Glead*G,1);
 figure; step(Tu, Tl, Tf, 2); grid on; legend('sin comp.','adelanto','adelanto-atraso')
 t = 0:0.001:30;
 figure; plot(t, t'-lsim(Tu,t,t), t, t'-lsim(Tf,t,t)); grid on
-legend('sin comp.','adelanto-atraso'); ylabel('e(t)')</pre></div></details>
+legend('sin comp.','adelanto-atraso'); ylabel('e(t)')</pre></div><div class="bd" data-bd="p7"></div></details>
 </section>
 <!-- ===================== PREGUNTAS ===================== -->
 <section class="page" id="preguntas" data-page hidden>
@@ -4965,6 +5003,159 @@ window.__lgdrQR=qrcode;
   addEventListener('hashchange',()=>{ if(cur) leave(); });
   window.__lgdrDemo=el=>setTimeout(()=>setup(el),0);
   document.querySelectorAll('.demo').forEach(el=>{ if(el.__demo) setup(el); });
+})();
+</script>
+<script>
+/* Diagrama de bloques (Simulink) en «Código MATLAB» de cada práctica — sólo presentación.
+   Lee los mismos datos del Banco de pruebas (window.__PR / __analyze); no cambia nada. */
+(()=>{
+const PR=window.__PR, AN=window.__analyze, LIB=window.__lib; if(!PR||!AN||!LIB) return;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=v=>Math.abs(v)<1e-12?'0':String(+v.toPrecision(6));
+const vec=c=>`[${c.map(num).join(' ')}]`;
+const SUP={2:'²',3:'³',4:'⁴',5:'⁵',6:'⁶'};
+const pstr=c=>{ const n=c.length-1; let o=''; c.forEach((v,i)=>{ const e=n-i; if(Math.abs(v)<1e-12) return;
+  const a=Math.abs(v), t=(a===1&&e>0?'':num(a))+(e>0?'s'+(SUP[e]||''):''); o+=o?(v<0?'−':'+')+t:(v<0?'−':'')+t; }); return o||'0'; };
+const fac=r=>r.map(x=>Math.abs(x)<1e-12?'s':`(s${x<0?'+':'−'}${num(Math.abs(x))})`).join('')||'1';
+const minus=(a,b)=>{ const o=a.slice(); b.forEach(x=>{ const i=o.findIndex(y=>Math.abs(y-x)<1e-9); if(i>=0) o.splice(i,1); }); return o; };
+const f3=v=>Number.isFinite(v)?(Math.abs(v)>=100?v.toFixed(1):Math.abs(v)>=10?v.toFixed(2):v.toFixed(3)):'—';
+const polesTxt=ps=>ps.filter(p=>p[1]>=0).map(p=>p[1]>0?`${f3(p[0])} ± j${f3(p[1])}`:f3(p[0])).join(', ');
+const SUB=['₁','₂','₃','₄'];
+const facD=r=>r.length>1?`[${fac(r)}]`:fac(r);
+
+/* ---- cómo se arma cada sistema en Simulink ---- */
+function model(id,i){
+  const P=PR[id], c=P.cfg[i], g=P.cfg[0], cz=minus(c.z,g.z), cp=minus(c.p,g.p);
+  const plant={z:g.z,p:g.p,title:'G(s)',kind:'Planta'};
+  const m={c,K:c.K,tf:[],pid:null,merged:false};
+  if(cz.length>cp.length){                       // PD / PID ideal: más ceros que polos
+    m.merged=true;
+    m.tf=[{z:c.z,p:c.p,title:'Gc(s)·G(s)',kind:'Compensador + planta',cmp:true}];
+    const ints=cp.filter(p=>Math.abs(p)<1e-12).length;
+    if(cp.length===ints&&ints<=1){ const a=LIB.polyFromRoots(cz), n=cz.length, k={};
+      let ok=true; a.forEach((v,j)=>{ const e=n-j-ints; if(e===1) k.D=c.K*v; else if(e===0) k.P=c.K*v; else if(e===-1) k.I=c.K*v; else ok=false; });
+      if(ok) m.pid={P:k.P||0,I:k.I||0,D:k.D||0,plant}; }
+  } else {
+    const parts=cz.map((z,k)=>({z:[z],p:[cp[k]]}));
+    if(cp.length>cz.length) parts.push({z:[],p:cp.slice(cz.length)});
+    parts.forEach((b,k)=>{ const p=b.p[0], z=b.z[0];
+      b.kind=b.z.length===0?'Compensador':Math.abs(p)<1e-12?'PI ideal':Math.abs(z)<Math.abs(p)?'Adelanto':'Atraso';
+      b.title=parts.length>1?`Gc${SUB[k]}(s)`:'Gc(s)'; b.cmp=true; m.tf.push(b); });
+    m.tf.push(plant);
+  }
+  return m;
+}
+
+/* ---- dibujo estilo Simulink ---- */
+function svg(m,usePid,ramp,col){
+  const y=92, H=54, out=[], A=(x,yy)=>`<polygon class="ah" points="${x},${yy} ${x-9},${yy-4.5} ${x-9},${yy+4.5}"/>`;
+  const Aup=(x,yy)=>`<polygon class="ah" points="${x},${yy} ${x-4.5},${yy+9} ${x+4.5},${yy+9}"/>`;
+  const line=(pts)=>`<polyline class="ln" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+  const lbl=(x,t,k)=>`<text class="lb" x="${x}" y="${y+H/2+17}" text-anchor="middle">${esc(t)}</text><text class="mu" x="${x}" y="${y+H/2+31}" text-anchor="middle">${esc(k)}</text>`;
+  let x=8;
+  // fuente
+  out.push(`<rect class="bx" x="${x}" y="${y-H/2}" width="58" height="${H}" rx="3"/>`);
+  out.push(ramp?`<polyline class="ic" points="${x+12},${y+14} ${x+46},${y-14}"/>`:`<polyline class="ic" points="${x+10},${y+12} ${x+26},${y+12} ${x+26},${y-12} ${x+48},${y-12}"/>`);
+  out.push(lbl(x+29,ramp?'Ramp':'Step',ramp?'r(t) = t':'r(t) = 1'));
+  x+=58; const sx=x+46;
+  out.push(line([[x,y],[sx-14,y]]),A(sx-14,y),`<text x="${x+8}" y="${y-8}">R</text>`);
+  out.push(`<circle class="bx" cx="${sx}" cy="${y}" r="14"/><text class="sg" x="${sx-11}" y="${y-17}">+</text><text class="sg" x="${sx+5}" y="${y+30}">−</text>`);
+  x=sx+14; const tapE=x+20, scE=tapE+26;
+  // ramal del error hacia su Scope
+  out.push(line([[tapE,y],[tapE,22],[scE,22]]),A(scE,22),`<circle class="ah" cx="${tapE}" cy="${y}" r="3"/>`);
+  out.push(`<rect class="bx" x="${scE}" y="6" width="44" height="32" rx="3"/><rect class="ic" x="${scE+7}" y="12" width="30" height="20" rx="1"/><polyline class="ic" points="${scE+9},28 ${scE+17},18 ${scE+25},26 ${scE+35},14"/>`);
+  out.push(`<text class="lb" x="${scE+52}" y="20">Scope · error</text><text class="mu" x="${scE+52}" y="34">e(t) = r(t) − c(t)</text>`);
+  out.push(`<text x="${x+4}" y="${y-8}">E</text>`);
+  const tfs=usePid?[{pid:true},m.pid.plant]:m.tf;
+  // ganancia K (no hace falta si el PID ya la incluye)
+  if(!usePid){ const gx=x+48; out.push(line([[x,y],[gx,y]]),A(gx,y));
+    const kt=num(m.K), gw=Math.max(80,kt.length*8+34);
+    out.push(`<polygon class="bx" points="${gx},${y-H/2} ${gx},${y+H/2} ${gx+gw},${y}"/><text x="${gx+8}" y="${y+4.5}">${esc(kt)}</text>`);
+    out.push(lbl(gx+gw/2-6,'K','Gain')); x=gx+gw; }
+  tfs.forEach(b=>{ const bx=x+40; out.push(line([[x,y],[bx,y]]),A(bx,y));
+    if(b.pid){ const w=92; out.push(`<rect class="bx cmp" style="--sw:var(${col})" x="${bx}" y="${y-H/2}" width="${w}" height="${H}" rx="3"/><text x="${bx+w/2}" y="${y+5}" text-anchor="middle">PID(s)</text>`);
+      out.push(lbl(bx+w/2,'K·Gc(s)','PID Controller')); x=bx+w; return; }
+    const n=pstr(LIB.polyFromRoots(b.z)), d=pstr(LIB.polyFromRoots(b.p)), w=Math.max(n.length,d.length)*7.6+26;
+    out.push(`<rect class="bx${b.cmp?' cmp':''}"${b.cmp?` style="--sw:var(${col})"`:''} x="${bx}" y="${y-H/2}" width="${w}" height="${H}" rx="3"/>`);
+    out.push(`<text x="${bx+w/2}" y="${y-7}" text-anchor="middle">${esc(n)}</text><line class="ln" x1="${bx+8}" y1="${y}" x2="${bx+w-8}" y2="${y}"/><text x="${bx+w/2}" y="${y+17}" text-anchor="middle">${esc(d)}</text>`);
+    out.push(lbl(bx+w/2,b.title+(b.kind?' · '+b.kind:''),'Transfer Fcn')); x=bx+w; });
+  const tapC=x+34, sc=tapC+30, yF=y+H/2+50;
+  out.push(line([[x,y],[sc,y]]),A(sc,y),`<circle class="ah" cx="${tapC}" cy="${y}" r="3"/><text x="${x+8}" y="${y-8}">C</text>`);
+  out.push(`<rect class="bx" x="${sc}" y="${y-20}" width="48" height="40" rx="3"/><rect class="ic" x="${sc+7}" y="${y-13}" width="34" height="26" rx="1"/><polyline class="ic" points="${sc+9},${y+9} ${sc+18},${y-8} ${sc+27},${y+3} ${sc+38},${y-4}"/>`);
+  out.push(`<text class="lb" x="${sc+24}" y="${y+H/2+17}" text-anchor="middle">Scope</text><text class="mu" x="${sc+24}" y="${y+H/2+31}" text-anchor="middle">c(t)</text>`);
+  out.push(line([[tapC,y],[tapC,yF],[sx,yF],[sx,y+14+9]]),Aup(sx,y+14));
+  out.push(`<text class="mu" x="${(sx+tapC)/2}" y="${yF+16}" text-anchor="middle">realimentación unitaria (Sum con signos |+−)</text>`);
+  const W=sc+48+8, Ht=yF+24;
+  return `<svg viewBox="0 0 ${W} ${Ht}" width="${W}" height="${Ht}" role="img" aria-label="Diagrama de bloques en Simulink">${out.join('')}</svg>`;
+}
+
+/* ---- panel de cada práctica ---- */
+function build(el){
+  const id=el.dataset.bd, P=PR[id], cache={}; if(!P) return;
+  const S={i:P.sel??0,ramp:false,pid:false};
+  const res=i=>cache[i]||(cache[i]=AN(P.cfg[i],P.cfg[i].K));
+  const n=id.slice(1);
+  function render(){
+    const m=model(id,S.i), c=m.c, usePid=S.pid&&!!m.pid, ramp=P.ramp&&S.ramp, T=ramp?(P.Tr||P.T):P.T, r=res(S.i);
+    const rows=[];
+    rows.push(ramp?['Ramp','Sources','Slope = <span class="pv">1</span> · Start time = <span class="pv">0</span> · Initial output = <span class="pv">0</span>']
+                  :['Step','Sources','Step time = <span class="pv">0</span> · Initial value = <span class="pv">0</span> · Final value = <span class="pv">1</span>']);
+    rows.push(['Sum','Math Operations','Icon shape = round · List of signs = <span class="pv">|+-</span>']);
+    if(usePid){ const p=m.pid;
+      rows.push(['PID Controller','Continuous',`Form = Parallel · P = <span class="pv">${num(p.P)}</span> · I = <span class="pv">${num(p.I)}</span> · D = <span class="pv">${num(p.D)}</span> · Filter coefficient N = <span class="pv">1000</span><br><small>La ganancia K ya va dentro: K·Gc(s) = ${esc(num(m.K))}·${esc(fac(minus(c.z,P.cfg[0].z)))}${minus(c.p,P.cfg[0].p).length?'/s':''}</small>`]);
+      const g=p.plant; rows.push(['Transfer Fcn','Continuous',`<b>G(s)</b> = ${esc(fac(g.z))}/${esc(facD(g.p))}<br>Numerator = <span class="pv">${vec(LIB.polyFromRoots(g.z))}</span> · Denominator = <span class="pv">${vec(LIB.polyFromRoots(g.p))}</span>`]);
+    } else {
+      rows.push(['Gain','Math Operations',`Gain = <span class="pv">${num(m.K)}</span>`]);
+      m.tf.forEach(b=>rows.push(['Transfer Fcn','Continuous',`<b>${esc(b.title)}</b>${b.kind?' · '+esc(b.kind):''} = ${esc(fac(b.z))}/${esc(facD(b.p))}<br>Numerator = <span class="pv">${vec(LIB.polyFromRoots(b.z))}</span> · Denominator = <span class="pv">${vec(LIB.polyFromRoots(b.p))}</span>`]));
+    }
+    rows.push(['Scope ×2','Sinks','Uno en la salida c(t) y otro en el error e(t)']);
+    rows.push(['To Workspace ×2 <small>(opcional)</small>','Sinks','Junto a cada Scope: Variable name = <span class="pv">y</span> (salida) y <span class="pv">e</span> (error) · Save format = Timeseries']);
+    rows.push(['Ajustes del modelo','Modeling › Model Settings',`Stop time = <span class="pv">${num(T)}</span> · Solver = <span class="pv">ode45</span> · Max step size = <span class="pv">1e-3</span><br><small>Con el paso automático el Scope se ve “quebrado” y el %OS y Tp salen corridos.</small>`]);
+
+    const stats=[['K',num(m.K)],['Polos en lazo cerrado',r.poles?polesTxt(r.poles):'—','wide']];
+    if(r.stable){
+      if(ramp) stats.push(['e(∞) a rampa',r.type===1?f3(r.ess):r.type>=2?'0':'∞']);
+      else stats.push(['%OS',f3(r.os)],['Ts (2 %) [s]',f3(r.ts)],['Tp [s]',f3(r.tp)],['e(∞) a escalón',r.type===0?f3(r.ess):'0']);
+    } else stats.push(['Estado','inestable']);
+    const file=`P${n}_lgdr`;
+    const code=ramp?`out = sim('${file}');          % nombre de tu archivo .slx\ne_final = out.e.Data(end)      % compáralo con e(∞) a rampa`
+      :`out = sim('${file}');          % nombre de tu archivo .slx\nS = stepinfo(out.y.Data, out.y.Time)   % Overshoot, SettlingTime, PeakTime\ne_final = out.e.Data(end)      % compáralo con e(∞) a escalón`;
+
+    el.innerHTML=`<div class="bd-head"><h4>Diagrama de bloques en Simulink · Práctica ${n}</h4><span class="src">Ármalo y compáralo con el Banco de pruebas</span></div>
+    <p class="bd-sub">Los valores salen del mismo cálculo que el Banco de pruebas, así que tu Scope debe verse igual que su gráfica con «K de diseño».</p>
+    <div class="bd-ctl">
+      ${P.cfg.length>1?`<div class="chips" role="group" aria-label="Sistema a armar">${P.cfg.map((cc,k)=>`<button class="chip" style="--sw:var(${cc.c})" data-bi="${k}" aria-pressed="${k===S.i}"><span class="sw"></span>${esc(cc.name)}</button>`).join('')}</div>`:''}
+      ${P.ramp?`<div class="seg" role="group" aria-label="Entrada"><button data-br="0" aria-pressed="${!ramp}">Escalón</button><button data-br="1" aria-pressed="${ramp}">Rampa</button></div>`:''}
+      ${m.pid?`<div class="seg" role="group" aria-label="Forma del compensador"><button data-bp="0" aria-pressed="${!usePid}">Gc·G en un bloque</button><button data-bp="1" aria-pressed="${usePid}">Bloque PID</button></div>`:''}
+    </div>
+    <div class="bd-svg">${svg(m,usePid,ramp,c.c)}</div>
+    <p class="bd-swipe">Desliza el diagrama hacia los lados para verlo completo.</p>
+    ${m.merged&&!usePid?`<p class="note">Simulink no acepta un bloque <b>Transfer Fcn</b> con más ceros que polos (PD o PID ideal). Por eso el compensador y la planta van juntos en un solo bloque${m.pid?'; o elige «Bloque PID» para armarlo con el bloque PID Controller':''}.</p>`:''}
+    ${usePid?`<p class="note">El bloque PID usa un filtro en la derivada (N = 1000), así que los números pueden variar un poco respecto al PID ideal del Banco de pruebas.</p>`:''}
+    <div class="tablewrap"><table><thead><tr><th>Bloque</th><th>Biblioteca</th><th>Parámetros</th></tr></thead><tbody>${rows.map(rw=>`<tr><td>${rw[0]}</td><td>${rw[1]}</td><td>${rw[2]}</td></tr>`).join('')}</tbody></table></div>
+    <div><p style="font-weight:600;margin-bottom:8px">Lo que debes obtener · ${esc(c.name)}${ramp?' · entrada rampa':' · entrada escalón'}</p>
+    <div class="bd-res">${stats.map(s=>`<div${s[2]?' class="wide"':''}><span>${s[0]}</span><b>${esc(s[1])}</b></div>`).join('')}</div></div>
+    <div class="codebox"><button class="btn" data-bdcopy>Copiar</button><pre>${esc(code)}</pre></div>
+    <div class="bd-ctl"><button class="btn" data-bdgo>Ver este sistema en el Banco de pruebas</button></div>`;
+
+    el.querySelectorAll('[data-bi]').forEach(b=>b.addEventListener('click',()=>{ S.i=+b.dataset.bi; render(); }));
+    el.querySelectorAll('[data-br]').forEach(b=>b.addEventListener('click',()=>{ S.ramp=b.dataset.br==='1'; render(); }));
+    el.querySelectorAll('[data-bp]').forEach(b=>b.addEventListener('click',()=>{ S.pid=b.dataset.bp==='1'; render(); }));
+    const cb=el.querySelector('[data-bdcopy]'); cb.addEventListener('click',()=>{ const pre=cb.parentElement.querySelector('pre'), txt=pre.innerText;
+      const done=()=>{ cb.textContent='Copiado'; setTimeout(()=>cb.textContent='Copiar',1500); };
+      const fb=()=>{ const rg=document.createRange(); rg.selectNodeContents(pre); const s=getSelection(); s.removeAllRanges(); s.addRange(rg); cb.textContent='Ctrl+C'; setTimeout(()=>cb.textContent='Copiar',2000); };
+      try{ navigator.clipboard.writeText(txt).then(done,fb); }catch(e){ fb(); } });
+    el.querySelector('[data-bdgo]').addEventListener('click',()=>{ const lab=document.querySelector(`#${id} [data-lab]`); if(!lab) return;
+      const chip=lab.querySelector(`.chip[data-i="${S.i}"]`); if(chip) chip.click();
+      const rs=lab.querySelector('[data-reset]'); if(rs) rs.click();
+      const mb=lab.querySelector(`[data-mode] [data-m="${ramp?'ramp':'step'}"]`); if(mb) mb.click();
+      lab.scrollIntoView({behavior:'smooth',block:'start'}); });
+  }
+  el.__bdRender=render;
+}
+document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details'); build(el);
+  const go=()=>{ if(!el.__bdDone&&el.__bdRender){ el.__bdDone=1; el.__bdRender(); } };
+  if(!d||d.open) go(); else d.addEventListener('toggle',()=>{ if(d.open) go(); }); });
 })();
 </script>
 </body></html>

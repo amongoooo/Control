@@ -112,6 +112,13 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `.dgd` en la demo muestra `.gcur` (dentro de `.dtop`, fijo) y `[data-guide]`. Preferencia `r` en
   `lgdr-sim-vista` (por defecto 1). Botón oculto si la demo no tiene guía. En ≤520 px la barra se compacta
   (Salir solo con ✕) para caber en una fila.
+- **Hecho (v9): Diagrama de bloques en Simulink** dentro de cada «Código MATLAB» (P1–P7): `div.bd[data-bd=pN]`
+  tras `.codebox`. JS al final del `<body>` (solo lectura de `window.__PR`, `__analyze`, `__lib`): se arma al
+  abrir el `details`. Chips por sistema (`cfg`), Escalón/Rampa si `P.ramp`, y «Bloque PID» si el compensador es
+  PD/PID ideal (impropio → por defecto Gc·G en un solo Transfer Fcn). Compensador = ceros/polos de `cfg` menos
+  los de `cfg[0]` (planta); se separa en bloques adelanto/atraso/PI. Tabla de parámetros (vectores para
+  Numerator/Denominator), «Lo que debes obtener» (= Banco con K de diseño), código `sim`/`stepinfo` y botón
+  «Ver este sistema en el Banco de pruebas». CSS `.bd*` antes de `</style>` principal.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
