@@ -993,6 +993,18 @@ section.page>details.about.fabout>.lede{margin-top:10px!important}
   }
 }
 @media (prefers-reduced-motion:reduce){.fold,.fold-h .fcv,.fdetb::after,.qtopic.fold>.qth{transition:none}}
+/* ==== v16 · deslizadores con imán y zona muerta (solo presentación) ==== */
+.sl.mg,.kctl.mg{position:relative}
+.mgk{position:absolute;pointer-events:none}
+.mgl{position:absolute;z-index:3;left:0;bottom:calc(50% + 15px);translate:-50% 0;padding:2px 7px;border-radius:6px;background:var(--ok);color:var(--surface);font:600 11.5px/1.35 var(--f-mono);white-space:nowrap;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.25);opacity:0;transition:opacity .15s}
+.mgl.on{opacity:1}
+.sl input[type=range].grad.mg-on::-webkit-slider-thumb{border-color:var(--ok);box-shadow:0 1px 4px rgba(0,0,0,.35),0 0 0 8px color-mix(in srgb,var(--ok) 28%,transparent)}
+.sl input[type=range].grad.mg-on::-moz-range-thumb{border-color:var(--ok);box-shadow:0 1px 4px rgba(0,0,0,.35),0 0 0 8px color-mix(in srgb,var(--ok) 28%,transparent)}
+html.mo-rng .kctl input[type=range].mg-on::-webkit-slider-thumb{background:var(--ok);box-shadow:0 0 0 1px var(--ok),0 1px 3px rgba(0,0,0,.3),0 0 0 9px color-mix(in srgb,var(--ok) 26%,transparent)}
+html.mo-rng .kctl input[type=range].mg-on::-moz-range-thumb{background:var(--ok);box-shadow:0 0 0 1px var(--ok),0 1px 3px rgba(0,0,0,.3),0 0 0 9px color-mix(in srgb,var(--ok) 26%,transparent)}
+.btn.mgt{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn.mgt svg{flex:none}
+.btn.mgt[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
 </style>
 
 <header class="appbar" id="appbar">
@@ -5833,6 +5845,191 @@ document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details
   FOLDS.filter(F=>F.kind!=='topic').forEach(initial);
   Object.keys(bars).forEach(refreshBar);
   window.__lgdrFolds={list:()=>FOLDS.map(F=>({k:F.k,on:F.on})),all,open:(k,on=true)=>{ const F=FOLDS.find(x=>x.k===k); if(F) setOpen(F,on); }};
+})();
+</script>
+<script>
+/* ==== v16 · deslizadores con imán y zona muerta (solo presentación) ====
+   Valores especiales (sin marcas visibles) en los bancos (P1–P7) y en las simulaciones de teoría. Al ARRASTRAR con el puntero cerca de una marca
+   (≤ 10 px, o la mitad de la distancia a la vecina) el deslizador se pega y se aplica el valor EXACTO por el mismo camino que
+   la casilla numérica (evento «change»), así el estado y los retos lo ven igual que si lo escribieras. Ya pegado no se suelta
+   hasta alejarse 18 px (zona muerta; en pistas angostas, menos: ver radii()). Teclado, casilla numérica y animaciones por código no pasan por aquí. Alt al arrastrar,
+   o el interruptor «Imán» (localStorage 'lgdr-iman'), lo desactiva. Mientras haces un reto solo atraen los valores
+   redondos y únicamente si el puntero se queda 1 s encima. El círculo se desliza: al pegarse va suave a la marca, en la zona
+   muerta se inclina un poco hacia donde jalas (el valor no cambia) y al soltarse alcanza rápido al puntero. Solo lee window.__PR, __labs, __lib y el.__demo; no cambia la lógica original. */
+(()=>{
+const d=document, root=d.documentElement, LIB=window.__lib, PR=window.__PR;
+if(!LIB||!PR||!window.ResizeObserver) return;
+const KEY='lgdr-iman', CAP=10, MINCAP=5, REL=18, DWELL=1000, reduce=matchMedia('(prefers-reduced-motion: reduce)');
+let on=true; try{ on=localStorage.getItem(KEY)!=='0'; }catch(e){}
+const MAGI='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3v8a6 6 0 0 0 12 0V3"/><path d="M6 7h4M14 7h4"/></svg>';
+const near=(a,b)=>Math.abs(a-b)<=1e-9*Math.max(1,Math.abs(a),Math.abs(b));
+const f4=x=>String(+(+x).toPrecision(4)).replace('-','−');
+const nice=(range,t)=>{ const raw=range/t, m=Math.pow(10,Math.floor(Math.log10(raw))), f=raw/m; return (f<1.5?1:f<3.5?2:f<7.5?5:10)*m; };
+const REG=new WeakMap(), ALL=new Set();
+
+/* ---------- valores especiales del banco: K de diseño, otras K de la misma planta, K crítica y puntos de quiebre ---------- */
+const PC=new WeakMap(), poly=c=>{ let o=PC.get(c); if(!o){ o={N:LIB.polyFromRoots(c.z),D:LIB.polyFromRoots(c.p)}; PC.set(c,o); } return o; };
+const peval=(a,x)=>a.reduce((s,v)=>s*x+v,0);
+const der=a=>a.slice(0,-1).map((v,i)=>v*(a.length-1-i));
+const mul=(a,b)=>{ const o=new Array(a.length+b.length-1).fill(0); a.forEach((x,i)=>b.forEach((y,j)=>o[i+j]+=x*y)); return o; };
+const sub=(a,b)=>{ const n=Math.max(a.length,b.length), o=new Array(n).fill(0); a.forEach((v,i)=>o[n-a.length+i]+=v); b.forEach((v,i)=>o[n-b.length+i]-=v); return o; };
+const stableAt=(c,K)=>{ const {N,D}=poly(c); return Math.max(...LIB.roots(LIB.addScaled(D,K,N)).map(q=>q[0]))< -1e-9; };
+const CACHE=new WeakMap();
+function special(c,a,b){ let o=CACHE.get(c); if(o) return o; o={crit:[],brk:[]};
+  const n=240, la=Math.log(a), lb=Math.log(b), Kx=i=>Math.exp(la+(lb-la)*i/n); let prev=stableAt(c,Kx(0));
+  for(let i=1;i<=n;i++){ const s=stableAt(c,Kx(i)); if(s!==prev){ let lo=Math.log(Kx(i-1)), hi=Math.log(Kx(i));
+      for(let k=0;k<50;k++){ const m=(lo+hi)/2; if(stableAt(c,Math.exp(m))===prev) lo=m; else hi=m; } o.crit.push(+Math.exp((lo+hi)/2).toPrecision(7)); } prev=s; }
+  const {N,D}=poly(c), f=sub(mul(N,der(D)),mul(der(N),D));
+  if(f.length>1) LIB.roots(f).forEach(([re,im])=>{ if(im!==0) return; const nv=peval(N,re); if(Math.abs(nv)<1e-12) return; const K=+(-peval(D,re)/nv).toPrecision(7);
+    if(K>a*1.001&&K<b/1.001&&!o.brk.some(x=>near(x[0],K))) o.brk.push([K,re]); });
+  CACHE.set(c,o); return o; }
+const samePlant=(u,v)=>u.z.length===v.z.length&&u.p.length===v.p.length&&u.z.every((x,i)=>near(x,v.z[i]))&&u.p.every((x,i)=>near(x,v.p[i]));
+function labMarks(L){ const P=PR[L.id], c=P.cfg[L.sel], a=c.K/100, b=c.K*15, toS=K=>1000*Math.log(K/a)/Math.log(b/a), out=[];
+  out.push({v:c.K,t:'K de diseño = '+f4(c.K),k:'key'});
+  P.cfg.forEach((o,j)=>{ if(j!==L.sel&&samePlant(o,c)&&!near(o.K,c.K)&&o.K>a&&o.K<b) out.push({v:o.K,t:o.name+' = '+f4(o.K),k:'key'}); });
+  const sp=special(c,a,b);
+  sp.crit.forEach(K=>out.push({v:K,t:'K crítica (límite de estabilidad) = '+f4(K),k:'lim'}));
+  sp.brk.forEach(([K,s])=>out.push({v:K,t:'Punto de quiebre en s = '+f4(s)+' · K = '+f4(K),k:'brk'}));
+  for(let e=Math.ceil(Math.log10(a*1.02));Math.pow(10,e)<b/1.02;e++){ const v=Math.pow(10,e); out.push({v,t:'K = '+f4(v),k:'',r:1}); }
+  return out.map(m=>({...m,p:toS(m.v)})); }
+
+/* ---------- valores especiales de las simulaciones de teoría (st = estado actual de la simulación) ---------- */
+const Z7=Math.SQRT1_2, KC={p1:480,p2:396,p4:240};
+const SP={
+  polos:{re:()=>[[0,'Eje jω: límite de estabilidad','lim']]},
+  specs:{os:()=>[[100*Math.exp(-Math.PI),'ζ = 0.707 → %OS = 4.32 %','key']]},
+  angulo:{a:()=>[[0,'Eje jω','lim']]},
+  routh:{K:st=>KC[st.pp]?[[KC[st.pp],'K crítica (Routh) = '+KC[st.pp],'lim']]:[]},
+  adelanto:{zc:()=>[[4,'Cero sobre el polo en −4','key'],[6,'Cero sobre el polo en −6','key']]},
+  senal:{sg:()=>[[0,'σ = 0: eje jω','lim']]},
+  resorte:{b:st=>{ const r=Math.sqrt(st.m*st.k); return [[2*r,'Amortiguamiento crítico (ζ = 1): b = '+f4(2*r),'key'],[Math.SQRT2*r,'ζ = 0.707: b = '+f4(Math.SQRT2*r),'key']]; }},
+  paisaje:{re:()=>[[0,'Eje jω: límite de estabilidad','lim']],z:()=>[[0,'Cero en el origen','brk']]},
+  polo1:{p:()=>[[0,'Polo en el origen: límite de estabilidad','lim']]},
+  zeta:{z:()=>[[0,'ζ = 0: sin amortiguamiento','lim'],[Z7,'ζ = 0.707','key'],[1,'ζ = 1: amortiguamiento crítico','key']]},
+  modos:{z:st=>[[st.p1,'Cero sobre el polo p₁','key'],[st.p2,'Cero sobre el polo p₂','key']]},
+  cero:{z:()=>[[0,'Cero en el origen (a la derecha: fase no mínima)','lim']],zt:()=>[[Z7,'ζ = 0.707','key']]}
+};
+function demoMarks(el,c){ const D=el.__demo, st=D.st, tv=D.map(c)[1], lo=Math.min(c.min,c.max), hi=Math.max(c.min,c.max), span=hi-lo;
+  const fm=v=>{ try{ return c.fmt?String(c.fmt(v)):f4(v); }catch(e){ return f4(v); } }, out=[];
+  const fn=(SP[el.dataset.demo]||{})[c.k]; let sp=[]; try{ sp=fn?fn(st)||[]:[]; }catch(e){}
+  sp.forEach(([v,t,k])=>{ if(Number.isFinite(v)&&v>lo&&v<hi) out.push({v,t,k}); });
+  if(Number.isFinite(c.val)&&!out.some(m=>near(m.v,c.val))) out.push({v:c.val,t:'Valor inicial: '+fm(c.val),k:'ini'});
+  const round=[];
+  if(c.log){ const m=Math.log10(hi/lo)<1.4?[1,2,5]:[1]; for(let e=Math.floor(Math.log10(lo));e<=Math.ceil(Math.log10(hi));e++) m.forEach(k=>{ const v=+(k*Math.pow(10,e)).toPrecision(6); if(v>lo*1.02&&v<hi/1.02) round.push(v); }); }
+  else{ const s=nice(span,4); for(let v=Math.ceil(lo/s)*s;v<hi-0.02*span;v+=s){ const x=+v.toPrecision(10); if(x>lo+0.02*span) round.push(x); } }
+  round.forEach(v=>{ const m=out.find(o=>near(o.v,v)); if(m){ m.r=1; m.rt=fm(v); } else out.push({v,t:fm(v),k:'',r:1}); });
+  return out.map(m=>({...m,p:tv(m.v)})); }
+
+/* ---------- un deslizador con imán (sin marcas visibles: solo la etiqueta mientras está pegado) ---------- */
+function make(inp,host,o){ if(REG.has(inp)) return REG.get(inp);
+  const ov=d.createElement('span'); ov.className='mgk'; ov.setAttribute('aria-hidden','true'); ov.innerHTML='<span class="mgl"></span>'; host.classList.add('mg'); host.appendChild(ov);
+  const S={inp,host,ov,lbl:ov.firstChild,cur:null,list:[],dw:null,dwT:0,anim:0,disp:0,tgt:0,k:.3,raw:0,...o}; REG.set(inp,S); ALL.add(S);
+  new ResizeObserver(()=>layout(S)).observe(inp); return S; }   /* los valores se calculan al empezar a arrastrar (render en pointerdown) */
+const tw=S=>S.inp.classList.contains('grad')?22:root.classList.contains('mo-rng')&&S.host.classList.contains('kctl')?18:16;
+function layout(S){ const i=S.inp; S.ov.style.cssText=`left:${i.offsetLeft}px;top:${i.offsetTop}px;width:${i.offsetWidth}px;height:${i.offsetHeight}px`; S.w=tw(S); }
+const at=(S,p)=>`calc(${S.w/2}px + ${(p/1000).toFixed(5)} * (100% - ${S.w}px))`;
+function render(S){ if(S.w===undefined) S.w=tw(S); let L=[]; try{ L=S.marks(); }catch(e){}
+  S.list=L.filter(m=>Number.isFinite(m.p)&&m.p>1&&m.p<999).sort((a,b)=>a.p-b.p);
+  if(S.cur){ const m=act(S).find(x=>near(x.v,S.cur.v)); S.cur=m||null; } if(S.dw) S.dw=null; paint(S); }
+const act=S=>S.reto()?S.list.filter(m=>m.r):S.list;
+function paint(S){ const c=S.cur; S.inp.classList.toggle('mg-on',!!c); const l=S.lbl; if(!l) return;
+  if(!c){ l.classList.remove('on'); return; }
+  l.textContent=S.reto()&&c.r?(c.rt||c.t):c.t; l.style.left=at(S,c.p); const f=c.p/1000; l.style.translate=f<.15?'-10px 0':f>.85?'calc(-100% + 10px) 0':'-50% 0';
+  l.classList.add('on'); }
+/* radios en px: 10 (atrae) y 18 (zona muerta) en pistas anchas; en pistas angostas (las simulaciones de teoría miden ~150 px)
+   se limitan al 3.5 % y 6 % del largo para que el imán no cubra media pista */
+const radii=tp=>{ const cap=Math.min(CAP,Math.max(4,.035*tp)); return [cap,Math.min(REL,Math.max(cap+4,.06*tp))]; };
+const geo=S=>{ const tp=Math.max(50,S.inp.getBoundingClientRect().width-S.w), [cp,rl]=radii(tp); return {ppx:tp/1000,cp,rl}; };
+function capture(S,raw,G){ const L=act(S); let best=null,bd=1e9;
+  L.forEach((m,i)=>{ const dpx=Math.abs(raw-m.p)*G.ppx, gap=Math.min(i>0?(m.p-L[i-1].p)*G.ppx:1e9,i<L.length-1?(L[i+1].p-m.p)*G.ppx:1e9), cap=Math.max(Math.min(MINCAP,G.cp),Math.min(G.cp,gap/2));
+    if(dpx<=cap&&dpx<bd){ bd=dpx; best=m; } });
+  return best; }
+/* mientras haces un reto el imán no se adelanta: la marca solo atrae si el puntero se queda DWELL ms encima */
+function decide(S,raw,G){ let m=capture(S,raw,G);
+  if(m&&m!==S.cur&&S.reto()){ const now=performance.now();
+    if(!S.dw||S.dw.m!==m){ S.dw={m,t:now}; clearTimeout(S.dwT); S.dwT=setTimeout(()=>dwellFire(S),DWELL); m=null; }
+    else if(now-S.dw.t<DWELL) m=null; }
+  else if(!m){ S.dw=null; clearTimeout(S.dwT); }
+  if(!m&&S.cur&&act(S).includes(S.cur)&&Math.abs(raw-S.cur.p)*G.ppx<=G.rl) m=S.cur;
+  return m; }
+function dwellFire(S){ const w=S.dw; if(!w||!(drag===S.inp||S.inp.matches(':active'))||!on||alt) return; const G=geo(S); if(capture(S,S.raw,G)!==w.m) return; snap(S,w.m,S.raw,G); }
+
+/* ---------- movimiento del círculo: se desliza hacia el objetivo (sin cambiar el valor aplicado) ---------- */
+const setVal=(S,v)=>{ S.last=Math.round(v); S.inp.value=String(S.last); };
+function drive(S,tgt,k){ S.tgt=tgt; S.k=k; if(reduce.matches){ stop(S); S.disp=tgt; setVal(S,tgt); return; }
+  if(!S.anim) S.anim=requestAnimationFrame(function step(){ if(+S.inp.value!==S.last&&drag!==S.inp){ S.anim=0; return; }   /* otro código movió el deslizador (K de diseño, chip, Repetir): se respeta */
+    const dlt=S.tgt-S.disp;
+    if(Math.abs(dlt)<.6){ S.disp=S.tgt; setVal(S,S.disp); S.anim=0; return; }
+    S.disp+=dlt*S.k; setVal(S,S.disp); S.anim=requestAnimationFrame(step); }); }
+const stop=S=>{ if(S.anim){ cancelAnimationFrame(S.anim); S.anim=0; } };
+/* dentro de la zona muerta el círculo se inclina hacia donde jalas (hasta 30 % de la zona), el valor sigue exacto */
+const pull=(S,raw,G)=>{ const RLu=G.rl/G.ppx, dd=raw-S.cur.p; return S.cur.p+Math.sign(dd)*Math.min(Math.abs(dd),RLu)*.3; };
+function snap(S,m,raw,G){ S.cur=m; S.dw=null; clearTimeout(S.dwT); S.apply(m.v);           /* valor exacto por la casilla numérica */
+  S.disp=raw; setVal(S,raw); drive(S,pull(S,raw,G),.28); paint(S);
+  try{ if(navigator.vibrate) navigator.vibrate(5); }catch(_){} }
+
+/* ---------- bancos de pruebas ---------- */
+function setupLab(L){ if(!L||!L.rng||REG.has(L.rng)) return; const host=L.rng.parentElement;
+  const S=make(L.rng,host,{marks:()=>labMarks(L),reto:()=>false,
+    apply:v=>{ L.num.value=String(+v.toPrecision(12)); L.num.dispatchEvent(new Event('change',{bubbles:true})); }});
+  const tb=d.createElement('button'); tb.type='button'; tb.className='btn mgt'; tb.dataset.mag='';
+  tb.title='Imán: al arrastrar cerca de un valor importante (K de diseño, K crítica, quiebre, 1/10/100…), K se pega a él. Mantén Alt para desactivarlo un momento.';
+  tb.innerHTML=MAGI+'<span>Imán</span>'; tb.setAttribute('aria-label','Imán en el deslizador de K');
+  const stt=L.el.querySelector('[data-stat]'); (stt?stt.after(tb):host.appendChild(tb)); syncBtns();   /* junto al estado: no le quita ancho al deslizador */
+  L.el.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('.chip')) unsnap(S); });
+  try{ labMarks(L); }catch(e){} }   /* adelanta K crítica y quiebres (se llama en tiempo libre: ver idle) */
+const scanLabs=()=>Object.values(window.__labs||{}).forEach(setupLab);
+
+/* ---------- simulaciones de teoría ---------- */
+function setupDemo(el){ const D=el.__demo; if(!D||el.__mg) return; el.__mg=1;
+  const reto=()=>{ const g=el.querySelector('.gcur'); if(!g) return false; const r=g.querySelector('.gmode [data-mode="ret"][aria-selected="true"]'), t=g.querySelector('.gtask'); return !!(r&&t&&!t.classList.contains('fin')); };
+  const mine=[];
+  (D.spec.ctl||[]).forEach(c=>{ if(c.sel||c.chk) return; const inp=el.querySelector(`input[type=range][data-k="${c.k}"]`), num=el.querySelector(`[data-n="${c.k}"]`); if(!inp||!num||!inp.parentElement) return;
+    const t=c.fmt?String(c.fmt(1)):'', sg=t[0]==='−'||t[0]==='-'?-1:1;
+    mine.push(make(inp,inp.parentElement,{marks:()=>demoMarks(el,c),reto,
+      apply:v=>{ num.value=String(+(sg*v).toPrecision(12)); num.dispatchEvent(new Event('change',{bubbles:true})); }})); });
+  if(!mine.length) return;
+  /* interruptor en la barra de la pantalla completa (la barra se crea al entrar) */
+  const top=el.querySelector('.dtop'); if(top){ const addBar=()=>{ const bar=top.querySelector(':scope>.dbar'); if(!bar||bar.querySelector('[data-mag]')) return;
+      const b=d.createElement('button'); b.type='button'; b.className='dbg'; b.dataset.mag=''; b.innerHTML=MAGI+'Imán'; b.setAttribute('aria-label','Imán en los deslizadores');
+      const r=bar.querySelector('[data-dr]'); r?r.before(b):bar.appendChild(b); syncBtns(); };
+    new MutationObserver(addBar).observe(top,{childList:true}); addBar(); } }
+const prevHook=window.__lgdrDemo; window.__lgdrDemo=el=>{ if(prevHook) prevHook(el); setTimeout(()=>setupDemo(el),0); };
+const scanDemos=()=>d.querySelectorAll('.demo').forEach(el=>{ if(el.__demo) setupDemo(el); });
+
+/* ---------- interruptor ---------- */
+function syncBtns(){ d.querySelectorAll('[data-mag]').forEach(b=>b.setAttribute('aria-pressed',String(on))); }
+d.addEventListener('click',e=>{ const b=e.target.closest&&e.target.closest('[data-mag]'); if(!b) return; on=!on; try{ localStorage.setItem(KEY,on?'1':'0'); }catch(_){}
+  if(!on) ALL.forEach(S=>{ if(S.cur){ S.cur=null; paint(S); } }); syncBtns(); });
+
+/* ---------- arrastre: el imán solo actúa con el puntero ---------- */
+let drag=null, alt=false;
+const ensure=t=>{ if(REG.has(t)) return REG.get(t); if(t.closest('[data-lab]')) scanLabs(); else { const el=t.closest('.demo'); if(el&&el.__demo) setupDemo(el); } return REG.get(t); };
+const unsnap=S=>{ S.dw=null; clearTimeout(S.dwT); clearTimeout(S.relT); if(S.cur){ S.cur=null; paint(S); } };
+addEventListener('pointerdown',e=>{ const t=e.target; if(!(t&&t.matches&&t.matches('input[type=range]'))) return; const S=ensure(t); if(!S) return;
+  stop(S); clearTimeout(S.relT); drag=t; alt=e.altKey; S.disp=+t.value; if(S.cur&&Math.abs(+t.value-S.cur.p)>1.5) unsnap(S); render(S); },true);
+addEventListener('pointermove',e=>{ if(drag) alt=e.altKey; },{capture:true,passive:true});
+const end=()=>{ const t=drag; drag=null; const S=t&&REG.get(t); if(!S) return; S.dw=null; clearTimeout(S.dwT);
+  if(S.cur){ drive(S,S.cur.p,.3); S.relT=setTimeout(()=>{ if(drag!==t) unsnap(S); },1200); } };
+addEventListener('pointerup',end,true); addEventListener('pointercancel',end,true);
+addEventListener('keydown',e=>{ if(e.key==='Alt') alt=true; }); addEventListener('keyup',e=>{ if(e.key==='Alt') alt=false; }); addEventListener('blur',()=>{ alt=false; });
+addEventListener('input',e=>{ const t=e.target, S=REG.get(t); if(!S) return;
+  const dragging=drag===t||t.matches(':active');
+  if(!dragging||!on||alt){ stop(S); unsnap(S); S.disp=+t.value; return; }   /* teclado, Alt o imán apagado: como siempre */
+  const raw=+t.value, G=geo(S), m=decide(S,raw,G); S.raw=raw;
+  if(m&&m===S.cur){ e.stopImmediatePropagation(); setVal(S,S.disp); drive(S,pull(S,raw,G),.28); return; }   /* zona muerta */
+  if(m){ e.stopImmediatePropagation(); snap(S,m,raw,G); return; }                                           /* se pega */
+  if(S.cur){ S.cur=null; paint(S); S.chase=1; }      /* se suelta: el código original recibe el valor del puntero */
+},true);
+/* después del código original: si el círculo venía de la marca, alcanza rápido al puntero en vez de saltar */
+addEventListener('input',e=>{ const S=REG.get(e.target); if(!S||!(S.chase||S.anim)||drag!==e.target) return; S.chase=0;
+  const raw=+e.target.value; if(reduce.matches){ S.disp=raw; return; } setVal(S,S.disp); drive(S,raw,.45); });
+
+/* se arma cuando el navegador está desocupado, para no sumar tiempo al cambio de pestaña (al tocar un deslizador se arma de inmediato) */
+const idle=f=>(window.requestIdleCallback?requestIdleCallback(f,{timeout:600}):setTimeout(f,200));
+addEventListener('hashchange',()=>idle(()=>{ scanLabs(); scanDemos(); }));
+idle(()=>{ scanLabs(); scanDemos(); }); syncBtns();
+window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.map(m=>({v:m.v,t:m.t,k:m.k,r:!!m.r})),cur:S.cur&&S.cur.v}))};
 })();
 </script>
 </body></html>

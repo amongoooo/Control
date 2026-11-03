@@ -201,6 +201,22 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   desplegar y mover K; claves de progreso intactas; cambio de pestaña más rápido (P1 88→31 ms, P6 137→68, Simulador 198→75).
   **Ojo para probar Ctrl+F con enlaces `#p6:~:text=`:** el error del salto a Teoría oculta la página antes de buscar; se probó
   en Resumen.
+- **Hecho (v16 · etapa 3): Deslizadores con imán y zona muerta.** CSS «v16» antes del `</style>` principal y `<script>`
+  propio al final del `<body>` (solo presentación). **Sin marcas visibles** (el usuario pidió quitar las rayitas/puntos); solo
+  una etiqueta verde sobre el círculo mientras está pegado, y halo verde en el círculo. Bancos P1–P7 (`window.__labs`): K de
+  diseño, otras K de la misma planta (`cfg` con mismos z/p), K crítica (barrido de estabilidad + bisección), puntos de quiebre
+  (raíces de N·D′ − N′·D con K > 0) y 1/10/100. Simulaciones de teoría (`el.__demo`): tabla `SP` por simulación (ζ = 0.707 y 1,
+  eje jω, K crítica de Routh `KC`, cancelaciones…), valor inicial y valores redondos. Simulador: sin imán.
+  Mecánica: escucha `input` en captura en `window`; solo con arrastre del puntero (no teclado, no casilla, no animaciones).
+  Atrae a ≤ 10 px (o la mitad de la distancia a la vecina) y suelta a 18 px; en pistas angostas 3.5 % / 6 % del largo
+  (`radii()`). Pegado = `stopImmediatePropagation` + valor exacto por la casilla numérica (evento `change`). Movimiento:
+  `drive()` (rAF) desliza el círculo a la marca; en la zona muerta se inclina hasta 30 % hacia donde jalas sin cambiar el valor;
+  al soltarse alcanza rápido al puntero (listener `input` de burbuja). La animación se detiene si otro código cambia el valor.
+  **Retos** (guía en modo Retos con reto pendiente): solo valores redondos y solo tras 1 s encima (`DWELL`); así el reto da lo
+  mismo con y sin imán (probado con Routh P2: 396 → logrado en ambos). Alt al arrastrar lo desactiva. Interruptor «Imán»
+  (`[data-mag]`) junto al estado del banco y en `.dbar` de la pantalla completa; `localStorage['lgdr-iman']` ('0' = apagado),
+  fuera de la sincronización. Se arma en tiempo libre (`requestIdleCallback`) o al tocar el deslizador. Depuración:
+  `window.__lgdrMag.list()`. También se borró `__testfind.html` (archivo de prueba que se subió por error en la etapa 2).
 - **Error encontrado (viene del artefacto original):** al cargar la página (con o sin `#p1` etc.) a los ~0.5 s
   salta a `#teoria`, porque `buildAccordion()` llama `openSection(o,false)` y esta cambia `location.hash` si no
   estás en Teoría. Arreglo propuesto (lógica, requiere aprobación): que la apertura inicial no cambie de página.
