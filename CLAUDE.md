@@ -280,8 +280,9 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `details.code#pN-mat`. Pasos: `.gstep>h4[data-n]` (número por CSS `::before`, así el resumen del plegable v15 no lo
   incluye). Figuras SVG en línea `.gfig` con colores del tema. Números calculados con python-control (coinciden con los del
   banco). Ajustes reportados: P1 K = 49.38, P3 variante 0.02/0.001, P5 p_c = 27.0 / K = 364.1, P7 p_ad = 12.29 / K = 290.31.
-  **Libro:** el usuario pasó fotos de Nise, *Sistemas de control para ingeniería* (pp. 457, 501–505, 510–531, 540–543; edición
-  sin confirmar, falta la portada). Columna «Libro» en la tabla de evidencia y en el paso 4 de la verificación con sus valores
+  **Libro:** el usuario pasó fotos de Nise, *Sistemas de control para ingeniería* (pp. 457, 501–505, 510–531, 540–543). **Referencia:** Nise, N. S.,
+  *Sistemas de control para ingeniería*, 3.ª ed. en inglés (1.ª en español), Compañía Editorial Continental (CECSA), 3.ª reimpresión,
+  México, 2006 (portada confirmada por el usuario). Columna «Libro» en la tabla de evidencia y en el paso 4 de la verificación con sus valores
   (P4 tabla 9.3 con simulación 14.8 %/3.6 s y 11.8 %/1.2 s; P6 tabla 9.5, predicción PID Tp = 0.214 s; P7 K = 205.4; P5 25.52 / 476.3).
   Lectura de modos por residuo: casi cancelado si |residuo| < 12 % del dominante; si no, «cancelación parcial» (como el libro en P4).
 - **Ventana del reporte (pendiente de contenido):** botón `.repbtn[data-rep=pN]` en `.phead` (dentro de `.phr`) → `dialog#repDlg`
