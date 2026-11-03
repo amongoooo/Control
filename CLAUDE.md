@@ -311,7 +311,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
   **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
 
-## Hecho (v24): "Resolución paso a paso" — P1, P2, P3 y P4 listas; falta P5–P7
+## Hecho (v24): "Resolución paso a paso" — P1–P5 listas; falta P6 y P7
 
 - Tarjeta `div.card.pasos[data-pasos="pN"]` justo después de `.card.bench` (P1 ya la tiene). No toca el contenido existente.
 - Script propio al final del `<body>` («Resolución paso a paso»): `PASOS.pN = () => ({title, intro, steps:[...]})` y un visor
@@ -354,7 +354,16 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   11.98 % / 1.152 s (×3.01), Kv = 5.94 / e = 0.168, forma KD = 47.47 / KP = 142.6 con gráfica |K·Gc(jω)| (ruido) y **Simulink** con
   bloque PID Controller en modo PD (`P = zc`, `D = 1`, `UseFilter = off`) tras el Gain; alternativas Derivative + Gain o Gc·G en un
   solo Transfer Fcn). `svgLoop`/`svgSL` aceptan bloques sin `d` (una sola línea, p. ej. «s + zc»).
-- PDF: 121 páginas con P1–P4 (~9.4 MB).
+- P5 (21 pasos, ejercicio 9.2 adelanto, cero en −10): 1–10 referencia (2º orden puro como P3: σ = 3.5, ruptura −3.5, Routh ∀K,
+  ζ = 0.5169, s0 = −3.5 ± j5.7959, K = 45.84, a) Ts = 1.143 s, Kv = 6.549 / e = 0.1527), 11–17 diseño (sd = −10.5 ± j17.39, ángulo
+  con el cero −130.86° → θp = 49.14°, pc = 25.54 por geometría, K = 476.2, ec. + Routh ∀K, p3 = −11.54 sin cancelar |r| 0.21,
+  verificación 21.07 % → no cumple), 18 ajuste (función `dis(ζd)` con σ y cero fijos; tabla de pruebas, curva %OS–ζd y
+  **bisección** → ζd = 0.6273, pc = 27.00, K = 364.1; ML con funciones anónimas + `fzero`, `getfield(stepinfo(...))`),
+  19 re‑verificación (−10.5 ± j13.03, −13.0 |r| 0.477, 15.00 % / 0.362 s), 20 error a rampa (libro 0.0375, ajuste 0.0519) y
+  21 Simulink con el ajuste (Transfer Fcn [1 10]/[1 27.00]) y `set_param` a los valores del libro (21 %).
+  Para la bisección y la curva se usa un %OS rápido (pico de `simulate` con dt 0.002, 0.2 ms) en lugar de `TT.metrics` (14 ms):
+  `PASOS.p5()` tarda ≈ 36 ms.
+- PDF: 139 páginas con P1–P5 (~10.7 MB).
 - **Siguiente:** escribir `PASOS.p4` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
   plegables ya recorre P1–P7). Después, volver a generar `practicas.pdf`.
 
