@@ -256,6 +256,13 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   +5–25 ms (≈ +8–12 %) a 1280 y 1440 px (p. ej. P1 44 → 50 ms, Teoría 190 → 216 ms; casi todo es el diseño nuevo, no el JS).
 - **Corregido en la etapa 4 (decisión 5): el salto a Teoría al cargar** (venía del artefacto original): `openSection(id,scroll,stay)`;
   `buildAccordion()` llama `openSection(o,false,true)` y así la apertura inicial ya no cambia `location.hash`.
+- **Hecho (v20): «Saltar evaluación ⏭»** (pedido del usuario: saltar los exámenes). Botón `[data-skipex]` en el panel del
+  candado (`lockHTML`, junto a «Ir a la evaluación») y en la cabecera de las evaluaciones I y II (no en la III: no desbloquea nada).
+  Dos toques (el 1.º cambia a «¿Seguro? Toca otra vez…», 4 s), sin `confirm()` para no salir de pantalla completa.
+  Guarda `ST.skip[r]=true` en `lgdr-teoria-v1` (se sincroniza con la combinación genérica) y lanza `unlockAnim` de la parte
+  siguiente. `isUnlocked` usa `passedOrSkipped(r)`; la parte «actual» (apertura inicial y Resumen) ignora las saltadas.
+  La evaluación saltada muestra la pastilla «Saltada ⏭» y se puede presentar igual. No hay «deshacer» (borrar `skip` a mano).
+  Los candados por sección dentro de cada parte siguen igual.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 

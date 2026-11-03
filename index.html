@@ -194,7 +194,7 @@ details.code summary span{font:400 13px var(--f-body);color:var(--muted)}
 @keyframes lkclose{to{opacity:0;transform:scale(.97)}}
 .lockp.nudge{animation:lknudge .5s ease}
 @keyframes lknudge{0%,100%{transform:none}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
-.lkt{display:grid;gap:6px;min-width:0} .lkt h3{margin:0;font-size:21px} .lkt p{color:var(--muted);font-size:14px;max-width:70ch} .lkt p b{color:var(--ink)} .lkt .btn{justify-self:start}
+.lkt{display:grid;gap:6px;min-width:0} .lkt h3{margin:0;font-size:21px} .lkt p{color:var(--muted);font-size:14px;max-width:70ch} .lkt p b{color:var(--ink)} .lkt .btn{justify-self:start} .lkt .chips{display:flex;flex-wrap:wrap;gap:8px} .btn.skipex.sure{border-color:var(--accent);color:var(--accent)}
 .pbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .pbseg{display:grid;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-width:0}
 .pbseg.lk{opacity:.7} .pbseg.ok{border-color:color-mix(in srgb,var(--ok) 50%,var(--line))}
@@ -4900,7 +4900,7 @@ const PARTS=[{r:'I',name:'Parte I · Fundamentos',ids:['f1','f2','f3','f4','f5',
              {r:'II',name:'Parte II · Lazo cerrado y LGDR',ids:['t1','t3','t4','t5','t6','t7','t8'],next:'Parte III'},
              {r:'III',name:'Parte III · Diseño',ids:['t9','t10','t11','t12','t13'],next:'las prácticas'}];
 const PASS=0.8, KEY='lgdr-teoria-v1';
-let ST={solved:{},exam:{},vs:{}}; try{ const v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v&&typeof v==='object') ST={solved:v.solved||{},exam:v.exam||{},vs:v.vs||{}}; }catch(e){}
+let ST={solved:{},exam:{},vs:{},skip:{}}; try{ const v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v&&typeof v==='object') ST={solved:v.solved||{},exam:v.exam||{},vs:v.vs||{},skip:(v.skip&&typeof v.skip==='object')?v.skip:{}}; }catch(e){}
 const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(ST)); }catch(e){} };
 const secNum=id=>{ const h=document.querySelector(`#${id} .th .num`)||document.querySelector(`#${id} .th>span`); return h?h.textContent:''; };
 const hash=s=>{ let h=2166136261; for(const c of s){ h^=c.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; };
@@ -4952,9 +4952,9 @@ function renderExam(box){
       <p>Incluye las ${items.length} preguntas de comprobación de esta parte, en otro orden, sin pistas y con valores que pueden cambiar. Necesitas <b>${need} de ${items.length}</b> (80 %) para pasar a ${P.next}.</p>
       <div class="exstat" data-stat></div>
       <div class="exhist" data-hist></div>
-      <div class="chips"><button class="btn primary" data-start>Empezar evaluación</button></div></div>
+      <div class="chips"><button class="btn primary" data-start>Empezar evaluación</button>${P.r!=='III'?`<button class="btn skipex" data-skipex="${P.r}">Saltar evaluación ⏭</button>`:''}</div></div>
     <div class="exbody" data-body hidden></div>`;
-  box.querySelector('[data-start]').addEventListener('click',()=>start(box,P,items,need));
+  box.querySelector('[data-start]').addEventListener('click',()=>start(box,P,items,need)); bindSkip(box.querySelector('[data-skipex]'));
   refreshExams();
 }
 function start(box,P,items,need){
@@ -4999,7 +4999,8 @@ function grade(box,P,items,need){
 function refreshExams(){
   refreshToc();
   PARTS.forEach(P=>{ const e=ST.exam[P.r], items=examItems(P);
-    document.querySelectorAll(`[data-exam="${P.r}"] [data-stat]`).forEach(el=>{ el.innerHTML=e?`${e.passed?'<span class="pill ok">Aprobada</span>':'<span class="pill bad">No aprobada aún</span>'} <span class="exbest">Mejor resultado: ${Math.round(e.best*100)} % · último: ${Math.round(e.last*100)} %</span>`:'<span class="pill warn">Pendiente</span>'; });
+    document.querySelectorAll(`[data-exam="${P.r}"] [data-skipex]`).forEach(b=>b.hidden=passedOrSkipped(P.r));
+    document.querySelectorAll(`[data-exam="${P.r}"] [data-stat]`).forEach(el=>{ el.innerHTML=(ST.skip[P.r]&&!(e&&e.passed)?'<span class="pill warn">Saltada ⏭</span> ':'')+(e?`${e.passed?'<span class="pill ok">Aprobada</span>':'<span class="pill bad">No aprobada aún</span>'} <span class="exbest">Mejor resultado: ${Math.round(e.best*100)} % · último: ${Math.round(e.last*100)} %</span>`:(ST.skip[P.r]?'':'<span class="pill warn">Pendiente</span>')); });
     document.querySelectorAll(`[data-exam="${P.r}"] [data-hist]`).forEach(el=>{ el.innerHTML=e?histChart(e.hist||[e.last]):''; });
     const solved=items.filter(x=>ST.solved[`${x.sid}-${x.j}`]).length;
     document.querySelectorAll(`[data-tocex="${P.r}"]`).forEach(a=>{ a.innerHTML=`${e&&e.passed?'✓ ':''}Evaluación ${P.r} <small>${solved}/${items.length}</small>`; a.classList.toggle('done',!!(e&&e.passed)); });
@@ -5025,7 +5026,7 @@ function progressData(){
   const parts=PARTS.map(P=>{ const secs=P.ids.map(id=>({id,n:secNum(id),t:titleOf(id),s:solvedIn(id),tot:(CHK[id]||[]).length}));
     const q=secs.reduce((a,x)=>a+x.s,0), qt=secs.reduce((a,x)=>a+x.tot,0), full=secs.filter(x=>x.s===x.tot).length, e=ST.exam[P.r]||null;
     return {P,secs,q,qt,full,e,passed:!!(e&&e.passed)}; });
-  const cur=parts.find(x=>!x.passed); let next;
+  const cur=parts.find(x=>!x.passed&&!ST.skip[x.P.r]); let next;
   if(!cur) next={label:'Teoría completa: ve a las prácticas',sel:null,hash:'#p1'};
   else { const s=cur.secs.find(x=>x.s<x.tot); next=s?{label:`Continuar: sección ${s.n} · ${s.t}`,sel:'#'+s.id}:{label:`Presentar la evaluación de la ${cur.P.name.split(' · ')[0]}`,sel:`#ex-${cur.P.r}`}; }
   return {parts,cur,next,Q:parts.reduce((a,x)=>a+x.q,0),QT:parts.reduce((a,x)=>a+x.qt,0),S:parts.reduce((a,x)=>a+x.full,0),ST_:parts.reduce((a,x)=>a+x.secs.length,0),E:parts.filter(x=>x.passed).length};
@@ -5075,7 +5076,7 @@ function buildAccordion(){
     b.addEventListener('click',()=>{ if(OPEN===id) closeSection(id); else openSection(id,true); }); });
   applySecLocks(false);
   let o=null; try{ o=localStorage.getItem(OKEY); }catch(e){}
-  if(!(o&&secUnlocked(o))){ const cur=PARTS.find(P=>isUnlocked(P.r)&&!(ST.exam[P.r]&&ST.exam[P.r].passed))||PARTS[0]; o=cur.ids.find(id=>secUnlocked(id)&&!secDone(id))||cur.ids.filter(secUnlocked).pop()||'f1'; }
+  if(!(o&&secUnlocked(o))){ const cur=PARTS.find(P=>isUnlocked(P.r)&&!passedOrSkipped(P.r))||PARTS[0]; o=cur.ids.find(id=>secUnlocked(id)&&!secDone(id))||cur.ids.filter(secUnlocked).pop()||'f1'; }
   openSection(o,false,true);   /* apertura inicial: no cambiar de página (antes saltaba a #teoria al cargar) */
 }
 function closeSection(id){ const art=document.getElementById(id); if(!art) return; art.classList.remove('open'); art.querySelector('.accb').hidden=true; art.querySelector('.acchb').setAttribute('aria-expanded','false'); if(OPEN===id) OPEN=null; }
@@ -5114,7 +5115,13 @@ function applySecLocks(detect){
 /* ---------- bloqueo de fases ---------- */
 let UNLOCK=null, ANIM=null;
 const PREV={II:'I',III:'II'};
-function isUnlocked(r){ return r==='I'||!!(ST.exam[PREV[r]]&&ST.exam[PREV[r]].passed); }
+const passedOrSkipped=r=>!!((ST.exam[r]&&ST.exam[r].passed)||ST.skip[r]);
+function isUnlocked(r){ return r==='I'||passedOrSkipped(PREV[r]); }
+/* saltar evaluación: desbloquea la parte siguiente sin aprobar (dos toques, sin confirm() nativo para no salir de pantalla completa) */
+function bindSkip(b){ if(!b) return; b.addEventListener('click',()=>{ if(!b.classList.contains('sure')){ b.classList.add('sure'); b.dataset.txt=b.textContent; b.textContent='¿Seguro? Toca otra vez para saltarla';
+    clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove('sure'); b.textContent=b.dataset.txt; },4000); return; }
+    clearTimeout(b._t); skipExam(b.dataset.skipex); }); }
+function skipExam(r){ if(r==='III'||passedOrSkipped(r)) return; ST.skip[r]=true; save(); const nx={I:'II',II:'III'}[r]; ANIM=nx; refreshExams(); unlockAnim(nx); }
 const LOCKSVG=`<svg class="lksvg" viewBox="0 0 48 48" aria-hidden="true"><path class="shk" d="M15 23v-7a9 9 0 0 1 18 0v7" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><rect x="9" y="22" width="30" height="21" rx="5" fill="currentColor"/><circle cx="24" cy="31.5" r="3.2" class="kh"/><rect x="22.6" y="32" width="2.8" height="6" rx="1.4" class="kh"/></svg>`;
 function phaseStats(){ return PARTS.map(P=>{ const items=examItems(P), q=items.filter(x=>ST.solved[`${x.sid}-${x.j}`]).length, e=ST.exam[P.r], passed=!!(e&&e.passed);
   return {P,q,qt:items.length,passed,best:e?e.best:0,unl:isUnlocked(P.r),pct:Math.round(100*(0.7*q/items.length+(passed?0.3:0)))}; }); }
@@ -5128,8 +5135,8 @@ function lockHTML(r,opening){
     return `<div class="lkhead"><div class="lkic open">${LOCKSVG}</div><div class="lkt"><span class="eyebrow">Fin de la teoría</span><h3>${all?'¡Completaste las tres fases!':'Ya desbloqueaste todas las partes'}</h3><p>${all?'Aprobaste las tres evaluaciones. Ahora aplica todo en las prácticas.':'Aprueba la evaluación de la Parte III para completar la teoría.'}</p>${all?'<button class="btn primary" data-goprac>Ir a las prácticas →</button>':''}</div></div>${phaseBar()}`; }
   const P=PARTS.find(x=>x.r===r), prev=PARTS.find(x=>x.r===PREV[r]), st=phaseStats().find(x=>x.P.r===PREV[r]), items=examItems(prev), need=Math.ceil(PASS*items.length), e=ST.exam[prev.r];
   return `<div class="lkhead"><div class="lkic${opening?' open':''}">${LOCKSVG}</div><div class="lkt"><span class="eyebrow">${opening?`¡${P.name.split(' · ')[0]} desbloqueada!`:`${P.name.split(' · ')[0]} bloqueada`}</span><h3>${P.name.split(' · ')[1]}</h3>
-    <p>${opening?'Aprobaste la evaluación. Abriendo la siguiente parte…':`Para desbloquearla, aprueba la <b>evaluación de la ${prev.name.split(' · ')[0]}</b> con 80 % (${need} de ${items.length}).${e?` Tu mejor resultado: <b>${Math.round(e.best*100)} %</b>.`:''}${st.q<st.qt?` Te faltan <b>${st.qt-st.q}</b> preguntas de comprobación por resolver.`:' Ya resolviste todas las preguntas de comprobación.'}`}</p>
-    ${opening?'':`<button class="btn primary" data-goex="${prev.r}">Ir a la evaluación de la ${prev.name.split(' · ')[0]} ↑</button>`}</div></div>${phaseBar()}`; }
+    <p>${opening?(ST.skip[prev.r]&&!(e&&e.passed)?'Saltaste la evaluación. Abriendo la siguiente parte…':'Aprobaste la evaluación. Abriendo la siguiente parte…'):`Para desbloquearla, aprueba la <b>evaluación de la ${prev.name.split(' · ')[0]}</b> con 80 % (${need} de ${items.length}).${e?` Tu mejor resultado: <b>${Math.round(e.best*100)} %</b>.`:''}${st.q<st.qt?` Te faltan <b>${st.qt-st.q}</b> preguntas de comprobación por resolver.`:' Ya resolviste todas las preguntas de comprobación.'}`}</p>
+    ${opening?'':`<div class="chips"><button class="btn primary" data-goex="${prev.r}">Ir a la evaluación de la ${prev.name.split(' · ')[0]} ↑</button><button class="btn skipex" data-skipex="${prev.r}">Saltar evaluación ⏭</button></div>`}</div></div>${phaseBar()}`; }
 function applyLocks(){
   const first=PARTS.find(P=>!isUnlocked(P.r));
   PARTS.forEach(P=>{ const w=document.querySelector(`.tphase[data-phase="${P.r}"]`); if(w&&ANIM!==P.r) w.hidden=!isUnlocked(P.r);
@@ -5137,7 +5144,7 @@ function applyLocks(){
   document.querySelectorAll('.lockp').forEach(el=>{ const r=el.dataset.lock; if(ANIM&&r===ANIM) return; const show=ANIM?false:(first?r===first.r:r==='end'); el.hidden=!show;
     if(show){ el.classList.toggle('done',r==='end'); el.innerHTML=lockHTML(r); bindLock(el); growBars(el); } });
 }
-function bindLock(el){ const b=el.querySelector('[data-goex]'); if(b) b.addEventListener('click',()=>document.querySelector(`[data-exam="${b.dataset.goex}"]`).scrollIntoView({behavior:'smooth'}));
+function bindLock(el){ bindSkip(el.querySelector('[data-skipex]')); const b=el.querySelector('[data-goex]'); if(b) b.addEventListener('click',()=>document.querySelector(`[data-exam="${b.dataset.goex}"]`).scrollIntoView({behavior:'smooth'}));
   const g=el.querySelector('[data-goprac]'); if(g) g.addEventListener('click',()=>{ location.hash='#p1'; }); }
 function unlockAnim(r){
   const lp=document.querySelector(`.lockp[data-lock="${r}"]`); if(!lp){ applyLocks(); return; }
