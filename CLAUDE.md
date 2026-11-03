@@ -140,6 +140,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (`slSign`) se escriben con signo negativo. Sin `inputmode` si el valor puede ser negativo (iOS no tiene
   «−» en el teclado decimal). Fuente 16 px en táctil (evita el zoom de iOS). Banco de pruebas y simulador
   ya tenían su casilla de K.
+- **Hecho (v13): Pantalla completa de toda la app.** Botón `#abFull` (último de la barra) → API Fullscreen sobre
+  `document.documentElement` (con `webkit` de respaldo), así que se mantiene al cambiar de pestaña y dentro de
+  las capas `.demo.dfull` / `.exam.exfull`; clase `html.is-fs`. Lectura inmersiva: con `is-fs` o `is-app`
+  (abierta desde el ícono de inicio) la barra se esconde al bajar y vuelve al subir (`html.ab-hide`; `.toc` y
+  `.dtop` suben a `top:safe-area`); vuelve al cambiar de pestaña o al cerrar una simulación/evaluación.
+  Al abrir la pantalla completa de una simulación o evaluación (`html.dmode` / `html.exm`) se pide también
+  la pantalla completa real y se quita al salir, solo si se puso por eso (`auto`).
+  **Ojo:** el `confirm()` nativo saca de pantalla completa en Chrome; por eso, en pantalla completa, el clic en
+  «Salir» de la evaluación se intercepta en captura y se pregunta con `dialog#fsAsk`; si acepta, se repite el
+  clic con `window.confirm` devolviendo `true` momentáneamente.
+  iPhone (sin API): `dialog#fsDlg` explica «Agregar a pantalla de inicio» y ofrece Sincronizar progreso (el
+  ícono de inicio tiene su propio `localStorage`). Archivos nuevos: `manifest.webmanifest`
+  (`display: fullscreen`), `icon-180/192/512.png` (logo blanco sobre `#1d4ed8`); metas `apple-mobile-web-app-*`
+  en el `<head>`. Abierta como app (`display-mode` o `navigator.standalone`) el botón se oculta.
+  Pantallas ≤430 px: íconos de 34 px; ≤375 px se oculta el anillo de progreso.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
