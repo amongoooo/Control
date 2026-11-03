@@ -155,7 +155,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (`display: fullscreen`), `icon-180/192/512.png` (logo blanco sobre `#1d4ed8`); metas `apple-mobile-web-app-*`
   en el `<head>`. Abierta como app (`display-mode` o `navigator.standalone`) el botón se oculta.
   Pantallas ≤430 px: íconos de 34 px; ≤375 px se oculta el anillo de progreso.
-- **Plan v14+ (rediseño para computadora): ESPERANDO APROBACIÓN.** Publicado como artefacto
+- **Plan v14+ (rediseño para computadora): APROBADO (todo lo recomendado); se hace una etapa a la vez.** Publicado como artefacto
   https://claude.ai/artifact/TVv5frEJhE5CptruXQmG5n (diagnóstico a 1440×900 + 5 etapas con prototipos).
   No se ha tocado `index.html`. Etapas: 1 animaciones/microinteracciones · 2 contenido plegable con resumen ·
   3 deslizadores con imán y zona muerta · 4 transiciones (View Transitions + respaldo CSS) · 5 barra lateral en
@@ -169,6 +169,17 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   usa escala log `K/100 … K·15`; los deslizadores de demos van de 0 a 1000 y se mapean con `map(c)`; para que el
   imán corra antes que el listener original, escuchar `input` en captura en el contenedor. Línea base: cambio de
   pestaña 50 ms (Resumen) – 480 ms (Teoría); 37 798 elementos; carga ~1.2 s.
+- **Hecho (v14 · etapa 1): Animaciones y microinteracciones.** El usuario aprobó todo lo recomendado.
+  CSS «v14 · movimiento» antes del `</style>` principal y `<script>` propio al final del `<body>`.
+  Variables `--mo-*`; `@property --gl` (brillo que sigue al cursor con `--mx/--my`, solo en `:hover` y con
+  puntero fino); elevación de 1 px y sombra al pasar el mouse; presión `scale:.95` con rebote (se usan `scale` y
+  `translate` sueltos; en `.abpill/.abicon/tabs/.sy-b` se anula su `transform` de `:active`). Pestañas: `span.tab-fly`
+  viaja de la pestaña anterior a la nueva (MutationObserver sobre `aria-current`, medido en rAF). Deslizadores del
+  banco, simulador y zoom (`.kctl`/`.zbar`, clase `html.mo-rng`) ahora con círculo propio y relleno `--rf`; para que
+  el relleno siga los cambios por código se redefine `value` **en cada elemento** (no en el prototipo). Acordeón:
+  al cerrar la sección abierta se pliega con WAAPI y luego se repite el clic (solo si sigue abierta).
+  **No usar `:is()` largos en la posición derecha**: Chrome no los indexa y cada cambio de página tardaba ~19 % más;
+  escritos uno por uno queda en ~+7 %. Todo el movimiento está en `prefers-reduced-motion: no-preference`.
 - **Error encontrado (viene del artefacto original):** al cargar la página (con o sin `#p1` etc.) a los ~0.5 s
   salta a `#teoria`, porque `buildAccordion()` llama `openSection(o,false)` y esta cambia `location.hash` si no
   estás en Teoría. Arreglo propuesto (lógica, requiere aprobación): que la apertura inicial no cambie de página.

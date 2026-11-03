@@ -848,6 +848,68 @@ html.ab-hide:not(.dmode):not(.exm) .demo>.dtop{top:env(safe-area-inset-top,0px)}
 @media (prefers-reduced-motion:reduce){.appbar,.toc,.demo>.dtop{transition:none}}
 @media (max-width:430px){.abrow{gap:3px}.abicon{width:34px;height:34px}}
 @media (max-width:375px){.abpill .ring{display:none}.abpill{padding:0 9px}}
+/* ==== v14 · movimiento y microinteracciones (solo presentación) ==== */
+@property --gl{syntax:'<number>';inherits:false;initial-value:0}
+:root{--mo-fast:.12s;--mo-med:.22s;--mo-slow:.36s;--mo-out:cubic-bezier(.2,.8,.2,1);--mo-spring:cubic-bezier(.34,1.56,.64,1)}
+/* deslizadores sin degradado (banco, simulador, zoom): mismo aspecto que el nativo, pero con círculo propio */
+html.mo-rng .kctl input[type=range],html.mo-rng .zbar input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;height:24px;margin:0;cursor:pointer;--rx:calc(9px + var(--rf,0) * (100% - 18px))}
+html.mo-rng .kctl input[type=range]::-webkit-slider-runnable-track,html.mo-rng .zbar input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:99px;background:linear-gradient(90deg,var(--accent) var(--rx),var(--line) var(--rx))}
+html.mo-rng .kctl input[type=range]::-webkit-slider-thumb,html.mo-rng .zbar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;margin-top:-6px;border-radius:50%;background:var(--accent);border:2.5px solid var(--surface);box-shadow:0 0 0 1px var(--accent),0 1px 3px rgba(0,0,0,.3)}
+html.mo-rng .kctl input[type=range]::-moz-range-track,html.mo-rng .zbar input[type=range]::-moz-range-track{height:6px;border-radius:99px;background:var(--line)}
+html.mo-rng .kctl input[type=range]::-moz-range-progress,html.mo-rng .zbar input[type=range]::-moz-range-progress{height:6px;border-radius:99px;background:var(--accent)}
+html.mo-rng .kctl input[type=range]::-moz-range-thumb,html.mo-rng .zbar input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--accent);border:2.5px solid var(--surface);box-shadow:0 0 0 1px var(--accent),0 1px 3px rgba(0,0,0,.3)}
+html.mo-rng .kctl input[type=range]:focus-visible,html.mo-rng .zbar input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:99px}
+/* casillas de texto y número: halo al enfocar */
+.slnum,.kctl input[type=number],.fld input,.fld select{transition:border-color .15s,box-shadow .2s}
+.slnum:focus,.kctl input[type=number]:focus,.fld input:focus,.fld select:focus{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 18%,transparent)}
+@media (prefers-reduced-motion:no-preference){
+  /* transiciones comunes */
+  .btn,.chip,.seg button,.gmode button,.xbtns button,.sy-b,.sy-seg button,.dfs-b,.exbar button,.dbar button,.zbar button,.appbar nav.tabs a,.qo,.abpill,.abicon,details.about>summary,.glink,.tile,.rnode,.acchb,details.code>summary,.qtoc .chip{
+    transition:background-color .15s,border-color .15s,color .15s,outline-color .15s,box-shadow var(--mo-med) var(--mo-out),translate .32s var(--mo-spring),scale .32s var(--mo-spring),transform .32s var(--mo-spring),--gl var(--mo-med) var(--mo-out)}
+  /* presión: se encoge y rebota al soltar */
+  .abpill:active,.abicon:active,.appbar nav.tabs a:active,.sy-b:active:not(:disabled){transform:none}
+  .btn:active:not(:disabled),.chip:active:not(:disabled),.seg button:active:not(:disabled),.gmode button:active:not(:disabled),.xbtns button:active:not(:disabled),.sy-b:active:not(:disabled),.sy-seg button:active:not(:disabled),.dfs-b:active:not(:disabled),.exbar button:active:not(:disabled),.dbar button:active:not(:disabled),.zbar button:active:not(:disabled),.appbar nav.tabs a:active:not(:disabled),.abpill:active:not(:disabled),.abicon:active:not(:disabled),details.about>summary:active:not(:disabled),.glink:active:not(:disabled),.qtoc .chip:active:not(:disabled){scale:.95;translate:0 0;transition-duration:.06s}
+  .qo:active:not(:disabled){scale:.985;transition-duration:.06s}
+  .acchb:active{scale:.993;transition-duration:.06s}
+  .tile:active{scale:.9;transition-duration:.06s}
+  .rnode:active{scale:.92;transition-duration:.06s}
+  /* acordeón de teoría: flecha con rebote */
+  .acchb .chev{display:inline-block;transition:transform .45s var(--mo-spring)}
+  .dguide>summary::before,details.about>summary::after{transition:transform .4s var(--mo-spring)}
+  /* deslizadores: el círculo crece y muestra un halo al arrastrar */
+  input[type=range]::-webkit-slider-thumb{transition:scale .3s var(--mo-spring),box-shadow .25s var(--mo-out)}
+  input[type=range]::-moz-range-thumb{transition:scale .3s var(--mo-spring),box-shadow .25s var(--mo-out)}
+  .sl input[type=range].grad:active::-webkit-slider-thumb{scale:1.22;box-shadow:0 1px 4px rgba(0,0,0,.35),0 0 0 7px color-mix(in srgb,var(--ink) 14%,transparent)}
+  .sl input[type=range].grad:active::-moz-range-thumb{scale:1.22;box-shadow:0 1px 4px rgba(0,0,0,.35),0 0 0 7px color-mix(in srgb,var(--ink) 14%,transparent)}
+  html.mo-rng .kctl input[type=range]:active::-webkit-slider-thumb,html.mo-rng .zbar input[type=range]:active::-webkit-slider-thumb{scale:1.22;box-shadow:0 0 0 1px var(--accent),0 1px 3px rgba(0,0,0,.3),0 0 0 8px color-mix(in srgb,var(--accent) 20%,transparent)}
+  html.mo-rng .kctl input[type=range]:active::-moz-range-thumb,html.mo-rng .zbar input[type=range]:active::-moz-range-thumb{scale:1.22;box-shadow:0 0 0 1px var(--accent),0 1px 3px rgba(0,0,0,.3),0 0 0 8px color-mix(in srgb,var(--accent) 20%,transparent)}
+  /* indicador de pestaña que viaja */
+  .appbar nav.tabs{position:relative}
+  .tab-fly{position:absolute;left:0;top:0;z-index:2;border-radius:999px;background:var(--accent);pointer-events:none}
+  .accb.closing{overflow:hidden}
+  @media (hover:hover) and (pointer:fine){
+    /* brillo que sigue al cursor (el degradado solo existe mientras el puntero está encima) */
+    .btn:hover:not(:disabled),.chip:hover:not(:disabled),.seg button:hover:not(:disabled),.gmode button:hover:not(:disabled),.xbtns button:hover:not(:disabled),.sy-b:hover:not(:disabled),.sy-seg button:hover:not(:disabled),.dfs-b:hover:not(:disabled),.exbar button:hover:not(:disabled),.dbar button:hover:not(:disabled),.zbar button:hover:not(:disabled),.appbar nav.tabs a:hover:not(:disabled),.qo:hover:not(:disabled),.abpill:hover:not(:disabled),.abicon:hover:not(:disabled),details.about>summary:hover:not(:disabled),.qtoc .chip:hover:not(:disabled){
+      background-image:radial-gradient(110px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--accent) calc(var(--gl) * 20%),transparent),transparent 70%)!important}
+    .btn.primary:hover:not(:disabled),.btn.danger:hover:not(:disabled),.sy-b.pri:hover:not(:disabled),.appbar nav.tabs a[aria-current="page"]:hover:not(:disabled),.xbtns button[aria-selected="true"]:hover:not(:disabled),.dbar button[aria-pressed="true"]:hover:not(:disabled),.sy-seg button[aria-selected="true"]:hover:not(:disabled){
+      background-image:radial-gradient(110px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,calc(var(--gl) * .26)),transparent 70%)!important}
+    .btn:hover:not(:disabled),.chip:hover:not(:disabled),.seg button:hover:not(:disabled),.gmode button:hover:not(:disabled),.xbtns button:hover:not(:disabled),.sy-b:hover:not(:disabled),.sy-seg button:hover:not(:disabled),.dfs-b:hover:not(:disabled),.exbar button:hover:not(:disabled),.dbar button:hover:not(:disabled),.zbar button:hover:not(:disabled),.appbar nav.tabs a:hover:not(:disabled),.qo:hover:not(:disabled),.abpill:hover:not(:disabled),.abicon:hover:not(:disabled),details.about>summary:hover:not(:disabled),.qtoc .chip:hover:not(:disabled){--gl:1}
+    /* elevación */
+    .btn:hover:not(:disabled),.sy-b:hover:not(:disabled),.dfs-b:hover:not(:disabled),.exbar button:hover:not(:disabled),.dbar>button:hover:not(:disabled),.xbtns button:hover:not(:disabled){translate:0 -1px;box-shadow:0 6px 16px -8px color-mix(in srgb,var(--accent) 60%,transparent)}
+    .zbar button:hover:not(:disabled){scale:1.08}
+    .tile:hover{scale:1.12}
+    .rnode:hover{scale:1.08}
+    .qo:hover:not(:disabled):not([aria-pressed="true"]):not(.right):not(.wrong){background-color:color-mix(in srgb,var(--accent) 5%,var(--bg))}
+    .tsec.acc:not(.locked) .acchb:hover{background-color:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+    .tsec.acc:not(.locked):not(.open):hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+    details.code>summary:hover,.dguide>summary:hover{color:var(--accent)}
+    .qans summary:hover{text-decoration:underline;text-underline-offset:3px}
+    .sl input[type=range].grad:hover::-webkit-slider-thumb{scale:1.12}
+    .sl input[type=range].grad:hover::-moz-range-thumb{scale:1.12}
+    html.mo-rng .kctl input[type=range]:hover::-webkit-slider-thumb,html.mo-rng .zbar input[type=range]:hover::-webkit-slider-thumb{scale:1.12}
+    html.mo-rng .kctl input[type=range]:hover::-moz-range-thumb,html.mo-rng .zbar input[type=range]:hover::-moz-range-thumb{scale:1.12}
+  }
+}
 </style>
 
 <header class="appbar" id="appbar">
@@ -5415,6 +5477,89 @@ document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details
     if(sy&&sb) sy.addEventListener('click',()=>{ dlg.close(); sb.click(); });
   }
   set();
+})();
+</script>
+<script>
+/* ==== v14 · movimiento y microinteracciones (solo presentación; no toca estado, progreso ni lógica) ==== */
+(()=>{
+  const d=document, root=d.documentElement;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)'), fine=matchMedia('(hover: hover) and (pointer: fine)');
+  const calm=()=>reduce.matches;
+
+  /* 1) brillo que sigue al cursor: solo actualiza --mx/--my del botón bajo el puntero */
+  const GLOW='.btn,.chip,.seg button,.gmode button,.xbtns button,.sy-b,.sy-seg button,.dfs-b,.exbar button,.dbar button,.zbar button,.appbar nav.tabs a,.qo,.abpill,.abicon,details.about>summary,.qtoc .chip';
+  let pend=null, raf=0;
+  d.addEventListener('pointermove',e=>{ if(e.pointerType!=='mouse'||!fine.matches||calm()) return; pend=e;
+    if(!raf) raf=requestAnimationFrame(()=>{ raf=0; const ev=pend, t=ev.target, b=t&&t.closest&&t.closest(GLOW); if(!b) return;
+      const r=b.getBoundingClientRect(); b.style.setProperty('--mx',(ev.clientX-r.left).toFixed(0)+'px'); b.style.setProperty('--my',(ev.clientY-r.top).toFixed(0)+'px'); }); },{passive:true});
+
+  /* 2) relleno de los deslizadores sin degradado (banco, simulador, zoom): --rf = fracción del valor */
+  const RNG='.kctl input[type=range],.zbar input[type=range]';
+  const VD=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+  const fill=r=>{ const mn=r.min===''?0:+r.min, mx=r.max===''?100:+r.max, v=+VD.get.call(r);
+    const f=mx>mn?Math.min(1,Math.max(0,(v-mn)/(mx-mn))).toFixed(4):'0'; if(r.__moRf!==f){ r.__moRf=f; r.style.setProperty('--rf',f); } };
+  const hook=r=>{ if(r.__moRng){ fill(r); return; } r.__moRng=1;
+    /* el código existente asigna .value por programa (p. ej. «K de diseño»): se intercepta solo en este elemento para repintar el relleno */
+    try{ Object.defineProperty(r,'value',{configurable:true,enumerable:true,get(){ return VD.get.call(this); },set(v){ VD.set.call(this,v); fill(this); }}); }catch(e){}
+    fill(r); };
+  const scan=()=>d.querySelectorAll(RNG).forEach(r=>{ if(!r.__moRng) hook(r); });
+  const onR=e=>{ const t=e.target; if(t&&t.matches&&t.matches(RNG)) hook(t); };
+  d.addEventListener('input',onR,true); d.addEventListener('change',onR,true);
+  d.addEventListener('pointerover',onR,{passive:true}); d.addEventListener('focusin',onR);
+  let scT=0; const later=ms=>{ clearTimeout(scT); scT=setTimeout(scan,ms); };
+  addEventListener('hashchange',()=>{ requestAnimationFrame(scan); later(500); });
+  d.addEventListener('click',()=>later(300),true);
+  /* el zoom con la rueda cambia .value de un deslizador quizá aún no enganchado: se revisa enseguida */
+  d.addEventListener('wheel',()=>later(120),{passive:true,capture:true});
+  scan(); root.classList.add('mo-rng');
+
+  /* 3) píldora de la pestaña activa que viaja de una pestaña a otra */
+  const nav=d.getElementById('tabs');
+  if(nav&&nav.closest('.appbar')){
+    let fly=null;
+    const box=a=>{ const n=nav.getBoundingClientRect(), r=a.getBoundingClientRect(); return {x:r.left-n.left+nav.scrollLeft,y:r.top-n.top+nav.scrollTop,w:r.width,h:r.height}; };
+    new MutationObserver(recs=>{
+      if(calm()||!nav.offsetParent) return;
+      let from=null, to=null;
+      recs.forEach(m=>{ const a=m.target; if(m.oldValue==='page'&&a.getAttribute('aria-current')!=='page') from=a; else if(a.getAttribute('aria-current')==='page'&&m.oldValue!=='page') to=a; });
+      if(!from||!to||!from.animate) return;
+      /* se mide en el siguiente cuadro, junto con el resto del diseño, para no forzar un cálculo extra */
+      requestAnimationFrame(()=>launch(from,to)); }).observe(nav,{subtree:true,attributes:true,attributeFilter:['aria-current'],attributeOldValue:true});
+    const launch=(from,to)=>{
+      if(!nav.offsetParent) return;
+      const A=box(from), B=box(to); if(!A.w||!B.w) return;
+      if(fly) fly.remove();
+      fly=d.createElement('span'); fly.className='tab-fly'; fly.setAttribute('aria-hidden','true'); nav.appendChild(fly);
+      const el=fly, dist=Math.abs(B.x-A.x);
+      /* viaja (con un ligero rebote) hasta la pestaña nueva y luego se desvanece para dejar ver su texto */
+      const tB=`translate(${B.x}px,${B.y}px)`;
+      el.animate([
+        {transform:`translate(${A.x}px,${A.y}px)`,width:A.w+'px',height:A.h+'px',opacity:1,easing:'cubic-bezier(.34,1.25,.64,1)'},
+        {transform:tB,width:B.w+'px',height:B.h+'px',opacity:1,offset:.75},
+        {transform:tB,width:B.w+'px',height:B.h+'px',opacity:0}
+      ],{duration:Math.round(Math.min(560,280+dist/6)/.75),easing:'linear',fill:'forwards'}).finished.then(()=>{ el.remove(); if(fly===el) fly=null; },()=>{});
+    };
+  }
+
+  /* 4) acordeón de teoría: al cerrar la sección abierta, se pliega con animación y luego se repite el clic original */
+  let pass=false;
+  d.addEventListener('click',e=>{
+    if(pass||calm()) return;
+    const b=e.target.closest&&e.target.closest('.acchb'); if(!b) return;
+    const art=b.closest('.tsec'); if(!art||!art.classList.contains('open')) return;
+    const body=art.querySelector('.accb'); if(!body||body.hidden||!body.animate) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if(art.__moClosing) return; art.__moClosing=1;
+    const cs=getComputedStyle(body), h=body.offsetHeight;
+    body.classList.add('closing');
+    const an=body.animate([
+      {height:h+'px',paddingTop:cs.paddingTop,paddingBottom:cs.paddingBottom,opacity:1},
+      {height:'0px',paddingTop:'0px',paddingBottom:'0px',opacity:0}
+    ],{duration:Math.round(Math.min(420,200+h/25)),easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+    /* si mientras se plegaba otra acción ya la cerró (p. ej. abrir otra sección), no se repite el clic: lo reabriría */
+    const done=()=>{ pass=true; try{ if(art.classList.contains('open')) b.click(); }finally{ pass=false; art.__moClosing=0; an.cancel(); body.classList.remove('closing'); } };
+    an.finished.then(done,done);
+  },true);
 })();
 </script>
 </body></html>
