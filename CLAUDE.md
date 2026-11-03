@@ -274,3 +274,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
 - Datos del Proyecto — https://claude.ai/artifact/GPSBNtYhwKfaETNpjxnUd2
 - Taller de Electrónica: Ohm, diodos y transistores — https://claude.ai/artifact/9TBwLS6CNCjF3Cn4ZYkW9R
+- **Hecho (v19): Prácticas según la guía** (`Guia_practicas_compensadores_LGDR.pdf`, 2 páginas: procedimiento obligatorio
+  «Análisis del sistema de referencia» 5 pasos + evidencia, «Verificación del sistema completo» 6 pasos + advertencia, y
+  estructura del reporte de 10 puntos). En P1–P7 se reemplazaron las tarjetas 1 y 3: `#pN-ana` (pasos 1–5 con los títulos de
+  la guía; reutiliza los `.xstep` originales como `.gsub` con `h5`, más polos en lazo cerrado con K de referencia, contraste
+  «si se asumiera K = 1» y recuadro `.evid` con LGDR inicial, respuesta temporal y tabla 2º orden vs. simulación) y `#pN-ver`
+  (`#pN-v1`…`#pN-v6`: ecuación final y todas las raíces, estabilidad + rango de K con Routh numérico + tabla candidato/obtenido,
+  tabla de modos con residuos al escalón, simulación del modelo completo con metas y píldoras cumple/casi/no cumple, error
+  estacionario analítico vs. simulado, ajuste y re‑verificación; `.note.gnote` con la advertencia). Tarjeta 2 → `#pN-dis`
+  «Desarrollo y justificación del diseño» + paso `#pN-ctrl` «Controlador final y parámetros»; tarjeta 4 → `#pN-con`;
+  `details.code#pN-mat`. Pasos: `.gstep>h4[data-n]` (número por CSS `::before`, así el resumen del plegable v15 no lo
+  incluye). Figuras SVG en línea `.gfig` con colores del tema. Números calculados con python-control (coinciden con los del
+  banco). Ajustes reportados: P1 K = 49.38, P3 variante 0.02/0.001, P5 p_c = 27.0 / K = 364.1, P7 p_ad = 12.29 / K = 290.31.
+- **Ventana del reporte (pendiente de contenido):** botón `.repbtn[data-rep=pN]` en `.phead` (dentro de `.phr`) → `dialog#repDlg`
+  (clase `sync`) con «En preparación» y los 10 puntos de la guía; cada uno hace `scrollIntoView` a su parte (abre el plegable).
+  **Siguiente tarea:** llenar esa ventana con una simulación del reporte de cada práctica.
