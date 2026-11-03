@@ -119,6 +119,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   los de `cfg[0]` (planta); se separa en bloques adelanto/atraso/PI. Tabla de parámetros (vectores para
   Numerator/Denominator), «Lo que debes obtener» (= Banco con K de diseño), código `sim`/`stepinfo` y botón
   «Ver este sistema en el Banco de pruebas». CSS `.bd*` antes de `</style>` principal.
+- **Hecho (v10): Zoom en todas las gráficas.** Centralizado en `axes()` (de `__lib`): lee `canvas.__z`
+  (`{x0,x1,y0,y1}` = fracciones del rango base, mismo factor en x e y) y devuelve también `X0..Y1` e `inv`.
+  `plane()` y `drawPlane()` del simulador usan esos rangos/`inv` (así el arrastre del punto de prueba sigue
+  bien con zoom). Redibujo con `canvas.__redraw` (puesto en `buildLab`, `build()` y simulador). `zoomUI(cv)`
+  agrega `.zbar` tras el canvas (− slider + · nivel · ⟲). Rueda = zoom en el cursor; arrastrar = mover;
+  doble clic = restablecer; en táctil, con zoom (touch-action none) se arrastra o pellizca. En lienzos con
+  arrastre propio (`touchAction:none`, p. ej. «angulo», «paisaje») mover es con Mayús+arrastrar.
+  Solo se adjunta a lienzos conectados (las flechitas ▲▼ dibujan en lienzos sueltos).
+- **Hecho (v11): Pantalla completa en computadora (≥1000 px).** Con «Gráficas»: gráficas a la izquierda
+  (sticky, alto = pantalla − `--dtoph`), lecturas `[data-read]` y lista de retos a la derecha (340–460 px);
+  arriba, indicación y deslizadores lado a lado. `--dtoph` lo pone un ResizeObserver sobre `.demo>.dtop`.
+  Sin gráficas: ancho hasta 1400 px y más columnas de fórmulas. En celular no cambia nada.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 

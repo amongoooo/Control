@@ -777,6 +777,44 @@ details.code:has(.bd){min-width:0;max-width:100%}
 .bd .codebox pre{border-radius:10px}
 .bd .note{margin:0}
 @media (max-width:600px){.bd table,.bd tbody,.bd tr,.bd td{display:block}.bd thead{display:none}.bd tr{border-bottom:1px solid var(--grid);padding:7px 0}.bd td{border:0;padding:1px 2px}.bd td:nth-child(2){font-size:12px;color:var(--muted);font-weight:400}.bd .codebox pre{padding-top:46px}}
+
+/* ---- zoom de gráficas ---- */
+.zbar{display:flex;align-items:center;gap:6px;margin-top:5px;font:12px var(--f-body);color:var(--muted);min-width:0}
+.zbar .zhint{margin-right:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px}
+.zbar .zm{display:none}
+@media (hover:none),(pointer:coarse){.zbar .zd{display:none}.zbar .zm{display:inline}}
+.zbar button{flex:none;width:30px;height:30px;padding:0;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:600 17px/1 var(--f-body);cursor:pointer;display:grid;place-items:center}
+.zbar button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.zbar button:disabled{opacity:.35;cursor:default}
+.zbar input[type=range]{flex:0 1 130px;min-width:60px;accent-color:var(--accent)}
+.zbar output{flex:none;min-width:3em;text-align:right;font:12px var(--f-mono);color:var(--ink)}
+canvas.zoomed{cursor:grab}canvas.panning{cursor:grabbing}
+
+/* ---- pantalla completa en computadora: gráficas a la izquierda, lecturas a la derecha ---- */
+@media (min-width:1000px){
+  .demo.dfull{grid-template-columns:minmax(0,1400px);padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+  .demo.dfull>.dtop{margin:0 -24px;padding-left:24px;padding-right:24px}
+  .demo.dfull.dgd>.dtop:has(.gcur *){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:24px;align-items:center}
+  .demo.dfull.dgd>.dtop:has(.gcur *)>:not(.gcur):not(.dctl){grid-column:1/-1}
+  .demo.dfull.dgd>.dtop:has(.gcur *)>.dctl{grid-template-columns:minmax(0,1fr);gap:8px}
+  .demo.dfull.dplt{grid-template-columns:minmax(0,1300px) minmax(340px,460px);grid-template-rows:auto auto auto minmax(0,1fr);column-gap:22px}
+  .demo.dfull.dplt>*{grid-column:2}
+  .demo.dfull.dplt>.dtop{grid-column:1/-1;grid-row:1}
+  .demo.dfull.dplt>.dplots{grid-column:1;grid-row:2/span 3;align-self:start;position:sticky;top:calc(var(--dtoph,130px) + 12px)}
+  .demo.dfull.dplt>[data-read]{grid-row:2}
+  .demo.dfull.dplt>[data-guide]{grid-row:3}
+  .demo.dfull.dplt>.dplots{grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))}
+  .demo.dfull.dplt>.dplots canvas{height:clamp(240px,calc(100dvh - var(--dtoph,130px) - 110px),760px)!important}
+  .demo.dfull.dplt [data-read] .fxgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr))}
+  .demo.dfull.dplt:not(.dcomp) [data-read] .fxgrid{grid-template-columns:minmax(0,1fr)}
+  .demo.dfull.dplt [data-read] table{width:100%}
+  .demo.dfull:not(.dplt) [data-read] .fxgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+  .demo.dfull.dcomp:not(.dplt) [data-read] .fxgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))}
+}
+@media (min-width:1000px) and (max-width:1399px){
+  .demo.dfull.dplt>.dplots:has(figure+figure){grid-template-columns:minmax(0,1fr)}
+  .demo.dfull.dplt>.dplots:has(figure+figure) canvas{height:clamp(200px,calc((100dvh - var(--dtoph,130px) - 190px)/2),520px)!important}
+}
 </style>
 
 <header class="appbar" id="appbar">
@@ -2706,6 +2744,8 @@ function niceStep(range,target){ const raw=range/target, m=Math.pow(10,Math.floo
 function fmtTick(v,st){ const d=Math.max(0,-Math.floor(Math.log10(st))+ (st/Math.pow(10,Math.floor(Math.log10(st)))<1.5?0:0)); return (Math.abs(v)<st/1e3?0:v).toFixed(Math.min(4,d)); }
 function setupCanvas(cv){ const dpr=window.devicePixelRatio||1, w=cv.clientWidth, h=cv.clientHeight; if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);} const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,w,h); return {g,w,h}; }
 function axes(g,w,h,X0,X1,Y0,Y1,pad,xl,yl){
+  const cv=g.canvas, zz=cv.__z; if(!cv.__zb&&cv.isConnected) zoomUI(cv); cv.__ax={pad,w,h};
+  if(zz){ const dx=X1-X0, dy=Y1-Y0, ax0=X0, ay0=Y0; X0=ax0+zz.x0*dx; X1=ax0+zz.x1*dx; Y0=ay0+zz.y0*dy; Y1=ay0+zz.y1*dy; }
   const sx=v=>pad.l+(v-X0)/(X1-X0)*(w-pad.l-pad.r), sy=v=>h-pad.b-(v-Y0)/(Y1-Y0)*(h-pad.t-pad.b);
   g.font='11px '+css('--f-mono'); g.lineWidth=1;
   const xs=niceStep(X1-X0,6), ys=niceStep(Y1-Y0,5);
@@ -2720,7 +2760,59 @@ function axes(g,w,h,X0,X1,Y0,Y1,pad,xl,yl){
   g.globalAlpha=1; g.fillStyle=css('--muted'); g.font='12px '+css('--f-body');
   g.textAlign='right'; g.textBaseline='bottom'; g.fillText(xl,w-pad.r,h-pad.b-4);
   g.textAlign='left'; g.textBaseline='top'; g.fillText(yl,pad.l+6,pad.t+2);
-  return {sx,sy};
+  return {sx,sy,X0,X1,Y0,Y1,inv:(px,py)=>[X0+(px-pad.l)/(w-pad.l-pad.r)*(X1-X0),Y0+(h-pad.b-py)/(h-pad.t-pad.b)*(Y1-Y0)]};
+}
+/* ---------- zoom de gráficas (rueda, arrastre, pellizco, barra − slider +) ---------- */
+const ZK_MIN=0.5, ZK_MAX=40;
+function zoomUI(cv){
+  cv.__zb=1;
+  const own=cv.style.touchAction==='none';
+  const bar=document.createElement('div'); bar.className='zbar';
+  bar.innerHTML=`<span class="zhint"><span class="zd">Rueda: zoom · ${own?'Mayús + arrastrar':'arrastrar'}: mover${own?'':' · doble clic: restablecer'}</span><span class="zm">${own?'+ / − para zoom':'Arrastra o pellizca'}</span></span>`+
+    `<button type="button" data-z="out" aria-label="Alejar" title="Alejar">−</button><input type="range" min="${Math.round(100*Math.log2(ZK_MIN))}" max="${Math.round(100*Math.log2(ZK_MAX))}" step="1" value="0" aria-label="Zoom de la gráfica"><button type="button" data-z="in" aria-label="Acercar" title="Acercar">+</button><output>1×</output><button type="button" data-z="reset" aria-label="Restablecer zoom" title="Restablecer zoom" disabled>⟲</button>`;
+  cv.insertAdjacentElement('afterend',bar);
+  const rng=bar.querySelector('input'), out=bar.querySelector('output'), rst=bar.querySelector('[data-z="reset"]');
+  const Z=()=>cv.__z||{x0:0,x1:1,y0:0,y1:1};
+  let raf=0; const redraw=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0; cv.__redraw&&cv.__redraw(); }); };
+  const sync=()=>{ const z=Z(), k=1/(z.x1-z.x0); rng.value=Math.round(100*Math.log2(k)); out.textContent=(k<9.95?k.toFixed(1):Math.round(k))+'×';
+    rst.disabled=!cv.__z; if(!own) cv.style.touchAction=cv.__z?'none':''; cv.classList.toggle('zoomed',!!cv.__z); };
+  const set=z=>{ const id=Math.abs(z.x1-z.x0-1)<1e-6&&Math.abs(z.x0)<1e-6&&Math.abs(z.y0)<1e-6; cv.__z=id?null:z; sync(); redraw(); };
+  // fracción (del rango base) bajo un punto en píxeles
+  const frac=(px,py)=>{ const a=cv.__ax, z=Z(); if(!a) return [ (z.x0+z.x1)/2, (z.y0+z.y1)/2 ];
+    const u=Math.max(0,Math.min(1,(px-a.pad.l)/(a.w-a.pad.l-a.pad.r))), v=Math.max(0,Math.min(1,(a.h-a.pad.b-py)/(a.h-a.pad.t-a.pad.b)));
+    return [z.x0+u*(z.x1-z.x0), z.y0+v*(z.y1-z.y0)]; };
+  const zoomAt=(fx,fy,f)=>{ const z=Z(), sp=z.x1-z.x0, ns=Math.max(1/ZK_MAX,Math.min(1/ZK_MIN,sp*f)), r=ns/sp;
+    set({x0:fx-(fx-z.x0)*r, x1:fx+(z.x1-fx)*r, y0:fy-(fy-z.y0)*r, y1:fy+(z.y1-fy)*r}); };
+  const center=()=>{ const z=Z(); return [(z.x0+z.x1)/2,(z.y0+z.y1)/2]; };
+  const pan=(dx,dy)=>{ const a=cv.__ax; if(!a) return; const z=Z(), sp=z.x1-z.x0, ux=dx/(a.w-a.pad.l-a.pad.r)*sp, uy=dy/(a.h-a.pad.t-a.pad.b)*(z.y1-z.y0);
+    set({x0:z.x0-ux, x1:z.x1-ux, y0:z.y0+uy, y1:z.y1+uy}); };
+  bar.querySelector('[data-z="in"]').addEventListener('click',()=>zoomAt(...center(),1/1.5));
+  bar.querySelector('[data-z="out"]').addEventListener('click',()=>zoomAt(...center(),1.5));
+  rst.addEventListener('click',()=>set({x0:0,x1:1,y0:0,y1:1}));
+  rng.addEventListener('input',()=>{ const k=Math.pow(2,+rng.value/100), z=Z(); zoomAt(...center(),(1/k)/(z.x1-z.x0)); });
+  cv.addEventListener('wheel',e=>{ e.preventDefault(); const r=cv.getBoundingClientRect(), d=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?400:1);
+    zoomAt(...frac(e.clientX-r.left,e.clientY-r.top),Math.exp(Math.max(-300,Math.min(300,d))*(e.ctrlKey?0.01:0.002))); },{passive:false});
+  // arrastre (1 puntero) y pellizco (2 punteros)
+  const pts=new Map(); let moved=0, last=null;
+  const mid=()=>{ const v=[...pts.values()]; return v.length<2?v[0]:{x:(v[0].x+v[1].x)/2,y:(v[0].y+v[1].y)/2,d:Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y)}; };
+  cv.addEventListener('pointerdown',e=>{
+    if(e.pointerType==='mouse'&&e.button!==0) return;
+    if(own&&!(e.pointerType==='mouse'&&e.shiftKey)&&!(e.pointerType!=='mouse'&&pts.size>=1)) return;
+    if(e.pointerType!=='mouse'&&!own&&!cv.__z) return;
+    if(own) e.stopImmediatePropagation();
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); try{ cv.setPointerCapture(e.pointerId); }catch(_){}
+    moved=0; last=mid(); cv.classList.add('panning'); },true);
+  cv.addEventListener('pointermove',e=>{ if(!pts.has(e.pointerId)) return; if(own) e.stopImmediatePropagation();
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY}); const m=mid(); if(!last||(m.d===undefined)!==(last.d===undefined)){ last=m; return; }
+    const dx=m.x-last.x, dy=m.y-last.y; moved+=Math.abs(dx)+Math.abs(dy);
+    if(dx||dy) pan(dx,dy);
+    if(m.d&&last.d){ const r=cv.getBoundingClientRect(); zoomAt(...frac(m.x-r.left,m.y-r.top),last.d/m.d); }
+    last=m; },true);
+  const up=e=>{ if(!pts.has(e.pointerId)) return; pts.delete(e.pointerId); last=pts.size?mid():null; if(!pts.size) cv.classList.remove('panning'); };
+  cv.addEventListener('pointerup',up,true); cv.addEventListener('pointercancel',up,true);
+  cv.addEventListener('click',e=>{ if(moved>4){ e.stopImmediatePropagation(); e.preventDefault(); } moved=0; },true);
+  if(!own) cv.addEventListener('dblclick',()=>set({x0:0,x1:1,y0:0,y1:1}));
+  sync();
 }
 function drawLocus(L){
   const P=PR[L.id], v=P.view[L.view], {g,w,h}=setupCanvas(L.cvL);
@@ -2728,7 +2820,7 @@ function drawLocus(L){
   const {sx,sy}=axes(g,w,h,X0,X1,Y0,Y1,pad,'σ','jω');
   g.save(); g.beginPath(); g.rect(pad.l,pad.t,w-pad.l-pad.r,h-pad.t-pad.b); g.clip();
   // recta de zeta
-  const th=Math.acos(P.zeta), R=Math.hypot(X0,Y1)*2;
+  const th=Math.acos(P.zeta), R=Math.hypot(X0,Y1)*8;
   g.setLineDash([5,4]); g.strokeStyle=css('--muted'); g.lineWidth=1;
   [1,-1].forEach(sg=>{ g.beginPath(); g.moveTo(sx(0),sy(0)); g.lineTo(sx(-R*Math.cos(th)),sy(sg*R*Math.sin(th))); g.stroke(); });
   g.setLineDash([]);
@@ -2819,7 +2911,7 @@ function buildLab(el){
   el.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ L.sel=+b.dataset.i; syncInputs(); redraw(); }));
   el.querySelectorAll('[data-view] button').forEach(b=>b.addEventListener('click',()=>{ L.view=+b.dataset.v; el.querySelectorAll('[data-view] button').forEach(x=>x.setAttribute('aria-pressed',x===b)); redraw(); }));
   el.querySelectorAll('[data-mode] button').forEach(b=>b.addEventListener('click',()=>{ L.mode=b.dataset.m; el.querySelectorAll('[data-mode] button').forEach(x=>x.setAttribute('aria-pressed',x===b)); redraw(); }));
-  L.redraw=redraw; syncInputs(); labs[id]=L;
+  L.redraw=redraw; L.cvL.__redraw=L.cvR.__redraw=redraw; syncInputs(); labs[id]=L;
   new ResizeObserver(redraw).observe(L.cvL);
   return L;
 }
@@ -2890,14 +2982,13 @@ function plane(cv,x0,x1,yc=0){
   const {g,w,h}=setupCanvas(cv), pad={l:40,r:10,t:10,b:22}, half=(x1-x0)*(h-pad.t-pad.b)/(w-pad.l-pad.r)/2;
   const ax=axes(g,w,h,x0,x1,yc-half,yc+half,pad,'σ','jω');
   g.save(); g.beginPath(); g.rect(pad.l,pad.t,w-pad.l-pad.r,h-pad.t-pad.b); g.clip();
-  return {g,w,h,pad,...ax,x0,x1,y0:yc-half,y1:yc+half,
-    inv:(px,py)=>[x0+(px-pad.l)/(w-pad.l-pad.r)*(x1-x0),(yc-half)+(h-pad.b-py)/(h-pad.t-pad.b)*2*half]};
+  return {g,w,h,pad,...ax,x0:ax.X0,x1:ax.X1,y0:ax.Y0,y1:ax.Y1};
 }
 const X=(P,x,y,c)=>{const g=P.g,a=P.sx(x),b=P.sy(y),s=5; g.strokeStyle=c||css('--ink'); g.lineWidth=1.8; g.beginPath(); g.moveTo(a-s,b-s); g.lineTo(a+s,b+s); g.moveTo(a+s,b-s); g.lineTo(a-s,b+s); g.stroke();};
 const O=(P,x,y)=>{const g=P.g; g.beginPath(); g.fillStyle=css('--surface'); g.strokeStyle=css('--ink'); g.lineWidth=1.8; g.arc(P.sx(x),P.sy(y),5,0,7); g.fill(); g.stroke();};
 const DOT=(P,x,y,c,r=4.5)=>{const g=P.g; g.beginPath(); g.fillStyle=c; g.arc(P.sx(x),P.sy(y),r,0,7); g.fill(); g.strokeStyle=css('--surface'); g.lineWidth=1.5; g.stroke();};
 const DIA=(P,x,y,c)=>{const g=P.g,a=P.sx(x),b=P.sy(y); g.beginPath(); g.moveTo(a,b-7); g.lineTo(a+7,b); g.lineTo(a,b+7); g.lineTo(a-7,b); g.closePath(); g.strokeStyle=c||css('--ink'); g.lineWidth=1.4; g.stroke();};
-function zline(P,zeta){ const th=Math.acos(zeta), R=Math.max(Math.abs(P.x0),Math.abs(P.y0),Math.abs(P.y1))*3, g=P.g; g.setLineDash([5,4]); g.strokeStyle=css('--muted'); g.lineWidth=1;
+function zline(P,zeta){ const th=Math.acos(zeta), R=Math.max(Math.abs(P.x0),Math.abs(P.y0),Math.abs(P.y1),Math.abs(P.x1))*4, g=P.g; g.setLineDash([5,4]); g.strokeStyle=css('--muted'); g.lineWidth=1;
   [1,-1].forEach(sg=>{g.beginPath(); g.moveTo(P.sx(0),P.sy(0)); g.lineTo(P.sx(-R*Math.cos(th)),P.sy(sg*R*Math.sin(th))); g.stroke();}); g.setLineDash([]); }
 function lines(P,br,c,lw=2,al=1){ const g=P.g; g.strokeStyle=c; g.lineWidth=lw; g.globalAlpha=al; br.forEach(b=>{g.beginPath(); b.forEach((q,k)=>k?g.lineTo(P.sx(q[0]),P.sy(q[1])):g.moveTo(P.sx(q[0]),P.sy(q[1]))); g.stroke();}); g.globalAlpha=1; }
 function tplot(cv,T,curves,o={}){
@@ -2938,6 +3029,7 @@ function build(el,spec){
   (spec.buttons||[]).forEach((b,i)=>el.querySelector(`[data-b="${i}"]`).addEventListener('click',()=>{ const tg={}; b[1](st,(k,v)=>{tg[k]=v;}); G_.animateTo(tg); }));
   let raf=0; const redraw=()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(()=>{ try{ read.innerHTML=spec.draw(st,cvs)||''; }catch(e){ console.error(e); } G_.after(); }); };
   if(spec.pointer) spec.pointer(cvs,st,()=>{ G_.user(); redraw(); });
+  cvs.forEach(c=>c.__redraw=()=>redraw());
   new ResizeObserver(redraw).observe(cvs[0]);
   el.__demo={spec,st,map}; if(window.__lgdrDemo) window.__lgdrDemo(el);   /* gancho de solo lectura para la presentación */
   return redraw;
@@ -3954,8 +4046,8 @@ function drawPlane(){
   if(S.view==='orig'){ const dzv=Math.max(dipoleZero(),0.02); xmin=-dzv*5; xmax=dzv*1.5; ymax=dzv*2; }
   if(S.view==='fit'){ const sp=xmax-xmin; xmin-=sp*0.12; xmax+=sp*0.08; }
   const aw=w-pad.l-pad.r, ah=h-pad.t-pad.b; let half=Math.max(ymax*1.15,(xmax-xmin)*ah/aw/2); const xs=half*2*aw/ah; const xc=(xmin+xmax)/2; const x0=xc-xs/2, x1=xc+xs/2;
-  const {sx,sy}=axes(g,w,h,x0,x1,-half,half,pad,'σ','jω');
-  VP={sx,sy,inv:(px,py)=>[x0+(px-pad.l)/aw*(x1-x0),-half+(h-pad.b-py)/ah*2*half]};
+  const ax=axes(g,w,h,x0,x1,-half,half,pad,'σ','jω'), {sx,sy}=ax;
+  VP={sx,sy,inv:ax.inv};
   g.save(); g.beginPath(); g.rect(pad.l,pad.t,aw,ah); g.clip();
   // región de especificaciones
   const th=dz.th, L=Math.max(Math.abs(x0),half)*4;
@@ -4225,6 +4317,7 @@ function init(){ if(ready){ update(); return; } ready=true;
     LC.br.forEach(br=>br.forEach(q=>{ if(q[2]<=0) return; const d=Math.hypot(VP.sx(q[0])-VP.sx(a),VP.sy(q[1])-VP.sy(b)); if(d<bd){bd=d;best=q;} }));
     if(best&&bd<14){ const m=model(), K=1/angMag(m.Z,m.P,best[0],best[1]).mag; msg(`Punto del LGDR ${cx(best[0],best[1])} → K = ${fx(K,4)}.`); setK(K); } else msg('Haz clic más cerca de una rama del LGDR.',true); });
   new ResizeObserver(()=>{ if(A){ drawPlane(); drawResp(); } }).observe($('sim-cl'));
+  $('sim-cl').__redraw=()=>{ if(A) drawPlane(); }; $('sim-cr').__redraw=()=>{ if(A) drawResp(); };
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change',update);
   new MutationObserver(update).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   loadPreset(3);
@@ -5157,5 +5250,11 @@ document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details
   const go=()=>{ if(!el.__bdDone&&el.__bdRender){ el.__bdDone=1; el.__bdRender(); } };
   if(!d||d.open) go(); else d.addEventListener('toggle',()=>{ if(d.open) go(); }); });
 })();
+</script>
+<script>
+/* Alto de la barra fija de cada simulación (--dtoph), para acomodar las gráficas en pantalla completa */
+(()=>{ if(!window.ResizeObserver) return; const ro=new ResizeObserver(es=>es.forEach(e=>{ const d=e.target.parentElement; if(d) d.style.setProperty('--dtoph',Math.round(e.target.getBoundingClientRect().height)+'px'); }));
+  const hook=()=>document.querySelectorAll('.demo>.dtop').forEach(t=>{ if(!t.__dto){ t.__dto=1; ro.observe(t); } });
+  hook(); addEventListener('load',hook); document.addEventListener('click',hook,true); })();
 </script>
 </body></html>
