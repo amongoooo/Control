@@ -253,7 +253,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Teoría: índice de 256 px y `.tdots` a la derecha (absoluto). Transición v17: `#sbar` lleva `vt-side` y no se mueve. Impresión: sin barras.
   Probado: navegación, atrás, partes, columna derecha, pantallas completas (simulación, evaluación con formulario), `ab-hide`,
   cambio de tamaño (900/1100/1440), movimiento reducido, claves de progreso intactas, 390 y 999 px iguales a antes; cambio de página
-  ~+10 % a 1440 px (el contenido es más angosto), igual a 1280.
+  +5–25 ms (≈ +8–12 %) a 1280 y 1440 px (p. ej. P1 44 → 50 ms, Teoría 190 → 216 ms; casi todo es el diseño nuevo, no el JS).
 - **Corregido en la etapa 4 (decisión 5): el salto a Teoría al cargar** (venía del artefacto original): `openSection(id,scroll,stay)`;
   `buildAccordion()` llama `openSection(o,false,true)` y así la apertura inicial ya no cambia `location.hash`.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
