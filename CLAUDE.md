@@ -233,6 +233,12 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Pruebas: recorrido de pestañas, atrás/adelante, clics rápidos, 6 aperturas en Teoría, 2 simulaciones y 1 evaluación con
   mismas posiciones de scroll que la versión anterior, sin View Transitions, movimiento reducido, `?p=…#p3`, celular; consola limpia.
   **Ojo:** en el contenedor (sin GPU) los cuadros duran 60–180 ms, así que las animaciones se ven lentas en Playwright.
+- **Hecho (v18): interruptor «Animaciones»** (`#abAnim`, antes de `#abTheme`): solo aparece si el sistema pide reducir
+  movimiento (el usuario tenía «Efectos de animación» apagado en Windows y no veía nada). Encendido =
+  `localStorage['lgdr-anim']='1'` (fuera de la sincronización) y recarga. Un script temprano (después del gancho v17)
+  reescribe, antes que todo, las consultas del CSS (`CSSMediaRule.media.mediaText`) y envuelve `window.matchMedia`:
+  `(prefers-reduced-motion:no-preference)` → `(min-width:0px)` y `(prefers-reduced-motion: reduce)` → `(max-width:-1px)` (nunca).
+  Datos en `window.__lgdrAnim = {sys, on}`. Página de diagnóstico: https://claude.ai/artifact/VP46KFQS37bv12FTV2b7pc
 - **Corregido en la etapa 4 (decisión 5): el salto a Teoría al cargar** (venía del artefacto original): `openSection(id,scroll,stay)`;
   `buildAccordion()` llama `openSection(o,false,true)` y así la apertura inicial ya no cambia `location.hash`.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el

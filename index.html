@@ -1035,11 +1035,26 @@ html.vt-page::view-transition,html.vt-acc::view-transition{pointer-events:none}
 }
 @keyframes vt-out{to{opacity:0;translate:calc(var(--vt-dir,1) * -24px) 0}}
 @keyframes vt-in{from{opacity:0;translate:calc(var(--vt-dir,1) * 32px) 0}}
+/* ==== v18 · interruptor «Animaciones» (solo aparece si el sistema pide reducir movimiento) ==== */
+#abAnim[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
+#abAnim .ic-off{display:block} #abAnim .ic-on{display:none}
+#abAnim[aria-pressed="true"] .ic-off{display:none} #abAnim[aria-pressed="true"] .ic-on{display:block}
 </style>
 
 <header class="appbar" id="appbar">
 <script>(function(){try{var t=localStorage.getItem('lgdr-tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
 <script>/* v17 · gancho de las transiciones de página: en window, Chrome llama a los oyentes de «hashchange» en el orden en que se registraron (aunque sean de captura), así que este va antes que show(); la lógica está en el bloque v17 al final */addEventListener('hashchange',function(e){var f=window.__lgdrVTHash;if(f)f(e);});</script>
+<script>/* v18 · animaciones «siempre»: si el sistema pide reducir movimiento y el usuario eligió verlas igual
+   (localStorage['lgdr-anim']='1'), se reescriben aquí, antes de que corra cualquier otro script, las consultas
+   «prefers-reduced-motion» del CSS y de matchMedia(): no-preference → siempre, reduce → nunca. El interruptor
+   (#abAnim, bloque v18 al final) recarga la página al cambiar. */(function(){
+var om=window.matchMedia;if(!om)return;var sys=om.call(window,'(prefers-reduced-motion: reduce)').matches;window.__lgdrAnim={sys:sys,on:false};
+var on=false;try{on=localStorage.getItem('lgdr-anim')==='1';}catch(e){}if(!on||!sys)return;window.__lgdrAnim.on=true;
+var fix=function(q){return String(q).replace(/\(\s*prefers-reduced-motion\s*:\s*no-preference\s*\)/gi,'(min-width:0px)').replace(/\(\s*prefers-reduced-motion\s*(:\s*reduce\s*)?\)/gi,'(max-width:-1px)');};
+window.matchMedia=function(q){return om.call(window,fix(q));};
+var walk=function(rs){for(var i=0;i<rs.length;i++){var r=rs[i];if(r.media&&/prefers-reduced-motion/i.test(r.media.mediaText)){try{r.media.mediaText=fix(r.media.mediaText);}catch(e){}}if(r.cssRules)walk(r.cssRules);}};
+var all=function(){for(var i=0;i<document.styleSheets.length;i++){try{walk(document.styleSheets[i].cssRules);}catch(e){}}};
+all();document.addEventListener('DOMContentLoaded',all);})();</script>
 <div class="appbar-in">
   <div class="abrow">
     <a class="brand" href="#resumen" aria-label="Laboratorio LGDR: ir al resumen">
@@ -6187,6 +6202,22 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
     e.preventDefault(); e.stopImmediatePropagation();
     card(box,()=>{ (e.target&&e.target.isConnected?e.target:d).dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true,cancelable:true})); });
   },true);
+})();
+</script>
+<script>
+/* ==== v18 · interruptor «Animaciones» en la barra (solo presentación) ====
+   Solo aparece si el sistema pide reducir movimiento (si no, las animaciones ya se ven). Apagado = como pide el
+   sistema; encendido = animaciones siempre en este navegador (no entra en la sincronización). Recarga al cambiar. */
+(()=>{
+  const A=window.__lgdrAnim, theme=document.getElementById('abTheme');
+  if(!A||!A.sys||!theme) return;
+  const b=document.createElement('button'); b.type='button'; b.className='abicon'; b.id='abAnim';
+  b.innerHTML='<svg class="ic-off" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="12" r="4"/><path d="M3 9h5M3 15h5" opacity=".4"/><path d="M3 3l18 18"/></svg>'
+    +'<svg class="ic-on" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="12" r="4"/><path d="M2 8h6M4 12h5M2 16h6"/></svg>';
+  const l=A.on?'Animaciones: siempre (toca para seguir lo que pide tu sistema)':'Animaciones apagadas por tu sistema (toca para verlas siempre)';
+  b.setAttribute('aria-pressed',String(A.on)); b.setAttribute('aria-label',l); b.title=l;
+  b.addEventListener('click',()=>{ try{ if(A.on) localStorage.removeItem('lgdr-anim'); else localStorage.setItem('lgdr-anim','1'); }catch(e){ return; } location.reload(); });
+  theme.parentNode.insertBefore(b,theme);
 })();
 </script>
 </body></html>
