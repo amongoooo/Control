@@ -311,7 +311,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
   **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
 
-## Hecho (v24): "Resolución paso a paso" — P1–P5 listas; falta P6 y P7
+## Hecho (v24): "Resolución paso a paso" — P1–P7 listas
 
 - Tarjeta `div.card.pasos[data-pasos="pN"]` justo después de `.card.bench` (P1 ya la tiene). No toca el contenido existente.
 - Script propio al final del `<body>` («Resolución paso a paso»): `PASOS.pN = () => ({title, intro, steps:[...]})` y un visor
@@ -363,9 +363,26 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   21 Simulink con el ajuste (Transfer Fcn [1 10]/[1 27.00]) y `set_param` a los valores del libro (21 %).
   Para la bisección y la curva se usa un %OS rápido (pico de `simulate` con dt 0.002, 0.2 ms) en lugar de `TT.metrics` (14 ms):
   `PASOS.p5()` tarda ≈ 36 ms.
-- PDF: 139 páginas con P1–P5 (~10.7 MB).
-- **Siguiente:** escribir `PASOS.p4` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
-  plegables ya recorre P1–P7). Después, volver a generar `practicas.pdf`.
+- P6 (24 pasos, ejemplo 9.5 PID = PD · PI): 1–11 referencia (G = (s+8)/[(s+3)(s+6)(s+10)], eje real [−6,−3] ∪ [−10,−8], asíntotas
+  −5.5 ±90°, ruptura −4.6231 / Kb = 3.5585 (N·D′ − N′·D = 2σ³+43σ²+304σ+684), Routh ∀K, ζ = 0.4559, s0 = −5.4156 ± j10.57 con el ángulo
+  del cero, K = 121.6, p3 = −8.169 junto al cero (|r| 0.021), Tp = 0.2972, Kp = 5.40 / e = 0.156), 12–16 PD (Tp ×2/3 → sd = −8.123 ± j15.86,
+  ∠G(sd) = −198.34° → θ = 18.34°, zc = 55.96, K_PD = 5.326, verificación 21.74 % / 0.177 s / e 0.070), 17–21 PI (dipolo −1.45°, ec. de
+  4º orden + Routh numérico y barrido ∀K, re‑búsqueda desde r = 2: −7.5127 ± j14.66 / K = 4.5915, K1 = 259.3, K2 = 128.5, K3 = 4.59 con
+  gráfica |C(jω)| dB, 4 polos y residuos), 22 verificación (14.15 %, Tp 0.194, Ts 2.56), 23 error 0 (Kv = 5.71) y 24 **Simulink** con
+  Gain → PID Controller (PD, P = zc, D = 1, sin filtro) → Transfer Fcn PI [1 0.5]/[1 0] → G; «otra forma» un solo PID P/I/D = K1/K2/K3.
+  En `pz` de P6: opción `m:'U'|'PD'|'PID'` elige ceros/polos; el cero −55.96 fuera de la vista se anuncia con «← cero en …».
+- P7 (20 pasos, ejercicio 9.3 adelanto‑atraso, cero de adelanto en −3): 1–7 referencia (2º orden puro: σ = 3.5, ζ = 0.4559,
+  s0 = −3.5 ± j6.832, K = 58.93, a) Ts = 1.143 s, b) Kv = 8.418 / e = 0.1188), 8–12 diseño (sd = −7 ± j13.66 con Ts/2, ángulo con el cero
+  −100.81° → θp = 79.19°, pad = 9.609, K_ad = 205.0, Kv_ad = 9.14, atraso ratio 9.21 → zatr = 0.0921 / patr = 0.01, dipolo −0.27°),
+  13–16 (ec. de 4º orden + Routh numérico y barrido ∀K, re‑búsqueda desde r = 2: −6.966 ± j13.60 / K = 203.7, Kv = 83.65 / e = 0.01195,
+  polos −2.593 (|r| 0.157, cancelación parcial con −3) y −0.093, verificación Ts = 0.6295 ✗), 17 ajuste con `dis(Ts)` (tabla de pruebas
+  Ts_obj 0.571/0.54/0.51/0.48 con Ts simulado rápido `tsOf`) → pad = 12.29, zatr = 0.0827, K = 290.3, 18 re‑verificación (0.5688 s,
+  9.05 %), 19 error ÷10 (rampa simulada 130 s) y 20 **Simulink** con Transfer Fcn adelanto y atraso separados, Step → Ramp.
+  `pz` de P7: `m:'U'|'Z'|'L'|'F'` (sin compensar / sólo cero −3 / adelanto / final), `adj:1` usa el ajuste.
+- Pruebas P6/P7: Playwright a 390 (claro/oscuro) y 1280 px, recorrido de todos los pasos sin desbordes, sin errores KaTeX ni de consola;
+  `PASOS.p6()` ≈ 30 ms, `PASOS.p7()` ≈ 40 ms.
+- PDF: 176 páginas con P1–P7 (~14 MB).
+- Las 7 prácticas ya tienen su Resolución paso a paso. Si cambia algo en ellas, volver a generar `practicas.pdf`.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
