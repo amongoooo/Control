@@ -383,6 +383,11 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `PASOS.p6()` ≈ 30 ms, `PASOS.p7()` ≈ 40 ms.
 - PDF: 176 páginas con P1–P7 (~14 MB).
 - Las 7 prácticas ya tienen su Resolución paso a paso. Si cambia algo en ellas, volver a generar `practicas.pdf`.
+- **Corregido (v25): zoom en las gráficas de la Resolución paso a paso.** `axes()` les ponía la barra `.zbar`, pero
+  `buildPasos` no asignaba `canvas.__redraw`, así que el slider/±/rueda cambiaban `__z` sin redibujar. Ahora `drawStep` pone
+  `cv.__redraw` en cada lienzo; `plane()` devuelve `x0…y1` = bordes visibles (con zoom) y `tplot` extiende las líneas guía a la
+  vista. Sin zoom el dibujo es idéntico píxel a píxel (no hace falta regenerar el PDF). Probado: 142 lienzos de P1–P7 a 390 y
+  1280 px (slider, −, rueda y ⟲ vuelve a la imagen original), consola limpia.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 

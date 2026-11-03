@@ -6998,7 +6998,8 @@ function plane(cv,x0,x1,need=0){
   if(half<need){ const span=2*need*pw/ph, ex=span-(x1-x0); x0-=ex*0.75; x1+=ex*0.25; half=need; }
   const ax=axes(g,w,h,x0,x1,-half,half,pad,'σ','jω');
   g.save(); g.beginPath(); g.rect(pad.l,pad.t,pw,ph); g.clip();
-  return {g,w,h,pad,...ax,x0,x1,y0:-half,y1:half,ppu:pw/(x1-x0),done:()=>g.restore()};
+  // con zoom (canvas.__z) los bordes x0…y1 son los de la vista, para que lo que va «hasta el borde» siga a la vista
+  return {g,w,h,pad,...ax,x0:ax.X0,x1:ax.X1,y0:ax.Y0,y1:ax.Y1,ppu:pw/(ax.X1-ax.X0),done:()=>g.restore()};
 }
 const Xm=(P,x,y,c)=>{const g=P.g,a=P.sx(x),b=P.sy(y),s=5; g.strokeStyle=c||css('--ink'); g.lineWidth=2; g.beginPath(); g.moveTo(a-s,b-s); g.lineTo(a+s,b+s); g.moveTo(a+s,b-s); g.lineTo(a-s,b+s); g.stroke();};
 const DOT=(P,x,y,c,r=4.5)=>{const g=P.g; g.beginPath(); g.fillStyle=c; g.arc(P.sx(x),P.sy(y),r,0,7); g.fill(); g.strokeStyle=css('--surface'); g.lineWidth=1.5; g.stroke();};
@@ -7009,12 +7010,12 @@ function LINES(P,br,c,lw=2){ const g=P.g; g.strokeStyle=c; g.lineWidth=lw; br.fo
 function tplot(cv,T,curves,o={}){
   const {g,w,h}=setupCanvas(cv), pad={l:44,r:10,t:10,b:22};
   let ymax=o.ymax; if(ymax===undefined){ ymax=0; curves.forEach(c=>c.y.forEach(v=>{ if(Number.isFinite(v)) ymax=Math.max(ymax,v); })); ymax*=1.12; }
-  const {sx,sy}=axes(g,w,h,0,T,0,ymax,pad,'t (s)',o.yl||'c(t)');
+  const {sx,sy,X0,X1,Y0,Y1}=axes(g,w,h,0,T,0,ymax,pad,'t (s)',o.yl||'c(t)');
   g.save(); g.beginPath(); g.rect(pad.l,pad.t,w-pad.l-pad.r,h-pad.t-pad.b); g.clip();
-  (o.hl||[]).forEach(([v,lb])=>{ g.setLineDash([4,4]); g.strokeStyle=css('--muted'); g.lineWidth=1; g.beginPath(); g.moveTo(sx(0),sy(v)); g.lineTo(sx(T),sy(v)); g.stroke(); g.setLineDash([]);
-    if(lb){ g.font='11.5px '+css('--f-mono'); g.fillStyle=css('--muted'); g.textAlign='right'; g.textBaseline='bottom'; g.fillText(lb,sx(T)-6,sy(v)-2); } });
-  (o.vl||[]).forEach(([v,lb],i)=>{ g.setLineDash([2,4]); g.strokeStyle=css('--muted'); g.lineWidth=1; g.beginPath(); g.moveTo(sx(v),sy(0)); g.lineTo(sx(v),sy(ymax)); g.stroke(); g.setLineDash([]);
-    if(lb){ g.font='11.5px '+css('--f-mono'); g.fillStyle=css('--muted'); g.textAlign='left'; g.textBaseline='top'; g.fillText(lb,sx(v)+4,sy(ymax)+4+i*15); } });
+  (o.hl||[]).forEach(([v,lb])=>{ g.setLineDash([4,4]); g.strokeStyle=css('--muted'); g.lineWidth=1; g.beginPath(); g.moveTo(sx(X0),sy(v)); g.lineTo(sx(X1),sy(v)); g.stroke(); g.setLineDash([]);
+    if(lb){ g.font='11.5px '+css('--f-mono'); g.fillStyle=css('--muted'); g.textAlign='right'; g.textBaseline='bottom'; g.fillText(lb,sx(Math.min(T,X1))-6,sy(v)-2); } });
+  (o.vl||[]).forEach(([v,lb],i)=>{ g.setLineDash([2,4]); g.strokeStyle=css('--muted'); g.lineWidth=1; g.beginPath(); g.moveTo(sx(v),sy(Y0)); g.lineTo(sx(v),sy(Y1)); g.stroke(); g.setLineDash([]);
+    if(lb){ g.font='11.5px '+css('--f-mono'); g.fillStyle=css('--muted'); g.textAlign='left'; g.textBaseline='top'; g.fillText(lb,sx(v)+4,sy(Math.min(ymax,Y1))+4+i*15); } });
   curves.forEach(c=>{ g.strokeStyle=c.c; g.lineWidth=c.lw||2.2; if(c.dash) g.setLineDash(c.dash); g.beginPath(); c.t.forEach((t,k)=>k?g.lineTo(sx(t),sy(c.y[k])):g.moveTo(sx(t),sy(c.y[k]))); g.stroke(); g.setLineDash([]); });
   if(o.after) o.after(g,sx,sy);
   g.restore();
@@ -9381,7 +9382,9 @@ function buildPasos(el){
     <div class="psctl"><button class="btn" type="button" data-prev>◀ Anterior</button><span data-pos></span><button class="btn primary" type="button" data-next>Siguiente ▶</button></div>`;
   const arts=[...el.querySelectorAll('.pstep')], dots=[...el.querySelectorAll('[data-go]')], nav=el.querySelector('.psnav');
   const prev=el.querySelector('[data-prev]'), next=el.querySelector('[data-next]'), pos=el.querySelector('[data-pos]'), allB=el.querySelector('[data-all]');
-  const drawStep=i=>{ const a=arts[i]; if(a.hidden) return; a.querySelectorAll('canvas[data-cv]').forEach(cv=>{ if(!cv.clientWidth) return; try{ S[i].vis[+cv.dataset.cv].draw(cv); }catch(e){ console.error(e); } }); };
+  const drawCv=(i,cv)=>{ if(!cv.clientWidth) return; try{ S[i].vis[+cv.dataset.cv].draw(cv); }catch(e){ console.error(e); } };
+  // __redraw: lo usa la barra de zoom (− slider + ⟲, rueda, arrastre) para volver a dibujar con canvas.__z
+  const drawStep=i=>{ const a=arts[i]; if(a.hidden) return; a.querySelectorAll('canvas[data-cv]').forEach(cv=>{ cv.__redraw=()=>drawCv(i,cv); drawCv(i,cv); }); };
   const redraw=()=>arts.forEach((a,i)=>drawStep(i));
   function go(i,scroll){ cur=Math.max(0,Math.min(N-1,i)); seen.add(cur);
     arts.forEach((a,k)=>a.hidden=!all&&k!==cur);
