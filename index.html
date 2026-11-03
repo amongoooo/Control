@@ -1005,10 +1005,41 @@ html.mo-rng .kctl input[type=range].mg-on::-moz-range-thumb{background:var(--ok)
 .btn.mgt{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .btn.mgt svg{flex:none}
 .btn.mgt[aria-pressed="true"]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+/* ==== v17 · transiciones de página (View Transitions con respaldo CSS; solo presentación) ====
+   html.vt-page: cambio de sección (sale hacia un lado y entra desde el otro según el orden de las pestañas, --vt-dir);
+   html.vt-acc: abrir otra sección de Teoría; html.vt-card: entrar o salir de la pantalla completa de una
+   simulación o evaluación. Las clases solo existen mientras dura la transición. */
+/* durante la animación los toques y la rueda llegan a la página nueva (ya está en su lugar); en la pantalla
+   completa no, para que un doble toque no caiga en los botones de la capa que se está abriendo */
+html.vt-page::view-transition,html.vt-acc::view-transition{pointer-events:none}
+@media (prefers-reduced-motion:no-preference){
+  html.vt-page::view-transition-old(root){animation:.2s cubic-bezier(.4,0,1,1) both vt-out}
+  html.vt-page::view-transition-new(root){animation:.28s cubic-bezier(.2,.8,.2,1) both vt-in}
+  /* la barra de app no se mueve: se ve directamente la nueva (con la píldora de la pestaña viajando) */
+  html.vt-page #appbar,html.vt-acc #appbar{view-transition-name:vt-bar}
+  html.vt-page::view-transition-old(vt-bar),html.vt-acc::view-transition-old(vt-bar){display:none}
+  html.vt-page::view-transition-new(vt-bar),html.vt-acc::view-transition-new(vt-bar){animation:none}
+  html.vt-page::view-transition-group(vt-bar){animation-duration:.25s}
+  /* en Teoría las secciones que se mueven pasan por debajo de la barra, como al desplazarse */
+  html.vt-acc::view-transition-group(vt-bar){z-index:1}
+  /* acordeón y tarjetas: la caja cambia de tamaño y su contenido se descubre desde arriba, sin estirarse */
+  html.vt-acc::view-transition-group(*){animation-duration:.34s;animation-timing-function:cubic-bezier(.2,.8,.2,1);overflow:clip}
+  html.vt-acc::view-transition-old(*),html.vt-acc::view-transition-new(*){height:100%;object-fit:none;object-position:top center}
+  html.vt-acc::view-transition-old(*){animation-duration:.2s}
+  html.vt-card::view-transition-group(*){animation-duration:.36s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+  html.vt-card::view-transition-group(vt-card){overflow:clip}
+  html.vt-card::view-transition-old(vt-card),html.vt-card::view-transition-new(vt-card){height:100%;object-fit:none;object-position:top center}
+  html.vt-card::view-transition-old(vt-card){animation-duration:.22s}
+  /* respaldo sin View Transitions: la página nueva entra con una animación CSS corta */
+  section.page.vt-fb{animation:.22s cubic-bezier(.2,.8,.2,1) both vt-in}
+}
+@keyframes vt-out{to{opacity:0;translate:calc(var(--vt-dir,1) * -24px) 0}}
+@keyframes vt-in{from{opacity:0;translate:calc(var(--vt-dir,1) * 32px) 0}}
 </style>
 
 <header class="appbar" id="appbar">
 <script>(function(){try{var t=localStorage.getItem('lgdr-tema');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<script>/* v17 · gancho de las transiciones de página: en window, Chrome llama a los oyentes de «hashchange» en el orden en que se registraron (aunque sean de captura), así que este va antes que show(); la lógica está en el bloque v17 al final */addEventListener('hashchange',function(e){var f=window.__lgdrVTHash;if(f)f(e);});</script>
 <div class="appbar-in">
   <div class="abrow">
     <a class="brand" href="#resumen" aria-label="Laboratorio LGDR: ir al resumen">
@@ -4921,10 +4952,10 @@ function buildAccordion(){
   applySecLocks(false);
   let o=null; try{ o=localStorage.getItem(OKEY); }catch(e){}
   if(!(o&&secUnlocked(o))){ const cur=PARTS.find(P=>isUnlocked(P.r)&&!(ST.exam[P.r]&&ST.exam[P.r].passed))||PARTS[0]; o=cur.ids.find(id=>secUnlocked(id)&&!secDone(id))||cur.ids.filter(secUnlocked).pop()||'f1'; }
-  openSection(o,false);
+  openSection(o,false,true);   /* apertura inicial: no cambiar de página (antes saltaba a #teoria al cargar) */
 }
 function closeSection(id){ const art=document.getElementById(id); if(!art) return; art.classList.remove('open'); art.querySelector('.accb').hidden=true; art.querySelector('.acchb').setAttribute('aria-expanded','false'); if(OPEN===id) OPEN=null; }
-function openSection(id,scroll){
+function openSection(id,scroll,stay){
   const go=()=>{ const art=document.getElementById(id); if(!art) return;
     if(art.closest('.tphase[hidden]')){ const lp=document.querySelector('.lockp:not([hidden])'); if(lp){ lp.scrollIntoView({behavior:'smooth',block:'center'}); lp.classList.remove('nudge'); void lp.offsetWidth; lp.classList.add('nudge'); } return; }
     if(!secUnlocked(id)){ art.classList.remove('nudge'); void art.offsetWidth; art.classList.add('nudge','showwhy'); setTimeout(()=>art.classList.remove('showwhy'),3200); if(scroll) art.scrollIntoView({behavior:'smooth',block:'center'}); return; }
@@ -4933,7 +4964,7 @@ function openSection(id,scroll){
     body.classList.remove('opening'); void body.offsetWidth; body.classList.add('opening');
     try{ localStorage.setItem(OKEY,id); }catch(e){}
     if(scroll) requestAnimationFrame(()=>art.scrollIntoView({behavior:'smooth',block:'start'})); };
-  if(location.hash!=='#teoria'){ location.hash='#teoria'; setTimeout(go,200); } else go();
+  if(!stay&&location.hash!=='#teoria'){ location.hash='#teoria'; setTimeout(go,200); } else go();
 }
 window.__openSec=(id,scroll)=>openSection(id,scroll);
 function applySecLocks(detect){
@@ -6030,6 +6061,132 @@ const idle=f=>(window.requestIdleCallback?requestIdleCallback(f,{timeout:600}):s
 addEventListener('hashchange',()=>idle(()=>{ scanLabs(); scanDemos(); }));
 idle(()=>{ scanLabs(); scanDemos(); }); syncBtns();
 window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.map(m=>({v:m.v,t:m.t,k:m.k,r:!!m.r})),cur:S.cur&&S.cur.v}))};
+})();
+</script>
+<script>
+/* ==== v17 · transiciones de página (solo presentación; no toca estado, progreso ni lógica) ====
+   - Cambio de sección (pestañas, atrás/adelante, enlaces #p3…): el gancho del principio de la página
+     (window.__lgdrVTHash, registrado antes que show()) detiene el «hashchange» original y repite el mismo
+     evento dentro de document.startViewTransition(); así show() y el resto de los oyentes corren igual que
+     antes, solo que con la animación. La barra de app no se mueve.
+   - Abrir otra sección de Teoría y entrar o salir de la pantalla completa de una simulación o evaluación:
+     se detiene el clic (o Esc) en captura y se repite dentro de la transición.
+   - Sin View Transitions: la página nueva entra con una animación CSS (.vt-fb). Con movimiento reducido,
+     nada. Si una actualización tarda más de 300 ms, se omite su animación (y la siguiente vez ya no se anima). */
+(()=>{
+  const d=document, root=d.documentElement;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)'), calm=()=>reduce.matches;
+  const VT=typeof d.startViewTransition==='function';
+  const SLOW=300, pages=[...d.querySelectorAll('[data-page]')], idx=id=>pages.findIndex(p=>p.id===id);
+  const visible=()=>{ const p=pages.find(p=>!p.hidden); return p?p.id:null; };
+  const target=()=>{ const id=(location.hash||'#resumen').slice(1); return pages.some(p=>p.id===id)?id:'resumen'; };
+  const quiet=p=>{ if(p&&p.catch) p.catch(()=>{}); };
+  let cur=null, curK='', replaying=false;
+  const slow={};
+
+  /* inicia una transición del tipo indicado (la anterior, si sigue, se salta para no hacer cola) */
+  function vt(kind,update,onEnd,onMs){
+    if(cur){ try{ cur.skipTransition(); }catch(e){} root.classList.remove('vt-'+curK); }
+    root.classList.add('vt-'+kind);
+    let t=null, done=false;
+    const run=()=>{ if(done) return; done=true; const t0=performance.now();
+      replaying=true; try{ update(); }finally{ replaying=false; }
+      const ms=performance.now()-t0; if(onMs) onMs(ms); if(ms>SLOW&&t) try{ t.skipTransition(); }catch(e){} };
+    try{ t=d.startViewTransition(run); }catch(e){ t=null; }
+    if(!t){ root.classList.remove('vt-'+kind); run(); if(onEnd) onEnd(); return null; }
+    cur=t; curK=kind; quiet(t.updateCallbackDone);
+    /* si un cuadro de la animación tarda demasiado (equipo lento, página muy pesada), se termina de golpe */
+    let live=true, last=0;
+    t.ready.then(()=>{ last=performance.now(); const f=n=>{ if(!live) return; if(n-last>SLOW){ try{ t.skipTransition(); }catch(e){} return; } last=n; requestAnimationFrame(f); }; requestAnimationFrame(f); },()=>{});
+    const end=()=>{ live=false; if(cur===t){ cur=null; root.classList.remove('vt-'+kind); } if(onEnd) onEnd(); };
+    t.finished.then(end,end);
+    return t; }
+
+  /* ---- 1) cambio de sección ---- */
+  let fb=null, seq=0, plain=null;
+  window.__lgdrVTHash=e=>{
+    if(replaying||calm()) return;
+    const from=visible(), to=target(); if(!from||from===to) return;
+    root.style.setProperty('--vt-dir',idx(to)>=idx(from)?1:-1);
+    if(!VT){ fb=to; return; }                       /* respaldo: se anima después de show() */
+    /* página pesada: sin animación, como antes; se vuelve a medir (abajo) por si la próxima vez ya es rápida */
+    if(slow[to]>SLOW||d.hidden){ plain={to,t0:performance.now()}; return; }
+    e.stopImmediatePropagation();
+    const my=++seq, ev={oldURL:e.oldURL,newURL:e.newURL};
+    let stale=false;
+    vt('page',()=>{ if(my!==seq){ stale=true; return; }   /* llegó otro cambio: ese repite el evento */
+      dispatchEvent(new HashChangeEvent('hashchange',ev)); },null,ms=>{ if(!stale) slow[to]=ms; });
+  };
+  addEventListener('hashchange',()=>{ if(plain){ slow[plain.to]=performance.now()-plain.t0; plain=null; } });
+  addEventListener('hashchange',()=>{ if(!fb) return; const p=d.getElementById(fb); fb=null;
+    if(!p||p.hidden||calm()) return;
+    p.classList.remove('vt-fb'); void p.offsetWidth; p.classList.add('vt-fb');
+    p.addEventListener('animationend',function f(ev){ if(ev.target!==p) return; p.classList.remove('vt-fb'); p.removeEventListener('animationend',f); }); });
+
+  if(!VT) return;
+  const replay=el=>{ el.click(); };
+  /* pantalla completa real: se pide (o se quita) cuando termina la animación, para que el cambio de tamaño
+     de la ventana no la corte. La activación del usuario dura unos segundos, así que la petición sigue valiendo. */
+  /* (contador: si se encadenan dos transiciones, se suelta cuando terminan ambas) */
+  let holds=0; const fq=[], fundo=[];
+  const wrap=(o,k)=>{ if(typeof o[k]!=='function'||Object.prototype.hasOwnProperty.call(o,k)) return; const f=o[k], ask=o===root;
+    o[k]=function(...a){ return new Promise((res,rej)=>fq.push(()=>{
+      /* si mientras tanto ya se cerró la simulación o evaluación, la petición ya no aplica */
+      if(ask&&!root.classList.contains('dmode')&&!root.classList.contains('exm')){ rej(new Error('cancelada')); return; }
+      try{ const r=f.apply(o,a); if(r&&r.then) r.then(res,rej); else res(r); }catch(err){ rej(err); } })); };
+    fundo.push(()=>{ delete o[k]; }); };
+  function holdFs(){
+    if(holds++===0){ wrap(root,'requestFullscreen'); wrap(root,'webkitRequestFullscreen'); wrap(d,'exitFullscreen'); wrap(d,'webkitExitFullscreen'); }
+    let out=false; const release=()=>{ if(out) return; out=true; clearTimeout(tm);
+      if(--holds===0){ fundo.splice(0).forEach(u=>u()); fq.splice(0).forEach(f=>f()); } };
+    const tm=setTimeout(release,2000);
+    return release; }
+
+  /* ---- 2) abrir otra sección de Teoría ---- */
+  /* nombres de la transición: cada uno lleva la marca de quien lo puso, para que el final de una transición
+     anterior (saltada) no borre los de la nueva */
+  let tok=0;
+  const nameAll=(els,pre)=>{ const k=++tok; els.forEach((s,i)=>{ s.style.viewTransitionName=pre+(els.length>1?i:''); s.__vtTok=k; });
+    return ()=>els.forEach(s=>{ if(s.__vtTok===k){ s.style.viewTransitionName=''; s.__vtTok=0; } }); };
+  function openSec(art,act){
+    /* solo las secciones cerca de la pantalla (más la abierta y la nueva): las lejanas no se ven y capturarlas cuesta */
+    const H=innerHeight, secs=[...d.querySelectorAll('#teoria .tsec.acc')].filter(s=>{ if(s===art||s.classList.contains('open')) return true;
+      const r=s.getBoundingClientRect(); return r.height>0&&r.bottom>-H&&r.top<2*H; });
+    const clear=nameAll(secs,'vt-s');
+    vt('acc',()=>{ act(); try{ art.scrollIntoView({block:'start',behavior:'instant'}); }catch(e){ art.scrollIntoView(true); } },clear); }
+  const canOpen=art=>art&&art.classList.contains('acc')&&!art.classList.contains('open')&&!art.classList.contains('locked')&&!art.closest('.tphase[hidden]')&&visible()==='teoria';
+
+  /* ---- 3) pantalla completa de simulaciones y evaluaciones ---- */
+  const overlay=()=>d.querySelector('.demo.dfull,.exam.exfull');
+  const answers=box=>{ const body=box.querySelector('[data-body]'); return body?[...body.querySelectorAll('.qo[aria-pressed="true"],.cnum input')].filter(x=>x.tagName!=='INPUT'||x.value.trim()).length:0; };
+  function card(box,act){
+    const clear=nameAll([box],'vt-card'), release=holdFs();
+    vt('card',act,()=>{ clear(); release(); }); }
+
+  addEventListener('click',e=>{
+    if(replaying||calm()||e.defaultPrevented) return;
+    const t=e.target.closest&&e.target.closest('.acchb,nav.toc a[data-goto],.dfs-b,.demo.dfull .dbx,[data-exam] [data-start],[data-exam] [data-retry],.exam.exfull [data-grade],.exam.exfull .exout'); if(!t) return;
+    let box=null, kind='';
+    if(t.matches('.acchb')){ box=t.closest('.tsec'); if(canOpen(box)) kind='acc'; }
+    else if(t.matches('a[data-goto]')){ box=d.getElementById(t.dataset.goto); if(canOpen(box)) kind='acc'; }
+    else if(t.matches('.dfs-b')){ box=t.closest('.demo'); if(box&&!overlay()) kind='card'; }
+    else if(t.matches('.dbx')){ box=t.closest('.demo.dfull'); if(box) kind='card'; }
+    else if(t.matches('[data-start],[data-retry]')){ box=t.closest('[data-exam]'); if(box&&!overlay()) kind='card'; }
+    else if(t.matches('[data-grade]')){ box=t.closest('.exam.exfull'); const body=box&&box.querySelector('[data-body]'); if(box&&!(body&&body.dataset.graded)) kind='card'; }
+    else if(t.matches('.exout')){ box=t.closest('.exam.exfull'); if(box&&!answers(box)) kind='card'; }   /* con respuestas se pregunta antes: sin animación */
+    if(!kind) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if(kind==='acc') openSec(box,()=>replay(t)); else card(box,()=>replay(t));
+  },true);
+
+  /* Esc dentro de la pantalla completa: misma animación de salida */
+  addEventListener('keydown',e=>{
+    if(e.key!=='Escape'||replaying||calm()||e.defaultPrevented||e.isComposing) return;
+    if(d.querySelector('dialog[open]')) return;
+    const box=overlay(); if(!box||(box.matches('.exam')&&answers(box))) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    card(box,()=>{ (e.target&&e.target.isConnected?e.target:d).dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',code:'Escape',bubbles:true,cancelable:true})); });
+  },true);
 })();
 </script>
 </body></html>

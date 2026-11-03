@@ -217,9 +217,24 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (`[data-mag]`) junto al estado del banco y en `.dbar` de la pantalla completa; `localStorage['lgdr-iman']` ('0' = apagado),
   fuera de la sincronización. Se arma en tiempo libre (`requestIdleCallback`) o al tocar el deslizador. Depuración:
   `window.__lgdrMag.list()`. También se borró `__testfind.html` (archivo de prueba que se subió por error en la etapa 2).
-- **Error encontrado (viene del artefacto original):** al cargar la página (con o sin `#p1` etc.) a los ~0.5 s
-  salta a `#teoria`, porque `buildAccordion()` llama `openSection(o,false)` y esta cambia `location.hash` si no
-  estás en Teoría. Arreglo propuesto (lógica, requiere aprobación): que la apertura inicial no cambie de página.
+- **Hecho (v17 · etapa 4): Transiciones de página** (View Transitions con respaldo CSS). CSS «v17» antes del `</style>`
+  principal; `<script>` propio al final del `<body>` y un **gancho temprano** justo después del script del tema
+  (`addEventListener('hashchange',…window.__lgdrVTHash)`): en `window`, Chrome llama a los oyentes de `hashchange` en orden de
+  registro aunque sean de captura, así que el gancho debe ir antes que `show()`. Cambio de sección (pestañas, atrás/adelante,
+  enlaces): el gancho detiene el evento y lo repite (`new HashChangeEvent`) dentro de `startViewTransition`; sale hacia un lado y
+  entra desde el otro según el orden de `[data-page]` (`--vt-dir`); la barra (`vt-bar`) no se mueve. Teoría: clic en `.acchb` o
+  en `nav.toc a[data-goto]` de una sección desbloqueada y cerrada → se repite el clic dentro de la transición y se baja al instante
+  (las secciones cercanas a la pantalla llevan nombre `vt-sN`; la barra va encima con `z-index`). Pantallas completas (`.dfs-b`,
+  `.dbx`, Empezar/Reintentar, Calificar, Salir sin respuestas, Esc): la tarjeta (`vt-card`) crece o vuelve a su lugar; con
+  respuestas no se anima (confirm/`fsAsk` como antes). La pantalla completa real se pide/quita al terminar la animación
+  (`holdFs` envuelve `requestFullscreen`/`exitFullscreen` con contador; se descarta la petición si la capa ya se cerró).
+  Se omite la animación si la actualización o un cuadro tarda > 300 ms (`slow[]`, se vuelve a medir). Sin View Transitions:
+  `section.page.vt-fb` (220 ms). Movimiento reducido: nada. Clases `html.vt-page/vt-acc/vt-card` solo durante la transición.
+  Pruebas: recorrido de pestañas, atrás/adelante, clics rápidos, 6 aperturas en Teoría, 2 simulaciones y 1 evaluación con
+  mismas posiciones de scroll que la versión anterior, sin View Transitions, movimiento reducido, `?p=…#p3`, celular; consola limpia.
+  **Ojo:** en el contenedor (sin GPU) los cuadros duran 60–180 ms, así que las animaciones se ven lentas en Playwright.
+- **Corregido en la etapa 4 (decisión 5): el salto a Teoría al cargar** (venía del artefacto original): `openSection(id,scroll,stay)`;
+  `buildAccordion()` llama `openSection(o,false,true)` y así la apertura inicial ya no cambia `location.hash`.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
