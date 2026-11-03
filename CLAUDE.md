@@ -155,6 +155,23 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (`display: fullscreen`), `icon-180/192/512.png` (logo blanco sobre `#1d4ed8`); metas `apple-mobile-web-app-*`
   en el `<head>`. Abierta como app (`display-mode` o `navigator.standalone`) el botón se oculta.
   Pantallas ≤430 px: íconos de 34 px; ≤375 px se oculta el anillo de progreso.
+- **Plan v14+ (rediseño para computadora): ESPERANDO APROBACIÓN.** Publicado como artefacto
+  https://claude.ai/artifact/TVv5frEJhE5CptruXQmG5n (diagnóstico a 1440×900 + 5 etapas con prototipos).
+  No se ha tocado `index.html`. Etapas: 1 animaciones/microinteracciones · 2 contenido plegable con resumen ·
+  3 deslizadores con imán y zona muerta · 4 transiciones (View Transitions + respaldo CSS) · 5 barra lateral en
+  ≥1000 px. Decisiones pendientes del usuario (lo recomendado entre paréntesis): 1 organización (A: barra lateral
+  + «En esta página»); 2 Teoría sigue con una sección abierta a la vez («desplegar todo» actúa dentro de ella);
+  3 imán activo con interruptor, en retos solo marcas redondas; 4 resúmenes automáticos (primera frase / `h4`),
+  sin texto nuevo; 5 corregir el error de abajo en la etapa 4. Flujo por etapa: Playwright (1440/1920/1280/390,
+  claro/oscuro, reduced-motion, consola), `/code-review`, commit + push a la rama y a `main`, link, esperar visto bueno.
+  Datos útiles: Teoría ya es acordeón (`buildAccordion`, `openSection`, `OPEN`, `OKEY='lgdr-teoria-abierta'`,
+  `window.__openSec`); la regla global `[hidden]{display:none!important}` impide animar cierres con CSS; el banco
+  usa escala log `K/100 … K·15`; los deslizadores de demos van de 0 a 1000 y se mapean con `map(c)`; para que el
+  imán corra antes que el listener original, escuchar `input` en captura en el contenedor. Línea base: cambio de
+  pestaña 50 ms (Resumen) – 480 ms (Teoría); 37 798 elementos; carga ~1.2 s.
+- **Error encontrado (viene del artefacto original):** al cargar la página (con o sin `#p1` etc.) a los ~0.5 s
+  salta a `#teoria`, porque `buildAccordion()` llama `openSection(o,false)` y esta cambia `location.hash` si no
+  estás en Teoría. Arreglo propuesto (lógica, requiere aprobación): que la apertura inicial no cambie de página.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
