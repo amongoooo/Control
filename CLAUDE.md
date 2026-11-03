@@ -311,7 +311,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
   **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
 
-## Hecho (v24): "Resolución paso a paso" — P1, P2 y P3 listas; falta P4–P7
+## Hecho (v24): "Resolución paso a paso" — P1, P2, P3 y P4 listas; falta P5–P7
 
 - Tarjeta `div.card.pasos[data-pasos="pN"]` justo después de `.card.bench` (P1 ya la tiene). No toca el contenido existente.
 - Script propio al final del `<body>` («Resolución paso a paso»): `PASOS.pN = () => ({title, intro, steps:[...]})` y un visor
@@ -346,7 +346,15 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   −3.4019 ± j5.6335 / K = 44.64, e = 0.00784, mejora ×19.48, polo −0.2062 con residuo 0.0318), 18 verificación (18.3 %, Ts 2.145),
   19 ajuste 0.02/0.001 (K = 45.73, 15.33 %, ×19.95) y 20 Simulink (Step y luego Ramp: `delete_line/delete_block/add_block Ramp`).
   En `pz` de cada práctica las opciones son propias (copiar el de P2/P3 y adaptar). Error a rampa: `rampSim` dentro de `PASOS.p3`.
-- PDF: 103 páginas con P1–P3 (~7.9 MB).
+- P4 (21 pasos, ejemplo 9.3 PD ideal): 1–11 referencia (planteamiento con Gc = s + zc, polos/tipo, ec. característica, eje real
+  [−4, 0] ∪ (−∞, −6], asíntotas −3.333 ±60°/180°, ruptura −1.5695 / Kb = 16.90, Routh 0 < K < 240 (±j4.899), ζ = 0.5039, s0 =
+  −1.2044 ± j2.0648 por ángulo (fzero), K = 43.38, 3 polos (p3 = −7.591, 6.3σ, zona 5σ), transitorio 2º orden vs. simulación,
+  Kv = 1.807 / e = 0.553) y 12–21 diseño (sd = −3.613 ± j6.194 con Ts/3, ángulo −275.61° → θz = 95.61°, cero zc = 3.0046 por
+  geometría, K = 47.47, ec. + Routh estable ∀K y asíntotas −3.498 ±90°, polos y residuos (p3 = −2.773, |r| 0.101), verificación
+  11.98 % / 1.152 s (×3.01), Kv = 5.94 / e = 0.168, forma KD = 47.47 / KP = 142.6 con gráfica |K·Gc(jω)| (ruido) y **Simulink** con
+  bloque PID Controller en modo PD (`P = zc`, `D = 1`, `UseFilter = off`) tras el Gain; alternativas Derivative + Gain o Gc·G en un
+  solo Transfer Fcn). `svgLoop`/`svgSL` aceptan bloques sin `d` (una sola línea, p. ej. «s + zc»).
+- PDF: 121 páginas con P1–P4 (~9.4 MB).
 - **Siguiente:** escribir `PASOS.p4` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
   plegables ya recorre P1–P7). Después, volver a generar `practicas.pdf`.
 
