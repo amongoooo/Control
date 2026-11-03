@@ -261,7 +261,10 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Dos toques (el 1.º cambia a «¿Seguro? Toca otra vez…», 4 s), sin `confirm()` para no salir de pantalla completa.
   Guarda `ST.skip[r]=true` en `lgdr-teoria-v1` (se sincroniza con la combinación genérica) y lanza `unlockAnim` de la parte
   siguiente. `isUnlocked` usa `passedOrSkipped(r)`; la parte «actual» (apertura inicial y Resumen) ignora las saltadas.
-  La evaluación saltada muestra la pastilla «Saltada ⏭» y se puede presentar igual. No hay «deshacer» (borrar `skip` a mano).
+  La evaluación saltada muestra la pastilla «Saltada ⏭» y se puede presentar igual.
+  **Deshacer salto ↩** (v21): botón `[data-undoex]` en la cabecera de la evaluación I/II, visible solo si está saltada y no aprobada;
+  también dos toques; borra `ST.skip[r]` y vuelve a bloquear la parte siguiente. `isUnlocked` ahora es recursivo (deshacer I
+  bloquea también la III). Probado a 390×844.
   Los candados por sección dentro de cada parte siguen igual.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.

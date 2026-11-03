@@ -4952,9 +4952,9 @@ function renderExam(box){
       <p>Incluye las ${items.length} preguntas de comprobación de esta parte, en otro orden, sin pistas y con valores que pueden cambiar. Necesitas <b>${need} de ${items.length}</b> (80 %) para pasar a ${P.next}.</p>
       <div class="exstat" data-stat></div>
       <div class="exhist" data-hist></div>
-      <div class="chips"><button class="btn primary" data-start>Empezar evaluación</button>${P.r!=='III'?`<button class="btn skipex" data-skipex="${P.r}">Saltar evaluación ⏭</button>`:''}</div></div>
+      <div class="chips"><button class="btn primary" data-start>Empezar evaluación</button>${P.r!=='III'?`<button class="btn skipex" data-skipex="${P.r}">Saltar evaluación ⏭</button><button class="btn skipex" data-undoex="${P.r}" hidden>Deshacer salto ↩</button>`:''}</div></div>
     <div class="exbody" data-body hidden></div>`;
-  box.querySelector('[data-start]').addEventListener('click',()=>start(box,P,items,need)); bindSkip(box.querySelector('[data-skipex]'));
+  box.querySelector('[data-start]').addEventListener('click',()=>start(box,P,items,need)); bindSkip(box.querySelector('[data-skipex]')); bindUndo(box.querySelector('[data-undoex]'));
   refreshExams();
 }
 function start(box,P,items,need){
@@ -5000,6 +5000,7 @@ function refreshExams(){
   refreshToc();
   PARTS.forEach(P=>{ const e=ST.exam[P.r], items=examItems(P);
     document.querySelectorAll(`[data-exam="${P.r}"] [data-skipex]`).forEach(b=>b.hidden=passedOrSkipped(P.r));
+    document.querySelectorAll(`[data-exam="${P.r}"] [data-undoex]`).forEach(b=>b.hidden=!(ST.skip[P.r]&&!(e&&e.passed)));
     document.querySelectorAll(`[data-exam="${P.r}"] [data-stat]`).forEach(el=>{ el.innerHTML=(ST.skip[P.r]&&!(e&&e.passed)?'<span class="pill warn">Saltada ⏭</span> ':'')+(e?`${e.passed?'<span class="pill ok">Aprobada</span>':'<span class="pill bad">No aprobada aún</span>'} <span class="exbest">Mejor resultado: ${Math.round(e.best*100)} % · último: ${Math.round(e.last*100)} %</span>`:(ST.skip[P.r]?'':'<span class="pill warn">Pendiente</span>')); });
     document.querySelectorAll(`[data-exam="${P.r}"] [data-hist]`).forEach(el=>{ el.innerHTML=e?histChart(e.hist||[e.last]):''; });
     const solved=items.filter(x=>ST.solved[`${x.sid}-${x.j}`]).length;
@@ -5116,11 +5117,16 @@ function applySecLocks(detect){
 let UNLOCK=null, ANIM=null;
 const PREV={II:'I',III:'II'};
 const passedOrSkipped=r=>!!((ST.exam[r]&&ST.exam[r].passed)||ST.skip[r]);
-function isUnlocked(r){ return r==='I'||passedOrSkipped(PREV[r]); }
+function isUnlocked(r){ return r==='I'||(isUnlocked(PREV[r])&&passedOrSkipped(PREV[r])); }
 /* saltar evaluación: desbloquea la parte siguiente sin aprobar (dos toques, sin confirm() nativo para no salir de pantalla completa) */
 function bindSkip(b){ if(!b) return; b.addEventListener('click',()=>{ if(!b.classList.contains('sure')){ b.classList.add('sure'); b.dataset.txt=b.textContent; b.textContent='¿Seguro? Toca otra vez para saltarla';
     clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove('sure'); b.textContent=b.dataset.txt; },4000); return; }
     clearTimeout(b._t); skipExam(b.dataset.skipex); }); }
+/* deshacer el salto: vuelve a bloquear la parte siguiente (también con dos toques) */
+function bindUndo(b){ if(!b) return; b.addEventListener('click',()=>{ if(!b.classList.contains('sure')){ b.classList.add('sure'); b.dataset.txt=b.textContent; b.textContent='¿Seguro? Toca otra vez para volver a bloquear';
+    clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove('sure'); b.textContent=b.dataset.txt; },4000); return; }
+    clearTimeout(b._t); b.classList.remove('sure'); b.textContent=b.dataset.txt; undoSkip(b.dataset.undoex); }); }
+function undoSkip(r){ if(!ST.skip[r]) return; delete ST.skip[r]; save(); refreshExams(); const ex=document.querySelector(`[data-exam="${r}"]`); if(ex) ex.scrollIntoView({behavior:'smooth',block:'start'}); }
 function skipExam(r){ if(r==='III'||passedOrSkipped(r)) return; ST.skip[r]=true; save(); const nx={I:'II',II:'III'}[r]; ANIM=nx; refreshExams(); unlockAnim(nx); }
 const LOCKSVG=`<svg class="lksvg" viewBox="0 0 48 48" aria-hidden="true"><path class="shk" d="M15 23v-7a9 9 0 0 1 18 0v7" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><rect x="9" y="22" width="30" height="21" rx="5" fill="currentColor"/><circle cx="24" cy="31.5" r="3.2" class="kh"/><rect x="22.6" y="32" width="2.8" height="6" rx="1.4" class="kh"/></svg>`;
 function phaseStats(){ return PARTS.map(P=>{ const items=examItems(P), q=items.filter(x=>ST.solved[`${x.sid}-${x.j}`]).length, e=ST.exam[P.r], passed=!!(e&&e.passed);
