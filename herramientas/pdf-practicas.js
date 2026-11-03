@@ -31,10 +31,12 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       const s = document.getElementById('p' + n);
       s.querySelectorAll('.fold-b').forEach(b => b.removeAttribute('hidden'));
       s.querySelectorAll('details').forEach(d => { d.open = true; });
+      // Resolución paso a paso: en papel van todos los pasos seguidos.
+      s.querySelectorAll('.card.pasos').forEach(c => { const b = c.querySelector('[data-all]'); if (b && !c.classList.contains('all')) b.click(); });
     }, i);
     await page.waitForTimeout(700);
     await page.evaluate(n => {
-      document.querySelectorAll(`#p${n} .card.bench canvas`).forEach(cv => {
+      document.querySelectorAll(`#p${n} .card.bench canvas, #p${n} .card.pasos canvas`).forEach(cv => {
         const img = new Image(); img.src = cv.toDataURL('image/png'); img.className = 'pdfcv'; img.alt = '';
         img.style.aspectRatio = cv.clientWidth + ' / ' + cv.clientHeight;
         cv.replaceWith(img);
@@ -70,7 +72,7 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
     document.querySelectorAll('.card.bench').forEach(b => {
       const src = b.querySelector('.phead .src'); if (src) src.textContent = 'Captura con la K de diseño (en la página es interactivo)';
     });
-    document.querySelectorAll('.fbar, .repbtn, .zbar, [data-mag], .kctl, .fxhead, [data-fx], .seg, [data-reset], [data-copy], .bd button, .bd .seg')
+    document.querySelectorAll('.psnav, .psctl, .pasos [data-all], .mlbar, .fbar, .repbtn, .zbar, [data-mag], .kctl, .fxhead, [data-fx], .seg, [data-reset], [data-copy], .bd button, .bd .seg')
       .forEach(e => { e.style.setProperty('display', 'none', 'important'); });
     document.querySelectorAll('details').forEach(d => { d.open = true; });
     // Número de sección por CSS para que los marcadores digan «Análisis…» y no «1Análisis…».
@@ -142,6 +144,13 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       .pdfjump a{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px}
       .pdfup{margin:6px 0 0;font-size:11.5px;text-align:right}
       .pdfcv{display:block;width:100%;height:auto}
+      .pdfp .pasos,.pdfp .psbody,.pdfp .pstep{display:block!important}
+      .pdfp .pstep>*+*{margin-top:10px}
+      .psh{break-after:avoid}
+      .pdfp .pasos .psfig{width:60%}
+      .pdfp .pasos .psfig{break-inside:avoid}
+      .psf .fx,.mlr,.mlo,.psb{break-inside:avoid}
+      .pssvg{overflow:visible!important}.pssvg svg{min-width:0!important}
       .xstep,.gsub,.tablewrap,.plot,.gfig,figure,.statement>div,.disc li{break-inside:avoid}
       .xh,h3,h4,h5{break-after:avoid}
       .card{box-shadow:none!important}

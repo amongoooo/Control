@@ -1269,6 +1269,64 @@ dialog.sync.rpd{max-width:880px;height:94dvh;max-height:94dvh}
 .pdflist b{font:700 17px var(--f-mono);color:var(--accent)}
 .pdflist span{font-weight:600;font-size:14.5px;line-height:1.3}
 .pdflist i{font-style:normal;color:var(--muted);font-size:18px}
+/* ---------- resolución paso a paso ---------- */
+.pasos{display:grid;gap:12px}
+.pshead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:8px 12px}
+.pshead h3{margin:2px 0 0}
+.pasos>.tip{margin:0}
+.psnav{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.psnav button{flex:none;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);color:var(--muted);font:600 12.5px var(--f-mono);cursor:pointer;padding:0}
+.psnav button.seen{border-color:var(--accent);color:var(--accent)}
+.psnav button[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.psnav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.psbody{display:grid;gap:10px;min-width:0}
+.pstep{display:grid;gap:10px;min-width:0;scroll-margin-top:calc(var(--apph,52px) + 56px)}
+.pasos.all .pstep+.pstep{border-top:1px solid var(--line);padding-top:18px;margin-top:8px}
+.psh{display:flex;gap:10px;align-items:baseline}
+.psh .psn{font:600 12.5px var(--f-mono);color:var(--accent);border:1.5px solid var(--accent);border-radius:6px;padding:1px 7px;flex:none}
+.psh h4{margin:0;font:600 17px var(--f-display);font-stretch:90%}
+.psq{margin:0;max-width:80ch}
+.psf{display:grid;gap:8px;min-width:0}
+.psf .fx.res{border-color:var(--ok);background:var(--ok-soft)}
+.psf .fx.res .fxl{color:var(--ok)}
+.psfig{margin:0;display:grid;gap:6px;min-width:0}
+.psfig figcaption{font:500 12.5px var(--f-body);color:var(--muted)}
+.psfig canvas{display:block;width:100%;height:270px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.pssvg{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:6px;-webkit-overflow-scrolling:touch}
+.pssvg svg{display:block;width:100%;min-width:520px;height:auto}
+.pssvg svg.psd.fit{min-width:0}
+.psd .b{fill:var(--surface);stroke:var(--ink);stroke-width:1.5}
+.psd .l{fill:none;stroke:var(--ink);stroke-width:1.5}
+.psd .ar{fill:var(--ink)}
+.psd .ic{fill:none;stroke:var(--accent);stroke-width:1.8}
+.psd text{fill:var(--ink);font:13px var(--f-mono)}
+.psd .sm{font:11.5px var(--f-body);fill:var(--muted)}
+.psd .sg{font:600 14px var(--f-mono)}
+.psml{border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0}
+.psml summary{cursor:pointer;padding:10px 12px;font:600 14.5px var(--f-display);font-stretch:90%;display:flex;justify-content:space-between;gap:8px;align-items:center}
+.psml summary span{font:400 12.5px var(--f-body);color:var(--muted)}
+.mlr{display:grid;gap:3px;padding:8px 12px;border-top:1px solid var(--line);min-width:0}
+.mlr>code{display:block;font:12.5px/1.5 var(--f-mono);background:var(--codebg);padding:4px 8px;border-radius:6px;white-space:pre-wrap;overflow-wrap:anywhere}
+.mlr span{font-size:13.5px}
+.mlbar{display:flex;justify-content:flex-end;padding:8px 12px;border-top:1px solid var(--line)}
+.mlo{padding:0 12px 12px}
+.mlo .fxl{margin:2px 0 4px}
+.mlo pre{margin:0;padding:10px 12px;background:var(--codebg);border-radius:6px;font:12.5px/1.45 var(--f-mono);overflow-x:auto;white-space:pre-wrap}
+.mlr span code,.psq code,.psbq code{font:12.5px var(--f-mono);background:var(--codebg);padding:1px 5px;border-radius:4px}
+.psblk{display:grid;gap:6px}
+.psb{border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--bg);display:grid;gap:3px}
+.psbt{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+.psbt span{font-size:12.5px;color:var(--muted)}
+.psbp{display:flex;flex-wrap:wrap;gap:4px}
+.psbp code{font:12.5px var(--f-mono);background:var(--codebg);padding:1px 6px;border-radius:4px}
+.psbq{font-size:13.5px}
+.psctl{display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;bottom:0;z-index:2;background:var(--surface);border-top:1px solid var(--line);margin:0 -20px -18px;padding:10px 20px calc(10px + env(safe-area-inset-bottom,0px));border-radius:0 0 10px 10px}
+.psctl span{font:600 13px var(--f-mono);color:var(--muted);white-space:nowrap}
+.psctl .btn{padding:8px 14px;font-size:14px;white-space:nowrap}
+.pasos.all .psctl{display:none}
+@media (max-width:520px){.psfig canvas{height:250px}}
+.fold>.fold-b>.pasos>.pshead>div{display:none}
+.fold>.fold-b>.pasos>.pshead{justify-content:flex-end}
 </style>
 
 <header class="appbar" id="appbar">
@@ -2156,6 +2214,7 @@ M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
     </div>
   </div>
   <div class="card bench" data-lab="p1"></div>
+  <div class="card pasos" data-pasos="p1"></div>
   <div class="card xsec" id="p1-ana"><h3 class="xh"><span>1</span>Análisis del sistema de referencia</h3><p class="gintro">Procedimiento obligatorio de la guía · 5 pasos y evidencia</p><div class="xstep gstep"><h4 data-n="1">Ganancia de referencia</h4><p class="gsm">(la indicada en el ejercicio; no suponer K = 1)</p>
       <p>El ejercicio no da un valor de <i>K</i>: <i>K</i> es la incógnita del diseño. Por eso el “sistema de referencia” es la planta con <i>K</i> libre, y su desempeño se evalúa ya con la <i>K</i> diseñada.</p><p>Para el análisis inicial se toma la <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span></span></span></span> del punto de diseño, <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">45.53</span></span></span></span> (sección 2.c); el paso 3 dice qué valores de <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span></span></span></span> son admisibles.</p><p class="why">Si se asumiera <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal" style="margin-right:0.0715em;">K</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">1</span></span></span></span>, los polos en lazo cerrado serían <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8389em;vertical-align:-0.1944em;"></span><span class="mord">−</span><span class="mord">2.139</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">−</span><span class="mord">3.746</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">−</span><span class="mord">6.115</span></span></span></span>: sería otro sistema, con otro desempeño. Por eso la ganancia de referencia se calcula, no se supone.</p></div><div class="xstep gstep"><h4 data-n="2">Polos, ceros, tipo y ecuación característica</h4><div class="gsub"><h5>Polos, ceros y tipo</h5>
       <p>Los polos de lazo abierto son las raíces del denominador; los ceros, las del numerador. El numerador es la constante <i>K</i>, así que <b>no hay ceros</b>:</p>
@@ -5952,6 +6011,9 @@ document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details
       const tr=bench.querySelector('tbody tr.sel'), stt=bench.querySelector('[data-stat]'); if(!tr) return ['Mueve K y observa polos y respuesta'];
       const c=[...tr.cells].map(plain), ok=stt&&/^estable/.test(stt.textContent);
       return [c[0],'K\u00a0=\u00a0'+c[1],stt?stt.textContent:'',ok?'%OS\u00a0'+c[3]:'',ok?'Ts\u00a0'+c[4]+'\u00a0s':'']; }});
+    const ps=pg.querySelector(':scope>.card.pasos');   /* resolución paso a paso (resumen = paso actual) */
+    if(ps) wrap(ps,'pasos',{num:'R',title:'Resolución paso a paso',watch:()=>ps,sum:()=>{ const p=ps.querySelector('[data-pos]'), h=ps.querySelector('.pstep:not([hidden]) h4');
+      return p&&h&&!ps.classList.contains('all')?['Paso '+p.textContent.replace(' / ',' de '),h.textContent]:['Fórmulas, sustitución, gráficas, MATLAB y Simulink']; }});
     pg.querySelectorAll(':scope>.card.xsec').forEach(x=>{ const h=x.querySelector(':scope>.xh'), n=h&&h.querySelector('span');
       const num=n?n.textContent.trim():'', t=plain(h).replace(new RegExp('^'+num.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')),'').trim();
       wrap(x,'x'+(num||FOLDS.length),{num,title:t,sum:()=>xsecSum(x)}); });
@@ -6906,4 +6968,415 @@ calc:[String.raw`\sigma=7,\ \ \omega_d=13.66,\ \ \theta_p=79.19^\circ\Rightarrow
   window.__lgdrRep={open,prep,done,data:R};
 })();
 </script>
+<script>
+/* ---------- Resolución paso a paso: visor genérico + datos por práctica ----------
+   Cada práctica define PASOS[id]() → {title, intro, steps:[{t, q, f:[{l,t|h,n,res}], why, blk, vis:[{svg|draw, cap}], ml:[[código, explicación]], out}]}.
+   El visor (buildPasos) es el mismo para todas; se monta en <div class="card pasos" data-pasos="pX">. */
+(()=>{
+const L=window.__lib, FX=window.FX, TT=window.__T; if(!L||!FX||!TT) return;
+const {roots,simulate,setupCanvas,axes,css}=L;
+const D2R=Math.PI/180;
+const tx=t=>FX.tx(t), n=(v,d=3)=>FX.n(v,d);
+const AL=(...ls)=>'\\begin{aligned}'+ls.map(l=>'&'+l).join('\\\\[3pt]')+'\\end{aligned}';   // varias líneas (cabe en el celular)
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const m4=v=>{ const r=(Math.abs(v)<5e-5?0:v).toFixed(4); return r==='-0.0000'?'0.0000':r; };          // formato short de MATLAB
+const mval=(name,v)=>`${name} =\n${(' '.repeat(Math.max(2,10-m4(v).length))+m4(v))}`;
+const mcpx=(a,b)=>`${m4(a).padStart(10)} ${b<0?'-':'+'} ${m4(Math.abs(b))}i`;
+const mcol=(name,rs)=>`${name} =\n`+rs.map(([a,b])=>rs.some(q=>Math.abs(q[1])>1e-9)?mcpx(a,b):m4(a).padStart(10)).join('\n');
+const sortR=rs=>rs.slice().sort((p,q)=>p[0]-q[0]||q[1]-p[1]);
+
+/* ---- dibujo ---- */
+function plane(cv,x0,x1,need=0){
+  const {g,w,h}=setupCanvas(cv), pad={l:40,r:10,t:10,b:22}, pw=w-pad.l-pad.r, ph=h-pad.t-pad.b;
+  let half=(x1-x0)*ph/pw/2;
+  if(half<need){ const span=2*need*pw/ph, ex=span-(x1-x0); x0-=ex*0.75; x1+=ex*0.25; half=need; }
+  const ax=axes(g,w,h,x0,x1,-half,half,pad,'σ','jω');
+  g.save(); g.beginPath(); g.rect(pad.l,pad.t,pw,ph); g.clip();
+  return {g,w,h,pad,...ax,x0,x1,y0:-half,y1:half,ppu:pw/(x1-x0),done:()=>g.restore()};
+}
+const Xm=(P,x,y,c)=>{const g=P.g,a=P.sx(x),b=P.sy(y),s=5; g.strokeStyle=c||css('--ink'); g.lineWidth=2; g.beginPath(); g.moveTo(a-s,b-s); g.lineTo(a+s,b+s); g.moveTo(a+s,b-s); g.lineTo(a-s,b+s); g.stroke();};
+const DOT=(P,x,y,c,r=4.5)=>{const g=P.g; g.beginPath(); g.fillStyle=c; g.arc(P.sx(x),P.sy(y),r,0,7); g.fill(); g.strokeStyle=css('--surface'); g.lineWidth=1.5; g.stroke();};
+const SEG=(P,a,b,c,lw=1.6,dash)=>{const g=P.g; g.strokeStyle=c; g.lineWidth=lw; if(dash) g.setLineDash(dash); g.beginPath(); g.moveTo(P.sx(a[0]),P.sy(a[1])); g.lineTo(P.sx(b[0]),P.sy(b[1])); g.stroke(); g.setLineDash([]);};
+function LAB(P,x,y,t,o={}){ const g=P.g; g.font=(o.f||'12px ')+css('--f-mono'); g.textAlign=o.a||'left'; g.textBaseline=o.b||'bottom';
+  const X=P.sx(x)+(o.dx||0), Y=P.sy(y)+(o.dy||0); g.lineJoin='round'; g.lineWidth=3.5; g.strokeStyle=css('--surface'); g.strokeText(t,X,Y); g.fillStyle=o.c||css('--ink'); g.fillText(t,X,Y); }
+function LINES(P,br,c,lw=2){ const g=P.g; g.strokeStyle=c; g.lineWidth=lw; br.forEach(b=>{ g.beginPath(); b.forEach((q,k)=>k?g.lineTo(P.sx(q[0]),P.sy(q[1])):g.moveTo(P.sx(q[0]),P.sy(q[1]))); g.stroke(); }); }
+function tplot(cv,T,curves,o={}){
+  const {g,w,h}=setupCanvas(cv), pad={l:44,r:10,t:10,b:22};
+  let ymax=o.ymax; if(ymax===undefined){ ymax=0; curves.forEach(c=>c.y.forEach(v=>{ if(Number.isFinite(v)) ymax=Math.max(ymax,v); })); ymax*=1.12; }
+  const {sx,sy}=axes(g,w,h,0,T,0,ymax,pad,'t (s)',o.yl||'c(t)');
+  g.save(); g.beginPath(); g.rect(pad.l,pad.t,w-pad.l-pad.r,h-pad.t-pad.b); g.clip();
+  (o.hl||[]).forEach(([v,lb])=>{ g.setLineDash([4,4]); g.strokeStyle=css('--muted'); g.lineWidth=1; g.beginPath(); g.moveTo(sx(0),sy(v)); g.lineTo(sx(T),sy(v)); g.stroke(); g.setLineDash([]);
+    if(lb){ g.font='11.5px '+css('--f-mono'); g.fillStyle=css('--muted'); g.textAlign='right'; g.textBaseline='bottom'; g.fillText(lb,sx(T)-6,sy(v)-2); } });
+  (o.vl||[]).forEach(([v,lb],i)=>{ g.setLineDash([2,4]); g.strokeStyle=css('--muted'); g.lineWidth=1; g.beginPath(); g.moveTo(sx(v),sy(0)); g.lineTo(sx(v),sy(ymax)); g.stroke(); g.setLineDash([]);
+    if(lb){ g.font='11.5px '+css('--f-mono'); g.fillStyle=css('--muted'); g.textAlign='left'; g.textBaseline='top'; g.fillText(lb,sx(v)+4,sy(ymax)+4+i*15); } });
+  curves.forEach(c=>{ g.strokeStyle=c.c; g.lineWidth=c.lw||2.2; if(c.dash) g.setLineDash(c.dash); g.beginPath(); c.t.forEach((t,k)=>k?g.lineTo(sx(t),sy(c.y[k])):g.moveTo(sx(t),sy(c.y[k]))); g.stroke(); g.setLineDash([]); });
+  if(o.after) o.after(g,sx,sy);
+  g.restore();
+  if(o.legend){ g.font='12px '+css('--f-body'); const lw=Math.max(...o.legend.map(([t])=>g.measureText(t).width))+34, x=w-pad.r-lw-4;
+    g.fillStyle=css('--surface'); g.globalAlpha=.9; g.fillRect(x,pad.t+4,lw,o.legend.length*18+8); g.globalAlpha=1;
+    o.legend.forEach(([t,c,dash],i)=>{ const y=pad.t+16+i*18; g.strokeStyle=c; g.lineWidth=2.4; if(dash) g.setLineDash(dash); g.beginPath(); g.moveTo(x+6,y); g.lineTo(x+22,y); g.stroke(); g.setLineDash([]);
+      g.fillStyle=css('--ink'); g.textAlign='left'; g.textBaseline='middle'; g.fillText(t,x+28,y); }); }
+}
+const stepSim=(num,den,T)=>simulate(num,den,T,()=>1,700,0.004);
+function riseTime(s,yf){ const at=f=>{ for(let i=1;i<s.y.length;i++) if(s.y[i]>=f*yf){ const a=s.y[i-1],b=s.y[i]; return s.t[i-1]+(f*yf-a)/(b-a)*(s.t[i]-s.t[i-1]); } return NaN; }; return at(0.9)-at(0.1); }
+const PERM3=[[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+function locus3(den,Kmax,N=700){ let prev=roots(den); const br=prev.map(q=>[q]);
+  for(let i=1;i<=N;i++){ const K=Kmax*Math.pow(i/N,3), d=den.slice(); d[3]+=K; const r=roots(d); let best=PERM3[0],bd=Infinity;
+    for(const m of PERM3){ let s=0; for(let j=0;j<3;j++) s+=Math.hypot(prev[j][0]-r[m[j]][0],prev[j][1]-r[m[j]][1]); if(s<bd){bd=s;best=m;} }
+    prev=best.map(k=>r[k]); prev.forEach((q,j)=>br[j].push(q)); }
+  return br; }
+
+/* ---- diagramas de bloques (SVG, colores del tema) ---- */
+const ARW=(id)=>`<defs><marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ar" d="M0 0L10 5L0 10z"/></marker></defs>`;
+const svgLazo=(id,Ktxt)=>`<svg class="psd fit" viewBox="0 0 470 150" role="img" aria-label="Diagrama de bloques: R(s), sumador, ganancia K, planta G(s), salida C(s) y realimentación unitaria">${ARW(id)}
+  <text x="6" y="46">R(s)</text><path class="l" d="M8 56H78" marker-end="url(#${id})"/>
+  <circle class="b" cx="95" cy="56" r="16"/><text class="sg" x="70" y="48">+</text><text class="sg" x="100" y="94">−</text>
+  <path class="l" d="M111 56H150" marker-end="url(#${id})"/><text class="sm" x="118" y="48">E(s)</text>
+  <path class="b" d="M150 32V80L198 56Z"/><text x="160" y="61">${Ktxt}</text>
+  <path class="l" d="M198 56H232" marker-end="url(#${id})"/>
+  <rect class="b" x="232" y="28" width="150" height="56" rx="4"/><text x="307" y="50" text-anchor="middle">1</text><path class="l" d="M246 56H368"/><text x="307" y="74" text-anchor="middle">(s+2)(s+4)(s+6)</text>
+  <path class="l" d="M382 56H458" marker-end="url(#${id})"/><text x="420" y="46">C(s)</text><circle class="ar" cx="410" cy="56" r="3"/>
+  <path class="l" d="M410 56V124H95V74" marker-end="url(#${id})"/><text class="sm" x="200" y="140">H(s) = 1 (realimentación unitaria)</text>
+  <text class="sm" x="150" y="100">ganancia</text><text class="sm" x="280" y="100">planta G(s)</text></svg>`;
+const svgSimulink=(id,K)=>`<svg class="psd" viewBox="0 0 580 190" role="img" aria-label="Modelo de Simulink: Step, Sum, Gain, Transfer Fcn, Scope y To Workspace con realimentación">${ARW(id)}
+  <rect class="b" x="10" y="38" width="50" height="44" rx="3"/><path class="ic" d="M17 72H33V48H53"/><text class="sm" x="35" y="98" text-anchor="middle">Step</text>
+  <path class="l" d="M60 60H92" marker-end="url(#${id})"/>
+  <circle class="b" cx="108" cy="60" r="15"/><text class="sg" x="95" y="56">+</text><text class="sg" x="111" y="86">−</text><text class="sm" x="108" y="36" text-anchor="middle">Sum</text>
+  <path class="l" d="M123 60H156" marker-end="url(#${id})"/>
+  <path class="b" d="M156 36V84L204 60Z"/><text x="161" y="65" style="font-size:11px">${K}</text><text class="sm" x="180" y="100" text-anchor="middle">Gain</text>
+  <path class="l" d="M204 60H236" marker-end="url(#${id})"/>
+  <rect class="b" x="236" y="32" width="156" height="56" rx="3"/><text x="314" y="53" text-anchor="middle">1</text><path class="l" d="M248 60H380"/><text x="314" y="78" text-anchor="middle">s³+12s²+44s+48</text><text class="sm" x="314" y="104" text-anchor="middle">Transfer Fcn</text>
+  <path class="l" d="M392 60H430"/><circle class="ar" cx="430" cy="60" r="3"/>
+  <path class="l" d="M430 60V44H476" marker-end="url(#${id})"/>
+  <rect class="b" x="476" y="24" width="52" height="40" rx="3"/><rect class="l" x="483" y="30" width="38" height="24" rx="2"/><path class="ic" d="M486 50C492 30 497 36 501 42S510 42 518 40"/><text class="sm" x="502" y="16" text-anchor="middle">Scope</text>
+  <path class="l" d="M430 60V106H476" marker-end="url(#${id})"/>
+  <rect class="b" x="476" y="92" width="92" height="28" rx="3"/><text x="522" y="111" text-anchor="middle">y</text><text class="sm" x="522" y="136" text-anchor="middle">To Workspace</text>
+  <path class="l" d="M430 106V160H108V77" marker-end="url(#${id})"/><text class="sm" x="230" y="176">realimentación unitaria (va a la entrada − del Sum)</text></svg>`;
+
+/* ================= Práctica 1 · Ajuste de ganancia ================= */
+const PASOS={};
+PASOS.p1=()=>{
+  const p=[-2,-4,-6], den=[1,12,44,48], OS=10, lo=Math.log(OS/100);
+  const zeta=-lo/Math.sqrt(Math.PI**2+lo*lo), thz=Math.acos(zeta)/D2R;
+  const zp=TT.zetaPoint([],p,zeta), s0=zp.s, K=zp.K, sig=-s0[0], wd=s0[1], wn=Math.hypot(sig,wd);
+  const ang=p.map(q=>Math.atan2(wd,s0[0]-q)/D2R), dist=p.map(q=>Math.hypot(s0[0]-q,wd));
+  const Ts2=4/sig, Tp2=Math.PI/wd, Tr2=(1.768*zeta**3-0.417*zeta**2+1.039*zeta+1)/wn;
+  const Kp=K/48, ess=1/(1+Kp), yf=Kp/(1+Kp), p3=-12-2*s0[0], ratio=Math.abs(p3)/sig;
+  const sb=(-24+Math.sqrt(48))/6, sb2=(-24-Math.sqrt(48))/6, Kb=-(sb**3+12*sb**2+44*sb+48), wc=Math.sqrt(44);
+  const clDen=k=>[1,12,44,48+k], m=TT.metrics([K],clDen(K));
+  const Tsim=6, sF=stepSim([K],clDen(K),Tsim), s2=stepSim([yf*wn*wn],[1,2*sig,wn*wn],Tsim), Trs=riseTime(sF,m.yf);
+  let a=40,b=70; const fos=k=>TT.metrics([k],clDen(k)).os-OS; for(let i=0;i<46;i++){ const c=(a+b)/2; if(fos(c)<0) a=c; else b=c; }
+  const Kaj=(a+b)/2, mA=TT.metrics([Kaj],clDen(Kaj)), sA=stepSim([Kaj],clDen(Kaj),Tsim), essA=1/(1+Kaj/48);
+  const clp=sortR(roots(clDen(K))), K100=sortR(roots(clDen(100)));
+  let BR=null; const br=()=>BR||(BR=locus3(den,1400));
+  const cs=()=>({c1:css('--c1'),c2:css('--c2'),c3:css('--c3'),ink:css('--ink'),mu:css('--muted'),ok:css('--ok')});
+
+  /* plano s acumulativo: cada paso agrega su parte */
+  function pz(cv,o){
+    const C=cs(), P=plane(cv,o.x0??-9,o.x1??1.5,o.need??2.2), g=P.g;
+    if(o.region){ const x5=-5*sig; g.fillStyle=C.c2; g.globalAlpha=.09; g.fillRect(P.sx(P.x0),0,P.sx(x5)-P.sx(P.x0),P.h); g.globalAlpha=1;
+      SEG(P,[x5,P.y0],[x5,P.y1],C.c2,1.2,[5,4]); LAB(P,x5,P.y1*0.82,'−5σ = '+n(x5,3),{dx:5,c:C.c2}); LAB(P,P.x0,P.y0*0.82,'polos ≥ 5σ: despreciables',{dx:6,c:C.c2,b:'middle'}); }
+    if(o.seg){ g.lineCap='round'; [[-4,-2],[P.x0-1,-6]].forEach(([u,v])=>SEG(P,[u,0],[v,0],C.c3,6)); g.lineCap='butt';
+      if(!o.loc) { LAB(P,-3,0,'LGDR',{dy:-8,a:'center',c:C.c3}); LAB(P,-7.6,0,'LGDR',{dy:-8,a:'center',c:C.c3}); } }
+    if(o.asym){ const R=40; [60,-60,180].forEach(t=>SEG(P,[-4,0],[-4+R*Math.cos(t*D2R),R*Math.sin(t*D2R)],C.c2,1.4,[6,4]));
+      DOT(P,-4,0,C.c2,4); LAB(P,-4,0,'σa = −4',{dy:16,dx:4,c:C.c2,b:'top'}); LAB(P,-4+1.15,1.95,'60°',{c:C.c2}); }
+    if(o.scatter){ g.fillStyle=C.c1; for(let k=0;k<=640;k+=4){ const d=den.slice(); d[3]+=k; roots(d).forEach(q=>{ g.globalAlpha=k%80===0?1:.45; g.beginPath(); g.arc(P.sx(q[0]),P.sy(q[1]),k%80===0?3.2:1.8,0,7); g.fill(); }); } g.globalAlpha=1;
+      K100.forEach(q=>DOT(P,q[0],q[1],C.c2,4.5)); LAB(P,K100[1][0],K100[1][1],'K = 100',{dx:8,c:C.c2}); }
+    if(o.loc) LINES(P,br(),C.c1,2.2);
+    if(o.brk){ DOT(P,sb,0,C.c2,4.5); LAB(P,sb,0,'σb = '+n(sb,3),{dy:-10,a:'center',c:C.c2}); }
+    if(o.cross){ [1,-1].forEach(sg=>DOT(P,0,sg*wc,C.c2,4.5)); LAB(P,0,wc,`±j${n(wc,3)}  (K = 480)`,{dx:-8,a:'right',b:'middle',c:C.c2}); }
+    if(o.zeta){ const th=Math.acos(zeta), R=60; [1,-1].forEach(sg=>SEG(P,[0,0],[-R*Math.cos(th),sg*R*Math.sin(th)],C.mu,1.3,[5,4]));
+      if(!o.ang&&!o.dist) LAB(P,-0.62*P.y1/Math.tan(th),0.62*P.y1,`ζ = ${n(zeta,4)}`,{dx:8,b:'middle',c:C.mu}); }
+    if(o.ang){ const cl=[C.c1,C.c2,C.c3]; p.forEach((q,k)=>{ SEG(P,[q,0],s0,cl[k],1.6); const r=16+k*7, a0=ang[k]*D2R; g.strokeStyle=cl[k]; g.lineWidth=1.6; g.beginPath(); g.arc(P.sx(q),P.sy(0),r,0,-a0,true); g.stroke();
+        g.font='12px '+css('--f-mono'); g.fillStyle=cl[k]; g.textAlign='left'; g.textBaseline='bottom'; g.fillText('θ'+(k+1),P.sx(q)+(r+4)*Math.cos(a0/2)+2,P.sy(0)-(r+4)*Math.sin(a0/2)); }); }
+    if(o.dist){ const cl=[C.c1,C.c2,C.c3]; p.forEach((q,k)=>{ SEG(P,[q,0],s0,cl[k],1.6); LAB(P,(q+s0[0])/2,wd/2,n(dist[k],3),{a:'right',dx:-4,c:cl[k],b:'middle'}); }); }
+    if(o.s0){ [1,-1].forEach(sg=>DOT(P,s0[0],sg*wd,C.c1,5)); LAB(P,s0[0],-wd,`s0 = ${n(s0[0],3)} ± j${n(wd,3)}`,{dx:-10,a:'right',b:'middle',c:C.c1}); }
+    if(o.cl){ clp.forEach(q=>DOT(P,q[0],q[1],C.c1,5)); LAB(P,p3,0,`p3 = ${n(p3,3)}`,{dy:-10,a:'center',c:C.c1}); }
+    p.forEach(q=>Xm(P,q,0,C.ink));
+    P.done();
+  }
+  const fig=(cap,o)=>({cap,draw:cv=>pz(cv,o)});
+  const tfig=(cap,f)=>({cap,draw:f});
+
+  const steps=[
+  { t:'Planteamiento y diagrama de bloques',
+    q:'Se identifica la planta <i>G</i>(<i>s</i>), la ganancia ajustable <i>K</i> (la incógnita) y la realimentación unitaria. Todo el diseño se apoya en la función de transferencia en lazo cerrado <i>T</i>(<i>s</i>).',
+    f:[{l:'Fórmula',t:'T(s)=\\dfrac{C(s)}{R(s)}=\\dfrac{K\\,G(s)}{1+K\\,G(s)\\,H(s)}'},
+       {l:'Sustitución',t:'T(s)=\\dfrac{\\dfrac{K}{(s+2)(s+4)(s+6)}}{1+\\dfrac{K}{(s+2)(s+4)(s+6)}}',n:'Con H(s) = 1. Se multiplica arriba y abajo por (s+2)(s+4)(s+6).'},
+       {l:'Resultado',res:1,t:'T(s)=\\dfrac{K}{(s+2)(s+4)(s+6)+K}'}],
+    why:'Lo que se pide: a) trazar el LGDR; b) elegir <i>K</i> para 10 % de sobrepaso con la aproximación de 2º orden; c) estimar T<sub>s</sub>, T<sub>p</sub>, T<sub>r</sub> y e(∞); d) comprobar si la aproximación es válida.',
+    vis:[{svg:svgLazo('psa1','K'),cap:'Lazo de control: la única perilla de diseño es la ganancia K.'}],
+    ml:[["clear; clc; close all","Borra variables, limpia la Command Window y cierra figuras: cada corrida empieza desde cero."],
+        ["s = tf('s');","Crea la variable de Laplace <i>s</i> para escribir funciones de transferencia igual que en papel."],
+        ["G = 1/((s+2)*(s+4)*(s+6))","Planta con <i>K</i> = 1. <i>K</i> se deja fuera porque es la incógnita; <code>rlocus</code> la barre de 0 a ∞."]],
+    out:`G =\n \n             1\n  ------------------------\n  s^3 + 12 s^2 + 44 s + 48\n \nContinuous-time transfer function.` },
+
+  { t:'Polos, ceros y tipo del sistema',
+    q:'Los polos de lazo abierto son las raíces del denominador; los ceros, las del numerador. El tipo es el número de polos en <i>s</i> = 0 y decide el error en estado estable.',
+    f:[{l:'Fórmula',t:AL('D(s)=0\\Rightarrow p_i','N(s)=0\\Rightarrow z_i','\\text{tipo}=\\#\\{p_i=0\\}')},
+       {l:'Sustitución',t:AL('(s+2)(s+4)(s+6)=0','N(s)=1\\neq0')},
+       {l:'Resultado',res:1,t:AL('p_1=-2,\\;p_2=-4,\\;p_3=-6','\\text{sin ceros};\\quad\\text{tipo }0'),n:'n = 3 polos y m = 0 ceros → el LGDR tiene 3 ramas y n − m = 3 asíntotas.'}],
+    vis:[fig('Mapa de polos de lazo abierto (×). De aquí arrancan las 3 ramas del LGDR cuando K = 0.',{need:2})],
+    ml:[["pole(G)","Raíces del denominador = polos de lazo abierto."],
+        ["zero(G)","Raíces del numerador. Sale vacío: no hay ceros finitos."],
+        ["figure; pzmap(G); grid on","Dibuja los polos (×) y ceros (○) en el plano <i>s</i>."]],
+    out:`ans =\n   -6.0000\n   -4.0000\n   -2.0000\n\nans =\n  0×1 empty double column vector` },
+
+  { t:'Ecuación característica',
+    q:'Los polos en lazo cerrado anulan el denominador de <i>T</i>(<i>s</i>). Se desarrolla el producto para tener el polinomio con <i>K</i> libre.',
+    f:[{l:'Fórmula',t:'1+K\\,G(s)=0\\;\\Rightarrow\\;D(s)+K\\,N(s)=0'},
+       {l:'Desarrollo',t:AL('(s+2)(s+4)=s^2+6s+8','(s^2+6s+8)(s+6)','\\quad=s^3+12s^2+44s+48')},
+       {l:'Resultado',res:1,t:'s^3+12s^2+44s+(48+K)=0',n:'Sólo el término independiente depende de K, porque K multiplica a un numerador constante.'}],
+    vis:[fig(`Raíces de s³ + 12s² + 44s + (48 + K) para K = 0 … 640 (puntos grandes cada 80). En naranja, K = 100: ${K100.map(q=>Math.abs(q[1])>1e-9?`${n(q[0],3)} ${q[1]<0?'−':'+'} j${n(Math.abs(q[1]),3)}`:n(q[0],3)).join(', ')}.`,{scatter:1,need:7.5,x0:-12,x1:2})],
+    ml:[["den = conv(conv([1 2],[1 4]),[1 6])","<code>conv</code> multiplica polinomios: da los coeficientes de (s+2)(s+4)(s+6)."],
+        ["Kprueba = 100;","Una K cualquiera, sólo para ver dónde quedan los polos."],
+        ["roots(den + [0 0 0 Kprueba])","Suma K al término independiente y calcula las raíces: los polos en lazo cerrado para esa K."]],
+    out:`den =\n     1    12    44    48\n\n`+mcol('ans',K100) },
+
+  { t:'LGDR sobre el eje real',
+    q:'Un punto del eje real pertenece al LGDR si a su derecha hay un número <b>impar</b> de polos y ceros reales. Se revisa cada tramo entre polos.',
+    f:[{l:'Regla',t:AL('\\sigma\\in\\text{LGDR}\\iff','\\#\\{p_i,z_i\\text{ reales a la derecha}\\}','\\text{es impar}')},
+       {l:'Sustitución',t:'\\begin{array}{lcc}\\text{tramo}&\\#\\text{ a la derecha}&\\text{en LGDR}\\\\\\hline(-2,\\,0)&0&\\text{no}\\\\(-4,\\,-2)&1&\\text{sí}\\\\(-6,\\,-4)&2&\\text{no}\\\\(-\\infty,\\,-6)&3&\\text{sí}\\end{array}'},
+       {l:'Resultado',res:1,t:'[-4,\\,-2]\\;\\cup\\;(-\\infty,\\,-6]',n:'Tramos del eje real que forman parte del LGDR.'}],
+    why:'Los polos −2 y −4 avanzan uno hacia el otro hasta chocar (punto de ruptura, paso 6) y salen del eje; el polo −6 se va hacia −∞.',
+    vis:[fig('Tramos del eje real que forman parte del LGDR (verde).',{seg:1,need:2})],
+    ml:[["figure; rlocus(G)","Traza el LGDR completo de <i>G</i> para K de 0 a ∞."],
+        ["axis([-10 1 -2 2]); grid on","Acerca la vista al eje real para distinguir los tramos [−4, −2] y (−∞, −6]."]],
+    out:'(Figura: ramas sobre [−4, −2] y a la izquierda de −6.)' },
+
+  { t:'Asíntotas',
+    q:'Para K grande, las n − m ramas que no terminan en ceros se van al infinito siguiendo rectas que salen del centroide σ<sub>a</sub> con ángulos θ<sub>a</sub>.',
+    f:[{l:'Fórmula',t:AL('\\sigma_a=\\dfrac{\\sum p_i-\\sum z_i}{n-m}','\\theta_a=\\dfrac{(2k+1)\\,180^\\circ}{n-m}')},
+       {l:'Sustitución',t:AL('\\sigma_a=\\dfrac{(-2)+(-4)+(-6)-0}{3-0}=\\dfrac{-12}{3}','\\theta_a=\\dfrac{(2k+1)\\,180^\\circ}{3},\\;k=0,1,2')},
+       {l:'Resultado',res:1,t:AL('\\sigma_a=-4','\\theta_a=60^\\circ,\\;180^\\circ,\\;300^\\circ\\;(=-60^\\circ)')}],
+    why:'Las dos ramas complejas tienden a las rectas de ±60°, que cruzan el eje jω: para K suficientemente grande el sistema se vuelve inestable (lo cuantifica Routh en el paso 7).',
+    vis:[fig('Asíntotas desde σa = −4 a ±60° y 180°.',{seg:1,asym:1,need:3.6})],
+    ml:[["p = pole(G); z = zero(G);","Guarda polos y ceros en vectores."],
+        ["n = numel(p); m = numel(z);","Cuenta polos (3) y ceros (0)."],
+        ["sa = (sum(p) - sum(z))/(n - m)","Centroide de las asíntotas."],
+        ["ta = (2*(0:n-m-1) + 1)*180/(n - m)","Ángulos de las asíntotas para k = 0, 1, 2."]],
+    out:`sa =\n    -4\n\nta =\n    60   180   300` },
+
+  { t:'Punto de ruptura',
+    q:'Entre −4 y −2 las dos ramas chocan y salen del eje real. Ese punto es donde K, vista como función de σ sobre el eje, alcanza un máximo local: dK/dσ = 0.',
+    f:[{l:'Fórmula',t:AL('K(\\sigma)=-\\dfrac{D(\\sigma)}{N(\\sigma)}','\\dfrac{dK}{d\\sigma}=0')},
+       {l:'Sustitución',t:AL('K=-(\\sigma^3+12\\sigma^2+44\\sigma+48)','\\dfrac{dK}{d\\sigma}=-(3\\sigma^2+24\\sigma+44)=0')},
+       {l:'Desarrollo',t:AL('\\sigma=\\dfrac{-24\\pm\\sqrt{24^2-4(3)(44)}}{2(3)}',`\\;\\;=\\dfrac{-24\\pm\\sqrt{48}}{6}=${n(sb,4)},\\;${n(sb2,4)}`)},
+       {l:'Resultado',res:1,t:AL(`\\sigma_b=${n(sb,3)}\\;\\;(\\text{en }[-4,-2]\\;\\checkmark)`,`K_b=-D(\\sigma_b)=${n(Kb,3)}`),n:`${n(sb2,3)} se descarta: no está sobre el LGDR.`}],
+    why:`Para K > ${n(Kb,3)} los polos dominantes son complejos y aparece sobrepaso; con K menor la respuesta es sobreamortiguada.`,
+    vis:[fig('Punto de ruptura σb sobre el tramo [−4, −2].',{seg:1,asym:1,brk:1,loc:1,need:3.6})],
+    ml:[["dD = polyder(den)","Deriva el polinomio D(σ): coeficientes de 3σ² + 24σ + 44."],
+        ["sb = roots(dD)","Candidatos a punto de ruptura."],
+        ["Kb = -polyval(den, sb(2))","K en el candidato que sí está en [−4, −2]."]],
+    out:`dD =\n     3    24    44\n\n`+mcol('sb',[[sb2,0],[sb,0]])+`\n\n`+mval('Kb',Kb) },
+
+  { t:'Estabilidad: arreglo de Routh y cruce del eje jω',
+    q:'Con el polinomio característico se arma el arreglo de Routh. El sistema es estable si la primera columna no cambia de signo; la K que hace cero una fila marca el cruce del eje jω.',
+    f:[{l:'Arreglo de Routh',t:'\\begin{array}{c|cc}s^3&1&44\\\\s^2&12&48+K\\\\s^1&\\dfrac{480-K}{12}&0\\\\s^0&48+K&\\end{array}'},
+       {l:'Fila s¹',t:'b_1=\\dfrac{12\\cdot44-1\\cdot(48+K)}{12}=\\dfrac{480-K}{12}'},
+       {l:'Condición',t:AL('\\dfrac{480-K}{12}>0\\;\\;\\text{y}\\;\\;48+K>0','\\Rightarrow\\;-48<K<480')},
+       {l:'Cruce (K = 480)',t:AL('12s^2+(48+480)=0','s^2=-44\\;\\Rightarrow\\;s=\\pm j\\sqrt{44}')},
+       {l:'Resultado',res:1,t:AL('0<K<480',`s=\\pm j${n(wc,4)}\\;(\\omega=${n(wc,4)}\\text{ rad/s})`)}],
+    vis:[fig('LGDR completo: las ramas complejas cruzan el eje jω en ±j6.633 cuando K = 480.',{seg:1,asym:1,brk:1,loc:1,cross:1,need:7.6,x0:-11,x1:3})],
+    ml:[["[Kc, ~, wc] = margin(G)","Margen de ganancia = K crítica (480) y la frecuencia donde ocurre (cruce con jω)."],
+        ["roots([12 0 48+Kc])","Polinomio auxiliar de la fila s²: confirma s = ±j6.633."],
+        ["figure; rlocus(G); grid on","LGDR completo; al tocar una rama se ve la K de cada punto."]],
+    out:mval('Kc',480)+`\n\n`+mval('wc',wc)+`\n\nans =\n   0.0000 + 6.6332i\n   0.0000 - 6.6332i` },
+
+  { t:'Del 10 % de sobrepaso a ζ',
+    q:'El sobrepaso de un 2º orden depende sólo de ζ. Se despeja ζ y se obtiene la recta radial del plano <i>s</i> donde deben quedar los polos dominantes.',
+    f:[{l:'Fórmula',t:AL('\\zeta=\\dfrac{-\\ln(\\%OS/100)}{\\sqrt{\\pi^2+\\ln^2(\\%OS/100)}}','\\theta=\\cos^{-1}\\zeta')},
+       {l:'Sustitución',t:AL('\\zeta=\\dfrac{-\\ln(0.10)}{\\sqrt{\\pi^2+\\ln^2(0.10)}}',`\\;\\;=\\dfrac{${n(-lo,4)}}{\\sqrt{${n(Math.PI**2,4)}+${n(lo*lo,4)}}}=\\dfrac{${n(-lo,4)}}{${n(Math.sqrt(Math.PI**2+lo*lo),4)}}`)},
+       {l:'Resultado',res:1,t:AL(`\\zeta=${n(zeta,4)}`,`\\theta=\\cos^{-1}(${n(zeta,4)})=${n(thz,2)}^\\circ`)}],
+    why:`Todos los puntos con ζ = ${n(zeta,3)} están sobre una recta desde el origen a ${n(thz,2)}° del eje real negativo. El polo de diseño debe estar a la vez en el LGDR y en esa recta.`,
+    vis:[fig('Recta de ζ constante sobre el LGDR: el corte con la rama compleja es el punto de diseño.',{loc:1,zeta:1,need:4.4,x0:-9,x1:1.5})],
+    ml:[["OS = 10;","Sobrepaso pedido en %."],
+        ["zeta = -log(OS/100)/sqrt(pi^2 + log(OS/100)^2)","ζ a partir del %OS (<code>log</code> es logaritmo natural)."],
+        ["theta = acosd(zeta)","Ángulo de la recta en grados."],
+        ["hold on; sgrid(zeta, 0)","Dibuja la recta de ζ sobre la figura del LGDR."]],
+    out:mval('zeta',zeta)+`\n\n`+mval('theta',thz) },
+
+  { t:'Punto de diseño: condición de ángulo',
+    q:'Se recorre la recta de ζ (radio <i>r</i>) hasta encontrar el punto donde la suma de los ángulos desde los polos es exactamente 180°. Ahí la recta corta al LGDR.',
+    f:[{l:'Fórmula',t:AL('\\angle KG(s_0)=\\sum\\angle(s_0-z_i)','\\qquad\\qquad-\\sum\\angle(s_0-p_i)=-180^\\circ','s_0=r\\,(-\\zeta+j\\sqrt{1-\\zeta^2})')},
+       {l:'Sustitución',t:AL(`\\theta_1=\\angle(s_0+2)=${n(ang[0],2)}^\\circ`,`\\theta_2=\\angle(s_0+4)=${n(ang[1],2)}^\\circ`,`\\theta_3=\\angle(s_0+6)=${n(ang[2],2)}^\\circ`)},
+       {l:'Comprobación',t:AL('-(\\theta_1+\\theta_2+\\theta_3)',`\\;=-(${n(ang[0],2)}+${n(ang[1],2)}+${n(ang[2],2)})`,`\\;=${n(-(ang[0]+ang[1]+ang[2]),2)}^\\circ\\;\\checkmark`)},
+       {l:'Resultado',res:1,t:AL(`s_0=${n(s0[0],4)}\\pm j${n(wd,4)}`,`r=\\omega_n=${n(wn,4)}`)}],
+    why:'Cada ángulo se mide desde el eje real positivo, del polo hacia s<sub>0</sub>. Como no hay ceros, sólo restan los ángulos de los polos.',
+    vis:[fig('Vectores desde cada polo hasta s0 y sus ángulos θ1, θ2, θ3.',{loc:1,zeta:1,ang:1,s0:1,need:3.5,x0:-7.2,x1:1})],
+    ml:[["th = acos(zeta);","Ángulo de la recta en radianes."],
+        ["f = @(r) mod(angle(evalfr(G, r*exp(1j*(pi-th)))) + 2*pi, 2*pi) - pi;","Error de ángulo en el punto de radio <i>r</i> de la recta: vale 0 cuando ∠G(s) = −180°. El <code>mod</code> evita el salto de ±180°."],
+        ["r = fzero(f, [1 6]);","Busca el radio donde el error es cero (entre 1 y 6 hay un solo cruce)."],
+        ["s0 = r*exp(1j*(pi-th))","Punto de diseño. Atajo equivalente: <code>[s0,K] = puntoZeta(G,zeta)</code> (pestaña Resumen)."]],
+    out:`s0 =\n  ${m4(s0[0])} + ${m4(wd)}i` },
+
+  { t:'Ganancia: condición de magnitud',
+    q:'En s<sub>0</sub> debe cumplirse |K G(s<sub>0</sub>)| = 1. Se despeja K como el producto de las distancias de los polos a s<sub>0</sub> (dividido entre el de los ceros, que aquí no hay).',
+    f:[{l:'Fórmula',t:'|K\\,G(s_0)|=1\\;\\Rightarrow\\;K=\\dfrac{\\prod|s_0-p_i|}{\\prod|s_0-z_i|}'},
+       {l:'Sustitución',t:AL('K=|s_0+2|\\,|s_0+4|\\,|s_0+6|',`\\;\\;=(${n(dist[0],4)})(${n(dist[1],4)})(${n(dist[2],4)})`)},
+       {l:'Resultado',res:1,t:`K=${n(K,4)}\\qquad(0<K<480\\;\\checkmark)`,n:'Libro: 45.55.'}],
+    vis:[fig('Distancias desde cada polo hasta s0: su producto es K.',{loc:1,zeta:1,dist:1,s0:1,need:3.5,x0:-7.2,x1:1})],
+    ml:[["K = 1/abs(evalfr(G, s0))","|G(s0)| evaluada en el punto de diseño; K es su inverso."],
+        ["prod(abs(s0 - pole(G)))","Lo mismo con el producto de distancias (comprobación)."]],
+    out:mval('K',K)+`\n\n`+mval('ans',dist[0]*dist[1]*dist[2]) },
+
+  { t:'Estimaciones con la aproximación de 2º orden',
+    q:'Si el par s<sub>0</sub> domina, la respuesta se parece a la de un 2º orden con esos polos. Se leen σ, ω<sub>d</sub> y ω<sub>n</sub> de s<sub>0</sub> y se aplican las fórmulas de tiempo.',
+    f:[{l:'Fórmula',t:AL('\\omega_n=|s_0|,\\qquad T_s=\\dfrac{4}{\\zeta\\omega_n}=\\dfrac{4}{\\sigma}','T_p=\\dfrac{\\pi}{\\omega_d}','T_r\\approx\\dfrac{1.768\\zeta^3-0.417\\zeta^2+1.039\\zeta+1}{\\omega_n}')},
+       {l:'Sustitución',t:AL(`\\omega_n=\\sqrt{${n(sig,4)}^2+${n(wd,4)}^2}`,`T_s=\\dfrac{4}{${n(sig,4)}},\\qquad T_p=\\dfrac{\\pi}{${n(wd,4)}}`,`T_r=\\dfrac{N_r}{\\omega_n}=\\dfrac{${n(Tr2*wn,4)}}{${n(wn,4)}}`,`N_r=1.768(${n(zeta,3)})^3-0.417(${n(zeta,3)})^2`,`\\quad\\;+1.039(${n(zeta,3)})+1=${n(Tr2*wn,4)}`)},
+       {l:'Resultado',res:1,t:AL(`\\omega_n=${n(wn,3)}\\text{ rad/s},\\quad\\%OS=10\\%`,`T_s=${n(Ts2,3)}\\text{ s},\\quad T_p=${n(Tp2,3)}\\text{ s}`,`T_r=${n(Tr2,3)}\\text{ s}`),n:'Libro: Ts = 1.97 s, Tp = 1.13 s, Tr = 0.53 s.'}],
+    vis:[tfig('Respuesta al escalón del modelo de 2º orden (sólo el par s0), con Tp y Ts marcados.',cv=>{ const C=cs(); tplot(cv,Tsim,[{...s2,c:css('--c0'),dash:[6,4]}],{hl:[[yf,'c(∞)']],vl:[[Tp2,'Tp'],[Ts2,'Ts']],legend:[['2º orden',css('--c0'),[6,4]]]}); })],
+    ml:[["wn = abs(s0); sig = -real(s0); wd = imag(s0);","Frecuencia natural, parte real y frecuencia amortiguada del par dominante."],
+        ["Ts = 4/sig, Tp = pi/wd","Tiempo de asentamiento (2 %) y tiempo pico."],
+        ["Tr = (1.768*zeta^3 - 0.417*zeta^2 + 1.039*zeta + 1)/wn","Tiempo de subida (10 %–90 %) con la fórmula aproximada del libro."]],
+    out:mval('Ts',Ts2)+`\n\n`+mval('Tp',Tp2)+`\n\n`+mval('Tr',Tr2) },
+
+  { t:'Error en estado estable al escalón',
+    q:'El sistema es tipo 0, así que tiene error finito al escalón. Se calcula la constante de posición K<sub>p</sub> con la K diseñada.',
+    f:[{l:'Fórmula',t:AL('K_p=\\lim_{s\\to0}K\\,G(s)','e(\\infty)=\\dfrac{1}{1+K_p}')},
+       {l:'Sustitución',t:AL(`K_p=\\dfrac{${n(K,4)}}{(2)(4)(6)}=\\dfrac{${n(K,4)}}{48}`,`e(\\infty)=\\dfrac{1}{1+${n(Kp,4)}}`)},
+       {l:'Resultado',res:1,t:AL(`K_p=${n(Kp,4)}`,`e(\\infty)=${n(ess,4)}\\;(${n(100*ess,3)}\\,\\%)`,`c(\\infty)=1-e(\\infty)=${n(yf,4)}`)}],
+    why:'El error es grande porque el sistema es tipo 0 y K quedó limitada por el requisito de sobrepaso.',
+    vis:[tfig('Respuesta real al escalón: se queda en c(∞) y nunca llega a 1. La diferencia es e(∞).',cv=>{ const C=cs(); tplot(cv,Tsim,[{...sF,c:C.c1}],{ymax:1.12,hl:[[1,'r(t) = 1'],[yf,'c(∞)']],
+      after:(g,sx,sy)=>{ const x=sx(Tsim*0.78); g.strokeStyle=C.c2; g.lineWidth=1.6; g.beginPath(); g.moveTo(x,sy(yf)); g.lineTo(x,sy(1)); g.stroke(); [yf,1].forEach(v=>{ g.beginPath(); g.moveTo(x-5,sy(v)); g.lineTo(x+5,sy(v)); g.stroke(); });
+        g.font='12px '+css('--f-mono'); g.fillStyle=C.c2; g.textAlign='right'; g.textBaseline='middle'; g.fillText(`e(∞) = ${n(ess,3)}`,x-8,sy((1+yf)/2)); }}); })],
+    ml:[["Kp = dcgain(K*G)","Ganancia en s = 0 del lazo abierto con la K diseñada."],
+        ["e = 1/(1 + Kp)","Error al escalón unitario."]],
+    out:mval('Kp',Kp)+`\n\n`+mval('e',ess) },
+
+  { t:'Tercer polo y validez de la aproximación',
+    q:'El sistema es de 3er orden: además del par s<sub>0</sub> hay un tercer polo en lazo cerrado. Se ubica con la suma de raíces y se compara con la parte real dominante.',
+    f:[{l:'Fórmula',t:AL('\\textstyle\\sum s_i=-a_2\\;(\\text{coef. de }s^2)','p_3=-a_2-2\\,\\mathrm{Re}(s_0)','\\text{válida si }|p_3|\\ge5\\sigma')},
+       {l:'Sustitución',t:AL(`p_3=-12-2(${n(s0[0],4)})=-12+${n(-2*s0[0],4)}`,`\\dfrac{|p_3|}{\\sigma}=\\dfrac{${n(-p3,4)}}{${n(sig,4)}}`)},
+       {l:'Resultado',res:1,t:AL(`p_3=${n(p3,4)},\\qquad\\dfrac{|p_3|}{\\sigma}=${n(ratio,3)}<5`,'\\Rightarrow\\;\\text{la aprox. de orden 2 no es válida}')}],
+    why:'El tercer polo está a menos de 5 veces la parte real dominante y no hay un cero que lo cancele: su modo e<sup>−7.94t</sup> sí pesa en la respuesta (igual que dice el libro).',
+    vis:[fig(`Polos en lazo cerrado con K = ${n(K,4)}. La zona sombreada (más allá de 5σ) es donde un polo sería despreciable; p3 no llega.`,{cl:1,region:1,need:3.4,x0:-11.5,x1:1})],
+    ml:[["T = feedback(K*G, 1)","Lazo cerrado con realimentación unitaria."],
+        ["pole(T)","Los tres polos en lazo cerrado."],
+        ["ratio = abs(min(real(pole(T))))/sig","Qué tan lejos está el tercer polo comparado con σ."]],
+    out:mcol('ans',clp)+`\n\n`+mval('ratio',ratio) },
+
+  { t:'Verificación con el modelo completo',
+    q:'Se simula la respuesta al escalón del sistema real de 3er orden y se compara con las predicciones de 2º orden.',
+    f:[{l:'Fórmula',t:AL('c(t)=\\mathcal{L}^{-1}\\!\\left\\{\\dfrac{T(s)}{s}\\right\\}','\\%OS=\\dfrac{c_{max}-c(\\infty)}{c(\\infty)}\\cdot100')},
+       {l:'Sustitución',t:`T(s)=\\dfrac{${n(K,4)}}{s^3+12s^2+44s+${n(48+K,4)}}`},
+       {l:'Resultado',res:1,t:`\\begin{array}{lcc}&\\text{orden 2}&\\text{simulación}\\\\\\hline\\%OS&10.0&${n(m.os,3)}\\\\T_s\\,(\\text{s})&${n(Ts2,3)}&${n(m.ts,3)}\\\\T_p\\,(\\text{s})&${n(Tp2,3)}&${n(m.tp,3)}\\\\T_r\\,(\\text{s})&${n(Tr2,3)}&${n(Trs,3)}\\\\e(\\infty)&${n(ess,3)}&${n(1-m.yf,3)}\\end{array}`}],
+    why:'El tercer polo frena el arranque (Tp y Tr más grandes) y amortigua el pico (menos sobrepaso). El error coincide porque sólo depende de K<sub>p</sub>.',
+    vis:[tfig('Modelo completo (3er orden) contra la aproximación de 2º orden.',cv=>{ const C=cs(); tplot(cv,Tsim,[{...s2,c:css('--c0'),dash:[6,4]},{...sF,c:C.c1}],{hl:[[yf,'c(∞)']],legend:[['3er orden (real)',C.c1],['2º orden (aprox.)',css('--c0'),[6,4]]]}); })],
+    ml:[["info = stepinfo(T)","Mide %OS, Ts, Tp y Tr sobre la respuesta real."],
+        ["T2 = dcgain(T)*wn^2/(s^2 + 2*zeta*wn*s + wn^2);","Modelo de 2º orden con el mismo valor final, para comparar."],
+        ["figure; step(T, T2, '--', 6); grid on","Las dos respuestas en la misma gráfica durante 6 s."],
+        ["legend('3er orden (real)', '2º orden (aprox.)')","Rótulos de las curvas."]],
+    out:`info =\n  struct with fields:\n\n        RiseTime: ${m4(Trs)}\n    SettlingTime: ${m4(m.ts)}\n       Overshoot: ${m4(m.os)}\n        PeakTime: ${m4(m.tp)}\n  (se muestran sólo los campos usados)` },
+
+  { t:'Ajuste fino de K con la simulación',
+    q:'Como la aproximación no es válida, la simulación da menos sobrepaso del pedido. Se busca numéricamente la K que da exactamente 10 % en el modelo completo.',
+    f:[{l:'Fórmula',t:AL('\\text{buscar }K\\text{ tal que}','f(K)=\\%OS_{sim}(K)-10=0')},
+       {l:'Sustitución',t:AL(`f(${n(K,4)})=${n(m.os,3)}-10<0\\;\\Rightarrow\\;K\\uparrow`,'\\text{raíz entre }40\\text{ y }70')},
+       {l:'Resultado',res:1,t:AL(`K=${n(Kaj,4)}\\;\\Rightarrow\\;\\%OS=${n(mA.os,3)}\\%`,`e(\\infty)=\\dfrac{1}{1+${n(Kaj,4)}/48}=${n(essA,4)}`)}],
+    why:'Es la segunda ganancia del banco de pruebas. Al subir K el error baja un poco, pero sigue siendo grande: para mejorarlo hace falta un compensador (P2 y P3).',
+    vis:[tfig('Respuesta con la K de 2º orden contra la K ajustada por simulación.',cv=>{ const C=cs(); tplot(cv,Tsim,[{...sF,c:css('--c0'),dash:[6,4]},{...sA,c:C.c1}],{hl:[[mA.yf*1.1,'10 % sobre c(∞)']],legend:[[`K = ${n(K,4)} (${n(m.os,3)} %)`,css('--c0'),[6,4]],[`K = ${n(Kaj,4)} (10 %)`,C.c1]]}); })],
+    ml:[["os = @(k) getfield(stepinfo(feedback(k*G,1)), 'Overshoot');","Función que devuelve el %OS simulado para cualquier K."],
+        ["K_aj = fzero(@(k) os(k) - OS, [40 70])","Busca la K donde el %OS simulado es exactamente 10."],
+        ["os(K_aj)","Comprobación."]],
+    out:mval('K_aj',Kaj)+`\n\n`+mval('ans',mA.os) },
+
+  { t:'Verificación en Simulink',
+    q:'Se arma el mismo lazo con bloques de Simulink y se simula. El Scope debe mostrar la misma curva que <code>step(T)</code>. Abajo está qué hace cada bloque y qué parámetros lleva.',
+    f:[{l:'Lazo que forman los bloques',t:AL('E=R-C,\\quad U=K\\,E,\\quad C=G(s)\\,U','\\Rightarrow\\;\\dfrac{C}{R}=\\dfrac{K\\,G}{1+K\\,G}')},
+       {l:'Parámetros',t:AL(`\\text{Gain}=${n(K,4)}`,'G(s)=\\dfrac{1}{s^3+12s^2+44s+48}','\\text{Denominator}=\\texttt{[1 12 44 48]}')},
+       {l:'Resultado',res:1,t:AL(`\\%OS=${n(m.os,3)}\\%,\\quad T_s=${n(m.ts,3)}\\text{ s}`,`c(\\infty)=${n(m.yf,4)}`),n:'Iguales a los del paso 14: Simulink y step(T) resuelven el mismo sistema.'}],
+    blk:`<div class="psblk"><div class="fxl">Bloques del modelo</div>${[
+      ['Step','Sources','<code>Step time = 0</code> <code>Initial value = 0</code> <code>Final value = 1</code>','Genera la referencia r(t): un escalón unitario en t = 0.'],
+      ['Sum','Math Operations','<code>List of signs = |+-</code>','Calcula el error e = r − c. La entrada «−» recibe la realimentación.'],
+      ['Gain','Math Operations',`<code>Gain = ${n(K,4)}</code>`,'Es el controlador proporcional: u = K·e.'],
+      ['Transfer Fcn','Continuous','<code>Numerator = [1]</code> <code>Denominator = [1 12 44 48]</code>','Es la planta G(s): convierte u en la salida c.'],
+      ['Scope','Sinks','—','Muestra c(t) como un osciloscopio.'],
+      ['To Workspace','Sinks','<code>Variable name = y</code> <code>Save format = Timeseries</code>','Guarda c(t) en el Workspace para medirla con <code>stepinfo</code>.'],
+      ['Configuración','Modeling → Model Settings','<code>Stop time = 6</code> <code>Max step size = 0.01</code>','Simula 6 s con paso fino para que la curva salga suave.']
+    ].map(([b,lib,par,q])=>`<div class="psb"><div class="psbt"><b>${b}</b><span>${lib}</span></div><div class="psbp">${par}</div><div class="psbq">${q}</div></div>`).join('')}</div>`,
+    vis:[{svg:svgSimulink('psa16',n(K,4)),cap:'(Desliza el diagrama para verlo completo.) Modelo de Simulink: la salida de Transfer Fcn se reparte al Scope, al Workspace y de regreso a la entrada «−» del Sum.'},
+         tfig('Lo que muestra el Scope: c(t) del lazo cerrado con K = '+n(K,4)+'.',cv=>{ const C=cs(); tplot(cv,Tsim,[{...sF,c:C.c1}],{hl:[[m.yf,'c(∞)'],[1,'r(t)']],ymax:1.12,vl:[[m.tp,'Tp'],[m.ts,'Ts']],yl:'y(t)'}); })],
+    mlTitle:'MATLAB · construir y correr el modelo por código',
+    ml:[["mdl = 'P1_simulink'; new_system(mdl); open_system(mdl);","Crea un modelo vacío y lo abre (es lo mismo que File → New → Blank Model)."],
+        ["add_block('simulink/Sources/Step', [mdl '/Step'], 'Time','0', 'Before','0', 'After','1');","Bloque Step: escalón de 0 a 1 en t = 0."],
+        ["add_block('simulink/Math Operations/Sum', [mdl '/Sum'], 'Inputs','|+-');","Sumador con una entrada «+» y otra «−»."],
+        [`add_block('simulink/Math Operations/Gain', [mdl '/Gain'], 'Gain','${m4(K)}');`,"Ganancia K diseñada."],
+        ["add_block('simulink/Continuous/Transfer Fcn', [mdl '/G'], 'Numerator','1', 'Denominator','[1 12 44 48]');","Planta G(s) con los coeficientes del paso 3."],
+        ["add_block('simulink/Sinks/Scope', [mdl '/Scope']);","Osciloscopio para ver la salida."],
+        ["add_block('simulink/Sinks/To Workspace', [mdl '/y'], 'VariableName','y', 'SaveFormat','Timeseries');","Envía la salida al Workspace."],
+        ["add_line(mdl,'Step/1','Sum/1'); add_line(mdl,'Sum/1','Gain/1'); add_line(mdl,'Gain/1','G/1');","Conecta la cadena directa r → Σ → K → G."],
+        ["add_line(mdl,'G/1','Scope/1'); add_line(mdl,'G/1','y/1'); add_line(mdl,'G/1','Sum/2');","Reparte la salida: Scope, Workspace y realimentación a la entrada «−»."],
+        ["set_param(mdl, 'StopTime','6', 'MaxStep','0.01'); Simulink.BlockDiagram.arrangeSystem(mdl);","Configura la simulación y ordena los bloques en pantalla."],
+        ["out = sim(mdl); y = out.y;","Corre la simulación y toma la señal guardada."],
+        ["info = stepinfo(y.Data, y.Time)","Mide la respuesta igual que con <code>stepinfo(T)</code>."]],
+    out:`info =\n  struct with fields:\n\n        RiseTime: ${m4(Trs)}\n    SettlingTime: ${m4(m.ts)}\n       Overshoot: ${m4(m.os)}\n        PeakTime: ${m4(m.tp)}\n  (pueden variar en el 3er decimal por el paso de integración)` }
+  ];
+  return {title:'Práctica 1 · cómo se resuelve',
+    intro:'Cada paso dice qué se hace, la fórmula, la sustitución con los números de la práctica, el resultado, la gráfica que agrega ese paso y el código MATLAB con lo que hace cada línea. Desliza o usa los botones para avanzar.',
+    steps};
+};
+
+/* ---- visor genérico ---- */
+function fxRow(r){ return `<div class="fx${r.res?' res':''}"><div class="fxl">${r.l}</div><div class="fxm">${r.t?tx(r.t):r.h}</div>${r.n?`<div class="fxn">${r.n}</div>`:''}</div>`; }
+function stepHTML(s,i,N){
+  const vis=(s.vis||[]).map((v,k)=>`<figure class="psfig">${v.svg?`<div class="pssvg">${v.svg}</div>`:`<canvas data-cv="${k}"></canvas>`}<figcaption>${v.cap}</figcaption></figure>`).join('');
+  const ml=s.ml?`<details class="psml" open><summary>${s.mlTitle||'MATLAB · qué hace cada línea'}<span>${s.ml.length} línea${s.ml.length>1?'s':''}</span></summary>
+    ${s.ml.map(([c,e])=>`<div class="mlr"><code>${esc(c)}</code><span>${e}</span></div>`).join('')}
+    <div class="mlbar"><button class="btn sm" type="button" data-cp>Copiar código del paso</button></div>
+    ${s.out?`<div class="mlo"><div class="fxl">Salida esperada en la Command Window</div><pre>${esc(s.out)}</pre></div>`:''}</details>`:'';
+  return `<article class="pstep" data-i="${i}" hidden>
+    <div class="psh"><span class="psn">${i+1}/${N}</span><h4>${s.t}</h4></div>
+    <p class="psq"><b>Qué se hace.</b> ${s.q}</p>
+    <div class="psf">${s.f.map(fxRow).join('')}</div>
+    ${s.why?`<p class="why">${s.why}</p>`:''}${s.blk||''}${vis}${ml}</article>`;
+}
+function buildPasos(el){
+  const id=el.dataset.pasos, D=PASOS[id]&&PASOS[id](); if(!D) return null;
+  const S=D.steps, N=S.length, KEY='lgdr-pasos-'+id;
+  let cur=0, all=false, seen=new Set([0]);
+  try{ const v=parseInt(localStorage.getItem(KEY),10); if(v>=0&&v<N) cur=v; }catch(e){}
+  el.innerHTML=`<div class="pshead"><div><span class="eyebrow">Resolución paso a paso</span><h3>${D.title}</h3></div><button class="btn sm" type="button" data-all aria-pressed="false">Ver todos</button></div>
+    <p class="tip">${D.intro}</p>
+    <div class="psnav" aria-label="Pasos">${S.map((s,i)=>`<button type="button" data-go="${i}" title="${esc(s.t)}" aria-label="Paso ${i+1}: ${esc(s.t)}">${i+1}</button>`).join('')}</div>
+    <div class="psbody">${S.map((s,i)=>stepHTML(s,i,N)).join('')}</div>
+    <div class="psctl"><button class="btn" type="button" data-prev>◀ Anterior</button><span data-pos></span><button class="btn primary" type="button" data-next>Siguiente ▶</button></div>`;
+  const arts=[...el.querySelectorAll('.pstep')], dots=[...el.querySelectorAll('[data-go]')], nav=el.querySelector('.psnav');
+  const prev=el.querySelector('[data-prev]'), next=el.querySelector('[data-next]'), pos=el.querySelector('[data-pos]'), allB=el.querySelector('[data-all]');
+  const drawStep=i=>{ const a=arts[i]; if(a.hidden) return; a.querySelectorAll('canvas[data-cv]').forEach(cv=>{ if(!cv.clientWidth) return; try{ S[i].vis[+cv.dataset.cv].draw(cv); }catch(e){ console.error(e); } }); };
+  const redraw=()=>arts.forEach((a,i)=>drawStep(i));
+  function go(i,scroll){ cur=Math.max(0,Math.min(N-1,i)); seen.add(cur);
+    arts.forEach((a,k)=>a.hidden=!all&&k!==cur);
+    dots.forEach((d,k)=>{ d.classList.toggle('seen',seen.has(k)); if(k===cur&&!all) d.setAttribute('aria-current','step'); else d.removeAttribute('aria-current'); });
+    pos.textContent=`${cur+1} / ${N}`; prev.disabled=cur===0; next.disabled=cur===N-1; next.textContent=cur===N-1?'Fin ✓':'Siguiente ▶'; pos.setAttribute('aria-label',`Paso ${cur+1} de ${N}`);
+    const d=dots[cur]; nav.scrollTo({left:d.offsetLeft-nav.clientWidth/2+d.clientWidth/2,behavior:'smooth'});
+    try{ localStorage.setItem(KEY,String(cur)); }catch(e){}
+    requestAnimationFrame(()=>{ all?redraw():drawStep(cur); if(scroll){ const a=arts[cur]; if(all||a.getBoundingClientRect().top<0) a.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'}); } }); }
+  prev.addEventListener('click',()=>go(cur-1,true)); next.addEventListener('click',()=>go(cur+1,true));
+  dots.forEach((d,k)=>d.addEventListener('click',()=>go(k,true)));
+  allB.addEventListener('click',()=>{ all=!all; el.classList.toggle('all',all); allB.setAttribute('aria-pressed',String(all)); allB.textContent=all?'Ver de uno en uno':'Ver todos'; if(all) S.forEach((s,k)=>seen.add(k)); go(cur,false); });
+  el.addEventListener('keydown',e=>{ if(all||e.target.closest('input,textarea,select,pre,code')) return; if(e.key==='ArrowRight'){ go(cur+1,true); e.preventDefault(); } else if(e.key==='ArrowLeft'){ go(cur-1,true); e.preventDefault(); } });
+  let t0=null; const body=el.querySelector('.psbody');
+  body.addEventListener('touchstart',e=>{ t0=(all||e.touches.length>1||e.target.closest('.fxm,.mathd,.pssvg,.mlr code,pre,.tablewrap,canvas'))?null:[e.touches[0].clientX,e.touches[0].clientY]; },{passive:true});
+  body.addEventListener('touchend',e=>{ if(!t0) return; const dx=e.changedTouches[0].clientX-t0[0], dy=e.changedTouches[0].clientY-t0[1]; t0=null; if(Math.abs(dx)>70&&Math.abs(dy)<45) go(cur+(dx<0?1:-1),true); },{passive:true});
+  el.addEventListener('click',e=>{ const b=e.target.closest('[data-cp]'); if(!b) return; const i=+b.closest('.pstep').dataset.i, txt=S[i].ml.map(r=>r[0]).join('\n');
+    const done=t=>{ b.textContent=t; setTimeout(()=>b.textContent='Copiar código del paso',1600); };
+    try{ navigator.clipboard.writeText(txt).then(()=>done('Copiado ✓'),()=>done('No se pudo copiar')); }catch(err){ done('No se pudo copiar'); } });
+  let raf=0; new ResizeObserver(()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(redraw); }).observe(body);
+  go(cur,false);
+  return {redraw};
+}
+const built=new Map();
+function initPage(page){ page.querySelectorAll('[data-pasos]').forEach(el=>{ if(!built.has(el)){ const r=buildPasos(el); if(r) built.set(el,r); } else built.get(el).redraw(); }); }
+window.__pageInit=window.__pageInit||{};
+document.querySelectorAll('[data-pasos]').forEach(el=>{ const page=el.closest('section.page'); if(!page) return; const id=page.id, prevHook=window.__pageInit[id];
+  window.__pageInit[id]=()=>{ if(prevHook) prevHook(); initPage(page); };
+  if(!page.hidden) initPage(page); });
+const redrawAll=()=>built.forEach(r=>r.redraw());
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawAll);
+new MutationObserver(redrawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+window.__PASOS=PASOS;
+})();
+</script>
+
 </body></html>

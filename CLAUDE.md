@@ -311,29 +311,27 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
   **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
 
-## Idea en curso: "Resolución paso a paso" (primero P1, luego P2–P7)
+## Hecho (v24): "Resolución paso a paso" — P1 lista; falta P2–P7
 
-- **Estado: plan aprobado pendiente** (no hay código aún). Plan completo en el chat del 2026-11-03.
-- Nueva tarjeta `div.card.pasos[data-pasos="p1"]` después de `.bench` de P1; no se toca el contenido existente.
-- Datos por práctica en `PASOS.p1 = [ {titulo, que, formulas:[{gen,sus,res}], plot(cv), matlab:{code,bloques,salida}, simulink?} ]`
-  y un renderizador genérico `buildPasos(el)` (perezoso, como `buildLab`), KaTeX en tiempo de ejecución (`window.katex`),
-  gráficas con los ayudantes existentes (`plane`, `locusPts`, `zline`, `angDraw`, `tplot`, `stepSim`, `metrics`).
-- UI: stepper (Anterior/Siguiente, puntos, deslizar), modo "ver todos"; plantilla fija por paso:
-  Qué se hace → Fórmula → Sustitución → Resultado → Gráfica del paso → MATLAB (código + qué hace cada línea + salida).
-- P1 (verificado con numpy): ζ = 0.5912 (θ = 53.76°), Routh 0<K<480 (ω = 6.633), σa = −4, ruptura s = −2.845 (K = 3.08),
-  s0 = −2.028 ± j2.768, K = 45.55, Kp = 0.949, e(∞) = 0.513, p3 = −7.943, ajuste K = 49.38.
-
-## Idea en curso: "Resolución paso a paso" (primero P1, luego P2–P7)
-
-- **Estado: plan aprobado pendiente** (no hay código aún). Plan completo en el chat del 2026-11-03.
-- Nueva tarjeta `div.card.pasos[data-pasos="p1"]` después de `.bench` de P1; no se toca el contenido existente.
-- Datos por práctica en `PASOS.p1 = [ {titulo, que, formulas:[{gen,sus,res}], plot(cv), matlab:{code,bloques,salida}, simulink?} ]`
-  y un renderizador genérico `buildPasos(el)` (perezoso, como `buildLab`), KaTeX en tiempo de ejecución (`window.katex`),
-  gráficas con los ayudantes existentes (`plane`, `locusPts`, `zline`, `angDraw`, `tplot`, `stepSim`, `metrics`).
-- UI: stepper (Anterior/Siguiente, puntos, deslizar), modo "ver todos"; plantilla fija por paso:
-  Qué se hace → Fórmula → Sustitución → Resultado → Gráfica del paso → MATLAB (código + qué hace cada línea + salida).
-- P1 (verificado con numpy): ζ = 0.5912 (θ = 53.76°), Routh 0<K<480 (ω = 6.633), σa = −4, ruptura s = −2.845 (K = 3.08),
-  s0 = −2.028 ± j2.768, K = 45.55, Kp = 0.949, e(∞) = 0.513, p3 = −7.943, ajuste K = 49.38.
+- Tarjeta `div.card.pasos[data-pasos="pN"]` justo después de `.card.bench` (P1 ya la tiene). No toca el contenido existente.
+- Script propio al final del `<body>` («Resolución paso a paso»): `PASOS.pN = () => ({title, intro, steps:[...]})` y un visor
+  genérico `buildPasos(el)` que se arma al mostrar la página (envuelve `__pageInit[pN]`). Usa `window.__lib` (roots, simulate,
+  setupCanvas, axes, css), `window.FX.tx/n` (KaTeX) y `window.__T` (zetaPoint, metrics). **Los números se calculan en vivo**
+  (no están escritos a mano). Expuesto como `window.__PASOS`.
+- Cada paso: `{t, q, f:[{l, t (TeX) | h (HTML), n, res}], why, blk, vis:[{svg | draw(cv), cap}], mlTitle, ml:[[código, explicación]], out}`.
+  Fórmulas largas en varias líneas con `AL(...)` (aligned) para que quepan a 390 px. Gráficas acumulativas en P1 con `pz(cv, {seg, asym,
+  brk, loc, cross, zeta, ang, dist, s0, cl, region, scatter})`; respuestas con `tplot`. Diagramas SVG con clase `.psd` (no `.bd`, que es de v9).
+- UI: puntos 1…N, Anterior/Siguiente fijos abajo (`.psctl`), deslizar, flechas del teclado, «Ver todos». Paso abierto en
+  `localStorage['lgdr-pasos-pN']` (no se sincroniza). Botón «Copiar código del paso» y «Salida esperada en la Command Window».
+- Plegable v15: en el bucle P1–P7 del script de plegables se envuelve `:scope>.card.pasos` como `pN:pasos` (número «R»,
+  resumen = «Paso n de N · título»). PDF: `herramientas/pdf-practicas.js` pulsa «Ver todos», captura sus lienzos y oculta los
+  controles (68 páginas con P1). CSS «resolución paso a paso» antes del `</style>` principal.
+- P1 (16 pasos): planteamiento, polos/tipo, ec. característica, eje real, asíntotas, ruptura (σ = −2.845, K = 3.08), Routh
+  (0 < K < 480, ±j6.633), ζ = 0.5912, ángulo (s0 = −2.0285 ± j2.7677), magnitud (K = 45.53), 2º orden, error (0.513),
+  tercer polo (−7.943, 3.92σ), verificación, ajuste K = 49.38 y **Simulink** (bloques, parámetros y script `add_block`/`sim`).
+- Probado a 390, 1280 y 1500 px, tema claro/oscuro, plegable cerrado→abierto (los lienzos se dibujan al abrir), consola sin errores.
+- **Siguiente:** escribir `PASOS.p2` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
+  plegables ya recorre P1–P7). Después, volver a generar `practicas.pdf`.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
