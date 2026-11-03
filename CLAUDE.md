@@ -311,7 +311,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
   **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
 
-## Hecho (v24): "Resolución paso a paso" — P1 lista; falta P2–P7
+## Hecho (v24): "Resolución paso a paso" — P1 y P2 listas; falta P3–P7
 
 - Tarjeta `div.card.pasos[data-pasos="pN"]` justo después de `.card.bench` (P1 ya la tiene). No toca el contenido existente.
 - Script propio al final del `<body>` («Resolución paso a paso»): `PASOS.pN = () => ({title, intro, steps:[...]})` y un visor
@@ -330,7 +330,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (0 < K < 480, ±j6.633), ζ = 0.5912, ángulo (s0 = −2.0285 ± j2.7677), magnitud (K = 45.53), 2º orden, error (0.513),
   tercer polo (−7.943, 3.92σ), verificación, ajuste K = 49.38 y **Simulink** (bloques, parámetros y script `add_block`/`sim`).
 - Probado a 390, 1280 y 1500 px, tema claro/oscuro, plegable cerrado→abierto (los lienzos se dibujan al abrir), consola sin errores.
-- **Siguiente:** escribir `PASOS.p2` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
+- P2 (19 pasos, ejemplo 9.1 PI ideal): 1–12 sin compensar (planteamiento con Gc, polos/tipo, ec. característica, eje real,
+  asíntotas σa = −4.333, ruptura σb = −1.4853 / Kb = 2.127, Routh 0 < K < 396 (±j5.657), recta ζ = 0.174 (79.98°, 57.4 %), ángulo
+  s0 = −0.6936 ± j3.9255, magnitud K = 164.53, tercer polo −11.61 (16.7σ) + tiempos, error 0.1084) y 13–19 con PI (tipo 1, dipolo
+  −1.42° / 0.9959, ec. de 4º orden, re‑búsqueda desde r = 1: −0.6778 ± j3.8359 / K = 158.10, polos −0.0902 y −11.55 con residuos,
+  Routh 0 < K < 379.95 (±j5.547), verificación sin comp. vs PI, Kv = 0.7905, y Simulink con Gain → Gc [1 0.1]/[1 0] → G;
+  alternativa bloque PID P = K, I = 0.1K).
+- **Utilidades comunes para P3–P7** (antes de `PASOS.p2`): `pmul, pder, peval, cmul, cdiv, cev, angTo, distTo, resStep` (residuo al
+  escalón), `locusN(num,den,Kmax,N)` (cualquier orden), `kcrit(num,den,lo,hi)` → {K, w}, `OO` (cero), `cpxT/cpxH`,
+  `svgLoop(id,K,[{n,d,lab,w}])` (lazo con bloques en cascada), `svgSL(id,K,[...])` (Simulink con varios Transfer Fcn),
+  `blkList(rows)` y `infoOut(tr,m)` (salida de `stepinfo`).
+- PDF: 86 páginas con P1–P2 (~6.4 MB).
+- **Siguiente:** escribir `PASOS.p3` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
   plegables ya recorre P1–P7). Después, volver a generar `practicas.pdf`.
 
 ## Otros artefactos del usuario (galería de claude.ai)
