@@ -239,6 +239,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   reescribe, antes que todo, las consultas del CSS (`CSSMediaRule.media.mediaText`) y envuelve `window.matchMedia`:
   `(prefers-reduced-motion:no-preference)` → `(min-width:0px)` y `(prefers-reduced-motion: reduce)` → `(max-width:-1px)` (nunca).
   Datos en `window.__lgdrAnim = {sys, on}`. Página de diagnóstico: https://claude.ai/artifact/VP46KFQS37bv12FTV2b7pc
+- **Hecho (v19 · etapa 5): Barra lateral en computadora (opción A).** CSS «v19» antes del `</style>` principal, `<script>` propio al
+  final del `<body>` y un script temprano (después del de v18) que pone `html.sb-on`/`sb-rail` antes del primer dibujo (si `#sbar`
+  no existe al cargar, los quita). ≥ 1000 px (`html.sb-on`): `nav#tabs` oculto (`--navh` = 0) y `nav#sbar` fijo a la izquierda
+  (248 px) con grupos Inicio/Aprender/Practicar/Repasar, armado desde `#tabs` (mismos `#hash`, así v17 sigue igual). Teoría muestra su %
+  (`#abProg`) y las partes I–III con avance y candado leídos de `nav.toc` (`.tocg.locked`, `[data-tocbar] i`); clic en una parte →
+  `#teoria` y baja a `.tphase .tpart` (o a su `.lockp`). P1–P7 con ✓/! según la tabla de Resumen; Preguntas con «n/71».
+  `html.sb-rail` (1000–1199 px, y siempre en Teoría): 76 px, solo íconos y P1…P7. Indicador `.sb-ind` que se desliza.
+  ≥ 1440 px (`html.sb-toc`, fuera de Teoría y si la página tiene plegables): `aside#sbtoc` «En esta página» con los plegables de v15
+  (● abierto/○ plegado, resaltado del que se lee, clic = `scrollIntoView`, que v15 envuelve y abre) y Desplegar/Plegar todo
+  (`__lgdrFolds.all`); la `.fbar` de la página se oculta. Contenido hasta 1240 px centrado entre las barras (márgenes de `.wrap`).
+  Anchos `--sbw/--tcw/--sbmax` registrados con `@property` (no heredables) para que cambiar de modo no recalcule toda la página.
+  Teoría: índice de 256 px y `.tdots` a la derecha (absoluto). Transición v17: `#sbar` lleva `vt-side` y no se mueve. Impresión: sin barras.
+  Probado: navegación, atrás, partes, columna derecha, pantallas completas (simulación, evaluación con formulario), `ab-hide`,
+  cambio de tamaño (900/1100/1440), movimiento reducido, claves de progreso intactas, 390 y 999 px iguales a antes; cambio de página
+  ~+10 % a 1440 px (el contenido es más angosto), igual a 1280.
 - **Corregido en la etapa 4 (decisión 5): el salto a Teoría al cargar** (venía del artefacto original): `openSection(id,scroll,stay)`;
   `buildAccordion()` llama `openSection(o,false,true)` y así la apertura inicial ya no cambia `location.hash`.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el

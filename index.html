@@ -1039,6 +1039,110 @@ html.vt-page::view-transition,html.vt-acc::view-transition{pointer-events:none}
 #abAnim[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
 #abAnim .ic-off{display:block} #abAnim .ic-on{display:none}
 #abAnim[aria-pressed="true"] .ic-off{display:none} #abAnim[aria-pressed="true"] .ic-on{display:block}
+/* ==== v19 · etapa 5: barra lateral en computadora (≥ 1000 px) e índice «En esta página» (≥ 1440 px) ====
+   Solo presentación. Las clases las pone el script v19: html.sb-on (≥ 1000 px: la barra lateral reemplaza la fila de
+   pestañas), html.sb-rail (1000–1199 px, o Teoría con su propio índice: solo íconos y P1…P7) y html.sb-toc (≥ 1440 px,
+   página con plegables y fuera de Teoría: columna derecha «En esta página»). Sin JS o por debajo de 1000 px, todo igual. */
+.sbar,.sbtoc{display:none}
+/* anchos como propiedades no heredables y solo en los elementos que las usan: cambiar de modo (p. ej. al entrar a Teoría)
+   no obliga a recalcular el estilo de toda la página */
+@property --sbw{syntax:"<length>";inherits:false;initial-value:0px}
+@property --tcw{syntax:"<length>";inherits:false;initial-value:0px}
+@property --sbmax{syntax:"<length>";inherits:false;initial-value:1272px}
+html.sb-on .wrap,html.sb-on .sbar{--sbw:248px}
+html.sb-rail .wrap,html.sb-rail .sbar{--sbw:76px}
+html.sb-toc .wrap,html.sb-toc .sbtoc{--tcw:236px}
+html.sb-on .appbar nav.tabs{display:none}
+html.sb-on .appbar-in{max-width:none}
+/* contenido: hasta ~1240 px, centrado en el espacio que dejan las barras */
+html.sb-on .wrap{max-width:var(--sbmax);margin-left:calc(var(--sbw) + max(0px,(100% - var(--sbw) - var(--tcw,0px) - var(--sbmax)) / 2));margin-right:calc(var(--tcw,0px) + max(0px,(100% - var(--sbw) - var(--tcw,0px) - var(--sbmax)) / 2))}
+/* barra lateral */
+html.sb-on .sbar{display:block;position:fixed;z-index:5;left:0;bottom:0;top:calc(env(safe-area-inset-top,0px) + var(--apph) + 1px);width:var(--sbw);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;contain:strict;background:var(--bg);border-right:1px solid var(--line);padding:16px 12px 28px max(12px,env(safe-area-inset-left,0px))}
+html.sb-on.ab-hide:not(.dmode):not(.exm) .sbar,html.sb-toc.ab-hide:not(.dmode):not(.exm) .sbtoc{top:env(safe-area-inset-top,0px)}
+.sb-in{position:relative;display:grid;gap:16px}
+.sb-g{display:grid;gap:2px}
+.sb-gl{font:500 10.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 10px 5px}
+.sb-i{position:relative;z-index:1;display:flex;align-items:center;gap:10px;min-height:38px;padding:4px 10px;border-radius:10px;color:var(--ink);text-decoration:none;font:500 14.5px/1.25 var(--f-body);-webkit-tap-highlight-color:transparent}
+.sb-ic{flex:none;width:28px;height:28px;display:grid;place-items:center;border-radius:8px;color:var(--muted)}
+.sb-ic svg{width:20px;height:20px}
+.sb-bd{font:600 12px var(--f-mono);border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.sb-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-v{flex:none;font:600 11.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.sb-v.ok{color:var(--ok)} .sb-v.warn{color:var(--warn)}
+.sb-v.ok,.sb-v.warn{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;font-size:12px}
+.sb-v.ok{background:var(--ok-soft)} .sb-v.warn{background:var(--warn-soft)}
+.sb-i:hover{background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+.sb-i[aria-current="page"]{color:var(--accent);font-weight:600;background:transparent}
+.sb-i[aria-current="page"] .sb-ic{color:var(--accent)}
+.sb-i[aria-current="page"] .sb-bd{border-color:var(--accent);background:var(--accent);color:var(--surface)}
+.sb-i:focus-visible,.sb-pt:focus-visible,.st-l button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* indicador de la página actual (se desliza de un elemento a otro) */
+.sb-ind{position:absolute;z-index:0;left:0;right:0;top:0;height:0;border-radius:10px;background:var(--accent-soft);pointer-events:none;opacity:0}
+.sb-ind::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:3px;border-radius:3px;background:var(--accent)}
+/* partes de la teoría, con avance y candado */
+.sb-parts{display:grid;gap:1px;margin:2px 0 4px 23px;padding-left:12px;border-left:1px solid var(--line)}
+.sb-pt{display:grid;grid-template-columns:20px minmax(0,1fr);column-gap:6px;align-items:center;padding:5px 8px;border-radius:8px;color:var(--muted);text-decoration:none;font:500 13px/1.3 var(--f-body);-webkit-tap-highlight-color:transparent}
+.sb-pt:hover{background:color-mix(in srgb,var(--accent-soft) 55%,transparent);color:var(--ink)}
+.sb-pr{display:grid;place-items:center;font:600 11px var(--f-mono);color:var(--accent)}
+.sb-pr svg{display:none;width:12px;height:12px}
+.sb-pt.lk .sb-pr b{display:none} .sb-pt.lk .sb-pr svg{display:block;color:var(--muted)}
+.sb-pt.lk{opacity:.72}
+.sb-pt.ok .sb-pr{color:var(--ok)}
+.sb-pn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-pb{grid-column:2;display:block;height:3px;margin-top:4px;border-radius:3px;overflow:hidden;background:color-mix(in srgb,var(--accent) 16%,var(--surface))}
+.sb-pb i{display:block;height:100%;width:0;border-radius:3px;background:var(--accent)}
+.sb-pt.ok .sb-pb i{background:var(--ok)}
+/* modo angosto (1000–1199 px y Teoría): solo íconos y abreviaturas */
+html.sb-rail .sbar{padding:12px 8px 24px max(8px,env(safe-area-inset-left,0px))}
+html.sb-rail .sb-in{gap:10px}
+html.sb-rail .sb-gl,html.sb-rail .sb-parts{display:none}
+html.sb-rail .sb-g+.sb-g{border-top:1px solid var(--line);padding-top:10px}
+html.sb-rail .sb-i{flex-direction:column;justify-content:center;gap:1px;min-height:50px;padding:5px 2px;text-align:center}
+html.sb-rail .sb-i.pr{min-height:42px}
+html.sb-rail .sb-t{flex:none;max-width:100%;font-size:10.5px;font-weight:500;letter-spacing:-.01em}
+html.sb-rail .sb-i.pr .sb-t{display:none}
+html.sb-rail .sb-v:not(.ok):not(.warn){display:none}
+html.sb-rail .sb-v.ok,html.sb-rail .sb-v.warn{position:absolute;top:5px;right:9px;width:8px;height:8px;font-size:0;background:currentColor;box-shadow:0 0 0 2px var(--bg)}
+html.sb-rail .sb-ind::before{top:12px;bottom:12px}
+/* columna derecha «En esta página» */
+html.sb-toc .sbtoc{display:grid;align-content:start;gap:12px;position:fixed;z-index:5;right:0;bottom:0;top:calc(env(safe-area-inset-top,0px) + var(--apph) + 1px);width:var(--tcw);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;contain:strict;padding:30px max(16px,env(safe-area-inset-right,0px)) 28px 8px}
+.st-h{font:500 10.5px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-left:14px}
+.st-l{list-style:none;margin:0;padding:0;display:grid;gap:1px;border-left:1px solid var(--line)}
+.st-l button{all:unset;box-sizing:border-box;display:flex;align-items:baseline;gap:9px;width:100%;margin-left:-1px;padding:5px 8px 5px 13px;border-left:2px solid transparent;border-radius:0 8px 8px 0;color:var(--muted);font:400 13.5px/1.35 var(--f-body);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.st-l button:hover{color:var(--ink);background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+.st-d{flex:none;width:8px;height:8px;border-radius:50%;border:1.5px solid currentColor;translate:0 -1px;opacity:.8}
+.st-l li.on .st-d{background:var(--accent);border-color:var(--accent);opacity:1}
+.st-t{min-width:0;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.st-l li.cur button{color:var(--ink);font-weight:500;border-left-color:var(--accent)}
+.st-b{display:flex;flex-wrap:wrap;gap:6px;padding-left:13px;margin-top:4px}
+.st-b .btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:5px 11px;border-radius:999px}
+.st-b .btn svg{width:14px;height:14px;flex:none}
+.st-b .btn:disabled{opacity:.45;cursor:default}
+.st-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+/* con la columna derecha, sus botones reemplazan la barra «Desplegar / Plegar todo» de la página */
+html.sb-toc section.page:not(#teoria) .fbar{display:none}
+/* Teoría: índice un poco más ancho; los puntos de avance a la derecha, sin saltar de línea */
+html.sb-on .theory{grid-template-columns:256px minmax(0,1fr)}
+html.sb-on .toc{top:calc(env(safe-area-inset-top,0px) + var(--apph) + 16px)}
+html.sb-on .toc li{position:relative;padding-right:30px}
+html.sb-on .toc .tdots{position:absolute;right:0;top:0;margin:0}
+html.sb-on .tocbar{max-width:none}
+/* movimiento (con «reducir movimiento», nada se desliza) */
+@media (prefers-reduced-motion:no-preference){
+  .sb-ind{transition:translate .42s cubic-bezier(.34,1.25,.64,1),height .3s cubic-bezier(.2,.8,.2,1),opacity .2s}
+  .sb-ind.instant{transition:none}
+  .sb-i,.sb-pt{transition:background-color .15s,color .15s,scale .35s cubic-bezier(.34,1.56,.64,1)}
+  .sb-i:active,.sb-pt:active{scale:.96;transition-duration:.08s}
+  .sb-pb i{transition:width .45s ease}
+  html.sb-on .sbar,html.sb-toc .sbtoc{transition:top .25s ease}
+  .st-l button{transition:color .15s,background-color .15s,border-color .2s}
+  .st-d{transition:background-color .2s,border-color .2s}
+  /* transición de página (v17): la barra lateral no se mueve; solo se desliza el contenido */
+  html.vt-page .sbar{view-transition-name:vt-side}
+  html.vt-page::view-transition-old(vt-side){display:none}
+  html.vt-page::view-transition-new(vt-side),html.vt-page::view-transition-group(vt-side){animation:none}
+}
+@media print{.sbar,.sbtoc{display:none!important}html.sb-on .wrap{margin-left:auto;margin-right:auto}}
 </style>
 
 <header class="appbar" id="appbar">
@@ -1055,6 +1159,11 @@ window.matchMedia=function(q){return om.call(window,fix(q));};
 var walk=function(rs){for(var i=0;i<rs.length;i++){var r=rs[i];if(r.media&&/prefers-reduced-motion/i.test(r.media.mediaText)){try{r.media.mediaText=fix(r.media.mediaText);}catch(e){}}if(r.cssRules)walk(r.cssRules);}};
 var all=function(){for(var i=0;i<document.styleSheets.length;i++){try{walk(document.styleSheets[i].cssRules);}catch(e){}}};
 all();document.addEventListener('DOMContentLoaded',all);})();</script>
+<script>/* v19 · barra lateral: el modo (≥ 1000 px) se marca antes del primer dibujo para que la página no salte cuando el script
+   del final arma la barra; si por algo la barra no llega a existir, se quita al cargar y vuelven las pestañas */(function(){
+var m=window.matchMedia;if(!m||!m('(min-width:1000px)').matches)return;var r=document.documentElement;r.classList.add('sb-on');
+if(!m('(min-width:1200px)').matches||/^#teoria$/.test(location.hash))r.classList.add('sb-rail');
+addEventListener('load',function(){if(!document.getElementById('sbar'))r.classList.remove('sb-on','sb-rail');});})();</script>
 <div class="appbar-in">
   <div class="abrow">
     <a class="brand" href="#resumen" aria-label="Laboratorio LGDR: ir al resumen">
@@ -6218,6 +6327,171 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
   b.setAttribute('aria-pressed',String(A.on)); b.setAttribute('aria-label',l); b.title=l;
   b.addEventListener('click',()=>{ try{ if(A.on) localStorage.removeItem('lgdr-anim'); else localStorage.setItem('lgdr-anim','1'); }catch(e){ return; } location.reload(); });
   theme.parentNode.insertBefore(b,theme);
+})();
+</script>
+<script>
+/* ==== v19 · etapa 5: barra lateral en computadora e índice «En esta página» (solo presentación) ====
+   ≥ 1000 px: la fila de pestañas (#tabs) se oculta y la reemplaza una barra lateral fija con grupos (Inicio, Aprender,
+   Practicar, Repasar), avance y candados de cada parte de la teoría y el estado de cada práctica. 1000–1199 px (y en
+   Teoría, que tiene su propio índice): solo íconos y P1…P7. ≥ 1440 px: columna derecha con los plegables de la página
+   (● abierto, ○ plegado) y «Desplegar / Plegar todo». Los enlaces son los mismos #hash que las pestañas, así que la
+   navegación, las transiciones (v17) y el progreso no cambian; todo se lee del DOM que ya existe (pestañas, índice de
+   teoría, anillo de progreso, tabla de Resumen, contador de Preguntas y plegables de v15). */
+(()=>{
+  const d=document, root=d.documentElement, tabs=d.getElementById('tabs'), bar=d.getElementById('appbar');
+  if(!tabs||!bar||!window.matchMedia) return;
+  const mOn=matchMedia('(min-width:1000px)'), mFull=matchMedia('(min-width:1200px)'), mToc=matchMedia('(min-width:1440px)');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const sv=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+  const IC={
+    resumen:sv('<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/>'),
+    teoria:sv('<path d="M2.5 5.5h6a3.5 3.5 0 0 1 3.5 3.5v11a2.8 2.8 0 0 0-2.8-2.8H2.5z"/><path d="M21.5 5.5h-6A3.5 3.5 0 0 0 12 9v11a2.8 2.8 0 0 1 2.8-2.8h6.7z"/>'),
+    simulador:sv('<path d="M3.5 3.5v17h17"/><path d="M7 15.5c2.2 0 2.6-8 5-8s2.4 5.5 4.5 5.5c1.3 0 2-1.4 3-3"/>'),
+    preguntas:sv('<circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.3v.01"/>')
+  };
+  const LOCK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="5" y="10" width="14" height="11" rx="2.5"/></svg>';
+  const GROUP={resumen:'Inicio',teoria:'Aprender',preguntas:'Repasar'};
+  const mk=(tag,cls,txt)=>{ const e=d.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
+
+  /* estado de cada práctica, tal como lo dice la tabla de Resumen (Cumple / Ajuste propuesto / …) */
+  const STATUS={};
+  d.querySelectorAll('#resumen table tbody tr').forEach(tr=>{ const m=(tr.cells[0]&&tr.cells[0].textContent||'').match(/^\s*P(\d+)/), pill=tr.querySelector('.pill');
+    if(m&&pill) STATUS['p'+m[1]]={ok:pill.classList.contains('ok'),txt:pill.textContent.trim()}; });
+
+  /* ---------- barra lateral ---------- */
+  const sb=mk('nav','sbar'); sb.id='sbar'; sb.setAttribute('aria-label','Secciones del laboratorio');
+  const inner=mk('div','sb-in'), ind=mk('span','sb-ind'); ind.setAttribute('aria-hidden','true'); inner.appendChild(ind); sb.appendChild(inner);
+  const groups={}, links=[];
+  const group=name=>{ if(groups[name]) return groups[name]; const g=mk('div','sb-g'); g.appendChild(mk('span','sb-gl',name)); inner.appendChild(g); return groups[name]=g; };
+  let vTeo=null, vPre=null, parts=null;
+  [...tabs.querySelectorAll('a[href^="#"]')].forEach(t=>{
+    const pg=t.getAttribute('href').slice(1), sm=t.querySelector('small'), head=[...t.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim();
+    const g=group(GROUP[pg]||'Practicar'), a=mk('a','sb-i'); a.href='#'+pg; a.dataset.pg=pg;
+    const prac=/^p\d+$/.test(pg)&&sm, ic=mk('span','sb-ic'+(prac?' sb-bd':''));
+    if(prac) ic.textContent=head; else ic.innerHTML=IC[pg]||IC.simulador;
+    a.classList.add(prac?'pr':'ico'); a.append(ic,mk('span','sb-t',prac?sm.textContent.trim():head));
+    let tip=prac?`${head} · ${sm.textContent.trim()}`:head;
+    const st=STATUS[pg];
+    if(st){ const v=mk('span','sb-v '+(st.ok?'ok':'warn'),st.ok?'✓':'!'); v.setAttribute('aria-hidden','true'); a.appendChild(v); tip+=` — ${st.txt}`; }
+    if(pg==='teoria'){ vTeo=mk('span','sb-v'); a.appendChild(vTeo); }
+    if(pg==='preguntas'){ vPre=mk('span','sb-v'); a.appendChild(vPre); }
+    a.title=tip; a.setAttribute('aria-label',tip); g.appendChild(a); links.push(a);
+    if(pg==='teoria'){ parts=mk('div','sb-parts'); parts.setAttribute('role','group'); parts.setAttribute('aria-label','Partes de la teoría'); g.appendChild(parts); }
+  });
+  bar.after(sb);
+
+  /* partes de la teoría: nombre, candado y avance salen del índice de Teoría (lo actualiza refreshToc/applyLocks) */
+  const PT={};
+  d.querySelectorAll('nav.toc span.tocg[data-tocp]').forEach(s=>{ const r=s.dataset.tocp, txt=[...s.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim();
+    const name=txt.split('·').slice(1).join('·').trim()||txt, a=mk('a','sb-pt'); a.href='#teoria'; a.dataset.part=r;
+    const pr=mk('span','sb-pr'); pr.innerHTML=LOCK; pr.prepend(mk('b',null,r));
+    const pb=mk('span','sb-pb'), pi=mk('i'); pb.appendChild(pi); a.append(pr,mk('span','sb-pn',name),pb);
+    if(parts) parts.appendChild(a); PT[r]={a,src:s,bar:d.querySelector(`[data-tocbar="${r}"] i`),name}; });
+
+  const qCount=()=>{ const t=d.querySelector('#preguntas [data-qtotal]'), n=d.querySelector('#preguntas [data-qdone]'), T=t?+t.textContent:0;
+    if(T>0) return `${+n.textContent||0}/${T}`;
+    try{ const m=JSON.parse(localStorage.getItem('lgdr-preguntas-v1')||'{}'); const k=m&&typeof m==='object'?Object.keys(m).filter(x=>m[x]).length:0; return k?String(k):''; }catch(e){ return ''; } };
+  let sq=0;
+  function side(){ sq=0;
+    const pv=d.querySelector('#abProg .abpv'), pill=d.getElementById('abProg');
+    if(vTeo){ const v=pill&&!pill.hidden&&pv?pv.textContent.replace(/\s+/g,' ').trim():''; vTeo.textContent=v;
+      const a=vTeo.parentNode, l='Teoría'+(v?` — ${v} de avance`:''); a.title=l; a.setAttribute('aria-label',l); }
+    if(vPre){ const q=qCount(); vPre.textContent=q; const a=vPre.parentNode, l='Preguntas'+(q?` — ${q} dominadas`:''); a.title=l; a.setAttribute('aria-label',l); }
+    Object.keys(PT).forEach(r=>{ const P=PT[r], lk=P.src.classList.contains('locked'), w=P.bar?parseFloat(P.bar.style.width)||0:0, ok=w>=99.5;
+      P.a.classList.toggle('lk',lk); P.a.classList.toggle('ok',ok&&!lk); P.a.querySelector('.sb-pb i').style.width=(lk?0:Math.min(100,w))+'%';
+      const l=`Parte ${r} · ${P.name}: `+(lk?'bloqueada (aprueba la evaluación anterior)':`${Math.round(w)} % de las preguntas`); P.a.title=l; P.a.setAttribute('aria-label',l); });
+  }
+  const sideSoon=()=>{ if(!sq) sq=requestAnimationFrame(side); };
+  const tocNav=d.querySelector('nav.toc'); if(tocNav) new MutationObserver(sideSoon).observe(tocNav,{subtree:true,attributes:true,attributeFilter:['class','style']});
+  const abp=d.getElementById('abProg'); if(abp) new MutationObserver(sideSoon).observe(abp,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden']});
+  const qh=d.querySelector('#preguntas .qprog'); if(qh) new MutationObserver(sideSoon).observe(qh,{subtree:true,childList:true,characterData:true});
+  side();
+
+  /* clic en una parte: va a Teoría y baja a esa parte (o a su candado, si sigue bloqueada) */
+  let pendingPart=null;
+  const goPart=r=>{ const ph=d.querySelector(`.tphase[data-phase="${r}"]`), lk=d.querySelector(`.lockp[data-lock="${r}"]:not([hidden])`);
+    const t=ph&&!ph.hidden?(ph.querySelector('.tpart')||ph):(lk||null); if(t) t.scrollIntoView({block:'start',behavior:reduce.matches?'auto':'smooth'}); };
+  sb.addEventListener('click',e=>{ const p=e.target.closest('.sb-pt'); if(!p) return; e.preventDefault();
+    if(cur==='teoria') goPart(p.dataset.part); else { pendingPart=p.dataset.part; location.hash='#teoria'; } });
+
+  /* indicador que se desliza hasta la página actual */
+  const place=anim=>{ const a=links.find(x=>x.hasAttribute('aria-current'));
+    if(!a||!root.classList.contains('sb-on')){ ind.style.opacity='0'; return; }
+    if(!anim||ind.style.opacity!=='1') ind.classList.add('instant');
+    ind.style.translate=`0 ${a.offsetTop}px`; ind.style.height=a.offsetHeight+'px'; ind.style.opacity='1';
+    /* en ventanas bajas la barra se desplaza: se mueve lo justo para que el elemento actual se vea */
+    if(sb.scrollHeight>sb.clientHeight){ const rs=sb.getBoundingClientRect(), ra=a.getBoundingClientRect();
+      if(ra.top<rs.top+8) sb.scrollTop-=rs.top+8-ra.top; else if(ra.bottom>rs.bottom-8) sb.scrollTop+=ra.bottom-rs.bottom+8; }
+    if(ind.classList.contains('instant')){ void ind.offsetHeight; ind.classList.remove('instant'); } };
+
+  /* ---------- columna derecha «En esta página» ---------- */
+  const toc=mk('aside','sbtoc'); toc.id='sbtoc'; toc.setAttribute('aria-label','En esta página');
+  const tl=mk('ol','st-l'), tb=mk('div','st-b'); tb.setAttribute('role','group'); tb.setAttribute('aria-label','Plegar o desplegar el contenido de esta página');
+  const fb=d.querySelector('section.page .fbar');
+  const bOpen=mk('button','btn'), bClose=mk('button','btn'); bOpen.type=bClose.type='button';
+  const fb1=fb&&fb.querySelector('[data-fall="1"]'), fb0=fb&&fb.querySelector('[data-fall="0"]');
+  if(fb1) bOpen.innerHTML=fb1.innerHTML; else bOpen.textContent='Desplegar todo';
+  if(fb0) bClose.innerHTML=fb0.innerHTML; else bClose.textContent='Plegar todo';
+  tb.append(bOpen,bClose); toc.append(mk('span','st-h','En esta página'),tl,tb); sb.after(toc);
+  const FL=()=>window.__lgdrFolds;
+  let items=[], curIdx=-1;
+  const watched=new WeakSet(), fmo=new MutationObserver(()=>tocSoon());
+  const titleOf=el=>{ const t=el.querySelector('.fold-h .ftt'); if(t&&el.tagName!=='DETAILS') return [...t.childNodes].map(n=>n.textContent.trim()).filter(Boolean).join(' ');
+    const s=el.querySelector(':scope>summary'); if(!s) return ''; let x='';
+    s.childNodes.forEach(n=>{ if(n.nodeType===3||/^(CODE|B|I|EM|STRONG)$/.test(n.nodeName)) x+=n.textContent; });
+    return (x.trim()||s.textContent.trim()).replace(/\s+/g,' ').replace(/:$/,''); };
+  /* todos los plegables de v15 (se buscan una vez; Preguntas agrega los suyos al abrirse por primera vez) */
+  let ALL=null; const allFolds=()=>ALL||(ALL=[...d.querySelectorAll('.fold,details')].filter(el=>el.__lgdrFold));
+  function buildToc(){
+    const p=cur; items=p&&p!=='teoria'?allFolds().filter(el=>el.__lgdrFold.page===p&&!el.closest('[hidden]:not(.fold-b)')):[];
+    tl.textContent=''; curIdx=-1;
+    items.forEach((el,i)=>{ if(!watched.has(el)){ watched.add(el); fmo.observe(el,{attributes:true,attributeFilter:['class','open']}); }
+      const li=mk('li'), b=mk('button'); b.type='button'; b.dataset.i=i;
+      const dot=mk('span','st-d'); dot.setAttribute('aria-hidden','true');
+      b.append(dot,mk('span','st-t',titleOf(el)),mk('span','st-vh')); li.appendChild(b); tl.appendChild(li); });
+    root.classList.toggle('sb-toc',root.classList.contains('sb-on')&&mToc.matches&&items.length>0);
+    updToc(); if(!sp) sp=requestAnimationFrame(spy); }
+  let tq=0;
+  const tocSoon=()=>{ if(!tq) tq=requestAnimationFrame(()=>{ tq=0; updToc(); }); };
+  function updToc(){ if(!items.length) return; let on=0;
+    items.forEach((el,i)=>{ const o=!!(el.__lgdrFold&&el.__lgdrFold.on); if(o) on++; const li=tl.children[i]; if(!li) return;
+      li.classList.toggle('on',o); li.querySelector('.st-vh').textContent=o?' (abierto)':' (plegado)'; });
+    bOpen.disabled=on===items.length; bClose.disabled=on===0; }
+  tl.addEventListener('click',e=>{ const b=e.target.closest('button[data-i]'); if(!b) return; const el=items[+b.dataset.i]; if(!el) return;
+    /* scrollIntoView (envuelto por v15) abre primero el plegable, sin animación, para que la página ya tenga su alto final */
+    el.scrollIntoView({block:'start',behavior:reduce.matches?'auto':'smooth'}); });
+  tb.addEventListener('click',e=>{ const b=e.target.closest('button'); const fl=FL(); if(!b||!fl||!cur) return; fl.all(cur,b===bOpen); });
+  /* bloque que se está leyendo: el último cuyo encabezado ya pasó bajo la barra */
+  function spy(){ sp=0; if(!root.classList.contains('sb-toc')) return;
+    const lim=bar.getBoundingClientRect().bottom+96; let k=-1;
+    for(let i=0;i<items.length;i++){ const r=items[i].getBoundingClientRect(); if(r.height&&r.top<=lim) k=i; else if(r.top>lim) break; }
+    if(k!==curIdx){ if(tl.children[curIdx]) tl.children[curIdx].classList.remove('cur'); curIdx=k; if(tl.children[k]) tl.children[k].classList.add('cur'); } }
+  let sp=0; addEventListener('scroll',()=>{ if(!sp&&root.classList.contains('sb-toc')) sp=requestAnimationFrame(spy); },{passive:true});
+
+  /* ---------- página actual y modo (lo dicta #tabs, que actualiza show()) ---------- */
+  let cur=null;
+  const pageNow=()=>{ const a=tabs.querySelector('a[aria-current="page"]'); return a?a.getAttribute('href').slice(1):'resumen'; };
+  function sync(){
+    const p=pageNow(), on=mOn.matches, rail=on&&(!mFull.matches||p==='teoria');
+    const modeChanged=on!==root.classList.contains('sb-on')||rail!==root.classList.contains('sb-rail'), pageChanged=p!==cur;
+    root.classList.toggle('sb-on',on); root.classList.toggle('sb-rail',rail);
+    links.forEach(a=>{ if(a.dataset.pg===p) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current'); });
+    cur=p;
+    /* la fila de pestañas se oculta o vuelve: el alto que usan las barras fijas de las simulaciones (--navh) cambia */
+    if(modeChanged) root.style.setProperty('--navh',tabs.offsetHeight+'px');
+    if(pageChanged||modeChanged||root.classList.contains('sb-toc')!==(on&&mToc.matches&&items.length>0)) buildToc();
+    place(pageChanged&&!modeChanged);
+    if(pageChanged&&pendingPart&&p==='teoria'){ const r=pendingPart; pendingPart=null; requestAnimationFrame(()=>requestAnimationFrame(()=>goPart(r))); }
+    else if(pageChanged) pendingPart=null;
+  }
+  new MutationObserver(sync).observe(tabs,{subtree:true,attributes:true,attributeFilter:['aria-current']});
+  [mOn,mFull,mToc].forEach(m=>m.addEventListener('change',sync));
+  /* los plegables de Preguntas se arman al abrir la página por primera vez */
+  const PI=window.__pageInit=window.__pageInit||{};
+  if(typeof PI.preguntas==='function'){ const o=PI.preguntas; PI.preguntas=function(){ const r=o.apply(this,arguments); try{ ALL=null; if(cur==='preguntas') buildToc(); sideSoon(); }catch(e){} return r; }; }
+  /* las fuentes web cambian el alto de los elementos: se vuelve a medir el indicador */
+  if(d.fonts&&d.fonts.ready) d.fonts.ready.then(()=>place(false));
+  sync();
 })();
 </script>
 </body></html>
