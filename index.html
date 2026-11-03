@@ -1260,6 +1260,15 @@ dialog.sync.rpd{max-width:880px;height:94dvh;max-height:94dvh}
   #repPrint *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   @page{margin:15mm 14mm}
 }
+/* ---------- pestaña PDF ---------- */
+.pdfacts{display:flex;flex-wrap:wrap;gap:10px}
+.pdfacts .sy-b{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.pdflist{list-style:none;margin:0;padding:0;display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.pdflist a{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:2px 10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);text-decoration:none;min-height:44px}
+.pdflist a:hover{border-color:var(--accent);background:var(--accent-soft)}
+.pdflist b{font:700 17px var(--f-mono);color:var(--accent)}
+.pdflist span{font-weight:600;font-size:14.5px;line-height:1.3}
+.pdflist i{font-style:normal;color:var(--muted);font-size:18px}
 </style>
 
 <header class="appbar" id="appbar">
@@ -1304,6 +1313,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
   <a href="#p6">P6 <small>PID</small></a>
   <a href="#p7">P7 <small>Adelanto‑atraso</small></a>
   <a href="#preguntas">Preguntas</a>
+  <a href="#pdf">PDF</a>
 </nav>
 </div>
 </header>
@@ -2881,6 +2891,39 @@ legend('sin comp.','adelanto-atraso'); ylabel('e(t)')</pre></div><div class="bd"
   <p class="qroute"><b>Ruta de estudio:</b> los temas van en el orden en que se construyen los conceptos (fundamentos de polos y ceros → respuesta → especificaciones → lazo cerrado → estabilidad → error → LGDR → compensadores → verificación). Dentro de cada tema, las preguntas avanzan de <span class="qlv B">Básico</span> (definiciones y fórmulas) a <span class="qlv I">Intermedio</span> (cálculos y razonamiento) y <span class="qlv A">Avanzado</span> (diseño y diagnóstico de las prácticas). Si quieres una primera vuelta rápida, filtra sólo las básicas de todos los temas.</p>
   <div class="qtoc" data-qtoc></div>
   <div data-qlist class="qlist"></div>
+</section>
+<section class="page" id="pdf" data-page hidden>
+  <div class="phead"><h2>Prácticas en PDF</h2><span class="src">Las 7 prácticas en un solo archivo para leer sin conexión o imprimir</span></div>
+  <div class="card" style="display:grid;gap:14px">
+    <p style="margin:0">Incluye una portada con índice, el planteamiento, el banco de pruebas (gráficas y tabla con la <i>K</i> de diseño), el desarrollo, la verificación, las conclusiones y el código MATLAB de cada práctica.</p>
+    <div class="pdfacts">
+      <a class="sy-b pri" href="practicas.pdf" target="_blank" rel="noopener">Abrir PDF</a>
+      <a class="sy-b" href="practicas.pdf" download="Laboratorio-LGDR-practicas.pdf">Descargar</a>
+    </div>
+  </div>
+  <div class="card" style="display:grid;gap:12px">
+    <h3 style="margin:0">Abrir en una práctica</h3>
+    <ol class="pdflist">
+      <li><a href="practicas.pdf#p1" target="_blank" rel="noopener"><b>P1</b><span>Ajuste de ganancia</span><i>›</i></a></li>
+      <li><a href="practicas.pdf#p2" target="_blank" rel="noopener"><b>P2</b><span>PI ideal</span><i>›</i></a></li>
+      <li><a href="practicas.pdf#p3" target="_blank" rel="noopener"><b>P3</b><span>Atraso de fase</span><i>›</i></a></li>
+      <li><a href="practicas.pdf#p4" target="_blank" rel="noopener"><b>P4</b><span>PD ideal</span><i>›</i></a></li>
+      <li><a href="practicas.pdf#p5" target="_blank" rel="noopener"><b>P5</b><span>Adelanto de fase</span><i>›</i></a></li>
+      <li><a href="practicas.pdf#p6" target="_blank" rel="noopener"><b>P6</b><span>PID</span><i>›</i></a></li>
+      <li><a href="practicas.pdf#p7" target="_blank" rel="noopener"><b>P7</b><span>Adelanto‑atraso</span><i>›</i></a></li>
+    </ol>
+    <p class="hint" style="margin:0;font-size:12.5px;color:var(--muted)">Algunos visores del celular abren siempre en la primera página; en ese caso usa el índice de la portada.</p>
+  </div>
+  <div class="card">
+    <h3>Cómo moverte dentro del PDF</h3>
+    <ul class="disc">
+      <li><b>Portada = índice:</b> toca el nombre de una práctica o cualquiera de sus secciones (Planteamiento, Banco de pruebas, Desarrollo, Verificación, Código MATLAB…).</li>
+      <li><b>Arriba y abajo de cada práctica</b> hay una barra con <b>◀ práctica anterior</b>, <b>Índice</b> y <b>práctica siguiente ▶</b>.</li>
+      <li>Debajo del título de cada práctica, unos botones saltan directo a cada sección; al final de cada sección, <b>↑ Inicio</b> regresa al principio de la práctica.</li>
+      <li>El PDF también trae <b>marcadores</b> (esquema): en el lector, abre el panel de marcadores para ver todas las prácticas y sus pasos.</li>
+    </ul>
+    <p class="note ok" style="margin:12px 0 0">Las gráficas del PDF son una captura con la <i>K</i> de diseño. Para mover <i>K</i> y ver cómo cambian los polos y la respuesta, usa el banco de pruebas de cada práctica aquí en la página.</p>
+  </div>
 </section>
 </div>
 
@@ -6330,7 +6373,8 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
     resumen:sv('<path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5.5h4V20"/>'),
     teoria:sv('<path d="M2.5 5.5h6a3.5 3.5 0 0 1 3.5 3.5v11a2.8 2.8 0 0 0-2.8-2.8H2.5z"/><path d="M21.5 5.5h-6A3.5 3.5 0 0 0 12 9v11a2.8 2.8 0 0 1 2.8-2.8h6.7z"/>'),
     simulador:sv('<path d="M3.5 3.5v17h17"/><path d="M7 15.5c2.2 0 2.6-8 5-8s2.4 5.5 4.5 5.5c1.3 0 2-1.4 3-3"/>'),
-    preguntas:sv('<circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.3v.01"/>')
+    preguntas:sv('<circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.3v.01"/>'),
+    pdf:sv('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6m-2.5-2.5L12 17l2.5-2.5"/>')
   };
   const LOCK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="5" y="10" width="14" height="11" rx="2.5"/></svg>';
   const GROUP={resumen:'Inicio',teoria:'Aprender',preguntas:'Repasar'};

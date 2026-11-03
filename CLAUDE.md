@@ -299,6 +299,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   funciona con Ctrl+P (`beforeprint`). Depuración: `window.__lgdrRep.{open,prep,done,data}`. PDF de prueba (P4): 6 páginas carta.
   Si cambian los números de una práctica, revisar también el texto de `R` (las tablas/figuras copiadas se actualizan solas).
 
+- **Hecho (v23): PDF con todas las prácticas.** Pestaña «PDF» (`<a href="#pdf">` en `nav#tabs`, después de Preguntas;
+  en la barra lateral cae en «Practicar» con ícono `IC.pdf`) → `section#pdf.page`: Abrir / Descargar `practicas.pdf`, lista
+  P1–P7 con `practicas.pdf#pN` (destinos con nombre; algunos visores del celular los ignoran) y cómo navegar. CSS «pestaña PDF»
+  (`.pdfacts`, `.pdflist`) antes del `</style>` principal.
+  `practicas.pdf` (A4, ~53 páginas, ~3.7 MB) se **genera** con `node herramientas/pdf-practicas.js` (Playwright, tema claro,
+  movimiento reducido; no toca `index.html`): abre cada práctica, despliega los plegables, abre `details` (arma el diagrama de
+  Simulink), captura las gráficas del banco como imagen, quita los plegables (cada tarjeta recupera su título) y lo interactivo;
+  agrega portada-índice `#pdf-indice` con enlaces a cada práctica y sección, barra ◀ anterior · Índice · siguiente ▶ arriba y
+  abajo de cada práctica, chips de secciones y «↑ Inicio» al final de cada sección; marcadores (`outline: true`).
+  En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
+  **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
