@@ -180,6 +180,27 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   al cerrar la sección abierta se pliega con WAAPI y luego se repite el clic (solo si sigue abierta).
   **No usar `:is()` largos en la posición derecha**: Chrome no los indexa y cada cambio de página tardaba ~19 % más;
   escritos uno por uno queda en ~+7 %. Todo el movimiento está en `prefers-reduced-motion: no-preference`.
+- **Hecho (v15 · etapa 2): Contenido plegable con resumen.** CSS «v15 · plegables» antes del `</style>` principal y
+  `<script>` propio al final del `<body>` (solo presentación). Todo empieza plegado; lo abierto se guarda en
+  `localStorage['lgdr-plegado-v1']` = `{"<página>:<clave>":1}` (no entra en la sincronización). Envoltorio `div.fold` >
+  `h3.fold-t` > `button.fold-h` (`.fnn` número, `.ftt` título, `.fss` resumen, `.fcv` flecha) + `div.fold-b` con
+  `hidden="until-found"` (Ctrl+F lo abre; `beforematch` marca el estado). Se anula `[hidden]{display:none!important}` solo en
+  `.fold-b[hidden=until-found]` (queda `content-visibility:hidden`). La tarjeta original va dentro sin su marco y con su título
+  duplicado oculto por CSS. P1–P7: Planteamiento (resumen = planta y especificación de la tabla de Resumen), Banco (resumen en
+  vivo con un MutationObserver: sistema, K, estable, %OS, Ts), secciones 1–4 (resumen = sus `h4`, o las negritas iniciales, o
+  la primera frase); `details.code` se adopta tal cual. Resumen: tabla, método, uso del banco, `puntoZeta.m` y «Acerca de».
+  Teoría: `p.lede` → `details.about.fabout`; tarjeta de avance compacta (`.fcomp`, oculta `.route` y `.smap`) con botón
+  `.fdetb` «Ver detalle» que se vuelve a poner tras cada `renderProgress()`; cada sección cerrada muestra `p.tsum` (primera
+  frase, conserva KaTeX). El acordeón no cambia (una sección a la vez) y «Desplegar todo» en Teoría solo abre «Acerca de» y el
+  detalle del avance. Simulador: «Acerca de», Fórmulas en vivo y Explícame (la herramienta y gráficas siguen a la vista).
+  Preguntas: cada `.qtopic` se pliega (las `.q` pasan a `.fold-b`; `update()` las sigue encontrando) con «a/b dominadas» y
+  niveles; se engancha envolviendo `__pageInit.preguntas`. Barra `.fbar` «Desplegar todo / Plegar todo» en `.phead` (en
+  Resumen, antes de la tabla); cascada de 45 ms al desplegar, cancelable. `Element.prototype.scrollIntoView` envuelto para
+  abrir el plegable del destino (enlaces «Ver este sistema en el Banco», chips de temas). Animación con WAAPI (altura) y sin
+  animación con movimiento reducido. Probado: lienzos de los 7 bancos idénticos píxel a píxel a la versión anterior tras
+  desplegar y mover K; claves de progreso intactas; cambio de pestaña más rápido (P1 88→31 ms, P6 137→68, Simulador 198→75).
+  **Ojo para probar Ctrl+F con enlaces `#p6:~:text=`:** el error del salto a Teoría oculta la página antes de buscar; se probó
+  en Resumen.
 - **Error encontrado (viene del artefacto original):** al cargar la página (con o sin `#p1` etc.) a los ~0.5 s
   salta a `#teoria`, porque `buildAccordion()` llama `openSection(o,false)` y esta cambia `location.hash` si no
   estás en Teoría. Arreglo propuesto (lógica, requiere aprobación): que la apertura inicial no cambie de página.

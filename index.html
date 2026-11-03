@@ -910,6 +910,89 @@ html.mo-rng .kctl input[type=range]:focus-visible,html.mo-rng .zbar input[type=r
     html.mo-rng .kctl input[type=range]:hover::-moz-range-thumb,html.mo-rng .zbar input[type=range]:hover::-moz-range-thumb{scale:1.12}
   }
 }
+/* ==== v15 · contenido plegable con resumen (solo presentación) ==== */
+/* la regla global [hidden]{display:none!important} impediría que Ctrl+F encuentre el texto plegado: aquí el cuerpo queda con tamaño 0 pero buscable */
+.fold-b[hidden=until-found i]{display:block!important;content-visibility:hidden}
+.fold{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-width:0;transition:border-color .2s}
+.fold.open{border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+section.page>.fold+.fold,section.page>.fold+details.code,section.page>details.code+.fold,.grid-sum+.fold,.fold+.grid-sum{margin-top:-10px}
+.grid-sum:has(>.fold){align-items:start}
+.fold-t{margin:0;font-size:inherit;font-weight:inherit;line-height:inherit}
+.fold-h{all:unset;box-sizing:border-box;width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:'n t c' 'n s c';column-gap:12px;row-gap:2px;align-items:center;padding:13px 18px;cursor:pointer;border-radius:11px;color:var(--ink);-webkit-tap-highlight-color:transparent;text-align:left}
+.fold-h.nonum{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:'t c' 's c'}
+.fold-h:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.fold-h .fnn{grid-area:n;font:600 13px var(--f-mono);color:var(--accent);border:1.5px solid var(--accent);border-radius:6px;padding:1px 7px;min-width:12px;text-align:center}
+.fold-h .ftt{grid-area:t;font:600 18px var(--f-display);font-stretch:90%;line-height:1.2;min-width:0}
+.fold-h .fss{grid-area:s;font:400 13.5px/1.45 var(--f-body);color:var(--muted);min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.fold-h .fss:empty{display:none}
+.fold-h .fss b{color:var(--ink);font-weight:600}
+.fold-h .fss .fsep{opacity:.55;margin:0 .35em}
+.fold-h .fcv{grid-area:c;color:var(--muted);font-size:14px;display:inline-block;transition:transform .25s}
+.fold.open>.fold-t .fcv,.fold.open>.qth .fcv{transform:rotate(180deg)}
+.fold.open>.fold-t .fss,.qtopic.fold.open .fss{white-space:normal}
+.fold-b{min-width:0}
+.fold-b.fanim{overflow:hidden}
+/* la tarjeta original queda dentro del plegable, sin su marco (el marco lo pone el plegable) */
+.fold>.fold-b>.card{border:0;border-radius:0;background:none;box-shadow:none;padding-top:2px}
+.fold>.fold-b>.card>h3:first-child,.fold>.fold-b>.card>.xh,.fold>.fold-b>.card>.phead:first-child>h3,.fold>.fold-b>.card>.fxhead:first-child>h4,.fold>.fold-b>.statement>div:first-child>h3:first-child{display:none}
+.fold>.fold-b>.bench>.phead{margin-top:-4px}
+.fold>.fold-b>.card>.fxhead:first-child{justify-content:flex-start}
+/* barra «Desplegar todo / Plegar todo» */
+.fbar{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.fbar .btn{display:inline-flex;align-items:center;gap:6px;position:static;font-size:12.5px;padding:5px 11px;border-radius:999px}
+.fbar .btn svg{width:14px;height:14px;flex:none}
+.fbar .btn:disabled{opacity:.45;cursor:default}
+.fbar.solo{display:flex;justify-content:flex-end;margin:-8px 0 -10px}
+.phead>.fbar{align-self:center}
+/* «Acerca de» en Teoría y Simulador */
+section.page>details.about.fabout{margin-top:-12px}
+section.page>details.about.fabout>.lede{margin-top:10px!important}
+/* tarjeta de avance compacta con «Ver detalle» */
+.card.prog.fcomp:not(.fdet) .route,.card.prog.fcomp:not(.fdet) .smap{display:none}
+.fdetb{display:inline-flex;align-items:center;gap:6px;justify-self:start;background:none;border:0;padding:4px 2px;font:600 13.5px var(--f-body);color:var(--accent);cursor:pointer;border-radius:6px}
+.fdetb::after{content:"";width:7px;height:7px;border-right:1.8px solid currentColor;border-bottom:1.8px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .25s}
+.card.prog.fdet .fdetb::after{transform:translateY(1px) rotate(-135deg)}
+.fdetb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* Teoría: primera frase de cada sección cerrada */
+.tsec.acc>.tsum{margin:-8px 0 0;padding:0 16px 13px calc(28px + 1.9em);font-size:14px;line-height:1.5;color:var(--muted);cursor:pointer;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tsec.acc.open>.tsum{display:none}
+.tsec.acc.locked>.tsum{opacity:.7;cursor:not-allowed}
+.tsec.acc>.tsum .katex{font-size:1em}
+.tsec.acc>.tsum .katex-display{display:inline;margin:0}
+@media (max-width:520px){.tsec.acc>.tsum{padding:0 12px 12px 12px;margin-top:-4px}}
+/* Preguntas: cada tema plegable con su contador */
+.qlist.fqlist{gap:10px}
+.qtopic.fold{background:none;border:0;border-radius:0;gap:0}
+.qtopic.fold>.qth{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:0 14px 0 0;gap:4px 10px;align-items:center;flex-wrap:nowrap;transition:border-color .2s}
+.qtopic.fold.open>.qth{border-color:color-mix(in srgb,var(--accent) 40%,var(--line))}
+.qtopic.fold>.qth>h3{flex:1 1 auto;min-width:0;font-size:inherit}
+.qtopic.fold>.qth>.src{flex:none;white-space:nowrap}
+.qtopic.fold .fold-h{border-radius:11px 0 0 11px}
+.qtopic.fold .fold-h .ftt{font-size:18px}
+.qtopic.fold .fold-h .ftt .tn{font-family:var(--f-mono);font-weight:500;color:var(--muted);margin-right:6px}
+.qtopic.fold>.fold-b:not([hidden]){display:grid;gap:10px;padding-top:10px}
+.qtopic.fold .fss .fok{color:var(--ok);font-weight:600}
+@media (max-width:560px){
+  .fold-h{padding:12px 14px;column-gap:10px}
+  .fold-h .ftt,.qtopic.fold .fold-h .ftt{font-size:16.5px}
+  .fold-h .fss{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .fold-h .fss:empty{display:none}
+  .qtopic.fold>.qth{flex-wrap:wrap;padding:0}
+  .qtopic.fold .fold-h{border-radius:11px}
+  .qtopic.fold>.qth>.src{padding:0 14px 10px;margin-top:-6px}
+  .phead>.fbar{margin-left:0}
+}
+@media (prefers-reduced-motion:no-preference){
+  .fold-h{transition:background-color .15s,scale .32s var(--mo-spring,ease)}
+  .fold-h:active{scale:.993;transition-duration:.06s}
+  .fold-h .fcv,.fdetb::after{transition:transform .45s var(--mo-spring,ease)}
+  @media (hover:hover) and (pointer:fine){
+    .fold-h:hover{background-color:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+    .fold:not(.open):hover,.qtopic.fold:not(.open)>.qth:hover{border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+    .fdetb:hover{text-decoration:underline;text-underline-offset:3px}
+  }
+}
+@media (prefers-reduced-motion:reduce){.fold,.fold-h .fcv,.fdetb::after,.qtopic.fold>.qth{transition:none}}
 </style>
 
 <header class="appbar" id="appbar">
@@ -5560,6 +5643,196 @@ document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details
     const done=()=>{ pass=true; try{ if(art.classList.contains('open')) b.click(); }finally{ pass=false; art.__moClosing=0; an.cancel(); body.classList.remove('closing'); } };
     an.finished.then(done,done);
   },true);
+})();
+</script>
+<script>
+/* ==== v15 · contenido plegable con resumen (solo presentación; no toca estado, progreso ni lógica) ==== */
+(()=>{
+  const d=document, KEY='lgdr-plegado-v1', reduce=matchMedia('(prefers-reduced-motion: reduce)');
+  const own=(o,k)=>Object.prototype.hasOwnProperty.call(o,k);
+  let MEM={};
+  try{ const v=JSON.parse(localStorage.getItem(KEY)||'{}'); if(v&&typeof v==='object'&&!Array.isArray(v)) Object.keys(v).forEach(k=>{ if(v[k]===1&&/^[a-z0-9]+:[a-z0-9-]+$/.test(k)) MEM[k]=1; }); }catch(e){ MEM={}; }
+  const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(MEM)); }catch(e){} };
+  const FOLDS=[], byPage={};
+  const pageOf=n=>{ const p=n&&n.closest&&n.closest('[data-page]'); return p?p.id:'resumen'; };
+  const plain=n=>{ if(!n) return ''; const c=n.cloneNode(true); c.querySelectorAll('.katex-mathml,svg,button').forEach(x=>x.remove()); return c.textContent.replace(/\s+/g,' ').trim(); };
+  const sep=()=>{ const s=d.createElement('span'); s.className='fsep'; s.setAttribute('aria-hidden','true'); s.textContent='·'; return s; };
+  /* arma el resumen con piezas de texto (o nodos) separadas por «·» */
+  const fill=(el,parts)=>{ el.textContent=''; parts.filter(p=>p&&(typeof p!=='string'||p.trim())).forEach((p,i)=>{ if(i) el.appendChild(sep()); el.append(p); }); };
+  /* primera frase de un párrafo, conservando su formato (KaTeX, cursivas…) */
+  const ABBR=/(?:\b(?:p|ej|aprox|pág|fig|etc|vs|núm|cap|ec|Ec|Fig|Sr|Dr))$/;
+  function firstSentence(p){
+    if(!p) return null; const c=p.cloneNode(true); let cut=false;
+    const walk=n=>{ for(const ch of [...n.childNodes]){
+      if(cut){ ch.remove(); continue; }
+      if(ch.nodeType===3){ const t=ch.nodeValue, re=/[.!?](?=\s|$)/g; let m;
+        while((m=re.exec(t))){ if(ABBR.test(t.slice(0,m.index))) continue; ch.nodeValue=t.slice(0,m.index+1); cut=true; break; } }
+      else if(ch.nodeType===1&&!ch.classList.contains('katex')) walk(ch); } };
+    walk(c); return c; }
+  const redrawIn=b=>requestAnimationFrame(()=>b.querySelectorAll('canvas').forEach(c=>{ if(typeof c.__redraw==='function'){ try{ c.__redraw(); }catch(e){} } }));
+  const dur=h=>Math.round(Math.min(420,200+h/12));
+
+  /* ---------- estado de un plegable ---------- */
+  function setOpen(F,on,opt){ const o=opt||{}, anim=o.anim!==false&&!reduce.matches;
+    if(F.on===on) return; F.on=on;
+    if(o.store!==false){ if(on) MEM[F.k]=1; else delete MEM[F.k]; save(); }
+    F.apply(on,anim); refreshBar(F.page); }
+  /* plegable que envuelve un nodo (tarjeta) o un tema de preguntas: cuerpo con hidden="until-found" */
+  function bodyApply(F){ return (on,anim)=>{ const b=F.body, r=F.root;
+    let h0=null; if(F.an){ h0=b.offsetHeight; F.an.cancel(); F.an=null; }
+    r.classList.toggle('open',on); F.btn.setAttribute('aria-expanded',on);
+    if(on){ b.removeAttribute('hidden'); redrawIn(b);
+      if(anim&&b.animate){ const h=b.scrollHeight; b.classList.add('fanim');
+        const an=F.an=b.animate([{height:(h0??0)+'px',opacity:h0==null?0:1},{height:h+'px',opacity:1}],{duration:dur(h),easing:'cubic-bezier(.2,.8,.2,1)'});
+        const end=()=>{ if(F.an===an){ F.an=null; b.classList.remove('fanim'); } }; an.finished.then(end,()=>{}); } }
+    else{ if(anim&&b.animate){ const h=h0??b.offsetHeight; b.classList.add('fanim');
+        const an=F.an=b.animate([{height:h+'px',opacity:1},{height:'0px',opacity:0}],{duration:dur(h),easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+        an.finished.then(()=>{ if(F.an===an){ F.an=null; b.setAttribute('hidden','until-found'); b.classList.remove('fanim'); an.cancel(); } },()=>{}); }
+      else b.setAttribute('hidden','until-found'); } }; }
+  function register(F){ FOLDS.push(F); (byPage[F.page]=byPage[F.page]||[]).push(F); F.root.__lgdrFold=F; return F; }
+  function makeBody(F){ const b=F.body; b.className='fold-b'; b.id='fb-'+F.k.replace(':','-'); b.setAttribute('hidden','until-found');
+    F.btn.setAttribute('aria-controls',b.id);
+    /* Ctrl+F (o un enlace de texto) encontró algo dentro: el navegador lo muestra y aquí se marca abierto */
+    b.addEventListener('beforematch',()=>setOpen(F,true,{anim:false})); }
+  function headButton(F,{num,title}){ const b=d.createElement('button'); b.type='button'; b.className='fold-h'+(num?'':' nonum'); b.id='fh-'+F.k.replace(':','-'); b.setAttribute('aria-expanded','false');
+    if(num){ const n=d.createElement('span'); n.className='fnn'; n.textContent=num; b.appendChild(n); }
+    const t=d.createElement('span'); t.className='ftt'; if(typeof title==='string') t.textContent=title; else t.append(...title); b.appendChild(t);
+    const s=d.createElement('span'); s.className='fss'; b.appendChild(s); F.sum=s;
+    b.insertAdjacentHTML('beforeend','<span class="fcv" aria-hidden="true">▾</span>');
+    b.addEventListener('click',()=>setOpen(F,!F.on)); F.btn=b; return b; }
+  function wrap(node,key,o){ if(!node||node.closest('.fold')) return null; const page=pageOf(node);
+    const F={k:page+':'+key,page,on:false,kind:'wrap'};
+    const root=d.createElement('div'); root.className='fold'+(o.cls?' '+o.cls:''); root.dataset.fk=F.k; F.root=root;
+    const h=d.createElement('h3'); h.className='fold-t'; h.appendChild(headButton(F,o));
+    F.body=d.createElement('div'); makeBody(F);
+    node.parentNode.insertBefore(root,node); root.append(h,F.body); F.body.appendChild(node);
+    F.apply=bodyApply(F); F.summ=o.sum||null; register(F);
+    if(o.watch){ let q=0; new MutationObserver(()=>{ if(!q) q=requestAnimationFrame(()=>{ q=0; summarize(F); }); }).observe(o.watch(),{childList:true,subtree:true,characterData:true}); }
+    summarize(F); return F; }
+  function summarize(F){ if(!F.summ||!F.sum) return; try{ const p=F.summ(); if(p!=null) fill(F.sum,p); }catch(e){} }
+  /* <details> que ya existen (código MATLAB, «Acerca de»): se usan tal cual */
+  function adoptDetails(det,key){ if(!det||det.__lgdrFold) return null; const page=pageOf(det);
+    const F={k:page+':'+key,page,root:det,kind:'details',on:det.open};
+    F.apply=on=>{ if(det.open!==on) det.open=on; };
+    det.addEventListener('toggle',()=>{ if(det.open!==F.on){ F.on=det.open; if(F.on) MEM[F.k]=1; else delete MEM[F.k]; save(); refreshBar(F.page); } });
+    register(F); return F; }
+  function initial(F){ const want=own(MEM,F.k); F.on=!want; setOpen(F,want,{anim:false,store:false}); }
+
+  /* ---------- barra «Desplegar todo / Plegar todo» ---------- */
+  const IC_OPEN='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/><path d="M4 2.5h8M4 13.5h8"/></svg>';
+  const IC_CLOSE='<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10l4-4 4 4"/><path d="M4 2.5h8M4 13.5h8"/></svg>';
+  const bars={};
+  function addBar(page,where){ const pg=d.getElementById(page); if(!pg) return;
+    const bar=d.createElement('div'); bar.className='fbar'; bar.setAttribute('role','group'); bar.setAttribute('aria-label','Plegar o desplegar el contenido de esta página');
+    bar.innerHTML=`<button type="button" class="btn" data-fall="1">${IC_OPEN}Desplegar todo</button><button type="button" class="btn" data-fall="0">${IC_CLOSE}Plegar todo</button>`;
+    bar.addEventListener('click',e=>{ const b=e.target.closest('[data-fall]'); if(!b) return; all(page,b.dataset.fall==='1'); });
+    const ph=pg.querySelector(':scope>.phead');
+    if(where) { bar.classList.add('solo'); where.parentNode.insertBefore(bar,where); } else if(ph) ph.appendChild(bar); else { bar.classList.add('solo'); pg.prepend(bar); }
+    bars[page]=bar; refreshBar(page); }
+  function refreshBar(page){ const bar=bars[page], L=byPage[page]||[]; if(!bar) return;
+    bar.querySelector('[data-fall="1"]').disabled=L.every(F=>F.on); bar.querySelector('[data-fall="0"]').disabled=L.every(F=>!F.on); }
+  const gen={};
+  function all(page,on){ const L=(byPage[page]||[]).filter(F=>F.on!==on), calm=reduce.matches, g=gen[page]=(gen[page]||0)+1;
+    /* al desplegar, uno tras otro (cascada corta); al plegar, todos a la vez. Un «Plegar todo» posterior cancela la cascada pendiente */
+    L.forEach((F,i)=>{ if(on&&!calm&&i) setTimeout(()=>{ if(gen[page]===g&&!F.on) setOpen(F,true); },Math.min(i*45,400)); else setOpen(F,on); }); }
+
+  /* ---------- un elemento que se va a mostrar por programa (enlaces internos) abre primero su plegable ---------- */
+  const reveal=el=>{ for(let n=el;n&&n!==d.body;n=n.parentNode){ const F=n.__lgdrFold; if(F&&!F.on) setOpen(F,true,{anim:false}); } };
+  const SIV=Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView=function(){ try{ reveal(this); }catch(e){} return SIV.apply(this,arguments); };
+
+  /* ---------- resúmenes armados con lo que ya existe ---------- */
+  const h4s=n=>[...n.querySelectorAll(':scope>.xstep>h4, :scope h4')].filter((h,i,a)=>a.indexOf(h)===i).map(plain);
+  /* etiquetas en negritas al inicio de cada punto («Polos en lazo cerrado: …») */
+  const leadB=n=>[...n.querySelectorAll(':scope>ul>li')].map(li=>{ const b=li.firstElementChild; return b&&b.tagName==='B'&&plain(li).startsWith(plain(b))?plain(b).replace(/[:.]\s*$/,''):null; }).filter(Boolean);
+  const firstLi=n=>{ const li=n.querySelector('ul>li,ol>li,p'); return li?firstSentence(li):null; };
+  const xsecSum=n=>{ const a=h4s(n); if(a.length) return a; const b=leadB(n); if(b.length) return b; const f=firstLi(n); return f?[f]:[]; };
+  const resRow=page=>{ const tr=[...d.querySelectorAll('#resumen table tbody tr')].find(r=>plain(r.cells[0]).toUpperCase().startsWith(page.toUpperCase()+' ')); return tr; };
+  const cellNodes=td=>{ const f=d.createDocumentFragment(); [...td.cloneNode(true).childNodes].forEach(x=>f.appendChild(x)); return f; };
+
+  /* ===== Prácticas P1–P7 ===== */
+  for(let i=1;i<=7;i++){ const id='p'+i, pg=d.getElementById(id); if(!pg) continue;
+    const st=pg.querySelector(':scope>.card.statement');
+    if(st) wrap(st,'plant',{num:'P',title:plain(st.querySelector('h3'))||'Planteamiento',sum:()=>{ const tr=resRow(id); return tr?[cellNodes(tr.cells[1]),cellNodes(tr.cells[4])]:[]; }});
+    const bench=pg.querySelector(':scope>.card.bench');
+    if(bench) wrap(bench,'banco',{num:'B',title:'Banco de pruebas',cls:'fold-bench',watch:()=>bench,sum:()=>{
+      const tr=bench.querySelector('tbody tr.sel'), stt=bench.querySelector('[data-stat]'); if(!tr) return ['Mueve K y observa polos y respuesta'];
+      const c=[...tr.cells].map(plain), ok=stt&&/^estable/.test(stt.textContent);
+      return [c[0],'K\u00a0=\u00a0'+c[1],stt?stt.textContent:'',ok?'%OS\u00a0'+c[3]:'',ok?'Ts\u00a0'+c[4]+'\u00a0s':'']; }});
+    pg.querySelectorAll(':scope>.card.xsec').forEach(x=>{ const h=x.querySelector(':scope>.xh'), n=h&&h.querySelector('span');
+      const num=n?n.textContent.trim():'', t=plain(h).replace(new RegExp('^'+num.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')),'').trim();
+      wrap(x,'x'+(num||FOLDS.length),{num,title:t,sum:()=>xsecSum(x)}); });
+    adoptDetails(pg.querySelector(':scope>details.code'),'code');
+    addBar(id); }
+
+  /* ===== Resumen ===== */
+  { const pg=d.getElementById('resumen');
+    if(pg){ adoptDetails(d.querySelector('header.top details.about'),'about');
+      const cards=[...pg.querySelectorAll(':scope>.card:not(.prog)')];
+      const res=cards.find(c=>c.querySelector('table'));
+      if(res) wrap(res,'tabla',{title:plain(res.querySelector('h3')),sum:()=>{ const m=new Map(); res.querySelectorAll('tbody .pill').forEach(p=>{ const t=plain(p); m.set(t,(m.get(t)||0)+1); }); return [...m].map(([t,n])=>t+': '+n); }});
+      const gs=pg.querySelector(':scope>.grid-sum');
+      if(gs) [...gs.querySelectorAll(':scope>.card')].forEach((c,i)=>{ const h=c.querySelector(':scope>h3');
+        wrap(c,i?'banco-uso':'metodo',{title:plain(h),sum:()=>{ const b=[...c.querySelectorAll(':scope>div>b')].map(plain); if(b.length) return b; const f=firstLi(c); return f?[f]:[]; }}); });
+      adoptDetails(pg.querySelector(':scope>details.code'),'code');
+      addBar('resumen',pg.querySelector(':scope>.fold, :scope>.grid-sum')); } }
+
+  /* ===== «Acerca de» para el párrafo de introducción de Teoría y Simulador ===== */
+  const INFO='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/></svg>';
+  function aboutOf(page,label){ const pg=d.getElementById(page), p=pg&&pg.querySelector(':scope>p.lede'); if(!p) return;
+    const det=d.createElement('details'); det.className='about fabout'; det.innerHTML=`<summary>${INFO}${label}</summary>`;
+    p.parentNode.insertBefore(det,p); det.appendChild(p); adoptDetails(det,'about'); }
+
+  /* ===== Teoría ===== */
+  aboutOf('teoria','Acerca de esta página');
+  { const box=d.querySelector('#teoria>.card.prog[data-progress="full"]');
+    if(box){ box.classList.add('fcomp'); const F={k:'teoria:avance',page:'teoria',root:box,kind:'prog',on:false};
+      const btn=()=>{ let b=box.querySelector(':scope>.fdetb'); if(!b){ b=d.createElement('button'); b.type='button'; b.className='fdetb'; b.addEventListener('click',()=>setOpen(F,!F.on)); box.appendChild(b); }
+        b.setAttribute('aria-expanded',F.on); b.textContent=F.on?'Ocultar detalle':'Ver detalle: ruta y mapa de secciones'; };
+      F.apply=on=>{ box.classList.toggle('fdet',on); btn(); };
+      /* renderProgress() reescribe la tarjeta en cada cambio: se vuelve a poner el botón */
+      new MutationObserver(()=>{ if(!box.querySelector(':scope>.fdetb')) btn(); }).observe(box,{childList:true});
+      register(F); btn(); } }
+  /* primera frase de cada sección cerrada (el acordeón ya se armó al cargar, en init() de Teoría) */
+  function theorySums(){ d.querySelectorAll('#teoria .tsec.acc').forEach(art=>{ if(art.querySelector(':scope>.tsum')) return;
+    const b=art.querySelector('.acchb'), p=art.querySelector('.accb .prose>p'), fs=firstSentence(p); if(!b||!fs) return;
+    const s=d.createElement('p'); s.className='tsum'; s.append(...fs.childNodes); s.addEventListener('click',()=>b.click());
+    art.querySelector(':scope>.th').after(s); }); }
+  theorySums(); addBar('teoria');
+
+  /* ===== Simulador ===== */
+  aboutOf('simulador','Acerca del simulador');
+  { const pg=d.getElementById('simulador');
+    if(pg){ const fxc=d.getElementById('sim-fx'), xb=d.getElementById('sim-xb');
+      const c1=fxc&&fxc.closest('#simulador>.card'), c2=xb&&xb.closest('#simulador>.card');
+      if(c1) wrap(c1,'formulas',{title:plain(c1.querySelector('h4'))||'Fórmulas en vivo',watch:()=>fxc,sum:()=>[...fxc.querySelectorAll('.fxl')].map(plain)});
+      if(c2) wrap(c2,'explica',{title:plain(c2.querySelector('h3'))||'Explícame este sistema',watch:()=>xb,sum:()=>[...xb.querySelectorAll('button')].map(plain)});
+      addBar('simulador'); } }
+
+  /* ===== Preguntas: cada tema se pliega con su contador y sus niveles ===== */
+  function topics(){ const list=d.querySelector('#preguntas [data-qlist]'); if(!list) return;
+    const ts=[...list.querySelectorAll(':scope>.qtopic')].filter(t=>!t.__lgdrFold); if(!ts.length) return; list.classList.add('fqlist');
+    ts.forEach(t=>{ const qth=t.querySelector(':scope>.qth'), h3=qth&&qth.querySelector('h3'); if(!h3) return;
+      const F={k:'preguntas:'+t.id,page:'preguntas',root:t,on:false,kind:'topic'};
+      const btn=headButton(F,{title:[...h3.childNodes]}); h3.appendChild(btn); t.classList.add('fold');
+      F.body=d.createElement('div'); makeBody(F); [...t.querySelectorAll(':scope>.q')].forEach(q=>F.body.appendChild(q)); t.appendChild(F.body);
+      F.apply=bodyApply(F);
+      F.summ=()=>{ const qs=[...F.body.querySelectorAll('.q')], dn=qs.filter(q=>q.classList.contains('done')).length, lv=new Map();
+        qs.forEach(q=>{ const l=q.querySelector('.qlv'); if(l){ const x=plain(l); lv.set(x,(lv.get(x)||0)+1); } });
+        const c=d.createElement('span'); if(dn===qs.length&&qs.length) c.className='fok'; c.textContent=`${dn}/${qs.length} dominadas`;
+        return [c,...[...lv].map(([x,n])=>`${x} ${n}`)]; };
+      register(F); initial(F); summarize(F); });
+    /* solo interesa cuando una pregunta cambia de clase (.done al marcarla), no las clases del propio plegable */
+    let q=0; new MutationObserver(rs=>{ if(!q&&rs.some(r=>r.target.classList&&r.target.classList.contains('q'))) q=requestAnimationFrame(()=>{ q=0; byPage.preguntas.forEach(summarize); }); }).observe(list,{subtree:true,attributes:true,attributeFilter:['class']});
+    if(!bars.preguntas) addBar('preguntas'); else refreshBar('preguntas'); }
+  const PI=window.__pageInit=window.__pageInit||{};
+  if(typeof PI.preguntas==='function'){ const o=PI.preguntas; PI.preguntas=function(){ const r=o.apply(this,arguments); try{ topics(); }catch(e){} return r; }; }
+  topics();
+
+  /* estado inicial: todo plegado salvo lo que se dejó abierto */
+  FOLDS.filter(F=>F.kind!=='topic').forEach(initial);
+  Object.keys(bars).forEach(refreshBar);
+  window.__lgdrFolds={list:()=>FOLDS.map(F=>({k:F.k,on:F.on})),all,open:(k,on=true)=>{ const F=FOLDS.find(x=>x.k===k); if(F) setOpen(F,on); }};
 })();
 </script>
 </body></html>
