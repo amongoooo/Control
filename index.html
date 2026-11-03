@@ -1181,15 +1181,85 @@ html.sb-on .tocbar{max-width:none}
 .phr{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
 .repbtn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 12px 5px 10px;font-weight:600;color:var(--accent);border-color:var(--accent)}
 .repbtn:hover{background:var(--accent-soft)}
-.rp-sub{font-size:13.5px;color:var(--muted);margin:-6px 0 0}
-.rp-soon{display:grid;gap:6px;justify-items:start;border:1.5px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:14px}
-.rp-soon p{margin:0}
-.rp-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
-.rp-list button{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:500 14.5px var(--f-body);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+/* ---------- reporte: documento (simulación del reporte de cada práctica) ---------- */
+dialog.sync.rpd{max-width:880px;height:94dvh;max-height:94dvh}
+@media (max-width:599px){dialog.sync.rpd{margin:0;max-width:none;width:100%;height:100dvh;max-height:100dvh;border-radius:0}}
+.rp-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;padding:max(10px,env(safe-area-inset-top,0px)) max(10px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line)}
+.rp-bt{flex:1;min-width:0}
+.rp-bt h2{font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rp-sub{margin:2px 0 0;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rp-prt{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:38px;padding:0 14px;font-size:14px}
+@media (max-width:420px){.rp-prt span{display:none}.rp-prt{padding:0 10px;min-width:42px}}
+.rp-body{display:grid;gap:12px;padding:14px max(16px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));min-width:0}
+.rp-note{font-size:13px;color:var(--muted);border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px}
+.rp-note .pill{margin-right:4px}
+.rp-idx>summary{cursor:pointer;font:600 14px var(--f-body);color:var(--accent);padding:4px 2px;-webkit-tap-highlight-color:transparent}
+.rp-idx>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.rp-list{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:6px}
+.rp-list button{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;min-height:40px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:500 14px var(--f-body);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .rp-list button:hover{background:var(--accent-soft)}
-.rp-list button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rp-list button:focus-visible,.rp-pg:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .rp-n{font:600 12px var(--f-mono);color:var(--accent);border:1.5px solid var(--accent);border-radius:6px;padding:1px 6px;min-width:26px;text-align:center}
-.rp-go{font-size:13px;color:var(--accent);white-space:nowrap}
+.rpdoc{font-size:15px;line-height:1.6;min-width:0;width:100%;max-width:760px;justify-self:center}
+.rpdoc p{margin:8px 0}
+.rp-cover{padding:2px 0 10px;border-bottom:2px solid var(--ink)}
+.rpdoc .rp-kick{font:600 11.5px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+.rp-cover h1{font-size:clamp(23px,5.6vw,30px)}
+.rps{padding-top:16px;margin-top:16px;border-top:1px solid var(--line);scroll-margin-top:76px;min-width:0}
+.rp-cover+.rps{border-top:0;margin-top:2px}
+.rp-h{display:flex;align-items:baseline;gap:10px;font-size:19px;margin:0 0 4px}
+.rp-h .rp-n{flex:none;font-size:12.5px;position:relative;top:-2px}
+.rp-ht{flex:1;min-width:0}
+.rp-pg{flex:none;border:0;background:none;color:var(--accent);font:500 12.5px var(--f-body);cursor:pointer;padding:4px 2px;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.rp-pg:hover{text-decoration:underline}
+.rpdoc h3{font:600 14.5px var(--f-body);font-stretch:100%;margin:14px 0 2px;color:var(--ink)}
+.rp-eq{overflow-x:auto;overflow-y:hidden;margin:6px 0;padding:2px 0;max-width:100%}
+.rp-eq .katex-display{margin:.2em 0}
+.rp-eq .katex-display>.katex{font-size:1.1em}
+@media (max-width:420px){.rp-eq .katex-display>.katex{font-size:1em}}
+.rp-tx td:first-child{font-weight:500}
+.rp-tab td.n{white-space:normal}
+.rp-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px 18px;margin:8px 0 12px}
+.rp-meta div{min-width:0}
+.rp-meta .w{grid-column:1/-1}
+.rp-meta dt{font:600 11px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rp-meta dd{margin:2px 0 0;font-size:14px;line-height:1.45}
+.rp-blank{min-height:24px;border-bottom:1px solid var(--muted)}
+.rp-tab{margin:10px 0}
+.rp-tab table{font-size:13.5px}
+.rp-tab th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+.rpdoc .rp-cap{font-size:12.5px;color:var(--muted);margin:4px 0 0}
+.rp-figs{margin:10px 0}
+.rp-diag{margin:8px 0;border:1px solid var(--line);border-radius:8px;padding:10px 8px 6px;background:var(--surface)}
+.rp-diag svg{width:100%;height:auto;display:block;margin:0 auto}
+.rp-diag figcaption{font-size:12.5px;color:var(--muted);padding:4px 4px 0}
+.rp-diag .dl{fill:none;stroke:var(--ink);stroke-width:1.4}
+.rp-diag .da,.rp-diag .dn{fill:var(--ink)}
+.rp-diag .db,.rp-diag .dc{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.rp-diag .dt{fill:var(--ink);font:13px var(--f-body)}
+.rp-diag .ds{fill:var(--ink);font:600 16px var(--f-body)}
+.rp-ul,.rp-calc{margin:6px 0;padding-left:22px;display:grid;gap:6px}
+.rp-calc li{overflow-x:auto;overflow-y:hidden}
+.rpdoc .rp-small{font-size:13px;color:var(--muted)}
+.rpdoc code{font:12.5px var(--f-mono);background:var(--codebg);padding:1px 4px;border-radius:4px;overflow-wrap:anywhere}
+.rp-code{margin:8px 0 0;padding:12px 14px;background:var(--codebg);border-radius:10px;font:12px/1.5 var(--f-mono);overflow-x:auto;tab-size:4}
+.rp-foot{margin-top:24px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);text-align:center}
+#repPrint{display:none}
+/* reporte · impresión: sólo el documento, en claro */
+@media print{
+  html.rp-print,html.rp-print body{background:#fff!important;overflow:visible!important;height:auto!important;min-height:0!important}
+  html.rp-print body>*:not(#repPrint){display:none!important}
+  html.rp-print #repPrint{display:block!important;--bg:#fff;--surface:#fff;--ink:#111;--muted:#4a5462;--line:#c9ced6;--grid:#e6e9ee;--accent:#1d4ed8;--accent-soft:#e3eaff;--c0:#8b95a5;--c1:#1d4ed8;--c2:#c2410c;--c3:#0f766e;--ok:#157f3c;--ok-soft:#e2f4e8;--bad:#b42318;--bad-soft:#fde7e5;--warn:#a15c07;--warn-soft:#fdf0d9;--codebg:#f1f3f6;color:var(--ink);background:#fff;color-scheme:light}
+  #repPrint .rpdoc{max-width:none;font-size:10.5pt;line-height:1.45}
+  #repPrint .rp-pg{display:none}
+  #repPrint .rp-h,#repPrint h3{break-after:avoid}
+  #repPrint figure,#repPrint .rp-tab,#repPrint .rp-eq,#repPrint li{break-inside:avoid}
+  #repPrint .rp-figs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #repPrint .tablewrap,#repPrint .rp-eq,#repPrint .rp-calc li{overflow:visible}
+  #repPrint .rp-code{white-space:pre-wrap;overflow-wrap:anywhere;font-size:8pt;overflow:visible}
+  #repPrint *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:15mm 14mm}
+}
 </style>
 
 <header class="appbar" id="appbar">
@@ -1238,12 +1308,16 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 </div>
 </header>
 
-<dialog class="sync" id="repDlg" aria-labelledby="repTtl">
-<div class="sy-in">
-  <div class="sy-hd"><h2 id="repTtl">Reporte</h2><button type="button" class="abicon" data-rp-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <p class="rp-sub" id="repSub"></p>
-  <div class="rp-soon"><span class="pill warn">En preparación</span><p>Aquí irá la simulación del reporte de esta práctica, con la estructura de la guía. Por ahora, cada punto te lleva a la parte de la página que ya lo contiene.</p></div>
-  <ol class="rp-list" id="repList"></ol>
+<dialog class="sync rpd" id="repDlg" aria-labelledby="repTtl">
+<div class="rp-bar">
+  <div class="rp-bt"><h2 id="repTtl">Reporte</h2><p class="rp-sub" id="repSub"></p></div>
+  <button type="button" class="sy-b pri rp-prt" data-rp-print aria-label="Imprimir o guardar como PDF" title="Imprimir o guardar como PDF"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg><span>Imprimir / PDF</span></button>
+  <button type="button" class="abicon" data-rp-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</div>
+<div class="rp-body">
+  <p class="rp-note"><span class="pill warn">Simulación</span> Ejemplo de reporte armado con los cálculos y simulaciones de esta página, con los 10 puntos de la guía. Úsalo como guía: el tuyo debe llevar tus propios cálculos, gráficas de MATLAB y redacción.</p>
+  <details class="rp-idx"><summary>Índice · 10 puntos</summary><ol class="rp-list" id="repList"></ol></details>
+  <article class="rpdoc" id="repDoc"></article>
 </div>
 </dialog>
 <dialog class="sync" id="syncDlg" aria-labelledby="syncTtl">
@@ -6404,31 +6478,388 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
 })();
 </script>
 <script>
-/* ventana del reporte (por ahora: estructura de la guía con accesos a cada parte) */
+/* ventana del reporte: simulación del reporte de cada práctica con los 10 puntos de la guía.
+   El texto está en R (abajo); figuras y tablas se copian de la propia página (así los números coinciden).
+   «Imprimir / PDF» copia el documento a #repPrint y en impresión sólo se ve eso (CSS «reporte · impresión»). */
 (()=>{
   const dlg=document.getElementById('repDlg'); if(!dlg||!dlg.showModal) return;
-  const list=dlg.querySelector('#repList'), ttl=dlg.querySelector('#repTtl'), sub=dlg.querySelector('#repSub');
+  const doc=dlg.querySelector('#repDoc'), idx=dlg.querySelector('#repList'), ttl=dlg.querySelector('#repTtl'), sub=dlg.querySelector('#repSub');
   const ITEMS=[['Identificación y referencia del ejercicio','phead'],['Planteamiento, modelo, diagrama y especificaciones','statement'],
     ['Análisis inicial y desempeño de referencia','ana'],['Desarrollo y justificación del diseño','dis'],['Controlador final y parámetros','ctrl'],
     ['Comprobación analítica','ver'],['Comprobación en MATLAB','mat'],['Comparación y discusión','v4'],
     ['Conclusiones y limitaciones demostradas','con'],['Anexo con archivo ejecutable y cálculos','mat']];
   const find=(pid,k)=>k==='phead'||k==='statement'?document.querySelector(`#${pid} .${k}`):document.getElementById(`${pid}-${k}`);
+  const BOOK='Nise, N. S. (2006). <i>Sistemas de control para ingeniería</i> (3.ª ed. en inglés; 1.ª ed. en español, 3.ª reimpresión). México: Compañía Editorial Continental (CECSA).';
+  /* contenido de cada reporte: \( \) = KaTeX en línea, \[ \] = en bloque; [[fig:sel]] / [[tab:sel|pie]] = copias de la página */
+  const C8='8 · Técnicas del lugar geométrico de las raíces', C9='9 · Diseño por medio del lugar geométrico de las raíces';
+  const R={
+p1:{cap:C8, blocks:['G(s)'],
+obj:String.raw`Ajustar únicamente la ganancia \(K\) de un sistema de tercer orden para obtener 10 % de sobrepaso; estimar con la aproximación de segundo orden \(T_s\), \(T_p\), \(T_r\) y \(e(\infty)\) al escalón, y juzgar si esa aproximación es válida.`,
+model:String.raw`\[G(s)=\frac{K}{(s+2)(s+4)(s+6)},\qquad H(s)=1\]<p>Realimentación unitaria negativa. No hay compensador: el diseño consiste en elegir el punto del LGDR original donde quedan los polos.</p>`,
+specs:[[String.raw`Sobrepaso`,String.raw`\(\%OS=10\,\%\)`,'Diseño: fija ζ'],[String.raw`\(T_s,\ T_p,\ T_r\)`,'Estimar','2.º orden y simulación'],[String.raw`\(e(\infty)\) al escalón`,'Estimar','Tipo 0: \\(1/(1+K_p)\\)'],['Validez de la aproximación','Juzgar','Tercer polo y residuos']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> El enunciado no fija \(K\): es la incógnita del diseño. Por eso no se supuso \(K=1\) (con ese valor los polos serían \(-2.139,\,-3.746,\,-6.115\), otro sistema) y el desempeño de referencia se evaluó con la \(K\) del punto de diseño, \(K=45.53\).</p>
+<p><b>Polos, ceros y tipo.</b> Polos de lazo abierto en \(-2,\,-4,\,-6\); sin ceros finitos (\(n=3,\ m=0\)). Tipo 0: error finito al escalón e infinito a la rampa.</p>
+\[1+KG(s)=0\;\Rightarrow\;s^3+12s^2+44s+(48+K)=0\]
+<p><b>Forma del LGDR.</b> Eje real en \([-4,-2]\) y \((-\infty,-6]\); asíntotas con \(\sigma_a=-4\) y \(\theta_a=60^\circ,180^\circ,300^\circ\); punto de ruptura en \(s=-2.845\).</p>
+<p><b>Estabilidad.</b> En el arreglo de Routh la fila \(s^1\) vale \((480-K)/12\): el sistema es estable para \(0<K<480\) y cruza el eje \(j\omega\) en \(\pm j6.633\).</p>
+<p><b>Polos en lazo cerrado con \(K=45.53\).</b> \(s^3+12s^2+44s+93.53=0\Rightarrow s=-2.029\pm j2.768,\ -7.943\) (suma de raíces \(=-12\) ✓).</p>
+<p><b>Desempeño de referencia.</b> Con \(\zeta=0.591\), \(\omega_n=3.431\) y \(K_p=K/48=0.9485\), el error al escalón es \(e(\infty)=1/(1+K_p)=0.513\). Las figuras y la tabla siguientes son la evidencia de esta etapa.</p>`,
+s4:String.raw`<h3>a) Del sobrepaso a ζ</h3>
+\[\zeta=\frac{-\ln(0.10)}{\sqrt{\pi^2+\ln^2(0.10)}}=0.591,\qquad\theta=\cos^{-1}\zeta=53.76^\circ\]
+<h3>b) Punto de diseño (condición de ángulo)</h3>
+<p>Se recorrió la recta \(\zeta=0.591\) hasta el punto donde la suma de ángulos de los polos vale 180°:</p>
+\[s_0=-2.028+j2.768:\quad 90.59^\circ+54.54^\circ+34.87^\circ=180.0^\circ\]
+<h3>c) Ganancia (condición de magnitud)</h3>
+\[K=|s_0+2|\,|s_0+4|\,|s_0+6|=2.768\cdot3.398\cdot4.841=45.53\]
+<p>El libro reporta 45.55. Como \(0<45.53<480\), el diseño es estable.</p>
+<h3>d) Estimaciones de segundo orden</h3>
+\[T_s=\frac{4}{\zeta\omega_n}=1.97\text{ s},\quad T_p=\frac{\pi}{\omega_d}=1.135\text{ s},\quad T_r\approx0.534\text{ s},\quad e(\infty)=0.513\]
+<h3>e) Validez de la aproximación</h3>
+<p>Con la suma de raíces se obtuvo el tercer polo, \(p_3=-12-2(-2.028)=-7.943\). Está a sólo 3.9 veces la parte real dominante (menos de 5) y ningún cero lo cancela: <b>la aproximación de segundo orden no es válida</b> (misma conclusión que el libro). La decisión final se tomó con la simulación (puntos 7 y 8).</p>`,
+s5:String.raw`<p>El diseño pedido es sólo de ganancia (\(G_c=1\)). La \(K=49.38\) es el ajuste del paso 6 de la verificación, con el que el modelo completo da exactamente 10 %.</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces.</b> Con \(K=45.53\): \(s^3+12s^2+44s+93.53=0\Rightarrow s=-2.029\pm j2.768,\ -7.943\). No se descartó ningún modo: el orden 3 coincide con el de la planta.</p>
+<p><b>Estabilidad.</b> Todas las raíces tienen parte real negativa; por Routh el rango es \(0<K<480\) y \(K=45.53\) está dentro.</p>`,
+s6b:String.raw`<p>Con \(K=45.53\) el par complejo cae exactamente en el candidato; con la \(K\) ajustada se mueve 3 % sobre el LGDR, hacia un ζ algo menor.</p>`,
+s6c:String.raw`<p>El residuo del tercer polo al escalón (0.134) es un tercio del de cada polo dominante (0.367): el modo \(e^{-7.94t}\) no es despreciable.</p>
+<p><b>Error en estado estacionario.</b> \(e(\infty)=1/(1+K/48)\): 0.5132 con \(K=45.53\) y 0.4929 con \(K=49.38\).</p>`,
+s7:String.raw`<p>Se formó el lazo cerrado con <code>T = feedback(K*G,1)</code>, se obtuvieron sus polos con <code>pole(T)</code> y las medidas con <code>stepinfo(T)</code>, sin simplificar ningún polo; el error se comprobó con <code>dcgain</code>. La \(K\) ajustada se buscó con <code>fzero</code> sobre el sobrepaso simulado.</p>`,
+s7b:String.raw`<p>Con la \(K\) del LGDR el modelo completo da 8.82 % (no 10 %) y \(T_p=1.293\) s; con \(K=49.38\) se obtiene 10.00 %, \(T_s=1.826\) s y \(e(\infty)=0.493\). El valor final simulado es 0.4868, es decir \(e=0.5132\) ✓.</p>`,
+cmp:[['Magnitud','Libro','2.º orden (este reporte)','Modelo completo (sim.)'],[['\\(K\\)','45.55','45.53','—'],['%OS','10','10.0','8.82'],['\\(T_s\\) (s)','1.97','1.972','1.865'],['\\(T_p\\) (s)','1.13','1.135','1.293'],['\\(T_r\\) (s)','0.53','0.534','0.592'],['\\(e(\\infty)\\) escalón','0.51','0.513','0.513']]],
+s8:String.raw`<p>Los valores analíticos coinciden con los del libro (las diferencias son de redondeo). El libro concluye que la aproximación no es válida por el tercer polo, y la simulación lo confirma: el sobrepaso real es 1.2 puntos menor y \(T_p\) es 14 % mayor que lo estimado, porque el modo \(e^{-7.94t}\) frena el arranque.</p>
+<p>El error coincide en los tres casos porque depende sólo de \(K_p\), no de dónde estén los polos. Ajustar \(K\) a 49.38 recupera el 10 % con un costo mínimo en el error (0.513 → 0.493).</p>`,
+con:[String.raw`El ajuste de ganancia sólo coloca los polos sobre el LGDR existente: no permite fijar a la vez ζ y la velocidad.`,String.raw`En un sistema tipo 0, la \(K\) que da 10 % deja un error al escalón de 51 %; reducirlo sin cambiar el transitorio requiere un compensador (P2 y P3).`,String.raw`Limitación demostrada: el tercer polo en \(-7.94\) (a 3.9 σ) invalida la aproximación de segundo orden; las fórmulas sirven para diseñar, pero la verificación debe hacerse con el modelo completo.`],
+calc:[String.raw`\zeta=-\ln(0.10)/\sqrt{\pi^2+\ln^2 0.10}=0.591`,String.raw`K=|s_0+2|\,|s_0+4|\,|s_0+6|=45.53`,String.raw`\text{Routh: }(480-K)/12>0\Rightarrow 0<K<480,\ \ \omega=\sqrt{44}=6.633`,String.raw`K_p=K/48=0.9485,\ \ e(\infty)=0.513`]},
+
+p2:{cap:C9, blocks:['Gc(s)','G(s)'],
+obj:String.raw`Demostrar que un compensador integral ideal (PI) lleva a cero el error al escalón de un sistema que opera con \(\zeta=0.174\), sin afectar apreciablemente su respuesta transitoria.`,
+model:String.raw`\[G(s)=\frac{K}{(s+1)(s+2)(s+10)},\qquad G_c(s)=\frac{s+0.1}{s}\]<p>Realimentación unitaria negativa; el compensador va en cascada con la planta.</p>`,
+specs:[['Punto de operación','\\(\\zeta=0.174\\)','Fija la ganancia de referencia'],['Error al escalón','\\(e(\\infty)=0\\)','Subir a tipo 1'],['Transitorio','Sin cambio apreciable','Polos dominantes, pico y \\(T_p\\)']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> El enunciado la da de forma indirecta: el sistema opera con \(\zeta=0.174\) (\(\theta=79.98^\circ\)). La condición de ángulo se cumple en \(s_0=-0.694+j3.926\) (\(85.54^\circ+71.59^\circ+22.87^\circ=180^\circ\)) y la de magnitud da</p>
+\[K=|s_0+1|\,|s_0+2|\,|s_0+10|=3.937\cdot4.137\cdot10.10=164.5\]
+<p>Con \(K=1\) los polos serían \(-1.130,\,-1.857,\,-10.01\): otro sistema.</p>
+<p><b>Polos, ceros y tipo.</b> Polos en \(-1,\,-2,\,-10\); sin ceros. Tipo 0, así que \(K_p\) es finito y queda error al escalón.</p>
+\[s^3+13s^2+32s+(20+K)=0\]
+<p><b>Estabilidad.</b> Routh: \(0<K<396\), con cruce del eje \(j\omega\) en \(\pm j5.66\) rad/s.</p>
+<p><b>Polos en lazo cerrado con \(K=164.5\).</b> \(s=-0.694\pm j3.925,\ -11.61\). El tercer polo está 16.7 veces más lejos que la parte real dominante (más de 5): la aproximación de segundo orden es válida en la referencia.</p>
+<p><b>Desempeño de referencia.</b> %OS = 57.4 %, \(T_s=5.76\) s, \(T_p=0.80\) s; \(K_p=164.5/20=8.23\) y \(e(\infty)=1/(1+8.23)=0.108\).</p>`,
+s4:String.raw`<h3>a) Polo en el origen</h3>
+<p>Con \(G_c=(s+z_c)/s\) el lazo abierto gana un integrador: el sistema pasa a tipo 1, \(K_p=\infty\) y \(e_{\text{escalón}}(\infty)=0\).</p>
+<h3>b) Cero en −0.1 (dipolo)</h3>
+<p>Un integrador solo aportaría unos −100° en \(s_0\) y deformaría el LGDR. El cero, muy cerca del polo, compensa casi todo ese ángulo:</p>
+\[\angle G_c(s_0)=98.60^\circ-100.02^\circ=-1.42^\circ,\qquad\frac{|s_0+0.1|}{|s_0|}=0.996\]
+<p>Ángulo casi nulo y magnitud casi unitaria: los polos dominantes prácticamente no se mueven.</p>
+<h3>c) Nueva ecuación característica</h3>
+\[s^4+13s^3+32s^2+(20+K)s+0.1K=0\]
+<h3>d) Nueva búsqueda de K sobre ζ = 0.174</h3>
+<p>\(s_0=-0.678+j3.836\) y \(K=158.1\) (libro: 158.2). \(K\) bajó sólo 4 %, lo que confirma que el dipolo casi no alteró el LGDR cerca de \(s_0\).</p>
+<h3>e) Polos compensados y estabilidad</h3>
+<p>\(-0.678\pm j3.836,\ -11.55,\ -0.0902\). El polo nuevo queda junto al cero \(-0.1\) (cancelación aproximada). Por Routh el sistema es estable para \(0<K<379.9\) (antes 396).</p>`,
+s5:String.raw`<p>El cero en \(-0.1\) lo fija el enunciado; sólo se recalculó \(K\) para seguir sobre la recta \(\zeta=0.174\). No hizo falta ajuste en la verificación.</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces.</b> \(s^4+13s^3+32s^2+178.1s+15.81=0\Rightarrow s=-0.090,\ -0.678\pm j3.836,\ -11.55\) (suma \(=-13\) ✓; orden 4 = planta + compensador).</p>
+<p><b>Estabilidad.</b> Todas las raíces están en el semiplano izquierdo; Routh: \(0<K<379.9\), cruce en \(\pm j5.547\).</p>`,
+s6b:String.raw`<p>El par dominante se movió sólo 2.3 % respecto al punto de operación original.</p>`,
+s6c:String.raw`<p>El modo \(-0.090\) tiene residuo 0.100: pequeño, pero no nulo. No altera el pico, pero sí la cola de la respuesta.</p>
+<p><b>Error en estado estacionario.</b> Tipo 1: \(e_{\text{escalón}}(\infty)=0\). Como dato extra, \(K_v=0.7905\) y \(e_{\text{rampa}}=1.265\).</p>`,
+s7:String.raw`<p>Se simularon <code>Tu = feedback(K*G,1)</code> y <code>Tc = feedback(Kc*Gc*G,1)</code> con todos sus polos; <code>stepinfo</code> dio el pico y \(T_p\), y el error final se obtuvo con <code>1 - dcgain(Tc)</code>. La nueva \(K\) se buscó con <code>puntoZeta(Gc*G, zeta, 1)</code> y la nueva \(K\) crítica con <code>margin</code>.</p>`,
+s7b:String.raw`<p>El pico pasa de 1.374 a 1.396 y \(T_p\) de 0.888 a 0.909 s; el valor final llega a 1.0000 (antes 0.8916). \(T_s\) sube de 5.14 a 17.8 s por la cola del modo \(-0.090\).</p>`,
+cmp:[['Magnitud','Libro','Este reporte (sim.)'],[['\\(K\\) con PI','158.2','158.1'],['\\(T_s\\) sin compensar (s)','≈ 6 (sim.)','5.139'],['\\(T_s\\) con PI (s)','≈ 18 (sim.)','17.82'],['\\(e(\\infty)\\) sin compensar','0.108','0.108'],['\\(e(\\infty)\\) con PI','0','0']]],
+s8:String.raw`<p>Los resultados coinciden con el ejemplo del libro. La afirmación «sin afectar apreciablemente el transitorio» queda demostrada con números: los polos dominantes se movieron 2.3 %, el pico 1.6 % y \(T_p\) 2.4 %.</p>
+<p>El %OS baja de 54 % a 39.6 % sólo porque se mide contra un valor final distinto (1 en vez de 0.89); no es un cambio del transitorio. El precio del PI es el asentamiento largo (17.8 s), que también aparece en la simulación del libro (≈ 18 s).</p>`,
+con:[String.raw`El PI ideal elimina el error al escalón conservando los polos dominantes: la afirmación del ejemplo se cumple.`,String.raw`Limitación demostrada: requiere un integrador (circuito activo) y deja un modo lento (\(-0.090\)) que alarga el asentamiento final a casi 18 s.`,String.raw`Acercar el cero al origen reduce el residuo de ese modo, pero lo vuelve aún más lento.`],
+calc:[String.raw`K=3.937\cdot4.137\cdot10.10=164.5`,String.raw`K_p=164.5/20=8.23,\ \ e(\infty)=0.108`,String.raw`\angle G_c(s_0)=-1.42^\circ,\ \ |G_c(s_0)|=0.996`,String.raw`K_P=158.1,\ \ K_I=0.1K=15.81,\ \ 0<K<379.9`]},
+
+p3:{cap:C9, blocks:['Gc(s)','G(s)'],
+obj:String.raw`Evaluar el error a rampa de un sistema tipo 1 que opera con 15 % de sobrepaso, diseñar un compensador de atraso que lo mejore 20 veces sin cambiar el transitorio y evaluar la mejora lograda.`,
+model:String.raw`\[G(s)=\frac{K}{s(s+7)},\qquad G_c(s)=\frac{s+z_c}{s+p_c},\ \ \frac{z_c}{p_c}=20\]<p>Realimentación unitaria negativa; compensador en cascada.</p>`,
+specs:[['Sobrepaso','15 %','Se conserva'],['Error a rampa','×20 mejor: \\(e\\le0.00763\\)','\\(1/K_v\\)'],['Mejora lograda','Evaluar','Cociente de errores']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> El sistema «opera con 15 % de sobrepaso», lo que fija \(\zeta=0.517\) (no \(K=1\), que daría polos en \(-0.146\) y \(-6.854\)). Como la ecuación es de segundo orden, \(2\zeta\omega_n=7\) fija \(\sigma=3.5\) y</p>
+\[\omega_n=\frac{3.5}{0.517}=6.771\;\Rightarrow\;K=\omega_n^2=45.84\]
+<p><b>Polos, ceros y tipo.</b> Polos en \(0\) y \(-7\), sin ceros; tipo 1 (error nulo al escalón, finito a la rampa).</p>
+\[s^2+7s+K=0\]
+<p><b>Estabilidad.</b> Polinomio de segundo orden con coeficientes positivos: estable para todo \(K>0\); las ramas se unen en \(-3.5\) y suben en vertical.</p>
+<p><b>Polos en lazo cerrado.</b> \(s=-3.500\pm j5.796\). Es un sistema de segundo orden puro: las fórmulas son exactas.</p>
+<p><b>Desempeño de referencia.</b> %OS = 15 %, \(T_s=1.143\) s, \(T_p=0.542\) s; \(K_v=K/7=6.549\) y \(e_{\text{rampa}}(\infty)=0.1527\).</p>`,
+s4:String.raw`<h3>a) Cómo el atraso multiplica K<sub>v</sub></h3>
+\[K_{v,\text{comp}}=\frac{K}{7}\cdot\frac{z_c}{p_c}\]
+<p>Si \(K\) casi no cambia, la mejora es \(z_c/p_c\); se eligió \(z_c/p_c=20\).</p>
+<h3>b) Ubicación del dipolo</h3>
+<p>Con \(p_c=0.01\) y \(z_c=0.2\), cerca del origen, el compensador aporta en \(s_0\) sólo \(\angle G_c(s_0)=-1.40^\circ\): el LGDR casi no se mueve y el sobrepaso se conserva.</p>
+<h3>c) Nueva ecuación y estabilidad</h3>
+\[s^3+7.01s^2+(0.07+K)s+0.2K=0\]
+<p>Routh: \(7.01(0.07+K)>0.2K\) para todo \(K>0\); sigue siendo estable siempre.</p>
+<h3>d) Nueva búsqueda de K sobre ζ = 0.517</h3>
+<p>\(s_0=-3.402\pm j5.634\), \(K=44.64\); tercer polo \(p_3=-7.01-2(-3.402)=-0.206\).</p>
+<h3>e) Error compensado y mejora</h3>
+\[K_v=\frac{44.64}{7}\cdot\frac{0.2}{0.01}=127.5,\quad e_{\text{rampa}}(\infty)=0.00784,\quad\frac{0.1527}{0.00784}=19.5\]
+<p>No es 20 exacto porque \(K\) bajó 2.6 % para seguir sobre la recta de ζ. El libro reporta 0.0078 y 19.58.</p>`,
+s5:String.raw`<p>La variante con el dipolo diez veces más cerca del origen se adoptó en el paso 6 de la verificación para recuperar el 15 %.</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces.</b> \(s^3+7.010s^2+44.71s+8.928=0\Rightarrow s=-0.206,\ -3.402\pm j5.633\) (suma \(=-7.010\) ✓).</p>
+<p><b>Estabilidad.</b> Estable para todo \(K>0\); \(K=44.64\) cumple.</p>`,
+s6b:String.raw`<p>El par dominante se movió 2.8 % respecto al original: el transitorio se conserva aproximadamente.</p>`,
+s6c:String.raw`<p>El polo \(-0.206\) queda a 0.006 del cero \(-0.2\) (residuo 0.032): pequeño, pero suficiente para subir el pico y alargar \(T_s\).</p>
+<p><b>Error en estado estacionario.</b> \(K_v=127.5\Rightarrow e_{\text{rampa}}=0.00784\); al escalón, 0 (tipo 1).</p>`,
+s7:String.raw`<p>Se compararon <code>Tu</code> y <code>Tc</code> (ambos con <code>feedback</code>) al escalón con <code>stepinfo</code> y a la rampa unitaria con <code>lsim(T, t, t)</code>, graficando \(e(t)=t-c(t)\). \(K_v\) se calculó con <code>dcgain(minreal(s*K*Gc*G))</code>. Se simularon el diseño 0.2/0.01 y la variante 0.02/0.001.</p>`,
+s7b:String.raw`<p>Con 0.2/0.01: 18.31 % y \(T_s=2.144\) s, porque el modo \(-0.206\) no se cancela del todo. Con la variante (\(K=45.73\)): 15.33 %, \(T_s=0.858\) s y \(e_{\text{rampa}}=0.00765\) (×19.95).</p>`,
+cmp:[['Magnitud','Libro','Este reporte'],[['\\(e_{\\text{rampa}}\\) sin compensar','0.1527','0.1527'],['\\(e_{\\text{rampa}}\\) con atraso','0.0078','0.00784'],['Mejora','×19.58','×19.5'],['%OS con atraso (sim.)','—','18.31'],['Variante 0.02/0.001','—','15.33 % · ×19.95']]],
+s8:String.raw`<p>El error coincide con el libro. El libro no reporta el transitorio simulado; la simulación muestra 18.3 % (3.3 puntos sobre la meta) por el polo \(-0.206\), casi cancelado pero no del todo.</p>
+<p>Como el atraso no debe cambiar el transitorio, se probó la variante con el dipolo más cerca del origen: cumple 15.33 % y ×19.95, al precio de una cola del error más lenta (modo \(e^{-0.020t}\)).</p>`,
+con:[String.raw`El atraso cumple la meta del error (×19.5 ≈ 20) manteniendo aproximadamente el sobrepaso.`,String.raw`La mejora real no es exactamente \(z_c/p_c\) porque \(K\) se reajusta para seguir sobre la recta de ζ.`,String.raw`Limitación demostrada: el error tarda en llegar a su valor final (modo lento). Entre más cerca del origen el dipolo, menor su efecto en el transitorio, pero más lenta esa cola.`],
+calc:[String.raw`K=\omega_n^2=(3.5/0.517)^2=45.84,\ \ K_v=6.549`,String.raw`\angle G_c(s_0)=-1.40^\circ`,String.raw`K_v=\tfrac{44.64}{7}\cdot20=127.5,\ \ e=0.00784`,String.raw`\text{Variante: }G_c=\tfrac{s+0.02}{s+0.001},\ K=45.73,\ e=0.00765`]},
+
+p4:{cap:C9, blocks:['Gc(s)','G(s)'],
+obj:String.raw`Diseñar un compensador derivativo ideal (PD) para obtener 16 % de sobrepaso con una reducción de tres veces en el tiempo de asentamiento.`,
+model:String.raw`\[G(s)=\frac{K}{s(s+4)(s+6)},\qquad G_c(s)=s+z_c\]<p>Realimentación unitaria negativa; compensador en cascada.</p>`,
+specs:[['Sobrepaso','16 %','Misma recta \\(\\zeta=0.504\\)'],['Tiempo de asentamiento','\\(T_s/3\\)','\\(\\sigma\\) tres veces mayor']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> 16 % de sobrepaso para el sistema sin compensar: \(\zeta=0.504\), \(\theta=59.74^\circ\). La condición de ángulo se cumple en \(s_0=-1.204\pm j2.065\) (\(120.26^\circ+36.45^\circ+23.30^\circ=180^\circ\)) y</p>
+\[K=2.390\cdot3.476\cdot5.221=43.38\]
+<p>Con \(K=1\) los polos serían \(-0.042,\,-3.878,\,-6.079\).</p>
+<p><b>Polos, ceros y tipo.</b> Polos en \(0,\,-4,\,-6\); sin ceros; tipo 1 (error a rampa \(1/K_v\)).</p>
+\[s^3+10s^2+24s+K=0\]
+<p><b>Estabilidad.</b> Routh: \(0<K<240\), cruce en \(\pm j4.90\).</p>
+<p><b>Polos en lazo cerrado.</b> \(s=-1.204\pm j2.065,\ -7.591\); el tercer polo está 6.3 veces más lejos (más de 5): aproximación válida.</p>
+<p><b>Desempeño de referencia.</b> \(T_s=3.32\) s, \(T_p=1.52\) s, \(K_v=K/24=1.807\) y \(e_{\text{rampa}}=0.553\).</p>`,
+s4:String.raw`<h3>a) Punto de diseño</h3>
+\[T_{s,d}=\frac{3.32}{3}=1.107\text{ s}\Rightarrow\sigma=3.613,\quad\omega_d=3.613\tan59.74^\circ=6.194\]
+<p>\(s_d=-3.613+j6.194\), sobre la misma recta de ζ. No está en el LGDR original: hace falta un cero.</p>
+<h3>b) Ángulo faltante</h3>
+\[\angle G(s_d)=-(120.26^\circ+86.43^\circ+68.93^\circ)=-275.61^\circ\]
+<p>Para pertenecer al LGDR debe valer −180°: el cero debe aportar +95.61°.</p>
+<h3>c) Ubicación del cero</h3>
+\[z_c=\sigma+\frac{\omega_d}{\tan95.61^\circ}=3.613-0.608=3.005\]
+<p>Como el ángulo es mayor de 90°, el cero queda a la derecha de \(-\sigma\). Libro: 3.006.</p>
+<h3>d) Ganancia</h3>
+\[K=\frac{|s_d|\,|s_d+4|\,|s_d+6|}{|s_d+3.005|}=\frac{7.171\cdot6.206\cdot6.638}{6.224}=47.47\]
+<h3>e) Nueva ecuación y estabilidad</h3>
+\[s^3+10s^2+(24+K)s+3.005K=0\]
+<p>Routh: \(10(24+K)>3.005K\) siempre; el cero vuelve al sistema estable para todo \(K>0\). Tercer polo: \(-10-2(-3.613)=-2.773\).</p>
+<h3>f) Efecto en el error</h3>
+\[K_v=\frac{47.47\cdot3.005}{24}=5.94,\qquad e_{\text{rampa}}=0.168\]`,
+s5:String.raw`<p>El cero se obtuvo con la condición de ángulo y \(K\) con la de magnitud; la verificación no requirió ajuste.</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces.</b> \(s^3+10s^2+71.47s+142.6=0\Rightarrow s=-2.773,\ -3.613\pm j6.194\) (suma \(=-10\) ✓).</p>
+<p><b>Estabilidad.</b> Estable para todo \(K>0\) (antes sólo para \(K<240\)).</p>`,
+s6b:String.raw`<p>El par dominante coincide con el candidato.</p>`,
+s6c:String.raw`<p>El tercer polo \(-2.773\) está más cerca del eje que el par dominante (0.77 σ) y a 0.23 del cero; su residuo (0.101) es casi 1/5 del dominante: la cancelación es sólo parcial, como señala el libro.</p>
+<p><b>Error en estado estacionario.</b> \(K_v=5.942\Rightarrow e_{\text{rampa}}=0.168\) (antes 0.553); al escalón, 0.</p>`,
+s7:String.raw`<p>Se simuló al escalón el modelo completo (<code>feedback(K*Gc*G,1)</code>) con <code>step</code> y <code>stepinfo</code>, sin quitar el polo \(-2.773\), y se comparó con el sistema sin compensar.</p>`,
+s7b:String.raw`<p>\(T_s\) pasa de 3.471 a 1.153 s (3.01 veces menor) ✓. El sobrepaso queda en 11.98 %, menor que 16 %: el sistema resulta más amortiguado de lo pedido.</p>`,
+cmp:[['Magnitud','Libro (2.º orden)','Libro (sim.)','Este reporte (sim.)'],[['%OS sin compensar','16','14.8','15.08'],['\\(T_s\\) sin compensar (s)','3.320','3.6','3.471'],['\\(T_p\\) sin compensar (s)','1.522','1.7','1.673'],['%OS con PD','16','11.8','11.98'],['\\(T_s\\) con PD (s)','1.107','1.2','1.153'],['\\(T_p\\) con PD (s)','0.507','0.5','0.523'],['\\(e_{\\text{rampa}}\\) con PD','0.168','—','0.1683']]],
+s8:String.raw`<p>Los resultados coinciden con la tabla 9.3 del libro (cero en −3.006; aquí −3.005). El libro acepta el diseño porque el sobrepaso difiere unos 3 % y la velocidad mejora unas tres veces; lo mismo ocurre aquí con el modelo completo (11.98 % y 1.153 s).</p>
+<p>El sobrepaso menor se explica por el tercer polo \(-2.773\) sin cancelar del todo: amortigua el pico. Como efecto extra, el error a rampa mejoró 3.3 veces sin haberlo pedido.</p>`,
+con:[String.raw`Un cero bien ubicado aporta el ángulo que falta y desplaza el LGDR hasta el punto de diseño.`,String.raw`El cero hizo al sistema estable para cualquier \(K\) y mejoró el error a rampa.`,String.raw`Limitación demostrada: el PD ideal es activo y amplifica el ruido de alta frecuencia (derivada pura); el tercer polo deja el sobrepaso en 12 % y no en 16 %.`],
+calc:[String.raw`\sigma=4/1.107=3.613,\ \ \omega_d=6.194`,String.raw`\theta_z=-180^\circ+275.61^\circ=95.61^\circ\Rightarrow z_c=3.005`,String.raw`K=47.47,\ \ K_D=47.47,\ \ K_P=142.6`,String.raw`K_v=47.47\cdot3.005/24=5.94`]},
+
+p5:{cap:C9, blocks:['Gc(s)','G(s)'],
+obj:String.raw`Evaluar el tiempo de asentamiento de un sistema que opera con 15 % de sobrepaso y diseñar un compensador de adelanto, con el cero en −10, que lo reduzca tres veces.`,
+model:String.raw`\[G(s)=\frac{K}{s(s+7)},\qquad G_c(s)=\frac{s+10}{s+p_c}\]<p>Realimentación unitaria negativa; compensador pasivo en cascada.</p>`,
+specs:[['Sobrepaso','15 %','\\(\\zeta=0.517\\)'],['Tiempo de asentamiento','\\(T_s/3\\le0.381\\) s','\\(\\sigma=10.5\\)'],['Cero del compensador','−10 (impuesto)','Sólo se calcula el polo']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> Indicada: opera con 15 % de sobrepaso.</p>
+\[\zeta=0.517,\quad K=\omega_n^2=\left(\frac{3.5}{0.517}\right)^2=45.84,\quad T_s=\frac{4}{3.5}=1.143\text{ s}\]
+<p>Con \(K=1\) los polos serían \(-0.146\) y \(-6.854\).</p>
+<p><b>Polos, ceros y tipo.</b> Polos en \(0\) y \(-7\); tipo 1. \(s^2+7s+K=0\), con \(\sigma=3.5\) fijo.</p>
+<p><b>Estabilidad.</b> Estable para todo \(K>0\) (primera columna de Routh: \(1,\,7,\,K\)).</p>
+<p><b>Polos en lazo cerrado.</b> \(s=-3.500\pm j5.796\).</p>
+<p><b>Desempeño de referencia.</b> %OS = 15 %, \(T_s=1.143\) s, \(T_p=0.542\) s; \(K_v=6.549\) y \(e_{\text{rampa}}=0.1527\).</p>`,
+s4:String.raw`<h3>a) Punto de diseño</h3>
+\[T_{s,d}=\frac{1.143}{3}=0.381\text{ s}\Rightarrow\sigma=10.5,\quad\omega_d=10.5\tan58.87^\circ=17.39\]
+<h3>b) Ángulo con el cero ya puesto</h3>
+\[\angle(s_d+10)-\angle s_d-\angle(s_d+7)=91.65^\circ-121.13^\circ-101.38^\circ=-130.86^\circ\]
+<p>Para llegar a −180° el polo del compensador debe restar 49.14°.</p>
+<h3>c) Ubicación del polo</h3>
+\[p_c=10.5+\frac{17.39}{\tan49.14^\circ}=10.5+15.04=25.54\]
+<p>\(p_c>z_c\): el polo queda a la izquierda del cero, como en todo adelanto. Libro: 25.52.</p>
+<h3>d) Ganancia</h3>
+\[K=\frac{|s_d|\,|s_d+7|\,|s_d+25.54|}{|s_d+10|}=\frac{20.31\cdot17.74\cdot22.99}{17.40}=476.2\]
+<h3>e) Ecuación característica y tercer polo</h3>
+\[s^3+32.54s^2+(178.8+K)s+10K=0,\qquad p_3=-32.54-2(-10.5)=-11.54\]
+<p>Routh: \(32.54(178.8+K)>10K\) siempre; estable para todo \(K>0\).</p>`,
+s5:String.raw`<p>El compensador del libro no cumplió el sobrepaso en la simulación; el controlador final es el ajustado (\(p_c=27.00\), \(K=364.1\)), diseñado con \(\zeta=0.627\) manteniendo \(\sigma=10.5\) y el cero en \(-10\).</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces (libro).</b> \(s^3+32.54s^2+654.9s+4761.6=0\Rightarrow s=-10.50\pm j17.39,\ -11.54\) (suma \(=-32.54\) ✓).</p>
+<p><b>Ajustado.</b> \(s^3+34.00s^2+553.1s+3640.8=0\Rightarrow s=-10.50\pm j13.03,\ -13.00\). Ambos son estables para todo \(K>0\).</p>`,
+s6b:String.raw`<p>Los polos complejos quedan donde se diseñaron; el problema no es su ubicación, sino el tercer polo y el cero.</p>`,
+s6c:String.raw`<p>El tercer polo \(-11.54\) está a sólo 1.1 σ y el cero \(-10\) queda más cerca del eje que él: no hay cancelación (residuo 0.210). La aproximación de polos dominantes no es razonable.</p>
+<p><b>Error en estado estacionario.</b> \(K_v=10K/(7p_c)\): 26.63 con el diseño del libro (\(e=0.0375\)) y 19.27 con el ajustado (\(e=0.0519\)); al escalón, 0.</p>`,
+s7:String.raw`<p>El polo se calculó con <code>evalfr</code> y la condición de ángulo, \(K\) con <code>1/abs(evalfr(Gc*G, sd))</code>; luego se simuló <code>feedback(Kc*Gc*G,1)</code> con <code>stepinfo</code> y se revisaron <code>pole</code> y <code>zero</code> del lazo cerrado.</p>`,
+s7b:String.raw`<p>Diseño del libro: 21.07 % (no cumple) y \(T_s=0.391\) s; el cero sin cancelar suma una derivada de la respuesta y levanta el pico. Ajustado: 15.00 % y 0.363 s, ambos cumplen.</p>`,
+cmp:[['Magnitud','Libro','Este reporte'],[['\\(T_s\\) sin compensar (s)','1.143','1.143 (sim. 1.161)'],['\\(p_c\\)','25.52','25.54'],['\\(K\\)','476.3','476.2'],['%OS con adelanto (sim.)','no lo reporta','21.07'],['Ajuste \\(p_c\\) / \\(K\\)','—','27.00 / 364.1'],['%OS y \\(T_s\\) ajustado','—','15.00 % · 0.363 s']]],
+s8:String.raw`<p>El compensador coincide con la respuesta del libro, que sólo da \(G_c\) y \(K\) y no verifica el sobrepaso del modelo completo. La guía sí lo exige: la simulación da 21 %, fuera de la meta.</p>
+<p>Al rediseñar con más ζ (0.627) y la misma σ se cumplen el 15 % y \(T_s\). El costo es el error a rampa: \(K_v\) baja de 26.6 a 19.3.</p>`,
+con:[String.raw`El adelanto reduce \(T_s\) tres veces sin circuito activo.`,String.raw`Con el cero impuesto en \(-10\) la aproximación de segundo orden falla; se compensa con más ζ de diseño.`,String.raw`Limitación demostrada: más amortiguamiento cuesta \(K_v\) (26.6 → 19.3).`],
+calc:[String.raw`\sigma=4/0.381=10.5,\ \ \omega_d=17.39`,String.raw`\theta_p=180^\circ-130.86^\circ=49.14^\circ\Rightarrow p_c=25.54`,String.raw`K=476.2,\ \ p_3=-11.54`,String.raw`\text{Ajuste: }\zeta=0.627\Rightarrow p_c=27.00,\ K=364.1`]},
+
+p6:{cap:C9, blocks:['Gc(s)','G(s)'],
+obj:String.raw`Diseñar un controlador PID para que el sistema opere con 20 % de sobrepaso, tiempo pico igual a 2/3 del sistema sin compensar y error cero al escalón.`,
+model:String.raw`\[G(s)=\frac{K(s+8)}{(s+3)(s+6)(s+10)},\qquad G_c(s)=K_1+\frac{K_2}{s}+K_3s\]<p>Realimentación unitaria negativa. El PID se diseña como producto de un PD (transitorio) y un PI (error).</p>`,
+specs:[['Sobrepaso','20 %','\\(\\zeta=0.456\\)'],['Tiempo pico','\\(\\tfrac23T_p\\le0.198\\) s','Parte PD'],['Error al escalón','0','Parte PI']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> Indicada: el sistema sin compensar opera con 20 % de sobrepaso: \(\zeta=0.456\), \(\theta=62.87^\circ\), \(s_0=-5.416\pm j10.57\).</p>
+\[76.26^\circ-(102.87^\circ+86.84^\circ+66.56^\circ)=-180^\circ,\qquad K=\frac{10.84\cdot10.59\cdot11.52}{10.88}=121.5\]
+<p>Con \(K=1\) los polos serían \(-3.256,\,-5.814,\,-9.929\).</p>
+<p><b>Polos, ceros y tipo.</b> Polos en \(-3,\,-6,\,-10\); cero en \(-8\). Tipo 0: error finito al escalón. Hay 2 asíntotas a ±90° desde \(\sigma_a=-5.5\).</p>
+\[s^3+19s^2+(108+K)s+(180+8K)=0\]
+<p><b>Estabilidad.</b> Fila \(s^1\) de Routh: \((1872+11K)/19>0\) para todo \(K>0\).</p>
+<p><b>Polos en lazo cerrado con \(K=121.5\).</b> \(s=-5.416\pm j10.57,\ -8.169\). El tercer polo está junto al cero \(-8\): cancelación aproximada, la aproximación de segundo orden es razonable.</p>
+<p><b>Desempeño de referencia.</b> \(T_p=\pi/10.57=0.297\) s, \(T_s=0.739\) s; \(K_p=8K/180=5.40\) y \(e(\infty)=1/6.40=0.156\).</p>`,
+s4:String.raw`<h3>a) Punto de diseño desde T<sub>p</sub></h3>
+\[T_{p,d}=\tfrac23(0.297)=0.198\text{ s}\Rightarrow\omega_d=\frac{\pi}{0.198}=15.86,\quad\sigma=\frac{15.86}{\tan62.87^\circ}=8.123\]
+<h3>b) Cero del PD (condición de ángulo)</h3>
+\[\angle G(s_d)=90.45^\circ-(107.91^\circ+97.63^\circ+83.25^\circ)=-198.34^\circ\Rightarrow\theta_z=18.34^\circ\]
+\[z_{PD}=8.123+\frac{15.86}{\tan18.34^\circ}=55.96,\qquad K_{PD}=5.326\]
+<p>El ángulo faltante es pequeño, por eso el cero queda lejos.</p>
+<h3>c) PI ideal</h3>
+<p>\(G_{PI}=(s+0.5)/s\): el polo en el origen da tipo 1 (error cero) y el cero cercano al origen hace que el dipolo casi no mueva los polos del PD.</p>
+<h3>d) Ecuación característica con el PID completo</h3>
+\[s^4+(19+K)s^3+(108+64.46K)s^2+(180+479.7K)s+223.8K=0\]
+<h3>e) Nueva búsqueda de K y ganancias</h3>
+<p>\(s_0=-7.513\pm j14.66\), \(K=4.592\). Desarrollando \(K(s+55.96)(s+0.5)/s\):</p>
+\[K_1=259.3,\qquad K_2=128.5,\qquad K_3=4.592\qquad(\text{libro: }259.5,\ 128.6,\ 4.6)\]`,
+s5:String.raw`<p>El controlador se implementa en forma paralela con <code>pid(K1, K2, K3)</code>.</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces.</b> \(s^4+23.59s^3+404.0s^2+2382.5s+1027.8=0\Rightarrow s=-0.467,\ -7.513\pm j14.66,\ -8.099\) (suma \(=-23.59\) ✓; orden 4).</p>
+<p><b>Estabilidad.</b> Todas las raíces en el semiplano izquierdo; estable para todo \(K>0\).</p>`,
+s6b:String.raw`<p>Con el PI el par dominante se corrió 7.5 % respecto al punto del PD (el PI no es un dipolo perfecto); por eso se verificó \(T_p\) en la simulación.</p>`,
+s6c:String.raw`<p>Hay dos cancelaciones aproximadas: \(-8.099\) junto al cero \(-8\) y \(-0.467\) junto al cero \(-0.5\). Ambos polos son estables y de residuo pequeño (0.012 y 0.066).</p>
+<p><b>Error en estado estacionario.</b> El polo del PI en el origen da tipo 1: \(K_p=\infty\Rightarrow e_{\text{escalón}}=0\). Dato extra: \(K_v=5.710\), error a rampa 0.175.</p>`,
+s7:String.raw`<p>Se siguió el orden del diseño: <code>Tpd = feedback(Kpd*Gpd*G,1)</code>, luego el PID con <code>C = pid(K1,K2,K3)</code> y <code>Tpid = feedback(C*G,1)</code>; se revisaron <code>pole</code>/<code>zero</code>, <code>stepinfo</code> y <code>1 - dcgain(Tpid)</code>.</p>`,
+s7b:String.raw`<p>El PID cumple las tres especificaciones en el modelo completo: 14.15 % (≤ 20 %), \(T_p=0.194\) s (≤ 0.198 s) y error 0. \(T_s\) sube a 2.56 s por la cola del modo \(-0.467\); no se pidió, pero se reporta.</p>`,
+cmp:[['Magnitud','Libro','Este reporte'],[['%OS / \\(T_p\\) sin compensar','20 % · 0.297 s','20.73 % · 0.295 s (sim.)'],['\\(e(\\infty)\\) sin compensar','0.156','0.156'],['\\(K_1,\\ K_2,\\ K_3\\)','259.5 · 128.6 · 4.6','259.3 · 128.5 · 4.592'],['%OS con PID','20 (pred.)','14.15 (sim.)'],['\\(T_p\\) con PID (s)','0.214 (pred.)','0.194 (sim.)'],['\\(T_s\\) con PID (s)','0.532 (pred.)','2.558 (sim.)'],['\\(e(\\infty)\\) con PID','0','0']]],
+s8:String.raw`<p>Las ganancias coinciden con el libro. Su tabla 9.5 predice con segundo orden \(T_p=0.214\) s, que no cumpliría la meta de 0.198 s; la simulación del modelo completo da 0.194 s y sí cumple. Por eso el procedimiento del libro termina simulando: la predicción no basta.</p>
+<p>La diferencia en \(T_s\) (0.53 s previsto contra 2.56 s simulado) se debe al modo lento del PI (\(-0.467\)), que la aproximación ignora.</p>`,
+con:[String.raw`Diseñar primero el PD y después el PI evita que la segunda etapa deshaga la primera.`,String.raw`Las tres especificaciones se cumplen en el modelo completo, aunque la predicción de segundo orden no lo garantizaba.`,String.raw`Limitación demostrada: el PID requiere circuito activo, el término derivativo es sensible al ruido (en la práctica se agrega un filtro) y el PI deja un asentamiento largo.`],
+calc:[String.raw`\omega_d=\pi/0.198=15.86,\ \ \sigma=8.123`,String.raw`\theta_z=18.34^\circ\Rightarrow z_{PD}=55.96`,String.raw`K_1=K(55.96+0.5)=259.3,\ \ K_2=K(55.96)(0.5)=128.5,\ \ K_3=K=4.592`,String.raw`e_{\text{escalón}}=0,\ \ K_v=5.710`]},
+
+p7:{cap:C9, blocks:['Gc(s)','G(s)'],
+obj:String.raw`Para un sistema que opera con 20 % de sobrepaso, evaluar \(T_s\) y el error a rampa, y diseñar un compensador de adelanto‑atraso, con el cero de adelanto en −3, que reduzca \(T_s\) dos veces y el error a rampa diez veces.`,
+model:String.raw`\[G(s)=\frac{K}{s(s+7)},\qquad G_c(s)=\frac{(s+3)(s+z_{atr})}{(s+p_{ad})(s+p_{atr})}\]<p>Realimentación unitaria negativa; primero se diseña el adelanto (transitorio) y después el atraso (error).</p>`,
+specs:[['Sobrepaso','20 %','\\(\\zeta=0.456\\)'],['Tiempo de asentamiento','\\(T_s/2\\le0.571\\) s','Adelanto'],['Error a rampa','÷10: \\(e\\approx0.0119\\)','Atraso'],['Cero del adelanto','−3 (impuesto)','—']],
+s3:String.raw`<p><b>Ganancia de referencia.</b> Indicada: opera con 20 % de sobrepaso.</p>
+\[\zeta=0.456\Rightarrow\omega_n=\frac{3.5}{0.456}=7.676,\quad K=58.93,\quad T_s=\frac{4}{3.5}=1.143\text{ s}\]
+<p>Con \(K=1\) los polos serían \(-0.146\) y \(-6.854\).</p>
+<p><b>Polos, ceros y tipo.</b> Polos en \(0\) y \(-7\); tipo 1. \(s^2+7s+K=0\), con \(\sigma=3.5\).</p>
+<p><b>Estabilidad.</b> Coeficientes positivos: estable para todo \(K>0\); las ramas suben en vertical desde \(-3.5\).</p>
+<p><b>Polos en lazo cerrado.</b> \(s=-3.500\pm j6.832\).</p>
+<p><b>Desempeño de referencia.</b> %OS = 20 %, \(T_s=1.143\) s, \(T_p=0.460\) s; \(K_v=58.93/7=8.418\) y \(e_{\text{rampa}}=0.1188\).</p>`,
+s4:String.raw`<h3>a) Punto de diseño</h3>
+\[T_{s,d}=\frac{1.143}{2}=0.571\text{ s}\Rightarrow\sigma=7,\quad\omega_d=7\tan62.87^\circ=13.66\]
+<h3>b) Polo del adelanto (cero fijo en −3)</h3>
+\[106.32^\circ-117.13^\circ-90^\circ=-100.81^\circ\Rightarrow\theta_p=79.19^\circ\]
+\[p_{ad}=7+\frac{13.66}{\tan79.19^\circ}=9.609,\qquad K_{ad}=\frac{15.35\cdot13.66\cdot13.91}{14.24}=205.0\]
+<h3>c) Error que deja el adelanto</h3>
+\[K_{v,ad}=\frac{205.0\cdot3}{7\cdot9.609}=9.14\]
+<p>El adelanto casi no mejoró el error (8.42 → 9.14): el resto lo debe dar el atraso.</p>
+<h3>d) Atraso</h3>
+\[K_{v,\text{meta}}=10\cdot8.418=84.18,\qquad\frac{z_{atr}}{p_{atr}}=\frac{84.18}{9.14}=9.21\Rightarrow p_{atr}=0.01,\ z_{atr}=0.0921\]
+<h3>e) Ecuación final y nueva búsqueda de K</h3>
+\[s^4+16.62s^3+(67.43+K)s^2+(0.673+3.092K)s+0.2763K=0\]
+<p>\(s_0=-6.966\pm j13.60\), \(K=203.7\); \(K_v=83.65\) y \(e_{\text{rampa}}=0.01195\) (÷9.9).</p>`,
+s5:String.raw`<p>El diseño del libro no cumplió \(T_s\) en la simulación; el controlador final es el ajustado: adelanto rediseñado para \(T_s=0.48\) s (\(p_{ad}=12.29\)) y atraso recalculado (\(z_{atr}=0.0827\)), con \(K=290.3\).</p>`,
+s6a:String.raw`<p><b>Ecuación final y raíces (libro).</b> \(s^4+16.62s^3+271.1s^2+630.4s+56.27=0\Rightarrow s=-0.093,\ -2.593,\ -6.966\pm j13.60\) (suma \(=-16.62\) ✓).</p>
+<p><b>Ajustado.</b> \(s^4+19.30s^3+376.5s^2+895.8s+72.05=0\Rightarrow s=-0.083,\ -2.607,\ -8.303\pm j16.21\). Ambos son estables para todo \(K>0\).</p>`,
+s6b:String.raw`<p>El atraso movió el par dominante sólo 0.5 %: el adelanto‑atraso respeta el punto de diseño.</p>`,
+s6c:String.raw`<p>\(-2.593\) está más cerca del eje que los dominantes (0.37 σ) y a 0.41 del cero \(-3\): cancelación sólo parcial (residuo 0.157). \(-0.093\) queda pegado al cero \(-0.0921\) (residuo 0.0094).</p>
+<p><b>Error en estado estacionario.</b> \(K_v=83.66\) (\(e=0.01195\)) con el diseño del libro y 83.78 (\(e=0.01194\)) con el ajustado: mejora ÷9.94 y ÷9.95.</p>`,
+s7:String.raw`<p>Se calcularon el adelanto (<code>evalfr</code>, condición de ángulo y de magnitud) y el atraso con <code>dcgain(minreal(s*K*Glead*G))</code>; se simuló <code>feedback(Kf*Glead*Glag*G,1)</code> al escalón con <code>stepinfo</code> y a la rampa con <code>lsim</code>.</p>`,
+s7b:String.raw`<p>Diseño del libro: \(T_s=0.627\) s, 10 % sobre la meta, por el modo \(-2.59\) sin cancelar. Ajustado: \(T_s=0.569\) s, 9.05 % y \(e_{\text{rampa}}=0.01194\); cumple todo.</p>`,
+cmp:[['Magnitud','Libro','Este reporte'],[['\\(T_s\\) sin compensar (s)','1.143','1.143 (sim. 1.085)'],['\\(e_{\\text{rampa}}\\) sin compensar','0.1189','0.1188'],['\\(K\\)','205.4','203.7 (con el atraso)'],['\\(T_s\\) con adelanto‑atraso (sim.)','no lo reporta','0.627 → ajustado 0.569'],['\\(e_{\\text{rampa}}\\) final','—','0.01195 (÷9.94)']]],
+s8:String.raw`<p>El libro da \(G_c\) con \(K=205.4\), la ganancia del adelanto solo; con el atraso puesto, la \(K\) que deja los polos sobre \(\zeta=0.456\) es 203.7 (0.8 % menos), y las dos dan prácticamente la misma respuesta.</p>
+<p>El error cumple la meta (÷9.94), pero \(T_s\) no: el polo \(-2.59\) cerca del cero \(-3\) alarga el asentamiento. Rediseñar el adelanto para un \(T_s\) algo menor (0.48 s) compensa ese efecto y cumple todas las metas.</p>`,
+con:[String.raw`El adelanto‑atraso resuelve el transitorio y el error por separado y sin circuitos activos.`,String.raw`El orden importa: el atraso se calcula con el \(K_v\) que ya dejó el adelanto.`,String.raw`Limitación demostrada: con el cero de adelanto impuesto en \(-3\) queda un polo lento sin cancelar del todo; \(T_s\) debe verificarse por simulación y ajustarse.`],
+calc:[String.raw`\sigma=7,\ \ \omega_d=13.66,\ \ \theta_p=79.19^\circ\Rightarrow p_{ad}=9.609`,String.raw`K_{ad}=205.0,\ \ K_{v,ad}=9.14`,String.raw`z_{atr}/p_{atr}=84.18/9.14=9.21`,String.raw`\text{Ajuste: }p_{ad}=12.29,\ z_{atr}=0.0827,\ K=290.3`]}
+  };
+
+  const K_=window.katex;
+  const tx=(t,d)=>{ try{ return K_?K_.renderToString(t,{displayMode:d,throwOnError:false,strict:'ignore'}):t; }catch(e){ return t; } };
+  const M=h=>String(h).replace(/\\\[([\s\S]+?)\\\]/g,(m,t)=>`<div class="rp-eq">${tx(t,true)}</div>`).replace(/\\\(([\s\S]+?)\\\)/g,(m,t)=>tx(t,false));
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let nf=0, nt=0, uid=0;
+  /* copia de un elemento de la página con ids renombrados (los clipPath de las figuras) */
+  function copy(el){
+    const c=el.cloneNode(true); const pre='rp'+(++uid)+'-';
+    const ids=[...c.querySelectorAll('[id]')].map(x=>x.id); if(c.id) ids.push(c.id);
+    let h=c.outerHTML; ids.forEach(id=>{ h=h.split(`id="${id}"`).join(`id="${pre+id}"`).split(`url(#${id})`).join(`url(#${pre+id})`); });
+    return h;
+  }
+  function figs(sel){
+    const els=[...document.querySelectorAll(sel)]; if(!els.length) return '';
+    return `<div class="gfigs rp-figs">${els.map(e=>{ const h=copy(e); nf++;
+      return h.replace(/<figcaption>/,`<figcaption><b>Figura ${nf}.</b> `); }).join('')}</div>`;
+  }
+  function tab(sel,cap){
+    const t=document.querySelector(sel); if(!t) return '';
+    const w=t.closest('.tablewrap')||t; nt++;
+    return `<div class="rp-tab">${copy(w)}<p class="rp-cap"><b>Tabla ${nt}.</b> ${cap}</p></div>`;
+  }
+  function mk(head,rows,cap,num){
+    nt++;
+    return `<div class="rp-tab"><div class="tablewrap"><table${num?'':' class="rp-tx"'}><thead><tr>${head.map(h=>`<th>${M(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td${i&&num?' class="n"':''}>${M(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="rp-cap"><b>Tabla ${nt}.</b> ${cap}</p></div>`;
+  }
+  /* diagrama de bloques: R(s) → ⊕ → bloques → C(s), realimentación unitaria */
+  function diagram(bl){
+    const bw=80, gap=24, y=44, h=36; let x=84, s='';
+    const lab=t=>t.replace(/^G(c)?\(s\)$/,(m,c)=>c?'G<tspan dy="4" font-size="10">c</tspan><tspan dy="-4">(s)</tspan>':'G(s)');
+    const arrow=(x1,x2)=>`<path class="dl" d="M${x1} ${y}H${x2-7}"/><path class="da" d="M${x2-8} ${y-4.5}L${x2} ${y}L${x2-8} ${y+4.5}z"/>`;
+    s+=`<text class="dt" x="2" y="${y-8}">R(s)</text>`+arrow(4,64)+`<circle class="dc" cx="74" cy="${y}" r="10"/><path class="dl" d="M68 ${y}h12M74 ${y-6}v12"/><text class="ds" x="60" y="${y+24}">−</text>`;
+    bl.forEach((b,i)=>{ const x0=x+gap; s+=arrow(x,x0)+`<rect class="db" x="${x0}" y="${y-h/2}" width="${bw}" height="${h}" rx="6"/><text class="dt" x="${x0+bw/2}" y="${y+5}" text-anchor="middle" font-style="italic">${lab(b)}</text>`; x=x0+bw; });
+    const xo=x+22; s+=`<path class="dl" d="M${x} ${y}H${xo}"/>`+arrow(xo,xo+34)+`<text class="dt" x="${xo+38}" y="${y+5}">C(s)</text>`;
+    s+=`<circle cx="${xo}" cy="${y}" r="2.6" class="dn"/><path class="dl" d="M${xo} ${y}V96H74V${y+18}"/><path class="da" d="M${74-4.5} ${y+19}L74 ${y+11}L${74+4.5} ${y+19}z"/>`;
+    const W=xo+76;
+    return `<figure class="rp-diag"><svg viewBox="0 0 ${W} 108" style="max-width:${Math.round(W*1.35)}px" role="img" aria-label="Diagrama de bloques en lazo cerrado con realimentación unitaria">${s}</svg><figcaption><b>Figura ${++nf}.</b> Diagrama de bloques: ${bl.length>1?'compensador en cascada con la planta y ':''}realimentación unitaria negativa.</figcaption></figure>`;
+  }
+  const sec=(n,body)=>`<section class="rps" data-n="${n}"><h2 class="rp-h"><span class="rp-n">${n}</span><span class="rp-ht">${ITEMS[n-1][0]}</span><button type="button" class="rp-pg" data-k="${ITEMS[n-1][1]}" title="Ir a esta parte en la página">En la página ›</button></h2>${body}</section>`;
+  const cache={};
+  function build(pid){
+    const D=R[pid]; if(!D) return '<p>Sin datos para esta práctica.</p>';
+    nf=0; nt=0;
+    const h2=document.querySelector(`#${pid} .phead h2`), src=document.querySelector(`#${pid} .phead .src`);
+    const name=h2?h2.textContent.trim():pid.toUpperCase(), ex=src?src.textContent.trim():'';
+    const code=document.querySelector(`#${pid}-mat pre`), n=pid.slice(1);
+    let o=`<header class="rp-cover"><p class="rp-kick">Reporte de práctica · Laboratorio de control (LGDR)</p><h1>${esc(name)}</h1></header>`;
+    o+=sec(1,`<dl class="rp-meta"><div><dt>Ejercicio</dt><dd>${esc(ex)}</dd></div><div><dt>Capítulo</dt><dd>${D.cap}</dd></div><div class="w"><dt>Libro</dt><dd>${BOOK}</dd></div><div><dt>Alumno(s)</dt><dd class="rp-blank"></dd></div><div><dt>Grupo</dt><dd class="rp-blank"></dd></div><div><dt>Fecha</dt><dd class="rp-blank"></dd></div></dl><p><b>Objetivo.</b> ${M(D.obj)}</p>`);
+    o+=sec(2,`<h3>Modelo</h3>${M(D.model)}<h3>Diagrama</h3>${diagram(D.blocks)}<h3>Especificaciones</h3>${mk(['Especificación','Valor o meta','Cómo se obtiene'],D.specs,'Especificaciones del ejercicio.')}`);
+    o+=sec(3,M(D.s3)+`<h3>Evidencia de la etapa 1</h3>`+figs(`#${pid}-ana .evid .gfig`)+tab(`#${pid}-ana .evid table`,'Desempeño de referencia: segundo orden, simulación del modelo completo y libro.'));
+    o+=sec(4,M(D.s4));
+    o+=sec(5,tab(`#${pid}-ctrl table`,'Controlador final y parámetros.')+M(D.s5));
+    o+=sec(6,M(D.s6a)+tab(`#${pid}-v2 table`,'Polos candidatos y polos obtenidos.')+M(D.s6b)+tab(`#${pid}-v3 table`,'Modos del lazo cerrado y residuos al escalón.')+M(D.s6c));
+    o+=sec(7,M(D.s7)+figs(`#${pid}-v4 .gfig`)+tab(`#${pid}-v4 table`,'Desempeño del modelo completo simulado (sin simplificar polos ni ceros).')+M(D.s7b));
+    o+=sec(8,mk(D.cmp[0],D.cmp[1],'Comparación con los valores del libro.',true)+M(D.s8));
+    o+=sec(9,`<ul class="rp-ul">${D.con.map(c=>`<li>${M(c)}</li>`).join('')}</ul>`);
+    o+=sec(10,`<h3>Cálculos principales</h3><ol class="rp-calc">${D.calc.map(c=>`<li>${tx(c,false)}</li>`).join('')}</ol><h3>Archivo ejecutable <code>practica${n}.m</code></h3><p class="rp-small">Requiere Control System Toolbox. La función <code>puntoZeta.m</code> está en la página de Resumen; el diagrama equivalente en Simulink está junto al código de la práctica.</p>${code?`<pre class="rp-code">${code.innerHTML}</pre>`:''}`);
+    o+=`<footer class="rp-foot">Simulación del reporte generada con los resultados de esta página · Laboratorio LGDR</footer>`;
+    return o;
+  }
   let cur=null;
   function open(pid){
     cur=pid; const h2=document.querySelector(`#${pid} .phead h2`), src=document.querySelector(`#${pid} .phead .src`);
     const parts=(h2?h2.textContent:'').split('·');
     ttl.textContent='Reporte · '+(parts[0]||'').trim(); sub.textContent=[(parts[1]||'').trim(),src?src.textContent.trim():''].filter(Boolean).join(' — ');
-    list.innerHTML=ITEMS.map(([t,k],i)=>`<li><button type="button" data-k="${k}"><span class="rp-n">${i+1}</span><span>${t}</span><span class="rp-go">Ver ›</span></button></li>`).join('');
-    dlg.showModal();
+    idx.innerHTML=ITEMS.map(([t],i)=>`<li><button type="button" data-to="${i+1}"><span class="rp-n">${i+1}</span><span>${t}</span></button></li>`).join('');
+    if(!cache[pid]) cache[pid]=build(pid);
+    doc.innerHTML=cache[pid]; doc.dataset.p=pid;
+    dlg.showModal(); dlg.scrollTop=0;
   }
-  list.addEventListener('click',e=>{ const b=e.target.closest('button[data-k]'); if(!b||!cur) return;
+  idx.addEventListener('click',e=>{ const b=e.target.closest('button[data-to]'); if(!b) return;
+    const s=doc.querySelector(`.rps[data-n="${b.dataset.to}"]`); if(s) s.scrollIntoView({behavior:'smooth',block:'start'}); });
+  doc.addEventListener('click',e=>{ const b=e.target.closest('button.rp-pg[data-k]'); if(!b||!cur) return;
     const el=find(cur,b.dataset.k); dlg.close(); if(!el) return;
     if(el.tagName==='DETAILS') el.open=true;
     setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),40); });
   dlg.querySelector('[data-rp-close]').addEventListener('click',()=>dlg.close());
   dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.close(); });
   document.addEventListener('click',e=>{ const b=e.target.closest('[data-rep]'); if(b) open(b.dataset.rep); });
+  /* impresión / PDF: sólo el documento, con colores claros */
+  const root=document.documentElement; let oldTitle=null;
+  function prep(){
+    if(!cur||!dlg.open) return false;
+    let p=document.getElementById('repPrint'); if(!p){ p=document.createElement('div'); p.id='repPrint'; document.body.appendChild(p); }
+    p.innerHTML=`<article class="rpdoc">${doc.innerHTML}</article>`;
+    if(oldTitle===null) oldTitle=document.title;
+    const h2=document.querySelector(`#${cur} .phead h2`);
+    document.title='Reporte '+(h2?h2.textContent.replace(/\s*·\s*/,' – ').trim():cur.toUpperCase());
+    root.classList.add('rp-print'); return true;
+  }
+  function done(){ root.classList.remove('rp-print'); const p=document.getElementById('repPrint'); if(p) p.innerHTML=''; if(oldTitle!==null){ document.title=oldTitle; oldTitle=null; } }
+  dlg.querySelector('[data-rp-print]').addEventListener('click',()=>{ if(prep()){ try{ window.print(); }catch(e){} if(!('onafterprint' in window)) setTimeout(done,1500); } });
+  addEventListener('beforeprint',()=>{ if(!root.classList.contains('rp-print')) prep(); });
+  addEventListener('afterprint',done);
+  dlg.addEventListener('close',()=>{ if(root.classList.contains('rp-print')) done(); });
+  window.__lgdrRep={open,prep,done,data:R};
 })();
-
 </script>
 </body></html>

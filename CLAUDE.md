@@ -285,9 +285,19 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   México, 2006 (portada confirmada por el usuario). Columna «Libro» en la tabla de evidencia y en el paso 4 de la verificación con sus valores
   (P4 tabla 9.3 con simulación 14.8 %/3.6 s y 11.8 %/1.2 s; P6 tabla 9.5, predicción PID Tp = 0.214 s; P7 K = 205.4; P5 25.52 / 476.3).
   Lectura de modos por residuo: casi cancelado si |residuo| < 12 % del dominante; si no, «cancelación parcial» (como el libro en P4).
-- **Ventana del reporte (pendiente de contenido):** botón `.repbtn[data-rep=pN]` en `.phead` (dentro de `.phr`) → `dialog#repDlg`
-  (clase `sync`) con «En preparación» y los 10 puntos de la guía; cada uno hace `scrollIntoView` a su parte (abre el plegable).
-  **Siguiente tarea:** llenar esa ventana con una simulación del reporte de cada práctica.
+- **Hecho (v22): Ventana del reporte con la simulación del reporte de P1–P7.** Botón `.repbtn[data-rep=pN]` en `.phead` →
+  `dialog#repDlg.sync.rpd` (pantalla completa en celular, 880 px en computadora): barra fija `.rp-bar` (título, «Imprimir / PDF»
+  `[data-rp-print]`, cerrar), nota «Simulación», índice plegable `details.rp-idx` (salta dentro del documento) y `article#repDoc.rpdoc`.
+  Documento con los 10 puntos de la guía (`section.rps[data-n]`, cada `h2` con «En la página ›» = `button.rp-pg[data-k]`, que cierra y
+  hace `scrollIntoView` a la parte como antes). Texto de cada práctica en el objeto `R` del script del reporte (al final del `<body>`):
+  `obj, model, blocks, specs, s3, s4, s5, s6a/b/c, s7, s7b, cmp, s8, con, calc`; `\( \)` y `\[ \]` se pasan por KaTeX (`window.katex`).
+  Figuras y tablas se **copian de la página** (`#pN-ana .evid`, `#pN-ctrl`, `#pN-v2/v3/v4`, código de `#pN-mat pre`) con ids renombrados
+  (clipPath), y se numeran «Figura n / Tabla n». Diagrama de bloques SVG propio (`.rp-diag`). Punto 1: ejercicio (de `.phead .src`),
+  capítulo (8 o 9), referencia del libro (Nise, CECSA 2006) y líneas en blanco para alumno/grupo/fecha.
+  Impresión: `prep()` copia el documento a `div#repPrint` (hijo de `body`) y pone `html.rp-print`; en `@media print` sólo se ve eso, con
+  colores claros forzados, y `document.title` = «Reporte Práctica N – …» (nombre del PDF); `afterprint`/cerrar → `done()`. También
+  funciona con Ctrl+P (`beforeprint`). Depuración: `window.__lgdrRep.{open,prep,done,data}`. PDF de prueba (P4): 6 páginas carta.
+  Si cambian los números de una práctica, revisar también el texto de `R` (las tablas/figuras copiadas se actualizan solas).
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
