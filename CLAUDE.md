@@ -131,6 +131,15 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (sticky, alto = pantalla − `--dtoph`), lecturas `[data-read]` y lista de retos a la derecha (340–460 px);
   arriba, indicación y deslizadores lado a lado. `--dtoph` lo pone un ResizeObserver sobre `.demo>.dtop`.
   Sin gráficas: ancho hasta 1400 px y más columnas de fórmulas. En celular no cambia nada.
+- **Hecho (v12): Entrada numérica en los deslizadores de las simulaciones de teoría.** En `build()` cada
+  deslizador lleva `span.slv` con `input.slnum[data-n=k]` (+ unidad `.slu` sacada de `fmt`); el `<output
+  data-o>` sigue existiendo pero `hidden` (el resto del código lo sigue escribiendo) y un MutationObserver
+  sobre él copia el valor a la casilla (salvo si tiene el foco). Lo escrito NO se redondea al `step` del
+  deslizador (para retos finos, p. ej. Routh con K = 479.3) y se limita a `[min,max]`; mientras se escribe
+  solo se aplica si está en rango, al confirmar (Enter/blur) se recorta. Formatos que muestran «−v»
+  (`slSign`) se escriben con signo negativo. Sin `inputmode` si el valor puede ser negativo (iOS no tiene
+  «−» en el teclado decimal). Fuente 16 px en táctil (evita el zoom de iOS). Banco de pruebas y simulador
+  ya tenían su casilla de K.
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 

@@ -423,6 +423,16 @@ table.routh-static{width:auto;font-family:var(--f-mono)}
 .sl{display:grid;grid-template-columns:minmax(90px,auto) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13.5px;min-width:0}
 .sl input[type=range]{width:100%;accent-color:var(--accent)}
 .sl output{font:500 13px var(--f-mono);min-width:58px;text-align:right;font-variant-numeric:tabular-nums}
+.slv{display:inline-flex;align-items:center;gap:5px;justify-self:end;min-width:0}
+.slnum{width:78px;font:500 13px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);-moz-appearance:textfield;appearance:textfield}
+.slnum::-webkit-inner-spin-button,.slnum::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.slnum:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.slu{font:12px var(--f-mono);color:var(--muted);white-space:nowrap}
+@media (pointer:coarse){.slnum,.kctl input[type=number]{font-size:16px}}
+.dctl:has(.slnum){grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.sl:has(.slnum){grid-template-columns:minmax(60px,auto) minmax(96px,1fr) auto}
+.sl:has(.slnum) label{overflow-wrap:break-word;hyphens:auto;min-width:0}
+@media (max-width:520px){.slnum{width:64px;padding:4px 5px}.slu{font-size:11px}.sl:has(.slnum){grid-template-columns:minmax(52px,auto) minmax(88px,1fr) auto}}
 .sl select{grid-column:2 / 4;font:14px var(--f-body);padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:0;max-width:100%}
 .sl.chk{grid-template-columns:auto 1fr}
 .sl.chk input{accent-color:var(--accent);width:16px;height:16px}
@@ -3006,12 +3016,15 @@ function tplot(cv,T,curves,o={}){
 }
 const stepSim=(num,den,T,inp=()=>1)=>{ const ps=roots(den); const mx=Math.max(1,...ps.map(q=>Math.hypot(q[0],q[1]))); return simulate(num,den,T,inp,600,0.25/mx); };
 /* ---- constructor de demos ---- */
+const slSign=c=>{ const t=c.fmt?String(c.fmt(1)):''; return t[0]==='−'||t[0]==='-'?-1:1; };   // el formato muestra −v
+const slUnit=c=>c.fmt?String(c.fmt(c.val)).replace(/^[−±+\-]?\s*[\d.,]+(e[+\-−]?\d+)?\s*/i,'').trim():'';
 function build(el,spec){
   const id='d-'+el.dataset.demo, st={};
   const ctl=(spec.ctl||[]).map(c=>{ st[c.k]=c.val;
     if(c.sel) return `<div class="sl"><label for="${id}-${c.k}">${c.label}</label><select id="${id}-${c.k}" data-k="${c.k}">${c.sel.map(([v,t])=>`<option value="${v}" ${v==c.val?'selected':''}>${t}</option>`).join('')}</select></div>`;
     if(c.chk) return `<div class="sl chk"><input type="checkbox" id="${id}-${c.k}" data-k="${c.k}" ${c.val?'checked':''}><label for="${id}-${c.k}">${c.label}</label></div>`;
-    return `<div class="sl"><label for="${id}-${c.k}">${c.label}</label><input type="range" id="${id}-${c.k}" data-k="${c.k}" min="0" max="1000" step="1"><output data-o="${c.k}"></output></div>`; }).join('');
+    const u=slUnit(c), neg=slSign(c)<0||c.min<0;
+    return `<div class="sl"><label for="${id}-${c.k}">${c.label}</label><input type="range" id="${id}-${c.k}" data-k="${c.k}" min="0" max="1000" step="1"><span class="slv"><input type="number" class="slnum" data-n="${c.k}" step="any" ${neg?'':'inputmode="decimal" '}enterkeyhint="done" aria-label="${c.label.replace(/<[^>]+>/g,'')} (escribe el valor)"><output data-o="${c.k}" hidden></output>${u?`<span class="slu">${u}</span>`:''}</span></div>`; }).join('');
   el.innerHTML=`<div class="dhead"><span class="eyebrow">Simulación</span><b>${spec.title}</b></div>
     <div class="dtop">${GUIDES[el.dataset.demo]?'<div class="gcur" data-gcur></div>':''}${ctl?`<div class="dctl">${ctl}</div>`:''}${spec.buttons?`<div class="chips">${spec.buttons.map((b,i)=>`<button class="btn" data-b="${i}">${b[0]}</button>`).join('')}</div>`:''}</div>
     <div class="dplots">${spec.plots.map((p,i)=>`<figure><figcaption>${p}</figcaption><canvas data-c="${i}" style="height:${spec.h||300}px"></canvas></figure>`).join('')}</div>
@@ -3024,7 +3037,20 @@ function build(el,spec){
     if(c.sel){ inp.addEventListener('change',()=>{ G_.user(); st[c.k]=inp.value; if(c.on){ const tg={}; c.on(st,(k,v)=>{tg[k]=v;}); G_.animateTo(tg,{user:true}); } else redraw(); }); return; }
     if(c.chk){ inp.addEventListener('change',()=>{ G_.user(); st[c.k]=inp.checked; redraw();}); return; }
     const [fv,tv]=map(c); inp.value=Math.round(tv(c.val)); const out=el.querySelector(`[data-o="${c.k}"]`); out.textContent=fmtOut(c);
-    inp.addEventListener('input',()=>{ G_.user(); let v=fv(+inp.value); if(c.step) v=Math.round(v/c.step)*c.step; st[c.k]=v; out.textContent=fmtOut(c); redraw(); }); });
+    inp.addEventListener('input',()=>{ G_.user(); let v=fv(+inp.value); if(c.step) v=Math.round(v/c.step)*c.step; st[c.k]=v; out.textContent=fmtOut(c); redraw(); });
+    /* entrada numérica: escribe el valor exacto (sin el redondeo del deslizador) */
+    const num=el.querySelector(`[data-n="${c.k}"]`), sg=slSign(c), lo=Math.min(c.min,c.max), hi=Math.max(c.min,c.max);
+    const numTxt=()=>{ const d=sg*st[c.k]; if(!Number.isFinite(d)) return ''; const m=String(fmtOut(c)).replace(/−/g,'-').match(/-?\d*\.?\d+(e[+-]?\d+)?/i);
+      return m&&Math.abs(+m[0]-d)<=1e-9*Math.max(1,Math.abs(d))?m[0]:String(+d.toPrecision(6)); };
+    num.value=numTxt();
+    new MutationObserver(()=>{ if(document.activeElement!==num) num.value=numTxt(); }).observe(out,{childList:true,characterData:true,subtree:true});
+    const applyNum=fin=>{ const d=parseFloat(String(num.value).trim().replace(',','.'));
+      if(!Number.isFinite(d)){ if(fin) num.value=numTxt(); return; }
+      let v=sg*d; if(!fin&&(v<lo||v>hi)) return; v=Math.min(hi,Math.max(lo,v));
+      G_.user(); st[c.k]=v; inp.value=Math.round(tv(v)); out.textContent=fmtOut(c); redraw(); if(fin) num.value=numTxt(); };
+    num.addEventListener('input',()=>applyNum(false));
+    num.addEventListener('change',()=>applyNum(true));
+    num.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); applyNum(true); num.blur(); } }); });
   const set=(k,v)=>{ const c=spec.ctl.find(x=>x.k===k); st[k]=v; const inp=el.querySelector(`[data-k="${k}"]`); if(c&&!c.sel&&!c.chk){ inp.value=Math.round(map(c)[1](v)); el.querySelector(`[data-o="${k}"]`).textContent=fmtOut(c);} else if(inp&&c.sel) inp.value=v; };
   (spec.buttons||[]).forEach((b,i)=>el.querySelector(`[data-b="${i}"]`).addEventListener('click',()=>{ const tg={}; b[1](st,(k,v)=>{tg[k]=v;}); G_.animateTo(tg); }));
   let raf=0; const redraw=()=>{ cancelAnimationFrame(raf); raf=requestAnimationFrame(()=>{ try{ read.innerHTML=spec.draw(st,cvs)||''; }catch(e){ console.error(e); } G_.after(); }); };
