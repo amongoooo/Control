@@ -77,6 +77,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
+## Idea en curso: "Resolución paso a paso" (primero P1, luego P2–P7)
+
+- **Estado: plan aprobado pendiente** (no hay código aún). Plan completo en el chat del 2026-11-03.
+- Nueva tarjeta `div.card.pasos[data-pasos="p1"]` después de `.bench` de P1; no se toca el contenido existente.
+- Datos por práctica en `PASOS.p1 = [ {titulo, que, formulas:[{gen,sus,res}], plot(cv), matlab:{code,bloques,salida}, simulink?} ]`
+  y un renderizador genérico `buildPasos(el)` (perezoso, como `buildLab`), KaTeX en tiempo de ejecución (`window.katex`),
+  gráficas con los ayudantes existentes (`plane`, `locusPts`, `zline`, `angDraw`, `tplot`, `stepSim`, `metrics`).
+- UI: stepper (Anterior/Siguiente, puntos, deslizar), modo "ver todos"; plantilla fija por paso:
+  Qué se hace → Fórmula → Sustitución → Resultado → Gráfica del paso → MATLAB (código + qué hace cada línea + salida).
+- P1 (verificado con numpy): ζ = 0.5912 (θ = 53.76°), Routh 0<K<480 (ω = 6.633), σa = −4, ruptura s = −2.845 (K = 3.08),
+  s0 = −2.028 ± j2.768, K = 45.55, Kp = 0.949, e(∞) = 0.513, p3 = −7.943, ajuste K = 49.38.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
