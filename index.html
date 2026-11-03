@@ -97,6 +97,7 @@ td.n,th.n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabula
 tr.sel td{background:var(--sel)}
 td .sw{display:inline-block;width:12px;height:3px;border-radius:2px;background:var(--sw);vertical-align:middle;margin-right:7px}
 .pill{display:inline-block;font:600 11.5px var(--f-body);letter-spacing:.02em;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.skipbox{align-items:center;margin-top:8px} .skipbox:empty{display:none} .skipbox .btn[data-skip]{min-height:44px} .skipbox .btn.armed{background:var(--warn-soft);color:var(--warn);border-color:var(--warn)}
 .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)}
 /* procedimiento */
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px}
@@ -4273,7 +4274,7 @@ const PARTS=[{r:'I',name:'Parte I · Fundamentos',ids:['f1','f2','f3','f4','f5',
              {r:'II',name:'Parte II · Lazo cerrado y LGDR',ids:['t1','t3','t4','t5','t6','t7','t8'],next:'Parte III'},
              {r:'III',name:'Parte III · Diseño',ids:['t9','t10','t11','t12','t13'],next:'las prácticas'}];
 const PASS=0.8, KEY='lgdr-teoria-v1';
-let ST={solved:{},exam:{},vs:{}}; try{ const v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v&&typeof v==='object') ST={solved:v.solved||{},exam:v.exam||{},vs:v.vs||{}}; }catch(e){}
+let ST={solved:{},exam:{},vs:{},skip:{}}; try{ const v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v&&typeof v==='object') ST={solved:v.solved||{},exam:v.exam||{},vs:v.vs||{},skip:v.skip||{}}; }catch(e){}
 const save=()=>{ try{ localStorage.setItem(KEY,JSON.stringify(ST)); }catch(e){} };
 const secNum=id=>{ const h=document.querySelector(`#${id} .th .num`)||document.querySelector(`#${id} .th>span`); return h?h.textContent:''; };
 const hash=s=>{ let h=2166136261; for(const c of s){ h^=c.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; };
@@ -4325,9 +4326,11 @@ function renderExam(box){
       <p>Incluye las ${items.length} preguntas de comprobación de esta parte, en otro orden, sin pistas y con valores que pueden cambiar. Necesitas <b>${need} de ${items.length}</b> (80 %) para pasar a ${P.next}.</p>
       <div class="exstat" data-stat></div>
       <div class="exhist" data-hist></div>
-      <div class="chips"><button class="btn primary" data-start>Empezar evaluación</button></div></div>
+      <div class="chips"><button class="btn primary" data-start>Empezar evaluación</button></div>
+      <div class="chips skipbox" data-skipbox></div></div>
     <div class="exbody" data-body hidden></div>`;
   box.querySelector('[data-start]').addEventListener('click',()=>start(box,P,items,need));
+  box.querySelector('[data-skipbox]').addEventListener('click',ev=>{ const b=ev.target.closest('[data-skip]'); if(b) skipTap(b,P); });
   refreshExams();
 }
 function start(box,P,items,need){
@@ -4369,9 +4372,25 @@ function grade(box,P,items,need){
   if(UNLOCK){ const nx={I:'II',II:'III',III:'end'}[UNLOCK]; UNLOCK=null; ANIM=nx; setTimeout(()=>unlockAnim(nx),900); }
   res.scrollIntoView({behavior:'smooth',block:'center'});
 }
+/* ---------- saltar evaluación / deshacer salto (confirmación con dos toques) ---------- */
+const NEXTP={I:'II',II:'III'};
+function skipHTML(P){ const e=ST.exam[P.r]; if(!NEXTP[P.r]||(e&&e.passed)) return '';
+  return ST.skip[P.r]?`<span class="pill warn">Evaluación saltada · ${P.next} abierta</span><button class="btn" data-skip="undo" aria-live="polite">Deshacer salto</button>`
+    :`<button class="btn" data-skip="do" aria-live="polite">Saltar evaluación</button>`; }
+function skipTap(b,P){
+  const undo=b.dataset.skip==='undo';
+  if(!b.dataset.armed){ b.dataset.armed='1'; b.dataset.label=b.textContent; b.classList.add('armed');
+    b.textContent=undo?'Toca otra vez: volver a bloquear':'Toca otra vez para saltar';
+    b._t=setTimeout(()=>{ if(b.isConnected){ delete b.dataset.armed; b.classList.remove('armed'); b.textContent=b.dataset.label; } },4000); return; }
+  clearTimeout(b._t);
+  if(undo) delete ST.skip[P.r]; else ST.skip[P.r]=true;
+  save(); refreshExams();
+  const ex=document.querySelector(`[data-exam="${P.r}"]`), nx=document.querySelector(`.tphase[data-phase="${NEXTP[P.r]}"]`);
+  const to=(!undo&&nx&&!nx.hidden)?nx:ex; if(to) to.scrollIntoView({behavior:'smooth',block:'start'}); }
 function refreshExams(){
   refreshToc();
   PARTS.forEach(P=>{ const e=ST.exam[P.r], items=examItems(P);
+    document.querySelectorAll(`[data-exam="${P.r}"] [data-skipbox]`).forEach(el=>{ el.innerHTML=skipHTML(P); });
     document.querySelectorAll(`[data-exam="${P.r}"] [data-stat]`).forEach(el=>{ el.innerHTML=e?`${e.passed?'<span class="pill ok">Aprobada</span>':'<span class="pill bad">No aprobada aún</span>'} <span class="exbest">Mejor resultado: ${Math.round(e.best*100)} % · último: ${Math.round(e.last*100)} %</span>`:'<span class="pill warn">Pendiente</span>'; });
     document.querySelectorAll(`[data-exam="${P.r}"] [data-hist]`).forEach(el=>{ el.innerHTML=e?histChart(e.hist||[e.last]):''; });
     const solved=items.filter(x=>ST.solved[`${x.sid}-${x.j}`]).length;
@@ -4487,7 +4506,7 @@ function applySecLocks(detect){
 /* ---------- bloqueo de fases ---------- */
 let UNLOCK=null, ANIM=null;
 const PREV={II:'I',III:'II'};
-function isUnlocked(r){ return r==='I'||!!(ST.exam[PREV[r]]&&ST.exam[PREV[r]].passed); }
+function isUnlocked(r){ if(r==='I') return true; const p=PREV[r]; return isUnlocked(p)&&!!((ST.exam[p]&&ST.exam[p].passed)||ST.skip[p]); }
 const LOCKSVG=`<svg class="lksvg" viewBox="0 0 48 48" aria-hidden="true"><path class="shk" d="M15 23v-7a9 9 0 0 1 18 0v7" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/><rect x="9" y="22" width="30" height="21" rx="5" fill="currentColor"/><circle cx="24" cy="31.5" r="3.2" class="kh"/><rect x="22.6" y="32" width="2.8" height="6" rx="1.4" class="kh"/></svg>`;
 function phaseStats(){ return PARTS.map(P=>{ const items=examItems(P), q=items.filter(x=>ST.solved[`${x.sid}-${x.j}`]).length, e=ST.exam[P.r], passed=!!(e&&e.passed);
   return {P,q,qt:items.length,passed,best:e?e.best:0,unl:isUnlocked(P.r),pct:Math.round(100*(0.7*q/items.length+(passed?0.3:0)))}; }); }

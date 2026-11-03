@@ -77,6 +77,10 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 
+- **Hecho (v3): Saltar evaluación / Deshacer salto** (Partes I y II), creado desde cero con confirmación de
+  dos toques (4 s para confirmar). Estado en `ST.skip` dentro de `lgdr-teoria-v1`; `isUnlocked` es recursivo
+  (evaluación aprobada o saltada). Botones en `[data-skipbox]` dentro de cada `.exam`. Probado a 390×844.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
