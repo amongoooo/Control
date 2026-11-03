@@ -311,7 +311,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   En el PDF todo va en `display:block` (la fragmentación de grid de Chromium superponía contenido).
   **Volver a correr el script y subir `practicas.pdf` cada vez que cambie el contenido de las prácticas.**
 
-## Hecho (v24): "Resolución paso a paso" — P1 y P2 listas; falta P3–P7
+## Hecho (v24): "Resolución paso a paso" — P1, P2 y P3 listas; falta P4–P7
 
 - Tarjeta `div.card.pasos[data-pasos="pN"]` justo después de `.card.bench` (P1 ya la tiene). No toca el contenido existente.
 - Script propio al final del `<body>` («Resolución paso a paso»): `PASOS.pN = () => ({title, intro, steps:[...]})` y un visor
@@ -340,8 +340,14 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   escalón), `locusN(num,den,Kmax,N)` (cualquier orden), `kcrit(num,den,lo,hi)` → {K, w}, `OO` (cero), `cpxT/cpxH`,
   `svgLoop(id,K,[{n,d,lab,w}])` (lazo con bloques en cascada), `svgSL(id,K,[...])` (Simulink con varios Transfer Fcn),
   `blkList(rows)` y `infoOut(tr,m)` (salida de `stepinfo`).
-- PDF: 86 páginas con P1–P2 (~6.4 MB).
-- **Siguiente:** escribir `PASOS.p3` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
+- P3 (20 pasos, ejercicio 9.1 atraso): 1–10 referencia (2º orden puro: σ = 3.5 fijo, eje real/asíntotas ±90°/ruptura −3.5,
+  Routh estable ∀K, ζ = 0.5169, s0 = −3.5 ± j5.7959, K = 45.84, transitorio, Kv = 6.549 / e = 0.1527 con gráfica de e(t) a rampa),
+  11 «¿basta subir K?» (K ×20 → 69.4 %), 12–17 atraso 0.2/0.01 (Kv ×zc/pc, dipolo −1.40°, ec. de 3er orden + Routh, re‑búsqueda
+  −3.4019 ± j5.6335 / K = 44.64, e = 0.00784, mejora ×19.48, polo −0.2062 con residuo 0.0318), 18 verificación (18.3 %, Ts 2.145),
+  19 ajuste 0.02/0.001 (K = 45.73, 15.33 %, ×19.95) y 20 Simulink (Step y luego Ramp: `delete_line/delete_block/add_block Ramp`).
+  En `pz` de cada práctica las opciones son propias (copiar el de P2/P3 y adaptar). Error a rampa: `rampSim` dentro de `PASOS.p3`.
+- PDF: 103 páginas con P1–P3 (~7.9 MB).
+- **Siguiente:** escribir `PASOS.p4` … `PASOS.p7` con el mismo formato y poner su `div.card.pasos` tras su banco (el bucle de
   plegables ya recorre P1–P7). Después, volver a generar `practicas.pdf`.
 
 ## Otros artefactos del usuario (galería de claude.ai)
