@@ -15,6 +15,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   2. el **modelo** a usar (Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1);
   3. el **esfuerzo** recomendado (low / medium / high / xhigh / max);
   4. el **prompt** listo para copiar y pegar, escrito con cortesía ("por favor").
+- **No cambiar la plantilla de Word** (`plantillas/*.docx`, `herramientas/plantilla-reportes.js`, `herramientas/plantilla/datos.js`)
+  ni `reportes.pdf`: el usuario pidió dejarlos como están. La Resolución paso a paso se adapta al Word, no al revés.
 - El usuario muchas veces trabaja **solo desde el celular**: evitar pasos que requieran terminal o computadora;
   hacer todo lo posible desde la sesión en la nube.
 
