@@ -31,6 +31,8 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       const s = document.getElementById('p' + n);
       s.querySelectorAll('.fold-b').forEach(b => b.removeAttribute('hidden'));
       s.querySelectorAll('details').forEach(d => { d.open = true; });
+      // Diagrama de Simulink (etapa propia desde v26): se arma aquí por si aún no se armó.
+      s.querySelectorAll('.bd[data-bd]').forEach(b => { if (!b.__bdDone && b.__bdRender) { b.__bdDone = 1; b.__bdRender(); } });
       // Resolución paso a paso: en papel van todos los pasos seguidos.
       s.querySelectorAll('.card.pasos').forEach(c => { const b = c.querySelector('[data-all]'); if (b && !c.classList.contains('all')) b.click(); });
     }, i);

@@ -1327,6 +1327,99 @@ dialog.sync.rpd{max-width:880px;height:94dvh;max-height:94dvh}
 @media (max-width:520px){.psfig canvas{height:250px}}
 .fold>.fold-b>.pasos>.pshead>div{display:none}
 .fold>.fold-b>.pasos>.pshead{justify-content:flex-end}
+/* ==== v26 · acomodo: barra lateral plegable con el índice de la página, una etapa a la vez en las prácticas (≥ 1000 px),
+   gráfica junto a las fórmulas en la Resolución paso a paso y prioridad a rlocus / Simulink (solo presentación) ==== */
+/* botón para ocultar o mostrar la barra lateral (solo cuando existe, ≥ 1000 px) */
+.abside{display:none}
+html.sb-on .abside{display:grid}
+.abside svg .sbp{transition:opacity .2s}
+html.sb-off .abside svg .sbp{opacity:.25}
+html.sb-on.sb-off .wrap,html.sb-on.sb-off .sbar{--sbw:0px}
+html.sb-on.sb-off .wrap{--sbmax:1480px}
+html.sb-on.sb-off .sbar{visibility:hidden;translate:-100% 0;pointer-events:none}
+@media (prefers-reduced-motion:no-preference){html.sb-on .sbar{transition:top .25s ease,translate .28s cubic-bezier(.2,.8,.2,1),visibility .28s}}
+/* índice de la página dentro de la barra lateral (reemplaza la columna «En esta página») */
+.sb-sub{display:grid;gap:1px;margin:2px 0 6px 23px;padding-left:10px;border-left:1px solid var(--line)}
+html.sb-rail .sb-sub{display:none}
+.sb-st{all:unset;box-sizing:border-box;display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:8px;align-items:center;width:100%;padding:5px 8px;border-radius:8px;color:var(--muted);font:500 13px/1.3 var(--f-body);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.sb-st:hover{background:color-mix(in srgb,var(--accent-soft) 55%,transparent);color:var(--ink)}
+.sb-st:focus-visible,.sb-dot:focus-visible,.sb-h4:focus-visible,.stc:focus-visible,.stnav button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.sb-sn{display:grid;place-items:center;height:20px;font:600 10.5px var(--f-mono);color:var(--muted);border:1.3px solid currentColor;border-radius:5px;opacity:.85}
+.sb-stt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-st[aria-current]{color:var(--accent);background:var(--accent-soft);font-weight:600}
+.sb-st[aria-current] .sb-sn{background:var(--accent);border-color:var(--accent);color:var(--surface);opacity:1}
+.sb-st.on:not([aria-current]) .sb-sn{color:var(--accent)}
+.sb-st2{display:grid;gap:1px;margin:2px 0 4px 18px;padding-left:10px;border-left:1px dashed var(--line)}
+.sb-dots{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0 6px 18px;padding-left:10px}
+.sb-dot{all:unset;box-sizing:border-box;min-width:24px;height:24px;padding:0 4px;display:grid;place-items:center;border-radius:999px;border:1.3px solid var(--line);font:600 11px var(--f-mono);color:var(--muted);background:var(--surface);cursor:pointer}
+.sb-dot.seen{border-color:color-mix(in srgb,var(--accent) 45%,var(--line));color:var(--ink)}
+.sb-dot:hover{border-color:var(--accent);color:var(--accent)}
+.sb-dot[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.sb-dott{grid-column:1/-1;width:100%;margin-top:3px;font:500 12px/1.35 var(--f-body);color:var(--ink);display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.sb-h4{all:unset;box-sizing:border-box;display:block;width:100%;padding:4px 8px;border-radius:7px;color:var(--muted);font:400 12.5px/1.35 var(--f-body);cursor:pointer;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.sb-h4:hover{color:var(--ink);background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+.sb-h4.cur{color:var(--ink);font-weight:600;box-shadow:inset 2px 0 0 var(--accent)}
+/* ---- prácticas: una etapa a la vez (≥ 1000 px) ---- */
+.stbar,.stnav{display:none}
+@media screen{
+  html.st-on section.page.st>.fold:not(.st-cur),html.st-on section.page.st>details.code:not(.st-cur){display:none}
+  html.st-on section.page.st>.st-cur{margin-top:0}
+  html.st-on section.page.st>.fbar,html.st-on section.page.st>.phead>.fbar{display:none}
+  /* el encabezado de la etapa abierta es su título: no se pliega */
+  html.st-on section.page.st>.fold.st-cur>.fold-t .fcv{display:none}
+  html.st-on section.page.st>.fold.st-cur>.fold-t .fold-h{cursor:default;background:none;scale:none}
+  html.st-on section.page.st>.fold.st-cur>.fold-t .fss{white-space:normal}
+  html.st-on section.page.st>details.code.st-cur>summary{cursor:default;pointer-events:none}
+  html.st-on section.page.st>details.code.st-cur>summary::-webkit-details-marker{display:none}
+  /* abajo: etapa anterior y siguiente */
+  html.st-on section.page.st>.stnav{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:-8px}
+  .stnav button{all:unset;box-sizing:border-box;display:grid;gap:2px;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;min-width:0}
+  .stnav button:hover{border-color:var(--accent)}
+  .stnav button[data-stn]{text-align:right;grid-column:2}
+  .stnav button[hidden]{display:none}
+  .stnav small{font:500 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .stnav b{font:600 16px var(--f-display);font-stretch:90%;color:var(--accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* arriba: las etapas como pestañas, solo cuando el índice de la barra lateral no se ve (barra angosta u oculta) */
+  html.st-on.sb-rail section.page.st>.stbar,html.st-on.sb-off section.page.st>.stbar{display:flex}
+  .stbar{position:sticky;z-index:4;top:calc(env(safe-area-inset-top,0px) + var(--apph) + 1px);gap:6px;overflow-x:auto;scrollbar-width:none;margin:-10px -6px -8px;padding:8px 6px;background:var(--bg)}
+  html.ab-hide:not(.dmode):not(.exm) .stbar{top:env(safe-area-inset-top,0px)}
+  .stbar::-webkit-scrollbar{display:none}
+  .stc{all:unset;box-sizing:border-box;flex:none;display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 7px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--ink);font:500 13px var(--f-body);cursor:pointer;white-space:nowrap}
+  .stc .sb-sn{width:20px}
+  .stc:hover{border-color:var(--accent)}
+  .stc[aria-current]{background:var(--accent);border-color:var(--accent);color:var(--surface);font-weight:600}
+  .stc[aria-current] .sb-sn{color:var(--surface);opacity:1}
+}
+@media screen and (prefers-reduced-motion:no-preference){
+  html.st-on section.page.st>.st-cur.st-in{animation:st-in .24s cubic-bezier(.2,.8,.2,1)}
+  @keyframes st-in{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+}
+/* Simulink como etapa propia (antes vivía dentro de «Código MATLAB») */
+.fold.fold-sl>.fold-b>.bd{border-top:0;padding-top:4px}
+/* ---- Resolución paso a paso: gráfica al lado de las fórmulas cuando hay espacio ---- */
+.psbody{container-type:inline-size}
+.psgrid{display:grid;gap:10px;min-width:0}
+.psA,.psB{display:grid;gap:10px;min-width:0;align-content:start}
+@media screen{@container (min-width:820px){
+  .psgrid{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:12px 22px;align-items:start}
+  .psB{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--apph,52px) + 12px)}
+  .psB .psfig canvas{height:clamp(280px,44vh,420px)}
+}}
+/* cómo se obtiene la gráfica: rlocus para el LGDR, bloques de Simulink para la salida */
+.psget{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:9px 12px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;background:color-mix(in srgb,var(--accent-soft) 35%,var(--surface));min-width:0}
+.psget.pg-sl{border-left-color:var(--ok)}
+.psget .pgk{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.psget.pg-sl .pgk{color:var(--ok)}
+.psget code{flex:1 1 220px;font:500 13px var(--f-mono);color:var(--ink);overflow-x:auto;white-space:nowrap}
+.psget .btn{display:inline-flex;align-items:center;gap:5px}
+.psget .pgc{flex:1 1 100%;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;font:500 12.5px var(--f-body)}
+.psget .pgc b{font-weight:600;padding:2px 8px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.psget .pgc i{font-style:normal;color:var(--muted)}
+.psget .pgn{flex:1 1 200px;font-size:12.5px;color:var(--muted)}
+.psml:not([open]) summary{color:var(--muted)}
+@media print{.psget .btn{display:none}}
+/* figuras SVG de las secciones (análisis, verificación): una sola figura ya no ocupa todo el ancho (su texto crecía de más) */
+@media screen and (min-width:900px){.gfig:only-child{width:100%;max-width:760px;justify-self:center;margin-inline:auto}}
 </style>
 
 <header class="appbar" id="appbar">
@@ -1348,6 +1441,7 @@ all();document.addEventListener('DOMContentLoaded',all);})();</script>
 var m=window.matchMedia;if(!m||!m('(min-width:1000px)').matches)return;var r=document.documentElement;r.classList.add('sb-on');
 if(!m('(min-width:1200px)').matches||/^#teoria$/.test(location.hash))r.classList.add('sb-rail');
 addEventListener('load',function(){if(!document.getElementById('sbar'))r.classList.remove('sb-on','sb-rail');});})();</script>
+<script>/* v26 · barra lateral oculta por el usuario (botón #abSide): se marca antes del primer dibujo; una etapa a la vez en las prácticas */(function(){var r=document.documentElement;try{if(localStorage.getItem('lgdr-barra')==='0')r.classList.add('sb-off');}catch(e){}if(r.classList.contains('sb-on'))r.classList.add('st-on');})();</script>
 <div class="appbar-in">
   <div class="abrow">
     <a class="brand" href="#resumen" aria-label="Laboratorio LGDR: ir al resumen">
@@ -6093,7 +6187,7 @@ document.querySelectorAll('[data-bd]').forEach(el=>{ const d=el.closest('details
   /* estado inicial: todo plegado salvo lo que se dejó abierto */
   FOLDS.filter(F=>F.kind!=='topic').forEach(initial);
   Object.keys(bars).forEach(refreshBar);
-  window.__lgdrFolds={list:()=>FOLDS.map(F=>({k:F.k,on:F.on})),all,open:(k,on=true)=>{ const F=FOLDS.find(x=>x.k===k); if(F) setOpen(F,on); }};
+  window.__lgdrFolds={list:()=>FOLDS.map(F=>({k:F.k,on:F.on})),all,open:(k,on=true,o)=>{ const F=FOLDS.find(x=>x.k===k); if(F) setOpen(F,on,o); }};
 })();
 </script>
 <script>
@@ -6434,7 +6528,7 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
 (()=>{
   const d=document, root=d.documentElement, tabs=d.getElementById('tabs'), bar=d.getElementById('appbar');
   if(!tabs||!bar||!window.matchMedia) return;
-  const mOn=matchMedia('(min-width:1000px)'), mFull=matchMedia('(min-width:1200px)'), mToc=matchMedia('(min-width:1440px)');
+  const mOn=matchMedia('(min-width:1000px)'), mFull=matchMedia('(min-width:1200px)'), mToc=matchMedia('not all'); /* v26: «En esta página» se juntó con la barra lateral (índice bajo la página actual) */
   const reduce=matchMedia('(prefers-reduced-motion: reduce)');
   const sv=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
   const IC={
@@ -9358,17 +9452,46 @@ PASOS.p7=()=>{
 
 /* ---- visor genérico ---- */
 function fxRow(r){ return `<div class="fx${r.res?' res':''}"><div class="fxl">${r.l}</div><div class="fxm">${r.t?tx(r.t):r.h}</div>${r.n?`<div class="fxn">${r.n}</div>`:''}</div>`; }
-function stepHTML(s,i,N){
+/* v26 · cómo se obtiene cada gráfica en MATLAB/Simulink. El LGDR siempre con rlocus (el sistema que corresponde a cada etapa);
+   las curvas de salida, con los bloques del modelo de Simulink del último paso.
+   r: primer paso con rlocus (antes: pzmap) · z: desde aquí se agrega sgrid(zeta, 0) · s: [desde el paso, sistema(s) de rlocus, compensador en Simulink] */
+const RL={
+  p1:{r:4,z:8,s:[[1,'G','']]},
+  p2:{r:4,z:8,s:[[1,'G',''],[13,'G, Gc*G','Transfer Fcn PI']]},
+  p3:{r:4,z:6,s:[[1,'G',''],[12,'G, Gc*G','Transfer Fcn atraso']]},
+  p4:{r:4,z:6,s:[[1,'G',''],[14,'Gc*G','PID Controller (PD)']]},
+  p5:{r:4,z:6,s:[[1,'G',''],[13,'G, Gc*G','Transfer Fcn adelanto'],[19,'Gc2*G','Transfer Fcn adelanto (ajustado)']]},
+  p6:{r:4,z:6,s:[[1,'G',''],[14,'Gpd*G','PID Controller (PD)'],[17,'Gpd*Gpi*G','PID Controller (PD) → Transfer Fcn PI'],[18,'Gpid*G','PID Controller (PD) → Transfer Fcn PI']]},
+  p7:{r:2,z:4,s:[[1,'G',''],[10,'Glead*G','Transfer Fcn adelanto'],[12,'Glead*Glag*G','Transfer Fcn adelanto → Transfer Fcn atraso']]}};
+const ICP='<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.6"/><path d="M3 10.5V3.6C3 3 3.4 2.5 4 2.5h6.5"/></svg>';
+function getHTML(s,i,N,id){
+  const R=RL[id]; if(!R||!s.vis||s.blk||s.vis.some(v=>v.svg)) return '';
+  const n=i+1, ph=R.s.filter(x=>x[0]<=n).pop()||R.s[0];
+  if(s.vis.some(v=>v.draw&&String(v.draw).includes('pz('))){
+    const cmd=n<R.r?'figure; pzmap(G); grid on':`figure; rlocus(${ph[1]})${n>=R.z?'; sgrid(zeta, 0)':''}`;
+    return `<div class="psget pg-lg"><span class="pgk">${n<R.r?'Polos y ceros en MATLAB':'LGDR en MATLAB'}</span><code>${esc(cmd)}</code><button class="btn sm" type="button" data-cpg title="Copiar">${ICP}<span>Copiar</span></button></div>`; }
+  const t=s.vis.find(v=>v.draw&&/escal|respuesta|rampa|error|c\(t\)/i.test(v.cap)&&!/jω|^%OS/.test(v.cap)); if(!t) return '';
+  const ramp=s.vis.some(v=>v.draw&&/rampa/i.test(v.cap)), cmp=ph[2], both=cmp&&s.vis.some(v=>/sin compensar/i.test(v.cap));
+  const ch=[ramp?'Ramp':'Step','Sum','Gain',...(cmp?cmp.split(' → '):[]),'Transfer Fcn G','Scope'];
+  return `<div class="psget pg-sl"><span class="pgk">Salida en Simulink</span><span class="pgc">${ch.map(b=>`<b>${b}</b>`).join('<i aria-hidden="true">→</i>')}</span>
+    <span class="pgn">${ramp?'Con <b>Ramp</b> en lugar de Step; el error es e = r − c. ':''}${both?'Para la curva sin compensar, quita el compensador. ':''}La curva es lo que muestra el Scope.</span>
+    <button class="btn sm" type="button" data-gosl="${N-1}">Ver el modelo · paso ${N}</button></div>`; }
+let mlOpen=false; try{ mlOpen=localStorage.getItem('lgdr-psml')==='1'; }catch(e){}
+function stepHTML(s,i,N,id){
   const vis=(s.vis||[]).map((v,k)=>`<figure class="psfig">${v.svg?`<div class="pssvg">${v.svg}</div>`:`<canvas data-cv="${k}"></canvas>`}<figcaption>${v.cap}</figcaption></figure>`).join('');
-  const ml=s.ml?`<details class="psml" open><summary>${s.mlTitle||'MATLAB · qué hace cada línea'}<span>${s.ml.length} línea${s.ml.length>1?'s':''}</span></summary>
+  const ml=s.ml?`<details class="psml"${mlOpen?' open':''}><summary>${s.mlTitle||'MATLAB · qué hace cada línea'}<span>${s.ml.length} línea${s.ml.length>1?'s':''}</span></summary>
     ${s.ml.map(([c,e])=>`<div class="mlr"><code>${esc(c)}</code><span>${e}</span></div>`).join('')}
     <div class="mlbar"><button class="btn sm" type="button" data-cp>Copiar código del paso</button></div>
     ${s.out?`<div class="mlo"><div class="fxl">Salida esperada en la Command Window</div><pre>${esc(s.out)}</pre></div>`:''}</details>`:'';
+  /* v26: en pantallas anchas, texto y fórmulas a la izquierda y la gráfica a la derecha (fija mientras se lee); los diagramas
+     (bloques, Simulink) siguen a todo lo ancho */
+  const side=vis&&!(s.vis||[]).some(v=>v.svg);
+  const A=`<p class="psq"><b>Qué se hace.</b> ${s.q}</p>
+    <div class="psf">${s.f.map(fxRow).join('')}</div>
+    ${s.why?`<p class="why">${s.why}</p>`:''}`, get=getHTML(s,i,N,id);
   return `<article class="pstep" data-i="${i}" hidden>
     <div class="psh"><span class="psn">${i+1}/${N}</span><h4>${s.t}</h4></div>
-    <p class="psq"><b>Qué se hace.</b> ${s.q}</p>
-    <div class="psf">${s.f.map(fxRow).join('')}</div>
-    ${s.why?`<p class="why">${s.why}</p>`:''}${s.blk||''}${vis}${ml}</article>`;
+    ${side?`<div class="psgrid"><div class="psA">${A}</div><div class="psB">${vis}${get}</div></div>${s.blk||''}`:`${A}${s.blk||''}${vis}${get}`}${ml}</article>`;
 }
 function buildPasos(el){
   const id=el.dataset.pasos, D=PASOS[id]&&PASOS[id](); if(!D) return null;
@@ -9378,7 +9501,7 @@ function buildPasos(el){
   el.innerHTML=`<div class="pshead"><div><span class="eyebrow">Resolución paso a paso</span><h3>${D.title}</h3></div><button class="btn sm" type="button" data-all aria-pressed="false">Ver todos</button></div>
     <p class="tip">${D.intro}</p>
     <div class="psnav" aria-label="Pasos">${S.map((s,i)=>`<button type="button" data-go="${i}" title="${esc(s.t)}" aria-label="Paso ${i+1}: ${esc(s.t)}">${i+1}</button>`).join('')}</div>
-    <div class="psbody">${S.map((s,i)=>stepHTML(s,i,N)).join('')}</div>
+    <div class="psbody">${S.map((s,i)=>stepHTML(s,i,N,id)).join('')}</div>
     <div class="psctl"><button class="btn" type="button" data-prev>◀ Anterior</button><span data-pos></span><button class="btn primary" type="button" data-next>Siguiente ▶</button></div>`;
   const arts=[...el.querySelectorAll('.pstep')], dots=[...el.querySelectorAll('[data-go]')], nav=el.querySelector('.psnav');
   const prev=el.querySelector('[data-prev]'), next=el.querySelector('[data-next]'), pos=el.querySelector('[data-pos]'), allB=el.querySelector('[data-all]');
@@ -9400,6 +9523,12 @@ function buildPasos(el){
   let t0=null; const body=el.querySelector('.psbody');
   body.addEventListener('touchstart',e=>{ t0=(all||e.touches.length>1||e.target.closest('.fxm,.mathd,.pssvg,.mlr code,pre,.tablewrap,canvas'))?null:[e.touches[0].clientX,e.touches[0].clientY]; },{passive:true});
   body.addEventListener('touchend',e=>{ if(!t0) return; const dx=e.changedTouches[0].clientX-t0[0], dy=e.changedTouches[0].clientY-t0[1]; t0=null; if(Math.abs(dx)>70&&Math.abs(dy)<45) go(cur+(dx<0?1:-1),true); },{passive:true});
+  /* v26: copiar el comando de la gráfica, ir al modelo de Simulink y recordar si el código MATLAB se deja abierto */
+  el.addEventListener('click',e=>{ const g=e.target.closest('[data-gosl]'); if(g){ if(all) arts[+g.dataset.gosl].scrollIntoView({block:'start'}); else go(+g.dataset.gosl,true); return; }
+    const c=e.target.closest('[data-cpg]'); if(!c) return; const txt=c.parentNode.querySelector('code').textContent, sp=c.querySelector('span');
+    const done=t=>{ sp.textContent=t; setTimeout(()=>sp.textContent='Copiar',1500); };
+    try{ navigator.clipboard.writeText(txt).then(()=>done('Copiado ✓'),()=>done('No se pudo')); }catch(err){ done('No se pudo'); } });
+  el.addEventListener('toggle',e=>{ const t=e.target; if(!t.classList||!t.classList.contains('psml')) return; mlOpen=t.open; try{ localStorage.setItem('lgdr-psml',t.open?'1':'0'); }catch(err){} },true);
   el.addEventListener('click',e=>{ const b=e.target.closest('[data-cp]'); if(!b) return; const i=+b.closest('.pstep').dataset.i, txt=S[i].ml.map(r=>r[0]).join('\n');
     const done=t=>{ b.textContent=t; setTimeout(()=>b.textContent='Copiar código del paso',1600); };
     try{ navigator.clipboard.writeText(txt).then(()=>done('Copiado ✓'),()=>done('No se pudo copiar')); }catch(err){ done('No se pudo copiar'); } });
@@ -9417,6 +9546,162 @@ const redrawAll=()=>built.forEach(r=>r.redraw());
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawAll);
 new MutationObserver(redrawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.__PASOS=PASOS;
+})();
+</script>
+<script>
+/* ==== v26 · acomodo (solo presentación; no toca progreso, cálculos ni contenido) ====
+   1) #abSide (y la tecla B) oculta o muestra la barra lateral: html.sb-off, localStorage['lgdr-barra']='0'.
+   2) Índice de la página actual dentro de la barra lateral (.sb-sub), en lugar de la columna «En esta página»: en las
+      prácticas, sus etapas; bajo la etapa abierta, los pasos (Resolución paso a paso) o los subtítulos (h4) con el que se lee
+      resaltado. En Resumen, Simulador y Preguntas, sus plegables.
+   3) Prácticas en computadora (html.st-on, ≥ 1000 px): una etapa a la vez (cada plegable de v15 es una etapa). Arriba,
+      pestañas de etapas si la barra no muestra el índice (angosta u oculta); abajo, etapa anterior / siguiente.
+      Etapa abierta en localStorage['lgdr-etapa-v1'] = {pN: clave}. Un scrollIntoView hacia otra etapa la cambia primero.
+   4) «Simulink» como etapa propia: el diagrama de bloques de v9 sale de «Código MATLAB» y va antes que él. */
+(()=>{
+  const d=document, root=d.documentElement, tabs=d.getElementById('tabs'), sb=d.getElementById('sbar'), abrow=d.querySelector('#appbar .abrow');
+  if(!window.matchMedia) return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)'), mOn=matchMedia('(min-width:1000px)');
+  const mk=(tag,cls,txt)=>{ const e=d.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
+  const lsGet=k=>{ try{ return localStorage.getItem(k); }catch(e){ return null; } }, lsSet=(k,v)=>{ try{ localStorage.setItem(k,v); }catch(e){} };
+  const lsObj=k=>{ try{ const v=JSON.parse(lsGet(k)||'{}'); return v&&typeof v==='object'&&!Array.isArray(v)?v:{}; }catch(e){ return {}; } };
+  const PR=[1,2,3,4,5,6,7].map(i=>'p'+i);
+  const idle=window.requestIdleCallback||(f=>setTimeout(f,400));
+  const redrawIn=el=>requestAnimationFrame(()=>el.querySelectorAll('canvas').forEach(c=>{ if(typeof c.__redraw==='function'){ try{ c.__redraw(); }catch(e){} } }));
+
+  /* ---------- 4) Simulink como etapa propia ---------- */
+  const SLMEM=lsObj('lgdr-sl-abierto');
+  PR.forEach(id=>{ const pg=d.getElementById(id), det=pg&&pg.querySelector(':scope>details.code'), bd=det&&det.querySelector('.bd[data-bd]'); if(!bd) return;
+    const F={k:id+':simulink',page:id,on:false,kind:'sl'};
+    const r=mk('div','fold fold-sl'), h=mk('h3','fold-t'), b=mk('button','fold-h'), body=mk('div','fold-b');
+    r.dataset.fk=F.k; b.type='button'; b.id='fh-'+id+'-simulink'; b.setAttribute('aria-expanded','false');
+    b.innerHTML='<span class="fnn">S</span><span class="ftt">Simulink · diagrama de bloques</span><span class="fss"></span><span class="fcv" aria-hidden="true">▾</span>';
+    b.querySelector('.fss').textContent='Bloques del lazo, parámetros de cada uno, lo que debes obtener y cómo correrlo';
+    body.id='fb-'+id+'-simulink'; body.setAttribute('hidden','until-found'); b.setAttribute('aria-controls',body.id);
+    h.appendChild(b); r.append(h,body); det.before(r); body.appendChild(bd);
+    const render=()=>{ if(!bd.__bdDone&&bd.__bdRender){ bd.__bdDone=1; try{ bd.__bdRender(); }catch(e){ console.error(e); } } };
+    Object.assign(F,{root:r,body,btn:b,apply:on=>{ F.on=on; r.classList.toggle('open',on); b.setAttribute('aria-expanded',on);
+      if(on){ body.removeAttribute('hidden'); render(); } else body.setAttribute('hidden','until-found');
+      if(on) SLMEM[id]=1; else delete SLMEM[id]; lsSet('lgdr-sl-abierto',JSON.stringify(SLMEM)); }});
+    b.addEventListener('click',()=>F.apply(!F.on));
+    body.addEventListener('beforematch',()=>F.apply(true));
+    r.__lgdrFold=F; if(SLMEM[id]) F.apply(true);
+    /* «Desplegar / Plegar todo» de la página también lo abre o lo cierra */
+    pg.addEventListener('click',e=>{ const x=e.target.closest('[data-fall]'); if(x) F.apply(x.dataset.fall==='1'); });
+    idle(render);   // armado con calma: así también sale completo en el PDF y en Ctrl+F
+  });
+
+  /* ---------- 1) ocultar / mostrar la barra lateral ---------- */
+  if(sb&&abrow){ const bt=mk('button','abicon abside'); bt.type='button'; bt.id='abSide';
+    bt.innerHTML='<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9.5 4v16"/><path class="sbp" d="M5.6 8.5h1.4M5.6 12h1.4M5.6 15.5h1.4"/></svg>';
+    const upd=()=>{ const off=root.classList.contains('sb-off'), l=off?'Mostrar la barra lateral':'Ocultar la barra lateral';
+      bt.setAttribute('aria-pressed',String(!off)); bt.title=l+' (tecla B)'; bt.setAttribute('aria-label',l); };
+    const toggle=()=>{ const off=!root.classList.contains('sb-off'); root.classList.toggle('sb-off',off); lsSet('lgdr-barra',off?'0':'1'); upd(); renderSub(); };
+    bt.addEventListener('click',toggle); abrow.prepend(bt); upd();
+    addEventListener('keydown',e=>{ if((e.key!=='b'&&e.key!=='B')||e.ctrlKey||e.metaKey||e.altKey||!root.classList.contains('sb-on')) return;
+      const t=e.target; if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      if(root.classList.contains('dmode')||root.classList.contains('exm')||d.querySelector('dialog[open]')) return; toggle(); }); }
+
+  /* ---------- 3) etapas de las prácticas ---------- */
+  const SHORT={plant:'Planteamiento',banco:'Banco de pruebas',pasos:'Paso a paso',x1:'Análisis',x2:'Diseño',x3:'Verificación',x4:'Conclusiones',simulink:'Simulink',code:'Código MATLAB'};
+  const SAVED=lsObj('lgdr-etapa-v1'), ST={};
+  const stOn=()=>root.classList.contains('st-on');
+  let subSoon=0; const renderSubSoon=()=>{ if(!subSoon) subSoon=requestAnimationFrame(()=>{ subSoon=0; renderSub(); }); };
+  PR.forEach(id=>{ const pg=d.getElementById(id); if(!pg) return;
+    const list=[...pg.children].filter(el=>el.__lgdrFold&&(el.matches('.fold')||el.matches('details.code'))).map(el=>{
+      const F=el.__lgdrFold, k=F.k.split(':')[1], det=el.matches('details');
+      const num=det?'M':((el.querySelector(':scope>.fold-t .fnn')||{}).textContent||'').trim();
+      const full=det?'Código MATLAB':((el.querySelector(':scope>.fold-t .ftt')||{}).textContent||'').trim();
+      return {k,el,F,num,full,short:SHORT[k]||full}; });
+    if(!list.length) return;
+    const S=ST[id]={id,pg,list,cur:null}; pg.classList.add('st');
+    const bar=mk('nav','stbar'); bar.setAttribute('aria-label','Etapas de la práctica');
+    list.forEach(it=>{ const c=mk('button','stc'); c.type='button'; c.dataset.k=it.k; c.title=it.full; c.append(mk('span','sb-sn',it.num),mk('span',null,it.short)); bar.appendChild(c); it.chip=c; });
+    const ph=pg.querySelector(':scope>.phead'); if(ph) ph.after(bar); else pg.prepend(bar);
+    const nav=mk('nav','stnav'); nav.setAttribute('aria-label','Etapa anterior y siguiente');
+    nav.innerHTML='<button type="button" data-stp><small>◀ Etapa anterior</small><b></b></button><button type="button" data-stn><small>Etapa siguiente ▶</small><b></b></button>';
+    pg.appendChild(nav); S.nav=nav; S.bar=bar;
+    bar.addEventListener('click',e=>{ const c=e.target.closest('.stc'); if(c) show(id,c.dataset.k,true); });
+    nav.addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; const i=list.findIndex(x=>x.k===S.cur)+(b.hasAttribute('data-stn')?1:-1); if(list[i]) show(id,list[i].k,true); });
+    /* el encabezado de la etapa abierta es su título: no la pliega */
+    pg.addEventListener('click',e=>{ if(!stOn()) return; const h=e.target.closest('.fold-h, summary'); if(!h) return; const it=list.find(x=>x.k===S.cur);
+      if(it&&(h.parentNode===it.el||(h.parentNode&&h.parentNode.parentNode===it.el))){ e.preventDefault(); e.stopImmediatePropagation(); } },true);
+    /* la Resolución paso a paso se arma al abrir la práctica; sus pasos alimentan el índice de la barra */
+    const ps=pg.querySelector('.card.pasos');
+    if(ps) new MutationObserver(rs=>{ if(curPage()!==id||S.cur!=='pasos') return;
+      if(rs.some(r=>r.type==='childList'&&r.target===ps)) renderSubSoon(); else updDots(); }).observe(ps,{childList:true,subtree:true,attributes:true,attributeFilter:['aria-current','class']});
+  });
+  function openIt(it){ const F=it.F;
+    if(F.kind==='details'){ if(!it.el.open) it.el.open=true; }
+    else if(F.kind==='sl'){ if(!F.on) F.apply(true); }
+    else if(!F.on&&window.__lgdrFolds) window.__lgdrFolds.open(F.k,true,{anim:false}); }
+  function show(id,k,user){ const S=ST[id]; if(!S) return; const it=S.list.find(x=>x.k===k)||S.list[0], changed=S.cur!==it.k; S.cur=it.k;
+    S.list.forEach(x=>{ const on=x===it; x.el.classList.toggle('st-cur',on); if(on) x.chip.setAttribute('aria-current','step'); else x.chip.removeAttribute('aria-current'); });
+    openIt(it); if(changed) redrawIn(it.el);
+    if(changed&&user&&!reduce.matches){ it.el.classList.remove('st-in'); void it.el.offsetWidth; it.el.classList.add('st-in'); }
+    const i=S.list.indexOf(it), p=S.list[i-1], n=S.list[i+1], [bp,bn]=S.nav.querySelectorAll('button');
+    bp.hidden=!p; bn.hidden=!n; if(p) bp.querySelector('b').textContent=p.full; if(n) bn.querySelector('b').textContent=n.full;
+    if(SAVED[id]!==it.k){ SAVED[id]=it.k; lsSet('lgdr-etapa-v1',JSON.stringify(SAVED)); }
+    S.bar.scrollTo({left:it.chip.offsetLeft-S.bar.clientWidth/2+it.chip.clientWidth/2});
+    if(user&&stOn()&&scrollY>0) scrollTo({top:0,behavior:'auto'});
+    renderSub(); }
+  /* un elemento que se va a mostrar por programa (enlaces del reporte, «Ver este sistema en el Banco»…) cambia antes de etapa */
+  const SIV=Element.prototype.scrollIntoView;
+  Element.prototype.scrollIntoView=function(){ try{ if(stOn()&&this.closest){ const pg=this.closest('section.page.st'), S=pg&&ST[pg.id];
+      if(S){ const it=S.list.find(x=>x.el.contains(this)); if(it&&it.k!==S.cur) show(pg.id,it.k,false); } } }catch(e){} return SIV.apply(this,arguments); };
+
+  /* ---------- 2) índice de la página en la barra lateral ---------- */
+  const curPage=()=>{ const a=tabs&&tabs.querySelector('a[aria-current="page"]'); return a?a.getAttribute('href').slice(1):'resumen'; };
+  const titleOf=el=>{ const t=el.querySelector(':scope>.fold-t .ftt, :scope>.qth .ftt'); if(t) return [...t.childNodes].map(n=>n.textContent.trim()).filter(Boolean).join(' ');
+    const s=el.querySelector(':scope>summary'); if(!s) return ''; let x=''; s.childNodes.forEach(n=>{ if(n.nodeType===3||/^(CODE|B|I|EM|STRONG)$/.test(n.nodeName)) x+=n.textContent; });
+    return (x.trim()||s.textContent.trim()).replace(/\s+/g,' ').replace(/:$/,''); };
+  const sub=mk('div','sb-sub'); sub.setAttribute('role','group');
+  let spy=[], spyCur=-1, dotsBox=null;
+  function updDots(){ if(!dotsBox) return; const ps=d.querySelector(`#${curPage()} .card.pasos`); if(!ps) return;
+    const src=[...ps.querySelectorAll('.psnav [data-go]')], all=ps.classList.contains('all'); let t='';
+    [...dotsBox.querySelectorAll('.sb-dot')].forEach((b,i)=>{ const o=src[i]; if(!o) return; b.classList.toggle('seen',o.classList.contains('seen'));
+      const on=!all&&o.getAttribute('aria-current')==='step'; if(on){ b.setAttribute('aria-current','step'); t=o.title; } else b.removeAttribute('aria-current'); });
+    const tt=dotsBox.querySelector('.sb-dott'); if(tt) tt.textContent=all?'Todos los pasos a la vista':t; }
+  function subOf(it){
+    if(it.k==='pasos'){ const ps=it.el.querySelector('.card.pasos'), src=ps?[...ps.querySelectorAll('.psnav [data-go]')]:[]; if(!src.length) return null;
+      const box=mk('div','sb-dots'); box.setAttribute('aria-label','Pasos');
+      src.forEach((o,i)=>{ const b=mk('button','sb-dot',String(i+1)); b.type='button'; b.title=o.title; b.setAttribute('aria-label',o.getAttribute('aria-label')||('Paso '+(i+1)));
+        b.addEventListener('click',()=>{ if(ps.classList.contains('all')){ const a=ps.querySelectorAll('.pstep')[i]; if(a) a.scrollIntoView({block:'start',behavior:reduce.matches?'auto':'smooth'}); } else o.click(); }); box.appendChild(b); });
+      box.appendChild(mk('span','sb-dott')); dotsBox=box; return box; }
+    const hs=[...it.el.querySelectorAll('.fold-b .xstep>h4')]; if(!hs.length) return null;
+    const box=mk('div','sb-st2');
+    hs.forEach(h=>{ const b=mk('button','sb-h4',h.textContent.replace(/\s+/g,' ').trim()); b.type='button'; b.title=b.textContent;
+      b.addEventListener('click',()=>h.scrollIntoView({block:'start',behavior:reduce.matches?'auto':'smooth'})); box.appendChild(b); spy.push([h,b]); });
+    return box; }
+  function renderSub(){ if(!sb) return; const p=curPage(), link=sb.querySelector(`.sb-i[data-pg="${p}"]`), S=ST[p];
+    sub.textContent=''; spy=[]; spyCur=-1; dotsBox=null;
+    if(S&&stOn()){ sub.setAttribute('aria-label','Etapas de la práctica');
+      S.list.forEach(it=>{ const b=mk('button','sb-st'); b.type='button'; b.dataset.k=it.k; b.title=it.full; b.append(mk('span','sb-sn',it.num),mk('span','sb-stt',it.short));
+        if(it.k===S.cur) b.setAttribute('aria-current','step'); b.addEventListener('click',()=>show(p,it.k,true)); sub.appendChild(b);
+        if(it.k===S.cur){ const x=subOf(it); if(x) sub.appendChild(x); } });
+      updDots(); }
+    else if(p!=='teoria'&&!S){ sub.setAttribute('aria-label','En esta página');
+      [...d.querySelectorAll('.fold, details')].filter(el=>el.__lgdrFold&&el.__lgdrFold.page===p&&el.getClientRects().length).forEach(el=>{
+        const b=mk('button','sb-h4',titleOf(el)); b.type='button'; b.title=b.textContent;
+        b.addEventListener('click',()=>el.scrollIntoView({block:'start',behavior:reduce.matches?'auto':'smooth'})); sub.appendChild(b); spy.push([el,b]); }); }
+    if(link&&sub.childNodes.length){ if(sub.previousElementSibling!==link) link.after(sub); } else sub.remove();
+    doSpy(); }
+  /* lo que se está leyendo: el último subtítulo que ya pasó bajo la barra superior */
+  let sq=0;
+  function doSpy(){ sq=0; if(!spy.length) return; const lim=(d.getElementById('appbar')||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom+110; let k=-1;
+    for(let i=0;i<spy.length;i++){ const r=spy[i][0].getBoundingClientRect(); if(r.height&&r.top<=lim) k=i; else if(r.top>lim) break; }
+    if(k!==spyCur){ if(spy[spyCur]) spy[spyCur][1].classList.remove('cur'); spyCur=k; if(spy[k]){ spy[k][1].classList.add('cur'); } } }
+  addEventListener('scroll',()=>{ if(!sq&&spy.length) sq=requestAnimationFrame(doSpy); },{passive:true});
+
+  /* ---------- página actual y modo ---------- */
+  function sync(){ const p=curPage(); root.classList.toggle('st-on',mOn.matches&&root.classList.contains('sb-on'));
+    const S=ST[p]; if(S&&stOn()) show(p,S.cur||SAVED[p]||S.list[0].k,false); else renderSub(); }
+  if(tabs) new MutationObserver(sync).observe(tabs,{subtree:true,attributes:true,attributeFilter:['aria-current']});
+  mOn.addEventListener('change',()=>requestAnimationFrame(sync));
+  /* Preguntas arma sus plegables al abrirse por primera vez */
+  const PI=window.__pageInit=window.__pageInit||{};
+  if(typeof PI.preguntas==='function'){ const o=PI.preguntas; PI.preguntas=function(){ const r=o.apply(this,arguments); try{ renderSubSoon(); }catch(e){} return r; }; }
+  sync();
 })();
 </script>
 

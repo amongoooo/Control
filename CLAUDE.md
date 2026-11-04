@@ -389,6 +389,36 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   vista. Sin zoom el dibujo es idéntico píxel a píxel (no hace falta regenerar el PDF). Probado: 142 lienzos de P1–P7 a 390 y
   1280 px (slider, −, rueda y ⟲ vuelve a la imagen original), consola limpia.
 
+## Hecho (v26): acomodo de las prácticas (pedido: gráficas que desperdician espacio, barra lateral, índice, plegables, Simulink)
+
+- **Barra lateral plegable:** botón `#abSide` (primero de la barra, solo ≥ 1000 px) o tecla **B** → `html.sb-off`
+  (`localStorage['lgdr-barra']='0'`, script temprano después del de v19). Oculta = `visibility:hidden` + `translate` (así v19 sigue
+  midiendo el indicador); `--sbw:0` y contenido hasta 1480 px.
+- **«En esta página» dentro de la barra lateral:** v19 ya no pone `sb-toc` (`mToc = matchMedia('not all')`). `.sb-sub` va después del
+  enlace de la página actual: en prácticas, las etapas (número/letra + nombre corto) y, bajo la abierta, los pasos de la Resolución
+  (bolitas `.sb-dot` que reflejan `.psnav`, + título del paso) o los `h4` de `.xstep` con resaltado del que se lee (scrollspy).
+  En Resumen/Simulador/Preguntas, sus plegables. En modo angosto (`sb-rail`) no se ve.
+- **Una etapa a la vez** en P1–P7 con `html.st-on` (≥ 1000 px; solo pantalla, no impresión): cada plegable de v15 (+ Simulink y
+  Código MATLAB) es una etapa; las demás `display:none`; el encabezado de la abierta no la pliega. Abajo `.stnav` (etapa anterior /
+  siguiente, sube al inicio); arriba `.stbar` (pestañas, sticky) solo si el índice no se ve (`sb-rail` o `sb-off`). Etapa guardada en
+  `localStorage['lgdr-etapa-v1']={pN:clave}` (claves: plant, banco, pasos, x1–x4, simulink, code). `Element.prototype.scrollIntoView`
+  envuelto otra vez: si el destino está en otra etapa, cambia primero (Reporte «En la página ›», «Ver este sistema en el Banco»).
+  v15 `__lgdrFolds.open(k,on,opt)` ahora acepta `{anim:false}`. En celular nada cambia (siguen los plegables).
+  Limitación: Ctrl+F solo encuentra texto de la etapa abierta en computadora.
+- **Simulink como etapa propia** (`.fold.fold-sl`, letra S, antes de «Código MATLAB»): el `div.bd` de v9 se mueve fuera del
+  `details.code`; se arma al abrir o en tiempo libre. Abierto en `localStorage['lgdr-sl-abierto']`. Responde a Desplegar/Plegar todo.
+- **Resolución paso a paso:** `stepHTML(s,i,N,id)` arma `.psgrid` (`.psA` texto+fórmulas | `.psB` gráfica fija) cuando el contenedor
+  `.psbody` mide ≥ 820 px (container query, solo pantalla); con diagramas SVG (paso 1 y Simulink) sigue a todo lo ancho. Como el plano
+  usa escala 1:1, la columna angosta ya muestra solo la zona con información. Lienzo 280–420 px de alto ahí.
+  Debajo de la gráfica, `.psget`: **«LGDR en MATLAB»** con `figure; rlocus(...)` (+ `sgrid(zeta, 0)` desde el paso de ζ; `pzmap` antes del
+  primer rlocus) según la tabla `RL` por práctica (sistema de cada etapa: G, Gc*G, Gpd*G, Glead*Glag*G…), con Copiar; o **«Salida en
+  Simulink»** (cadena Step/Ramp → Sum → Gain → compensador → G → Scope y botón al último paso). Clases `pg-lg`/`pg-sl` (ojo: `.lg` ya existía).
+  «MATLAB · qué hace cada línea» empieza **cerrado**; si se abre, se recuerda (`localStorage['lgdr-psml']`).
+- `.gfig` sola en su fila: máx. 760 px en ≥ 900 px (las figuras SVG de verificación tenían el texto gigante).
+- PDF regenerado (177 págs.); `herramientas/pdf-practicas.js` arma el `.bd` si hace falta.
+- Probado con Playwright: 1880/1440/1100 (barra angosta, oscuro)/390 px, barra oculta, cambio de etapa, Reporte, Banco desde Simulink,
+  Resumen/Preguntas/Teoría, consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
