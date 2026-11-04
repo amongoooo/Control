@@ -462,6 +462,30 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (así `herramientas/pdf-practicas.js` también lo oculta del PDF de prácticas); el reporte solo escucha `[data-rep]`, sin conflicto.
   En ≤ 520 px `.phead .phr .src` ocupa su propia fila para que los dos botones queden juntos. `.repbtn{line-height:1.3}` iguala alturas.
 
+## Hecho (v31): plantilla de reportes en Word (P1–P7)
+
+- Pedido: un Word con la estructura de la guía (`Guia_practicas_compensadores_LGDR.pdf`: 10 puntos del reporte + los 5 pasos del
+  análisis de referencia y los 6 de la verificación) para ir llenando cada práctica con resultados e imágenes de MATLAB, con el
+  **formato de `Reporte_P2_Equipo_5`** (PDF de Google Docs que subió el usuario): carta, márgenes 2 cm, Times New Roman 12,
+  logos TecNM Celaya (izq.) y «4.0 TecNM Celaya DSM» (der.) en el encabezado, título centrado 14 negritas (TecNM Celaya /
+  Depto. Ing. Mecatrónica / Práctica N / Equipo 5), autores 12 negritas con correo, Resumen y Palabras Clave a una columna,
+  cuerpo a dos columnas con encabezados «I.  Título», pies «Figura n:» negritas 10 pt, referencias en Calibri 11.
+- Equipo 5: Hector Dario Campos Cofradia, Kevin Santiago Sánchez Rojas, Cristian Leonardo López Bernal (correos en el script).
+- Archivos: `plantillas/Reportes_P1-P7_Equipo_5.docx` (todas, 63 págs.) y `plantillas/Reporte_PN_Equipo_5.docx` (una por práctica).
+  Se descargan desde Pages: `https://amongoooo.github.io/Control/plantillas/<archivo>`.
+- Generador: `node herramientas/plantilla-reportes.js` (docx-js; lee el código MATLAB de `index.html` `#pN-mat` y `puntoZeta.m`).
+  Datos/guías por práctica en `herramientas/plantilla/datos.js` (marcado `_x`, `^x`, `**negritas**`; ecuaciones TeX mínimo:
+  `\frac`, `\sqrt`, `\abs` → ecuaciones nativas de Word). Logos en `herramientas/plantilla/`.
+- Mapa: III = análisis de referencia (pasos 1–5 + evidencia); VI = verificación pasos 1, 2, 3, 5 (+ advertencia); VII = pasos 4, 5
+  (simulado), 6 + Simulink; IX incluye «Conclusiones individuales»; X (una columna) = código de la página + puntoZeta.m + cálculos.
+  Indicaciones en azul con ✎ (con valores de la página como guía) y recuadros grises «[ Pega aquí la imagen ]» con el comando MATLAB.
+  Primera página = instrucciones de uso (para borrar).
+- II.1 Planteamiento trae el **enunciado textual del libro**: se lee `DATA` de `herramientas/enunciados-libro.js` (sin ejecutarlo).
+  Si cambian esos textos o el código MATLAB de la página, volver a correr el generador.
+- Detalles técnicos: docx-js escribe los bordes de párrafo en orden top/bottom/left/right (inválido); `pack()` los reordena y
+  cambia los corchetes angulares de `\abs` por `|`. Valida con `validate.py` del skill docx. Para revisar en este contenedor hizo
+  falta `apt-get install libreoffice-math` (sin él las ecuaciones salen en blanco al convertir a PDF).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
