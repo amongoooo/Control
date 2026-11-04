@@ -516,6 +516,10 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   paso con esa clave. El práctica devuelve `script` (nombre del .m: activa el texto «Va en el Editor…» y el encabezado `%%` al copiar) y
   `rl` (reemplaza `RL.p1`). El botón «Ver el modelo · paso n» va al paso con `sl:1`. P2–P7 no cambian (no usan esos campos).
 - Probado a 390 y 1280/1440 px: 29 pasos sin desbordes ni errores de KaTeX/consola; P2 intacta. PDF regenerado (193 págs.).
+- **Cálculos en computadora (no a mano):** el usuario hará los cálculos escritos en el Word, no en foto. En los pasos de P1 donde
+  decía «Figura 2: foto de tus cálculos» y «X · C: fotos → Figura 10» ahora dice copiar la «Sustitución» y el «Resultado» del paso
+  (Insertar → Ecuación) y borrar esos recuadros. La plantilla de Word NO se cambió (el usuario pidió dejarla así). Lo de cómo
+  escribir el código en MATLAB (paso 1, «Simulink por código») se deja como está.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 

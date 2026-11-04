@@ -1511,7 +1511,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
       <span class="brand-tx"><b>Laboratorio LGDR</b><small>Control · Nise cap. 8–9</small></span>
     </a>
     <button type="button" class="abpill" id="abProg" hidden><span class="ring" aria-hidden="true"></span><span class="abpl">Teoría</span><span class="abpv">0 %</span></button>
-    <span class="abver" id="abVer" title="Versión del 3/11/2026, 23:05 (hora del centro de México)">v1.3.11.2305</span>
+    <span class="abver" id="abVer" title="Versión del 3/11/2026, 23:08 (hora del centro de México)">v1.3.11.2308</span>
     <button type="button" class="abicon" id="abSync" aria-label="Sincronizar progreso entre dispositivos" title="Sincronizar progreso"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.4-4.7L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.4 4.7L20 16"/><path d="M20 20.5V16h-4.5"/></svg></button>
     <button type="button" class="abicon" id="abTheme" aria-label="Cambiar modo claro u oscuro"><svg class="ic-moon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
     <button type="button" class="abicon" id="abFull" aria-label="Pantalla completa" title="Pantalla completa" aria-pressed="false"><svg class="ic-fs" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="ic-fsx" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
@@ -7675,10 +7675,10 @@ PASOS.p1=()=>{
     q:'El punto X pide el archivo ejecutable. Aquí está <b>todo el código de esta resolución junto</b>, en el orden de los pasos y con un encabezado <code>%%</code> por paso: es lo que queda en <code>'+SC+'</code> si fuiste pegando cada paso.',
     f:[{l:'X · A · Archivo ejecutable',h:'Pega este script (botón «Copiar código del paso») en el Word, en <b>X · A</b> (esa parte va a una columna para que quepa el código). La plantilla ya trae el código corto de la etapa «Código MATLAB»: usa uno de los dos, el que corriste.'},
        {l:'X · B · puntoZeta.m',h:'Sólo si lo usaste. Este script no lo necesita: el punto de diseño se busca con <code>fzero</code> (paso {#ang}).'},
-       {l:'X · C · Cálculos',h:'Fotos de tus cálculos a mano (Routh, ángulos, magnitudes, error) → <b>Figura 10</b>.'},
+       {l:'X · C · Cálculos',h:'Los cálculos van escritos en computadora: copia la «Sustitución» y el «Resultado» de los pasos {#routh} (Routh), {#ang} (ángulos), {#mag} (magnitud) y {#err} (error). El recuadro de la Figura 10 (fotos) se borra.'},
        {l:'Cómo correrlo',h:'En el Editor: <b>F5</b> corre todo; <b>Ctrl + Enter</b> corre la sección del cursor. La última sección (Simulink por código) es opcional: si no la quieres, bórrala.'},
        {l:'Resultado',res:1,h:'Un solo archivo <code>'+SC+'</code> que reproduce todas las figuras y números del reporte.'}],
-    wd:[['Pega','<b>X · A</b>: el script completo.'],['Pega','<b>X · B</b>: puntoZeta.m (si lo usaste).'],['Figura 10','<b>X · C</b>: fotos de tus cálculos.']],
+    wd:[['Pega','<b>X · A</b>: el script completo.'],['Pega','<b>X · B</b>: puntoZeta.m (si lo usaste).'],['Escribe','<b>X · C</b>: los cálculos escritos (Routh, ángulos, magnitud y error) copiados de esos pasos; borra el recuadro de fotos.']],
     mlTitle:'Script completo · '+SC,
     mlWhere:'Este es el archivo completo: pégalo <b>entero en el Editor</b> (reemplaza lo que tengas) y guárdalo como <code>'+SC+'</code>. También es lo que va en el punto X · A del Word.',
     ml:[] };
@@ -7690,9 +7690,9 @@ PASOS.p1=()=>{
     S4,S5,
     tag(C[1],'polos','III','III · Paso 2',[['Tabla 3','Polos de lazo abierto: −2, −4, −6 · Ceros: ninguno · Tipo: 0.']]),
     tag(C[2],'eccar','III','III · Paso 2',[['Escribe','La ecuación característica ya está en la plantilla: compárala con la tuya.']]),
-    tag(C[3],'eje','III','III · Paso 2',[['Escribe','Forma del LGDR: tramos [−4, −2] y (−∞, −6] del eje real.'],['Figura 2','Foto de tus cálculos a mano (eje real, asíntotas y ruptura).']]),
-    tag(C[4],'asin','III','III · Paso 2',[['Escribe','σ<sub>a</sub> = −4; θ<sub>a</sub> = 60°, 180° y 300°.'],['Figura 2','En la misma foto de cálculos.']]),
-    tag(C[5],'rupt','III','III · Paso 2',[['Escribe','Punto de ruptura σ<sub>b</sub> = '+n(sb,4)+' (K<sub>b</sub> = '+n(Kb,3)+').'],['Figura 2','En la misma foto de cálculos.']]),
+    tag(C[3],'eje','III','III · Paso 2',[['Escribe','Forma del LGDR: tramos [−4, −2] y (−∞, −6] del eje real.'],['Escribe','<b>Cálculos</b> (en computadora): copia la «Sustitución» y el «Resultado» de este paso en <b>III · Paso 2</b> (Insertar → Ecuación). El recuadro de la Figura 2 (foto) ya no hace falta: bórralo.']]),
+    tag(C[4],'asin','III','III · Paso 2',[['Escribe','σ<sub>a</sub> = −4; θ<sub>a</sub> = 60°, 180° y 300°.'],['Escribe','<b>Cálculos</b> (en computadora): copia la «Sustitución» y el «Resultado» de este paso en <b>III · Paso 2</b> (Insertar → Ecuación). El recuadro de la Figura 2 (foto) ya no hace falta: bórralo.']]),
+    tag(C[5],'rupt','III','III · Paso 2',[['Escribe','Punto de ruptura σ<sub>b</sub> = '+n(sb,4)+' (K<sub>b</sub> = '+n(Kb,3)+').'],['Escribe','<b>Cálculos</b> (en computadora): copia la «Sustitución» y el «Resultado» de este paso en <b>III · Paso 2</b> (Insertar → Ecuación). El recuadro de la Figura 2 (foto) ya no hace falta: bórralo.']]),
     tag(C[6],'routh','III','III · Paso 3',[['Tabla 4','s³: 1 | 44 · s²: 12 | 48 + K · s¹: (480 − K)/12 | 0 · s⁰: 48 + K.'],['Escribe','«Rango de K estable: 0 < K < 480» (cruce en ±j'+n(wc,3)+').']]),
     tag(C[7],'zeta','IV','IV · a)',[['Escribe','<b>IV · a)</b>: ζ = '+n(zeta,4)+' y θ = '+n(thz,2)+'°.'],['Figura 3','<b>III · Evidencia</b>: LGDR inicial con la recta de ζ → <code>figure; rlocus(G); sgrid(zeta, 0)</code>.']]),
     tag(C[8],'ang','IV','IV · b)',[['Escribe','<b>IV · b)</b>: s<sub>0</sub> = '+cH([s0[0],wd])+' y los tres ángulos (suman 180°).'],['Figura 5','LGDR con la recta y s<sub>0</sub> marcado (última línea del código de este paso).']],
