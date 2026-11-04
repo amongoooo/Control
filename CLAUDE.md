@@ -581,7 +581,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   de raíces, la **Tabla 5 llena** (p1, p2 dominantes con ζ y ωn; p3 a 3.92σ, no despreciable) y MATLAB `roots([1 12 44 48+45.53])`
   + `sum(p)` (sin usar la variable K, porque en el script completo K se calcula después). El paso del tercer polo ahora dice
   «Tabla 5: ya se llenó en el paso {#clref}». P1 = 30 pasos. Probado a 390 y 1280 px; PDF regenerado.
-- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39), P5 (v40); **sigue P6** (luego P7).
+- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39), P5 (v40), P6 (v41); **sigue P7**.
 
 ## Hecho (v39): Resolución paso a paso de P4 en el orden del reporte en Word
 
@@ -611,6 +611,20 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   y 10) · VIII(29 Tabla 13) · IX(30) · X(31; Figura 11 = fotos → se borra). `pz` de P5 ganó `k1` (puntos naranjas: el tramo es verde).
 - Revisado contra `plantillas/Reporte_P5_Equipo_5.docx`: Tablas 1–13 y Figuras 1–11 tienen su paso con la solución.
 - Probado a 390 (claro/oscuro) y 1280 px: 31 pasos, sin `{#…}`, sin errores de KaTeX ni de consola; P4 y P6 sin cambios. PDF: 227 págs.
+
+## Hecho (v41): Resolución paso a paso de P6 en el orden del reporte en Word
+
+- Mismo patrón (v35–v40), sin lo de MATLAB de P1. Los 24 pasos originales pasan a `const C=[…]`. P6 = 32 pasos:
+  I(1) · II(2 plant = Figura 1, 3 specs = Tabla 2) · III(4 kref con K = 1 → −9.929/−5.814/−3.256, 5 polos = Tabla 3, 6 ec., 7 LGDR
+  (Figura 2 → se borra), 8 Routh + fila «Con K = 121.6» = Tabla 4, 9 ζ = Figura 3, 10 punto, 11 magnitud, 12 `clref` = Tabla 5 con
+  Observación, 13 transitorio = Figura 4, 14 error + Tabla 6 completa) · IV(15 a pdis, 16–18 b angd/cero/kpd, 19 `verpd` = Figura 5,
+  20 c pi, 21 d eqpid, 22 e rebus = Figura 6) · V(23 `ctrl` = paso original de K1, K2, K3 + Tabla 7) · VI(24 `ver12`: Tablas 8, 9 (Routh
+  de 4.º orden completo con K = 4.592) y 10 (candidato PD 7.52 % y re‑búsqueda), 25 `modos` = Tabla 11 + gráfica «sólo el par dominante»,
+  26 `ver5` = paso original del error + advertencia) · VII(27 verif = Figuras 7 y 8, 28 `sim45` Tabla 12 + error simulado + «no hizo falta
+  ajuste» con escalón de 12 s, 29 Simulink a mano = Figuras 1 y 9, con un solo PID Controller K1/K2/K3 como pide el Word) · VIII(30 Tabla 13
+  con T_p/T_s analíticos del par re‑buscado) · IX(31) · X(32; Figura 10 = fotos → se borra). `pz` de P6 ganó `k1`.
+- Revisado contra `plantillas/Reporte_P6_Equipo_5.docx`: Tablas 1–13 y Figuras 1–10 tienen su paso con la solución.
+- Probado a 390 y 1280 px (claro/oscuro): 32 pasos, sin `{#…}`, sin errores de KaTeX ni de consola; P5 y P7 sin cambios. PDF: 235 págs.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
