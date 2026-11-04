@@ -581,7 +581,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   de raíces, la **Tabla 5 llena** (p1, p2 dominantes con ζ y ωn; p3 a 3.92σ, no despreciable) y MATLAB `roots([1 12 44 48+45.53])`
   + `sum(p)` (sin usar la variable K, porque en el script completo K se calcula después). El paso del tercer polo ahora dice
   «Tabla 5: ya se llenó en el paso {#clref}». P1 = 30 pasos. Probado a 390 y 1280 px; PDF regenerado.
-- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39); **sigue P5** (luego P6, P7).
+- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39), P5 (v40); **sigue P6** (luego P7).
 
 ## Hecho (v39): Resolución paso a paso de P4 en el orden del reporte en Word
 
@@ -597,6 +597,20 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - **PDF:** `herramientas/pdf-practicas.js` ahora pone `.psgrid/.psA/.psB/.psf` en `display:block` (la fragmentación de grid de Chromium
   encimaba el recuadro «Para el Word» con el «Resultado» en un salto de página; se recuperaron 7 recuadros en P1–P7). PDF: 218 págs.
 - Probado a 390, 1280 y 1500 px (oscuro): 30 pasos, sin `{#…}`, sin errores de KaTeX ni de consola, sin desbordes.
+
+## Hecho (v40): Resolución paso a paso de P5 en el orden del reporte en Word
+
+- Mismo patrón que P2–P4 (v35/v36/v39), sin lo de MATLAB de P1. Los 21 pasos originales pasan a `const C=[…]`. P5 = 31 pasos:
+  I(1) · II(2 plant = Figura 1, 3 specs = Tabla 2 con la fila «cero impuesto») · III(4 kref con K = 1 → −0.146/−6.854, 5 polos = Tabla 3,
+  6 ec., 7 LGDR (Figura 2 → se borra), 8 Routh + fila «Con K = 45.84» = Tabla 4, 9 ζ = Figura 3, 10 punto, 11 magnitud, 12 `clref` **nuevo**
+  (Tabla 5: sólo p1, p2; 2.º orden puro), 13 inciso a) = Figura 4, 14 error + Tabla 6 completa) · IV(15 a pdis, 16 b angd, 17 c `polo` =
+  Figura 5, 18 d kc, 19 e neweq = Figura 6) · V(20 `ctrl` nuevo: Tabla 7 libro 25.54/476.2 y ajustado ζd 0.6273, 27.00, 364.1) ·
+  VI(21 `ver12`: Tablas 8, 9 (Routh de los dos diseños) y 10 con libro y ajustado, 22 `modos` = Tabla 11 con los dos + gráfica «sin el modo
+  p3», 23 `ver5` = paso original «Error a rampa» + advertencia) · VII(24 verif = Figuras 7 y 8, 25 `sim45` Tabla 12 (libro 21.07 % ✗,
+  0.390 s casi; ajustado 15.00 %, 0.362 s ✓) + error simulado, 26 `ajuste` (VII·6), 27 `reverif` = Figura 9, 28 Simulink a mano = Figuras 1
+  y 10) · VIII(29 Tabla 13) · IX(30) · X(31; Figura 11 = fotos → se borra). `pz` de P5 ganó `k1` (puntos naranjas: el tramo es verde).
+- Revisado contra `plantillas/Reporte_P5_Equipo_5.docx`: Tablas 1–13 y Figuras 1–11 tienen su paso con la solución.
+- Probado a 390 (claro/oscuro) y 1280 px: 31 pasos, sin `{#…}`, sin errores de KaTeX ni de consola; P4 y P6 sin cambios. PDF: 227 págs.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 

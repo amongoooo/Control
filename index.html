@@ -1511,7 +1511,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
       <span class="brand-tx"><b>Laboratorio LGDR</b><small>Control · Nise cap. 8–9</small></span>
     </a>
     <button type="button" class="abpill" id="abProg" hidden><span class="ring" aria-hidden="true"></span><span class="abpl">Teoría</span><span class="abpv">0 %</span></button>
-    <span class="abver" id="abVer" title="Versión del 4/11/2026, 02:48 (hora del centro de México)">v1.4.11.0248</span>
+    <span class="abver" id="abVer" title="Versión del 4/11/2026, 03:21 (hora del centro de México)">v1.4.11.0321</span>
     <button type="button" class="abicon" id="abSync" aria-label="Sincronizar progreso entre dispositivos" title="Sincronizar progreso"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.4-4.7L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.4 4.7L20 16"/><path d="M20 20.5V16h-4.5"/></svg></button>
     <button type="button" class="abicon" id="abTheme" aria-label="Cambiar modo claro u oscuro"><svg class="ic-moon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
     <button type="button" class="abicon" id="abFull" aria-label="Pantalla completa" title="Pantalla completa" aria-pressed="false"><svg class="ic-fs" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="ic-fsx" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
@@ -9276,6 +9276,7 @@ PASOS.p5=()=>{
     if(o.s0){ [1,-1].forEach(sg=>DOT(P,s0[0],sg*wd,o.sd?C.c0:C.c1,5)); if(!o.nos0lab) LAB(P,s0[0],-wd,`s0 = −3.5 ± j${n(wd,4)}`,{dx:-10,a:'right',b:'middle',c:o.sd?C.c0:C.c1}); }
     if(o.sd){ [1,-1].forEach(sg=>DOT(P,sd[0],sg*wdD,C.c2,5.5)); if(!o.nosdlab) LAB(P,sd[0],-wdD,`sd = ${n(sd[0],3)} ± j${n(wdD,4)}`,{dx:-10,a:'right',b:'middle',c:C.c2}); }
     if(o.clC){ clpC.forEach(q=>DOT(P,q[0],q[1],o.adj?C.c0:C.c1,5)); if(!o.adj) LAB(P,pS[0],0,n(pS[0],4),{dy:18,a:'center',b:'top',c:C.c1}); }
+    if(o.k1){ T1.forEach(q=>DOT(P,q[0],q[1],C.c2,5.5)); T1.forEach(q=>LAB(P,q[0],0,n(q[0],3),{dy:16,a:'center',c:C.c2,b:'top'})); LAB(P,-5.2,0,'K = 1',{dy:-8,a:'center',c:C.c2}); }
     if(o.clA){ clpA.forEach(q=>DOT(P,q[0],q[1],C.c1,5.5)); LAB(P,pSA[0],0,n(pSA[0],4),{dy:18,a:'center',b:'top',c:C.c1}); LAB(P,pDA[0],-pDA[1],`${n(pDA[0],3)} ± j${n(pDA[1],4)}`,{dx:-10,a:'right',b:'middle',c:C.c1}); }
     p.forEach(q=>Xm(P,q,0,C.ink)); if(o.comp||o.compZ) OO(P,-zc,0,C.ink); if(o.comp) Xm(P,-PC,0,C.ink);
     P.done();
@@ -9295,7 +9296,7 @@ PASOS.p5=()=>{
     g.textAlign='left'; g.fillStyle=C.c2; g.fillText(`libro: ζ = ${n(zeta,4)} → ${n(mC.os,4)} %`,sx(zeta)+8,sy(mC.os)+4);
     g.fillStyle=C.ok; g.textBaseline='top'; g.fillText(`ajuste: ζd = ${n(zA,4)} → 15 %`,sx(zA)+8,sy(mA.os)+6); g.restore(); }
 
-  const steps=[
+  const C=[
   { t:'Planteamiento y diagrama de bloques',
     q:'Se identifica la planta, la ganancia <i>K</i> y el compensador de adelanto <i>G<sub>c</sub></i>(<i>s</i>) = (<i>s</i> + <i>z<sub>c</sub></i>)/(<i>s</i> + <i>p<sub>c</sub></i>) con el cero ya fijado en −10. Primero se analiza el sistema sin compensar (<i>G<sub>c</sub></i> = 1).',
     f:[{l:'Fórmula',t:'T(s)=\\dfrac{K\\,G_c(s)\\,G(s)}{1+K\\,G_c(s)\\,G(s)}'},
@@ -9306,7 +9307,7 @@ PASOS.p5=()=>{
     ml:[["clear; clc; close all","Empieza desde cero."],
         ["s = tf('s');","Variable de Laplace."],
         ["G = 1/(s*(s+7))","Planta con K = 1."],
-        ["OS = 15; zeta = -log(OS/100)/sqrt(pi^2 + log(OS/100)^2)","ζ que corresponde al 15 % de sobrepaso (se usa desde el paso 6)."]],
+        ["OS = 15; zeta = -log(OS/100)/sqrt(pi^2 + log(OS/100)^2)","ζ que corresponde al 15 % de sobrepaso (se usa desde el paso {#zeta})."]],
     out:`G =\n \n      1\n  ---------\n  s^2 + 7 s\n \nContinuous-time transfer function.\n\n`+mval('zeta',zeta) },
 
   { t:'Polos, ceros y tipo',
@@ -9377,7 +9378,7 @@ PASOS.p5=()=>{
     ml:[["K = 1/abs(evalfr(G, s0))","Condición de magnitud."]],
     out:mval('K',K) },
 
-  { t:'a) Tiempo de asentamiento de referencia',
+  { t:'Tiempo de asentamiento de referencia (inciso a)',
     q:'Con un 2º orden puro las fórmulas dan exactamente el transitorio. Se comparan con la simulación: es la respuesta al inciso a).',
     f:[{l:'Fórmulas',t:AL('T_s=\\dfrac{4}{\\sigma},\\qquad T_p=\\dfrac{\\pi}{\\omega_d}',`T_s=\\dfrac{4}{3.5},\\qquad T_p=\\dfrac{\\pi}{${n(wd,4)}}`)},
        {l:'Resultado',res:1,t:tab([['\\%OS','15',n(mU.os,4)],['T_s\\,(\\text{s})',n(Ts2,4),n(mU.ts,4)],['T_p\\,(\\text{s})',n(Tp2,4),n(mU.tp,4)],['T_r\\,(\\text{s})',n(Tr2,3),n(TrU,3)]],['','\\text{fórmula}','\\text{simulación}']),n:'a) Ts = 4/3.5 = '+n(Ts2,4)+' s (libro: 1.143 s). La simulada es un poco mayor porque 4/σ es la cota de la envolvente.'}],
@@ -9396,7 +9397,7 @@ PASOS.p5=()=>{
     ml:[["Kv = dcgain(minreal(s*K*G)); e_u = 1/Kv","Error a rampa sin compensar."]],
     out:mval('e_u',eR) },
 
-  { t:'b) Punto de diseño: T<sub>s</sub> tres veces menor',
+  { t:'Punto de diseño: T<sub>s</sub> tres veces menor (inciso b)',
     q:'Se divide T<sub>s</sub> entre 3: σ se multiplica por 3. El punto queda sobre la misma recta de ζ (mismo 15 %), más lejos del origen.',
     f:[{l:'Fórmula',t:AL('T_{s,d}=\\dfrac{T_s}{3},\\qquad\\sigma_d=\\dfrac{4}{T_{s,d}}','\\omega_d=\\sigma_d\\tan\\theta')},
        {l:'Sustitución',t:AL(`T_{s,d}=\\dfrac{${n(Ts2,4)}}{3}=${n(TsD,4)}\\text{ s}`,`\\sigma_d=\\dfrac{4}{${n(TsD,4)}}=${n(sigD,4)}`,`\\omega_d=${n(sigD,4)}\\tan ${f2(thz)}^\\circ=${n(wdD,4)}`)},
@@ -9470,7 +9471,7 @@ PASOS.p5=()=>{
     out:infoOut(TrC,mC).replace('info','info_c') },
 
   { t:'Ajuste: ζ de diseño mayor',
-    q:'Se mantiene σ<sub>d</sub> = '+n(sigD,4)+' (el mismo T<sub>s</sub>) y el cero en −10, y se sube el ζ del punto de diseño hasta que el <b>modelo completo</b> dé 15 %. Para cada ζ se repiten los pasos 12–14 (θ<sub>p</sub>, p<sub>c</sub> y K) y se simula.',
+    q:'Se mantiene σ<sub>d</sub> = '+n(sigD,4)+' (el mismo T<sub>s</sub>) y el cero en −10, y se sube el ζ del punto de diseño hasta que el <b>modelo completo</b> dé 15 %. Para cada ζ se repiten los pasos {#angd}–{#kc} (θ<sub>p</sub>, p<sub>c</sub> y K) y se simula.',
     f:[{l:'Para cada ζ',t:AL('s_d=-\\sigma_d+j\\,\\sigma_d\\tan(\\cos^{-1}\\zeta)','p_c=\\sigma_d+\\dfrac{\\omega_d}{\\tan\\theta_p},\\quad K=\\dfrac{1}{|G_cG(s_d)|}')},
        {l:'Pruebas',t:tab(tries.map(t=>[n(t.z,4),n(t.pc,4),n(t.K,4),n(t.os,4)+'\\,\\%']),['\\zeta','p_c','K','\\%OS'])},
        {l:'Resultado',res:1,t:AL(`\\zeta_d=${n(zA,4)}\\;(\\theta=${f2(thA)}^\\circ)`,`p_c=${f2(A.pc)},\\quad K=${n(A.K,4)}`),n:'Se encontró por bisección entre ζ = '+n(zeta,4)+' y 0.85 hasta que %OS = 15.00 %.'}],
@@ -9487,7 +9488,7 @@ PASOS.p5=()=>{
   { t:'Re‑verificación del diseño ajustado',
     q:'Con <i>p<sub>c</sub></i> = '+f2(A.pc)+' y <i>K</i> = '+n(A.K,4)+' se repite la verificación: ecuación, todos los polos, residuos y simulación.',
     f:[{l:'Ecuación',t:`s^3+${n(7+A.pc,4)}s^2+${n(7*A.pc+A.K,4)}s+${n(10*A.K,5)}=0`},
-       {l:'Polos y residuos',t:AL(`${cpxT(pDA)}\\;\\;(|r|=${n(rA(rDA),4)})`,`${n(pSA[0],4)}\\;\\;(|r|=${n(rA(rSA),4)})`),n:'Estable para todo K (mismo Routh que en el paso 15). El tercer polo sigue sin cancelarse.'},
+       {l:'Polos y residuos',t:AL(`${cpxT(pDA)}\\;\\;(|r|=${n(rA(rDA),4)})`,`${n(pSA[0],4)}\\;\\;(|r|=${n(rA(rSA),4)})`),n:'Estable para todo K (mismo Routh que en el paso {#neweq}). El tercer polo sigue sin cancelarse.'},
        {l:'Resultado',res:1,t:tab([['\\%OS','15',n(mC.os,4),f2(mA.os)],['T_s\\,(\\text{s})','\\le'+n(TsD,4),n(mC.ts,4),n(mA.ts,4)],['T_p\\,(\\text{s})','—',n(mC.tp,4),n(mA.tp,4)]],['','\\text{meta}','\\text{libro}','\\text{ajuste}']),n:'Cumple las dos metas. La especificación se cumple por simulación del modelo completo, no por la aproximación de 2º orden.'}],
     vis:[fig('LGDR ajustado (continuo) sobre el del libro (punteado), recta ζd (naranja) y los 3 polos en lazo cerrado.',{comp:1,adj:1,seg:1,locC:1,zeta:1,zetaA:1,clA:1,need:19,x0:-30,x1:2}),
          tfig('Escalón: adelanto del libro contra el ajustado.',cv=>{ const C=cs(); tplot(cv,2,[{...sC,c:C.c0,dash:[6,4]},{...sA,c:C.c1}],{hl:[[1,''],[1.15,'15 %']],vl:[[TsD,'meta Ts']],legend:[['libro',C.c0,[6,4]],['ajustado',C.c1]]}); })],
@@ -9510,7 +9511,7 @@ PASOS.p5=()=>{
     q:'Se arma el lazo con el adelanto en Simulink. A diferencia del PD, el adelanto sí cabe en un <b>Transfer Fcn</b> (un cero y un polo) y es pasivo. Se usa el diseño ajustado; al final se cambian los parámetros a los del libro para ver el 21 %.',
     f:[{l:'Lazo que forman los bloques',t:AL('E=R-C,\\quad U=K\\,G_c(s)\\,E','C=G(s)\\,U')},
        {l:'Parámetros',t:AL(`\\text{Gain}=${n(A.K,4)}`,`G_c:\\;\\texttt{[1 10]}\\,/\\,\\texttt{[1 ${f2(A.pc)}]}`,'G:\\;\\texttt{1}\\,/\\,\\texttt{[1 7 0]}')},
-       {l:'Resultado',res:1,t:AL(`\\text{ajuste: }\\%OS=${f2(mA.os)}\\%,\\;T_s=${n(mA.ts,4)}\\text{ s}`,`\\text{libro: }\\%OS=${n(mC.os,4)}\\%,\\;T_s=${n(mC.ts,4)}\\text{ s}`),n:'Iguales a los de los pasos 17 y 19.'}],
+       {l:'Resultado',res:1,t:AL(`\\text{ajuste: }\\%OS=${f2(mA.os)}\\%,\\;T_s=${n(mA.ts,4)}\\text{ s}`,`\\text{libro: }\\%OS=${n(mC.os,4)}\\%,\\;T_s=${n(mC.ts,4)}\\text{ s}`),n:'Iguales a los de los pasos {#verif} y {#reverif}.'}],
     blk:blkList([
       ['Step','Sources','<code>Step time = 0</code> <code>Initial value = 0</code> <code>Final value = 1</code>','Referencia escalón r(t).'],
       ['Sum','Math Operations','<code>List of signs = |+-</code>','Error e = r − c.'],
@@ -9537,8 +9538,173 @@ PASOS.p5=()=>{
         ["out = sim(mdl); info_libro = stepinfo(out.y.Data, out.y.Time)","Vuelve a simular: aparece el sobrepaso de ≈ 21 %."]],
     out:`info =\n  struct with fields:\n\n    SettlingTime: ${m4(mA.ts)}\n       Overshoot: ${m4(mA.os)}\n        PeakTime: ${m4(mA.tp)}\n\ninfo_libro =\n  struct with fields:\n\n    SettlingTime: ${m4(mC.ts)}\n       Overshoot: ${m4(mC.os)}\n        PeakTime: ${m4(mC.tp)}\n  (pueden variar en el 3er decimal por el paso de integración)` }
   ];
-  return {title:'Práctica 5 · cómo se resuelve',
-    intro:'Pasos 1–10: el sistema de referencia con 15 % de sobrepaso y su T<sub>s</sub> (inciso a). Pasos 11–17: diseño del adelanto con el cero en −10 (ángulo, polo, K) y verificación del modelo completo. Pasos 18–21: ajuste de ζ para cumplir el 15 %, re‑verificación, error y Simulink.',
+
+  /* ---- v40 · mismo acomodo que P2–P4 (v35/v36/v39): orden de los puntos I–X del Word, «Word · …» (w), grupos (sec) y
+     «Para el Word» (wd) con los números de tabla y figura de Reporte_P5_Equipo_5.docx. Sin lo de MATLAB agregado en P1. */
+  const tb=(h,rows)=>`<div class="tablewrap"><table class="mini"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  const calc=(w,fg)=>['Escribe','<b>Cálculos</b> (en computadora): copia la «Sustitución» y el «Resultado» de este paso en <b>'+w+'</b> (Insertar → Ecuación).'+(fg?' El recuadro de la '+fg+' (foto) ya no hace falta: bórralo.':'')];
+  const ins=(c,row)=>({f:[...c.f.slice(0,-1),row,c.f[c.f.length-1]]});
+  const tag=(c,k,sec,w,wd,extra)=>Object.assign({},c,{k,sec,w,wd},extra||{});
+  const T1=sortR(roots([1,7,1]));
+  const eUs=eU.y[eU.y.length-1], eCsim=eCs.y[eCs.y.length-1], eAsim=eAs.y[eAs.y.length-1];
+  const rDm=rA(rD), rSm=rA(rS), rDAm=rA(rDA), rSAm=rA(rSA), sumC=clpC.reduce((a,q)=>a+q[0],0), sumA=clpA.reduce((a,q)=>a+q[0],0);
+  const cC={a2:7+pc,a1:7*pc+Kc,a0:10*Kc}, cA={a2:7+A.pc,a1:7*A.pc+A.K,a0:10*A.K}; [cC,cA].forEach(c=>c.b1=(c.a2*c.a1-c.a0)/c.a2);
+  const dif=(c,o)=>100*Math.hypot(o[0]-c[0],o[1]-c[1])/Math.hypot(c[0],c[1]), dC=dif(sd,pD), dA=dif(A.sd,pDA);
+  const okOS=v=>v<=OS+0.05, okTs=v=>v<=TsD*1.0005, red=mU.ts/mC.ts, redA=mU.ts/mA.ts;
+  const f1=v=>v.toFixed(1), routhT=c=>`\\begin{array}{c|cc}s^3&1&${n(c.a1,4)}\\\\s^2&${n(c.a2,4)}&${f1(c.a0)}\\\\s^1&${n(c.b1,4)}&0\\\\s^0&${f1(c.a0)}&\\end{array}`;
+  const modeC=()=>{ const t=sC.t, d=t.map(x=>2*Math.exp(pD[0]*x)*(rD[0]*Math.cos(pD[1]*x)-rD[1]*Math.sin(pD[1]*x))), s=t.map(x=>rS[0]*Math.exp(pS[0]*x));
+    return {tot:t.map((x,k)=>1+d[k]+s[k]), nos:t.map((x,k)=>1+d[k])}; };
+
+  const S_id={k:'ident', sec:'I', w:'I · Identificación', t:'Identificación del ejercicio y objetivo',
+    q:'El punto I del Word sólo pide los datos de la práctica (tabla 1) y el objetivo. Casi todo ya viene en la plantilla: aquí está qué significa cada renglón.',
+    f:[{l:'Tabla 1 · identificación',h:tb(['Dato','Valor'],[['Práctica','5 · Compensador de adelanto de fase'],['Ejercicio','Ejercicio de evaluación de destreza 9.2, p. 526'],['Libro','Nise, <i>Sistemas de control para ingeniería</i> (CECSA, 2006)'],['Capítulo','9. Diseño por medio del lugar geométrico de las raíces'],['Equipo','5'],['Fecha','la del día en que la hagan'],['Archivo MATLAB','<code>Practica5_Equipo5.m</code>']])},
+       {l:'Objetivo',h:'Evaluar el tiempo de asentamiento de un sistema que opera con 15 % de sobrepaso y diseñar un compensador de adelanto, con el cero en −10, que lo reduzca tres veces.'},
+       {l:'Resultado',res:1,h:'Sin cálculos: es la portada técnica del reporte.'}],
+    why:'El adelanto G<sub>c</sub>(s) = (s + 10)/(s + p<sub>c</sub>) aporta ángulo positivo (el cero suma más de lo que resta el polo): dobla el LGDR hacia la izquierda para que pase por un punto más rápido sobre la misma recta de ζ. A diferencia del PD ideal, es pasivo y cabe en un solo Transfer Fcn.',
+    wd:[['Tabla 1','Llena «Fecha de realización»; lo demás ya está.'],['Escribe','<b>Objetivo</b>: ya viene redactado; ajústalo con tus palabras si quieres.'],['Escribe','Si lo pide el profesor: 2–3 líneas de introducción (qué hace un adelanto y por qué se diseña con el LGDR).']] };
+
+  const S_sp={k:'specs', sec:'II', w:'II · 4 Especificaciones', t:'Especificaciones de diseño',
+    q:'Del enunciado salen tres datos: el sobrepaso, el tiempo de asentamiento y el cero impuesto. Los dos primeros se traducen a una condición sobre el punto de diseño y se comprueban en la simulación.',
+    f:[{l:'Tabla 2',h:tb(['Especificación','Meta','Cómo se verifica'],[['Sobrepaso','15 %','Misma recta ζ = '+n(zeta,3)+' (pasos {#zeta} y {#verif})'],['Tiempo de asentamiento','T<sub>s</sub>/3 ≤ '+n(TsD,3)+' s','σ = '+n(sigD,3)+' (pasos {#pdis} y {#verif})'],['Cero del compensador','−10 (impuesto)','Sólo se calcula el polo (paso {#polo})']])},
+       {l:'Resultado',res:1,t:AL(`\\zeta=${n(zeta,4)}\\;(\\text{igual que sin compensar})`,`T_{s,d}=\\dfrac{${n(Ts2,4)}}{3}=${n(TsD,4)}\\text{ s}\\;\\Rightarrow\\;\\sigma_d=${n(sigD,4)}`)}],
+    wd:[['Tabla 2','Ya viene llena con estas filas en la plantilla: sólo revísala.']] };
+
+  const S_kr={k:'kref', sec:'III', w:'III · Paso 1', t:'Ganancia de referencia (no asumir K = 1)',
+    q:'La guía pide, antes de todo, decir con qué <i>K</i> se analiza el sistema de referencia y <b>no suponer que vale 1</b>. El enunciado no da K: dice que el sistema opera con 15 % de sobrepaso.',
+    f:[{l:'Qué dice el enunciado',h:'El 15 % fija ζ y, con ella, la recta donde deben estar los polos. La K de referencia es la que los pone sobre esa recta; se calcula en los pasos {#zeta}–{#mag} (ζ, punto de operación y condición de magnitud).'},
+       {l:'Si se supusiera K = 1',t:AL('s^2+7s+1=0',`s=${T1.map(q=>n(q[0],4)).join(',\\;')}`),n:'Dos polos reales: no habría sobrepaso y T<sub>s</sub> sería de unos 27 s. Sería otro sistema, no el del ejercicio.'},
+       {l:'Resultado',res:1,t:AL(`K_{ref}=\\omega_n^2=${n(K,4)}`,`s_0=-3.5\\pm j${n(wd,4)}`),n:'Sale de los pasos {#punto} y {#mag}.'}],
+    why:'Escribe aquí el valor cuando llegues al paso {#mag}; por ahora basta con justificar por qué no se usa K = 1.',
+    vis:[fig(`Polos en lazo cerrado con K = 1 (naranja, reales) y con la K de referencia ${n(K,4)} (azul, par complejo con 15 %).`,{seg:1,locU:1,zeta:1,s0:1,k1:1,need:7})],
+    wd:[['Escribe','«K de referencia = '+n(K,4)+'» (déjalo en blanco hasta el paso {#mag}).'],['Escribe','Una línea: el enunciado fija el 15 %, no K; con K = 1 los polos serían '+T1.map(q=>n(q[0],3)).join(' y ')+' (otro sistema).']] };
+
+  const S_t5={k:'clref', sec:'III', w:'III · Paso 4', t:'Polos en lazo cerrado de referencia (Tabla 5)',
+    q:'Con la K de referencia se resuelve la ecuación característica. Como es de 2º orden, sólo hay dos polos y salen con la fórmula general.',
+    f:[{l:'Ecuación',t:`s^2+7s+${n(K,4)}=0`},
+       {l:'Fórmula general',t:AL(`s=\\dfrac{-7\\pm\\sqrt{49-4(${n(K,4)})}}{2}`,`\\;\\;=-3.5\\pm j\\dfrac{\\sqrt{${n(4*K-49,4)}}}{2}`)},
+       {l:'Tabla 5',h:tb(['Polo','Valor','Observación'],[['p1','−3.5 + j'+n(wd,4),'Dominante: ζ = '+n(zeta,3)+', ω<sub>n</sub> = '+n(wn,4)],['p2','−3.5 − j'+n(wd,4),'Conjugado de p1']])},
+       {l:'Resultado',res:1,t:`p_{1,2}=-3.5\\pm j${n(wd,4)}`,n:'No hay tercer polo ni ceros: el sistema de referencia ES un 2º orden puro y las fórmulas de %OS, Ts y Tp son exactas.'}],
+    vis:[fig('Los dos polos en lazo cerrado de referencia sobre el LGDR y la recta de ζ.',{seg:1,locU:1,zeta:1,s0:1,need:7})],
+    wd:[['Tabla 5','p1 = −3.5 + j'+n(wd,4)+' · p2 = −3.5 − j'+n(wd,4)+' · Observación: dominantes; 2º orden puro (no hay más polos).']] };
+
+  const S_ct={k:'ctrl', sec:'V', w:'V · Controlador final', t:'Controlador final y parámetros',
+    q:'El controlador del libro (p<sub>c</sub> = '+n(pc,4)+', K = '+n(Kc,4)+') no cumple el sobrepaso al simular el modelo completo (paso {#verif}). El <b>controlador final</b> es el ajustado del paso {#ajuste}: misma σ, mismo cero en −10 y ζ de diseño mayor.',
+    f:[{l:'Controlador',t:AL(`G_c(s)=\\dfrac{s+10}{s+${f2(pc)}}\\;\\;(\\text{libro})`,`G_c(s)=\\dfrac{s+10}{s+${f2(A.pc)}}\\;\\;(\\text{final})`)},
+       {l:'Tabla 7',h:tb(['Parámetro','Valor obtenido'],[['Libro: p<sub>c</sub> / K',n(pc,4)+' / '+n(Kc,4)],['Ajustado: ζ de diseño',n(zA,4)+' (σ = '+n(sigD,3)+')'],['Ajustado: p<sub>c</sub>',f2(A.pc)],['Ajustado: K',n(A.K,4)]])},
+       {l:'Resultado',res:1,t:`K\\,G_c(s)=\\dfrac{${n(A.K,4)}\\,(s+10)}{s+${f2(A.pc)}}`}],
+    why:'p<sub>c</sub> > z<sub>c</sub> en los dos: el polo queda a la izquierda del cero y la red aporta ángulo positivo (adelanto). El ajustado mueve el punto de diseño a una recta de ζ más amortiguada para que el cero sin cancelar no lleve el sobrepaso arriba del 15 %.',
+    wd:[['Escribe','La ecuación G<sub>c</sub>(s) = (s + 10)/(s + '+f2(A.pc)+') ya viene en el Word (compárala con la tuya).'],['Tabla 7','Columna «Valor obtenido»: '+n(pc,4)+' / '+n(Kc,4)+', '+n(zA,4)+', '+f2(A.pc)+' y '+n(A.K,4)+'.'],['Escribe','Una línea: «El compensador del libro da '+n(mC.os,3)+' % al simular; el final es el ajustado (paso {#ajuste})».']] };
+
+  const S_v12={k:'ver12', sec:'VI', w:'VI · Pasos 1 y 2', t:'Ecuación final, todos los polos y estabilidad',
+    q:'La verificación empieza con el sistema completo: la ecuación característica con la K elegida, <b>todas</b> sus raíces (sin descartar ninguna), Routh con números y la comparación con los polos candidatos. Se hace con los dos diseños: el del libro y el ajustado.',
+    f:[{l:'Ecuación final',t:AL('1+K\\,G_c(s)\\,G(s)=0',`\\text{libro: }s^3+${n(cC.a2,4)}s^2+${n(cC.a1,4)}s+${f1(cC.a0)}=0`,`\\text{ajuste: }s^3+${n(cA.a2,4)}s^2+${n(cA.a1,4)}s+${f1(cA.a0)}=0`)},
+       {l:'Todas las raíces',t:AL(`\\text{libro: }${cpxT(pD)},\\;${n(pS[0],4)}`,`\\text{ajuste: }${cpxT(pDA)},\\;${n(pSA[0],4)}`),n:`Sumas: ${n(sumC,4)} y ${n(sumA,4)} (= −(7 + p<sub>c</sub>)) ✓. Orden 3 = planta (2) + compensador (1): no se descartó ningún modo.`},
+       {l:'Tabla 8',h:tb(['Polo','Libro','Ajustado','Observación'],[['p1',cpxH(pD,3).replace('±','+'),cpxH(pDA,3).replace('±','+'),'Dominante (= s<sub>d</sub>)'],['p2',cpxH(pD,3).replace('±','−'),cpxH(pDA,3).replace('±','−'),'Conjugado de p1'],['p3',n(pS[0],4),n(pSA[0],4),'Real, a '+n(-pS[0]/sigD,2)+'σ / '+n(-pSA[0]/sigD,2)+'σ: no se cancela (paso {#modos})']])},
+       {l:'Tabla 9 · Routh (libro, K = '+n(Kc,1)+')',t:routhT(cC)},
+       {l:'Tabla 9 · Routh (ajuste, K = '+n(A.K,1)+')',t:routhT(cA)},
+       {l:'Rango de K',t:AL(`s^1:\\;\\dfrac{${n(cC.a2,4)}(${n(7*pc,4)}+K)-10K}{${n(cC.a2,4)}}`,`\\;=${n(7*pc,4)}+${n(1-10/cC.a2,4)}K>0\\;\\Rightarrow\\;\\forall K>0`),n:'Con el ajuste: '+n(7*A.pc,4)+' + '+n(1-10/cA.a2,4)+'K > 0, también para todo K > 0.'},
+       {l:'Tabla 10',h:tb(['Polos','Candidato','Obtenido','Dif. (%)'],[['Par dominante (libro)',cpxH(sd,3),cpxH(pD,3),n(dC,2)],['Par dominante (ajustado)',cpxH(A.sd,3),cpxH(pDA,3),n(dA,2)]])},
+       {l:'Resultado',res:1,t:AL('\\text{primera columna }>0\\;\\Rightarrow\\;\\text{estables los dos}','\\text{pares dominantes = candidatos}')}],
+    why:'Los pares complejos caen exactamente donde se diseñaron porque p<sub>c</sub> y K salieron de las condiciones de ángulo y magnitud en s<sub>d</sub>. El problema del diseño del libro no es su ubicación, sino el tercer polo y el cero (paso {#modos}).',
+    vis:[fig('Diseño del libro: los tres polos en lazo cerrado (●) sobre su LGDR y la recta de ζ.',{comp:1,seg:1,locC:1,clC:1,zeta:1,need:19,x0:-30,x1:2}),
+         fig('Diseño ajustado: los tres polos (●) sobre su LGDR (continuo; punteado = libro) y la recta ζd (naranja).',{comp:1,adj:1,seg:1,locC:1,zeta:1,zetaA:1,clA:1,need:19,x0:-30,x1:2})],
+    get:['LGDR en MATLAB',"figure; rlocus(Gc*G); sgrid(zeta, 0); hold on; plot(real(pole(Tc)), imag(pole(Tc)), 'o')"],
+    wd:[['Escribe','<b>VI · Paso 1</b>: «1 + K·G<sub>c</sub>·G = 0 → s³ + '+n(cA.a2,4)+'s² + '+n(cA.a1,4)+'s + '+f1(cA.a0)+' = 0» (ajustado; el del libro, arriba).'],['Tabla 8','p1, p2 = '+cpxH(pD,3)+' y p3 = '+n(pS[0],4)+' (libro) · '+cpxH(pDA,3)+' y '+n(pSA[0],4)+' (ajustado).'],['Tabla 9','s³: 1 | '+n(cA.a1,4)+' · s²: '+n(cA.a2,4)+' | '+f1(cA.a0)+' · s¹: '+n(cA.b1,4)+' | 0 · s⁰: '+f1(cA.a0)+' (ajustado). «Rango de K estable: todo K > 0».'],['Tabla 10','Columna «Obtenido» y «Dif.»: '+cpxH(pD,3)+' ('+n(dC,2)+' %) y '+cpxH(pDA,3)+' ('+n(dA,2)+' %).']] };
+
+  const rowT11={l:'Tabla 11',h:tb(['Polo','Residuo','Lectura'],[[cpxH(pD,3)+' (libro)',n(rDm,4)+' (c/u)','Dominante'],[n(pS[0],4)+' (libro)',n(rSm,4),'Sin cancelar (≈ '+n(100*rSm/rDm,0)+' % del dominante)'],[cpxH(pDA,3)+' (ajustado)',n(rDAm,4)+' (c/u)','Dominante'],[n(pSA[0],4)+' (ajustado)',n(rSAm,4),'Sin cancelar (≈ '+n(100*rSAm/rDAm,0)+' % del dominante)']])};
+  const rowT4={l:'Con K = '+n(K,2),t:`\\begin{array}{c|cc}s^2&1&${n(K,4)}\\\\s^1&7&0\\\\s^0&${n(K,4)}&\\end{array}`,n:'Primera columna 1, 7, '+n(K,4)+': todos positivos. La K de referencia es estable (como cualquier K > 0).'};
+  const rowT6={l:'Tabla 6',h:tb(['Magnitud','Analítico (2.º orden)','Simulación (MATLAB)'],[['%OS (%)','15',n(mU.os,4)],['T<sub>s</sub> (s)',n(Ts2,4),n(mU.ts,4)],['T<sub>p</sub> (s)',n(Tp2,4),n(mU.tp,4)],['e<sub>rampa</sub>(∞)',n(eR,4),n(eUs,4)]]),n:'Al ser 2.º orden puro, %OS y T<sub>p</sub> coinciden; T<sub>s</sub> simulado es un poco mayor porque 4/σ es la cota de la envolvente.'};
+
+  const S_45={k:'sim45', sec:'VII', w:'VII · Pasos 4 y 5', t:'Simulación: especificaciones contra lo obtenido',
+    q:'Con el modelo completo (sin quitar el tercer polo ni el cero) se llena la tabla meta / obtenido / ¿cumple? con los dos diseños, y se simula la rampa para el error.',
+    f:[{l:'Entradas',h:'Escalón unitario (sobrepaso y T<sub>s</sub>). Como dato extra, rampa unitaria (error; no hay especificación de error).'},
+       {l:'Tabla 12',h:tb(['Especificación','Meta','Obtenido','¿Cumple?'],[['%OS (libro)','≤ 15 %',n(mC.os,4)+' %',okOS(mC.os)?'Sí':'No (+'+n(mC.os-OS,2)+')'],['T<sub>s</sub> (libro)','≤ '+n(TsD,4)+' s',n(mC.ts,4)+' s (×'+n(red,3)+')',okTs(mC.ts)?'Sí':'Casi'],['%OS (ajustado)','≤ 15 %',f2(mA.os)+' %',okOS(mA.os)?'Sí':'No'],['T<sub>s</sub> (ajustado)','≤ '+n(TsD,4)+' s',n(mA.ts,4)+' s (×'+n(redA,3)+')',okTs(mA.ts)?'Sí':'Casi']])},
+       {l:'VII · Paso 5 · error simulado',t:AL(`e(3)=${n(eCsim,4)}\\;(\\text{libro}),\\quad ${n(eAsim,4)}\\;(\\text{ajuste})`,`\\dfrac{1}{K_v}=${n(eC,4)}\\;\\text{y}\\;${n(eA,4)}\\;\\checkmark`)},
+       {l:'Resultado',res:1,t:AL(`\\text{libro: }\\%OS=${n(mC.os,3)}\\%>15\\%\\;\\Rightarrow\\;\\text{se ajusta (paso {#ajuste})}`,`\\text{ajuste: }\\%OS=${f2(mA.os)}\\%,\\;T_s=${n(mA.ts,3)}\\text{ s}\\;\\checkmark`)}],
+    vis:[tfig('Error a rampa e(t) = t − c(t) del modelo completo con los dos diseños (zoom cerca del valor final).',cv=>{ const C=cs(); tplot(cv,3,[{...eCs,c:C.c2},{...eAs,c:C.c1}],{ymax:0.08,yl:'e(t)',hl:[[eC,n(eC,4)],[eA,n(eA,4)]],legend:[['libro',C.c2],['ajustado',C.c1]]}); })],
+    wd:[['Tabla 12','Columnas «Obtenido» y «¿Cumple?»: libro '+n(mC.os,4)+' % ✗ y '+n(mC.ts,4)+' s; ajustado '+f2(mA.os)+' % ✓ y '+n(mA.ts,4)+' s ✓ (pon los dos).'],['Escribe','<b>VII · Paso 5</b>: «e(∞) simulado = '+n(eCsim,4)+' (libro) y '+n(eAsim,4)+' (ajustado)» con <code>lsim</code> y una rampa.']] };
+
+  const S_sl={k:'slmano', sec:'VII', sl:1, w:'VII · Simulink y II · 3', t:'Simulink a mano: armar el modelo con bloques',
+    q:'Simulink es una ventana aparte donde el lazo se dibuja con bloques. Así se obtienen las dos figuras de Simulink que pide el Word: el modelo (Figura 1) y lo que muestra el Scope (Figura 10).',
+    f:[{l:'1 · Abrir',h:'En la Command Window escribe <code>simulink</code> (o Home → Simulink) → <b>Blank Model</b>. Guárdalo como <code>P5_modelo.slx</code> en la carpeta de la práctica.'},
+       {l:'2 · Poner bloques',h:'Abre el <b>Library Browser</b> (ícono de cuadritos) y arrastra cada bloque de la lista de abajo. Atajo: haz clic en el lienzo vacío y escribe el nombre del bloque.'},
+       {l:'3 · Parámetros',h:'<b>Doble clic</b> en cada bloque y escribe los valores de la lista (Gain = '+n(A.K,4)+'; G<sub>c</sub>: <code>[1 10]</code>/<code>[1 '+f2(A.pc)+']</code>; G: <code>1</code>/<code>[1 7 0]</code>).'},
+       {l:'4 · Conectar',h:'Arrastra desde la flechita de salida de un bloque hasta la entrada del siguiente: Step → Sum → Gain → G<sub>c</sub> → G → Scope. Para la realimentación, arrastra con <b>clic derecho</b> (o Ctrl + arrastrar) desde la línea de salida hasta la entrada «−» del Sum.'},
+       {l:'5 · Simular',h:'Pon <b>Stop Time = 2</b> (Model Settings → Max step size = 0.001) y pulsa <b>Run ▶</b>. Doble clic en el Scope: ahí se leen el pico y el asentamiento.'},
+       {l:'6 · Libro (opcional)',h:'Cambia Gain a '+n(Kc,4)+' y el denominador de G<sub>c</sub> a <code>[1 '+f2(pc)+']</code> y vuelve a simular: aparece el ≈ '+n(mC.os,2)+' % del diseño del libro.'},
+       {l:'7 · Al Word',h:'Captura del modelo completo → <b>Figura 1</b> (II · 3). Captura del Scope con el diseño final (File → Copy to Clipboard, o Print to Figure) → <b>Figura 10</b> (VII · Modelo en Simulink).'},
+       {l:'Resultado',res:1,t:AL(`\\text{ajuste: }\\%OS=${f2(mA.os)}\\%,\\;T_s=${n(mA.ts,4)}\\text{ s}`,`\\text{libro: }\\%OS=${n(mC.os,4)}\\%,\\;T_s=${n(mC.ts,4)}\\text{ s}`),n:'Iguales a los de los pasos {#verif} y {#reverif}: Simulink y MATLAB resuelven el mismo sistema.'}],
+    blk:C[20].blk, vis:C[20].vis, mlTitle:C[20].mlTitle, ml:C[20].ml, out:C[20].out,
+    wd:[['Figura 1','<b>II · 3</b>: captura del modelo con todos los bloques conectados.'],['Figura 10','<b>VII · Modelo en Simulink</b>: captura del Scope con el diseño final.']] };
+
+  const S_cp={k:'comp', sec:'VIII', w:'VIII · Comparación', t:'Comparación: libro, cálculo analítico y MATLAB',
+    q:'Se ponen lado a lado los valores del libro, los de tus cálculos (condiciones de ángulo y magnitud, 2.º orden) y los de MATLAB (simulación del modelo completo), y se explica cada diferencia.',
+    f:[{l:'Tabla 13',h:tb(['Magnitud','Libro','Analítico','MATLAB'],[['T<sub>s</sub> sin compensar (s)','1.143',n(Ts2,4),n(mU.ts,4)],['p<sub>c</sub>','25.52',n(pc,4),n(pc,4)],['K','476.3',n(Kc,4),n(Kc,4)],['%OS con adelanto (sim.)','no lo reporta','15 (2.º orden)',n(mC.os,4)],['Ajuste p<sub>c</sub> / K','—',f2(A.pc)+' / '+n(A.K,4),f2(A.pc)+' / '+n(A.K,4)+' (fzero)'],['%OS y T<sub>s</sub> ajustado','—','15 / '+n(TsD,4),f2(mA.os)+' / '+n(mA.ts,4)]])},
+       {l:'Resultado',res:1,h:'El compensador coincide con el libro (25.54 vs. 25.52 y 476.2 vs. 476.3: redondeo). El libro sólo da G<sub>c</sub> y K y no verifica el modelo completo; al simularlo, el cero en −10 y el tercer polo suben el sobrepaso a '+n(mC.os,3)+' %. Esa diferencia no es de redondeo.'}],
+    why:'Ideas para la discusión: sin compensar el sistema es un 2.º orden puro, así que analítico y simulación coinciden. Con el adelanto el sistema es de 3er orden con un cero (−10) más cerca del eje que el tercer polo ('+n(pS[0],3)+'): el residuo del tercer polo ('+n(rSm,3)+') no es despreciable y el cero adelanta y levanta el pico. Por eso se ajustó ζ de diseño ('+n(zeta,3)+' → '+n(zA,3)+') y se recuperó el 15 % con T<sub>s</sub> = '+n(mA.ts,3)+' s. El precio: K<sub>v</sub> bajó de '+n(KvC,3)+' a '+n(KvA,3)+'.',
+    wd:[['Tabla 13','Columnas «Analítico» y «MATLAB» (la del libro ya viene llena).'],['Escribe','Discusión: ¿las diferencias son de redondeo o por el polo/cero que la aproximación ignora? ¿Se cumplió todo? (ideas de arriba).']] };
+
+  const S_cn={k:'concl', sec:'IX', w:'IX · Conclusiones', t:'Conclusiones y limitaciones demostradas',
+    q:'Las conclusiones dicen qué se logró, con números, y qué limitación quedó demostrada. Además, cada integrante escribe la suya.',
+    f:[{l:'Idea 1',h:'El adelanto (pasivo, sin circuito activo) reduce T<sub>s</sub> tres veces: de '+n(mU.ts,3)+' s a '+n(mA.ts,3)+' s (×'+n(redA,3)+'), algo que la ganancia sola no podía hacer porque σ = 3.5 es fijo.'},
+       {l:'Idea 2',h:'Con el cero impuesto en −10 la aproximación de 2.º orden falla: el diseño del libro da '+n(mC.os,3)+' % al simular. Se corrigió subiendo ζ de diseño a '+n(zA,3)+' con la misma σ: p<sub>c</sub> = '+f2(A.pc)+', K = '+n(A.K,4)+', '+f2(mA.os)+' %.'},
+       {l:'Idea 3',h:'Limitación demostrada: más amortiguamiento cuesta ganancia: K<sub>v</sub> pasó de '+n(KvC,3)+' a '+n(KvA,3)+' (e<sub>rampa</sub> de '+n(eC,4)+' a '+n(eA,4)+'), aunque sigue siendo mucho mejor que sin compensar ('+n(eR,4)+').'},
+       {l:'Individuales',h:'5–8 líneas por integrante: qué aprendiste, qué fue difícil y qué te dicen los resultados.'},
+       {l:'Resultado',res:1,h:'Tres conclusiones del equipo con números + una conclusión individual por integrante.'}],
+    wd:[['Escribe','<b>IX</b>: las tres ideas, redactadas con tus resultados.'],['Escribe','<b>Conclusiones individuales</b>: debajo del nombre de cada integrante.'],['Escribe','<b>Resumen</b> (al inicio del Word): 5–7 líneas con el sistema, el método y estos números; escríbelo al final.']] };
+
+  const S_ax={k:'anexo', sec:'X', w:'X · Anexo', t:'Anexo: código y cálculos',
+    q:'El punto X junta el código que corriste y los cálculos. Los cálculos van <b>escritos en computadora</b>, no en foto.',
+    f:[{l:'X · A · Archivo ejecutable',h:'La plantilla ya trae el código de la etapa «Código MATLAB» (<code>Practica5_Equipo5.m</code>). Termina la sección «4) Ajuste» con lo del paso {#ajuste} y pega aquí la versión que usaste.'},
+       {l:'X · B · puntoZeta.m',h:'Ya viene en la plantilla. Déjalo si lo usaste (el código de la plantilla lo usa para el punto de referencia, paso {#punto}).'},
+       {l:'X · C · Cálculos',h:'Copia la «Sustitución» y el «Resultado» de los pasos {#lgdr} (asíntotas y ruptura), {#zeta} (ζ), {#punto} y {#mag} (punto y K), {#err} (error), {#pdis} (punto de diseño), {#angd} (ángulo), {#polo} (polo), {#kc} (K), {#neweq} (nueva ecuación) y {#ver5} (error con adelanto) con Insertar → Ecuación. El recuadro de la Figura 11 (fotos) se borra.'},
+       {l:'Resultado',res:1,h:'Código que reproduce las figuras del reporte + los cálculos escritos.'}],
+    wd:[['Pega','<b>X · A</b>: el código que usaste (con el ajuste completo).'],['Escribe','<b>X · C</b>: los cálculos escritos copiados de esos pasos; borra el recuadro de la Figura 11.']] };
+
+  /* orden = el del Word (I → X) */
+  const steps=[S_id,
+    tag(C[0],'plant','II','II · 1, 2 y 3',[['Escribe','<b>II · 1</b>: el enunciado ya viene copiado del libro en la plantilla.'],['Escribe','<b>II · 2 Modelo</b>: G(s) = K/[s(s+7)], G<sub>c</sub>(s) = (s + 10)/(s + p<sub>c</sub>), realimentación unitaria (ya vienen en el Word).'],['Figura 1','<b>II · 3</b>: captura del modelo de Simulink del paso {#slmano} (o dibuja este diagrama).']],{t:'Planteamiento, modelo y diagrama de bloques'}),
+    S_sp,S_kr,
+    tag(C[1],'polos','III','III · Paso 2',[['Tabla 3','Polos de lazo abierto: 0, −7 · Ceros: ninguno · Tipo: 1.']]),
+    tag(C[2],'eccar','III','III · Paso 2',[['Escribe','La ecuación característica s² + 7s + K = 0 ya está en la plantilla: compárala con la tuya (σ = 3.5 fijo).']]),
+    tag(C[3],'lgdr','III','III · Paso 2',[['Escribe','Eje real [−7, 0]; asíntotas σ<sub>a</sub> = −3.5 con ±90°; ruptura en −3.5 (K<sub>b</sub> = '+n(Kb,4)+'); ramas verticales.'],calc('III · Paso 2','Figura 2')]),
+    tag(C[4],'routh','III','III · Paso 3',[['Tabla 4','s²: 1 | K · s¹: 7 | 0 · s⁰: K (con K = '+n(K,2)+': 1, 7, '+n(K,2)+').'],['Escribe','«Rango de K estable: todo K > 0» (el LGDR no cruza el eje jω).']],ins(C[4],rowT4)),
+    tag(C[5],'zeta','III','III · Paso 1 y Evidencia',[['Escribe','<b>III · Paso 1</b>: ζ = '+n(zeta,4)+' → θ = '+f2(thz)+'°.'],['Figura 3','<b>III · Evidencia</b>: LGDR inicial con la recta de ζ → <code>figure; rlocus(G); sgrid(0.517, 0)</code>.'],calc('III · Paso 1')]),
+    tag(C[6],'punto','III','III · Paso 1',[['Escribe','<b>III · Paso 1</b>: s<sub>0</sub> = −3.5 ± j'+n(wd,4)+' (ω<sub>n</sub> = 3.5/'+n(zeta,4)+' = '+n(wn,4)+').'],calc('III · Paso 1')]),
+    tag(C[7],'mag','III','III · Paso 1',[['Escribe','<b>III · Paso 1</b>: «K de referencia = '+n(K,4)+'» = '+n(dist[0],4)+' · '+n(dist[1],4)+' = ω<sub>n</sub>².'],calc('III · Paso 1')]),
+    S_t5,
+    tag(C[8],'trans','III','III · Paso 5 y Evidencia',[['Escribe','<b>III · Paso 5</b> (inciso a): T<sub>s</sub> = 4/3.5 = '+n(Ts2,4)+' s, T<sub>p</sub> = '+n(Tp2,4)+' s, %OS = 15 %.'],['Figura 4','<b>III · Evidencia</b>: respuesta al escalón → <code>Tu = feedback(K*G,1); step(Tu, 2); stepinfo(Tu)</code>.'],['Tabla 6','«Analítico»: 15, '+n(Ts2,4)+', '+n(Tp2,4)+' · «Simulación»: '+n(mU.os,4)+' %, '+n(mU.ts,4)+' s, '+n(mU.tp,4)+' s.']]),
+    tag(C[9],'err','III','III · Paso 5 y Evidencia',[['Escribe','<b>III · Paso 5</b>: K<sub>v</sub> = '+n(Kv,4)+', e<sub>rampa</sub>(∞) = '+n(eR,4)+'.'],['Tabla 6','Fila «e<sub>rampa</sub>(∞)»: '+n(eR,4)+' (simulación: '+n(eUs,4)+'). Arriba está la tabla completa.'],calc('III · Paso 5')],ins(C[9],rowT6)),
+    tag(C[10],'pdis','IV','IV · a)',[['Escribe','<b>IV · a)</b>: T<sub>s,d</sub> = '+n(TsD,4)+' s → σ = '+n(sigD,4)+', ω<sub>d</sub> = '+n(sigD,4)+' · tan '+f2(thz)+'° = '+n(wdD,4)+' → s<sub>d</sub> = '+cpxH(sd,4)+'; no está en el LGDR original.'],calc('IV · a)')]),
+    tag(C[11],'angd','IV','IV · b)',[['Escribe','<b>IV · b)</b>: '+f2(B.aZ)+'° − '+f2(B.aP[0])+'° − '+f2(B.aP[1])+'° = '+f2(B.aSin)+'°; el polo debe restar '+f2(B.thp)+'°.'],calc('IV · b)')]),
+    tag(C[12],'polo','IV','IV · c)',[['Escribe','<b>IV · c)</b>: p<sub>c</sub> = '+n(sigD,4)+' + '+n(wdD,4)+'/tan '+f2(B.thp)+'° = '+n(pc,4)+' (libro: 25.52).'],['Figura 5','Construcción geométrica del polo: captura esta figura (o escribe el triángulo con tus números y borra el recuadro).'],calc('IV · c)')]),
+    tag(C[13],'kc','IV','IV · d)',[['Escribe','<b>IV · d)</b>: K = '+n(B.dP[0],4)+' · '+n(B.dP[1],4)+' · '+n(B.dP[2],4)+' / '+n(B.dZ,4)+' = '+n(Kc,4)+' (libro: 476.3).'],calc('IV · d)')]),
+    tag(C[14],'neweq','IV','IV · e)',[['Escribe','<b>IV · e)</b>: s³ + '+n(7+pc,4)+'s² + ('+n(7*pc,4)+' + K)s + 10K = 0 (ya viene); tercer polo −'+n(7+pc,4)+' − 2(−'+n(sigD,4)+') = '+n(p3c,4)+'; Routh: estable para todo K > 0.'],['Figura 6','LGDR compensado con la recta de ζ → <code>rlocus(Gc*G); sgrid(0.517,0)</code>.'],calc('IV · e)')]),
+    S_ct,
+    S_v12,
+    tag(C[15],'modos','VI','VI · Paso 3',[['Tabla 11','Polo | residuo | lectura: '+cpxH(pD,3)+' → '+n(rDm,3)+' (c/u), dominante · '+n(pS[0],4)+' → '+n(rSm,3)+', sin cancelar (y lo mismo con el ajustado: '+n(pSA[0],3)+' → '+n(rSAm,3)+').'],['Escribe','«Conclusión: …» = el tercer polo está a sólo '+n(-pS[0]/sigD,2)+'σ y el cero −10 queda más cerca del eje que él: no hay cancelación y la aproximación de 2.º orden no es válida; hay que verificar con el modelo completo.']],
+      Object.assign({t:'Modos y residuos: ¿vale la aproximación de polos dominantes?'},ins(C[15],rowT11),
+        {vis:[...C[15].vis,tfig('Diseño del libro: respuesta con todos los modos (azul) y sólo con el par dominante (gris). El modo del tercer polo y el cero cambian la forma de la respuesta: no se pueden ignorar.',cv=>{ const C=cs(), M=modeC(); tplot(cv,1,[{t:sC.t,y:M.nos,c:C.c0,dash:[6,4]},{t:sC.t,y:M.tot,c:C.c1}],{hl:[[1,'c(∞)'],[1.15,'15 %']],legend:[['todos los modos',C.c1],['sin el modo p3',C.c0,[6,4]]]}); })]})),
+    tag(C[19],'ver5','VI','VI · Paso 5',[['Escribe','«K<sub>p</sub> / K<sub>v</sub> = K<sub>p</sub> = ∞, K<sub>v</sub> = 10K/(7p<sub>c</sub>) = '+n(KvC,4)+' (libro) y '+n(KvA,4)+' (ajustado)».'],['Escribe','«e(∞) = 0 al escalón; '+n(eC,4)+' y '+n(eA,4)+' a rampa».'],calc('VI · Paso 5')],
+      {t:'Error estacionario analítico (verificación)',q:'Se calcula el error con la constante de velocidad como parte de la verificación, con los dos diseños (el ajustado sale del paso {#ajuste}). El sistema sigue siendo tipo 1: error cero al escalón y finito a rampa.',
+       why:'<b>Advertencia de la guía</b> (ya viene en el Word): la apariencia acotada de una simulación no demuestra estabilidad, y una cancelación no justifica ignorar modos inestables. Por eso se revisaron todos los polos (paso {#ver12}) y sus residuos (paso {#modos}) antes de concluir.'}),
+    tag(C[16],'verif','VII','VII · Paso 4',[['Figura 7','<b>VII · Paso 4</b>: escalón sin compensar vs. con adelanto del libro → <code>step(Tu, Tc, 2); grid on; legend(\'sin comp.\',\'adelanto\')</code>.'],['Figura 8','Captura de la Command Window con <code>pole(Tc)</code>, <code>zero(Tc)</code> y <code>stepinfo(Tc)</code> (salida esperada: pasos {#modos} y este).']],{t:'Verificación con el modelo completo (diseño del libro)'}),
+    S_45,
+    tag(C[17],'ajuste','VII','VII · Paso 6',[['Escribe','<b>VII · Paso 6</b>: «El diseño del libro da '+n(mC.os,3)+' % (no cumple). Con σ = '+n(sigD,3)+' y el cero en −10 se buscó la ζ que da 15 % (bisección / <code>fzero</code>) → ζ<sub>d</sub> = '+n(zA,4)+', p<sub>c</sub> = '+f2(A.pc)+', K = '+n(A.K,4)+'».'],['Escribe','Si quieres, copia la tabla de pruebas (ζ, p<sub>c</sub>, K, %OS) como justificación.']]),
+    tag(C[18],'reverif','VII','VII · Paso 6',[['Escribe','«Repetida la verificación: polos '+cpxH(pDA,3)+' y '+n(pSA[0],3)+', estable para todo K, '+f2(mA.os)+' % y T<sub>s</sub> = '+n(mA.ts,4)+' s ✓».'],['Figura 9','Escalón con el adelanto ajustado → <code>Gc2 = (s+10)/(s+'+f2(A.pc)+'); Tc2 = feedback('+n(A.K,4)+'*Gc2*G,1); step(Tc2); stepinfo(Tc2)</code>.']]),
+    S_sl,S_cp,S_cn,S_ax];
+
+  /* {#clave} → número de paso */
+  const NUM={}; steps.forEach((s,i)=>NUM[s.k]=i+1);
+  const R=v=>typeof v==='string'?v.replace(/\{#(\w+)\}/g,(x,k)=>NUM[k]||x):v;
+  steps.forEach(s=>{ ['q','why','t','blk'].forEach(p=>s[p]=R(s[p]));
+    if(s.f) s.f=s.f.map(r=>({...r,l:R(r.l),h:R(r.h),n:R(r.n),t:R(r.t)}));
+    if(s.wd) s.wd=s.wd.map(([a,b])=>[a,R(b)]);
+    if(s.vis) s.vis=s.vis.map(v=>({...v,cap:R(v.cap)}));
+    if(s.ml) s.ml=s.ml.map(([c,e])=>[c,R(e)]); });
+  return {title:'Práctica 5 · cómo se resuelve (en el orden del reporte)',
+    rl:{r:NUM.lgdr,z:NUM.zeta,s:[[1,'G',''],[NUM.polo,'G, Gc*G','Transfer Fcn adelanto'],[NUM.reverif,'Gc2*G','Transfer Fcn adelanto (ajustado)']]},
+    intro:'Los pasos siguen los puntos I–X del Word del reporte. Cada uno trae la etiqueta verde <b>«Word · …»</b> (dónde va), el recuadro <b>«Para el Word»</b> (qué escribir y qué tabla o figura llenar), la fórmula con los números de la práctica, la gráfica y el MATLAB de ese paso. Los cálculos se escriben en computadora: copia la «Sustitución» y el «Resultado» de cada paso.',
     steps};
 };
 
