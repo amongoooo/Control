@@ -265,7 +265,11 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   **Deshacer salto ↩** (v21): botón `[data-undoex]` en la cabecera de la evaluación I/II, visible solo si está saltada y no aprobada;
   también dos toques; borra `ST.skip[r]` y vuelve a bloquear la parte siguiente. `isUnlocked` ahora es recursivo (deshacer I
   bloquea también la III). Probado a 390×844.
-  Los candados por sección dentro de cada parte siguen igual.
+  **Desbloquear sección ⏭** (v33): cada sección bloqueada de Teoría muestra bajo su encabezado la fila `.sskr` («🔒 Completa la
+  sección n o ábrela ya:» + `[data-sskip]`), dos toques (`twoTap`). Guarda `ST.skip['s:<id>']=true` (se sincroniza igual) y
+  `secUnlocked` lo acepta; la abre con la animación `sunlock`. Abierta así (y con la anterior sin completar) la fila dice
+  «Abierta sin completar…» con `[data-sundo]` «Volver a bloquear ↩» (solo visible con la sección abierta, clase `.sskd`).
+  Las partes II/III se siguen desbloqueando con «Saltar evaluación».
 - **Ojo al actualizar desde el artefacto:** si se vuelve a copiar el artefacto de claude.ai, se pierde el
   rediseño. Hay que reaplicarlo o pasar el rediseño al artefacto.
 - **Hecho (v21): Prácticas según la guía** (`Guia_practicas_compensadores_LGDR.pdf`, 2 páginas: procedimiento obligatorio

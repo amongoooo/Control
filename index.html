@@ -171,6 +171,11 @@ details.code summary span{font:400 13px var(--f-body);color:var(--muted)}
 .tsec.sunlock .acchb .sst::before{content:"🔓 ¡Desbloqueada! ";color:var(--ok);font-weight:600}
 .unlk{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--ok-soft);border-radius:9px;padding:10px 12px;font-size:13.5px;animation:accopen .5s ease}
 .unlk-i{font-size:20px} .unlk b{color:var(--ok)}
+.sskr{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:0 16px 13px calc(28px + 1.9em);font-size:13.5px;color:var(--muted)}
+.sskr .btn{min-height:34px}
+.tsec.sskd:not(.open)>.sskr{display:none}
+.tsec.open>.sskr{padding-bottom:4px}
+@media (max-width:520px){.sskr{padding:0 12px 12px}}
 .toc li.slocked a{color:var(--muted);opacity:.6} .toc li.slocked a::after{content:" 🔒";font-size:10px}
 @media (max-width:520px){.acchb{font-size:16px;padding:12px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:'num ttl chev' '. sm sm' '. sst sst';row-gap:4px}.acchb .num{grid-area:num}.acchb .ttl{grid-area:ttl}.acchb .chev{grid-area:chev;align-self:start;padding-top:3px}.acchb small{grid-area:sm}.acchb .sst{grid-area:sst;margin-left:0}.accb{padding:2px 12px 14px}.unlk{grid-template-columns:auto minmax(0,1fr)}.unlk .btn{grid-column:2;justify-self:start}}
 @media (prefers-reduced-motion:reduce){.accb.opening,.tsec.nudge,.tsec.sunlock,.tsec.sunlock .acchb .num,.unlk{animation:none}}
@@ -1488,7 +1493,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
       <span class="brand-tx"><b>Laboratorio LGDR</b><small>Control · Nise cap. 8–9</small></span>
     </a>
     <button type="button" class="abpill" id="abProg" hidden><span class="ring" aria-hidden="true"></span><span class="abpl">Teoría</span><span class="abpv">0 %</span></button>
-    <span class="abver" id="abVer" title="Versión del 3/11/2026, 21:42 (hora del centro de México)">v1.3.11.2142</span>
+    <span class="abver" id="abVer" title="Versión del 3/11/2026, 22:23 (hora del centro de México)">v1.3.11.2223</span>
     <button type="button" class="abicon" id="abSync" aria-label="Sincronizar progreso entre dispositivos" title="Sincronizar progreso"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.4-4.7L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.4 4.7L20 16"/><path d="M20 20.5V16h-4.5"/></svg></button>
     <button type="button" class="abicon" id="abTheme" aria-label="Cambiar modo claro u oscuro"><svg class="ic-moon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
     <button type="button" class="abicon" id="abFull" aria-label="Pantalla completa" title="Pantalla completa" aria-pressed="false"><svg class="ic-fs" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="ic-fsx" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
@@ -5276,7 +5281,15 @@ const secIds=()=>PARTS.flatMap(P=>P.ids);
 const secTotal=id=>(CHK[id]||[]).length;
 const secDone=id=>solvedIn(id)>=secTotal(id);
 const partOf=id=>PARTS.find(P=>P.ids.includes(id));
-function secUnlocked(id){ const P=partOf(id); if(!P||!isUnlocked(P.r)) return false; const i=P.ids.indexOf(id); return i===0||secDone(P.ids[i-1]); }
+function secUnlocked(id){ const P=partOf(id); if(!P||!isUnlocked(P.r)) return false; const i=P.ids.indexOf(id); return i===0||secDone(P.ids[i-1])||!!ST.skip['s:'+id]; }
+/* desbloquear una sección sin completar la anterior (como «Saltar evaluación»: dos toques, se guarda en ST.skip['s:<id>']) */
+function twoTap(b,msg,fn){ b.addEventListener('click',e=>{ e.stopPropagation(); if(!b.classList.contains('sure')){ b.classList.add('sure'); b.dataset.txt=b.textContent; b.textContent=msg;
+    clearTimeout(b._t); b._t=setTimeout(()=>{ b.classList.remove('sure'); b.textContent=b.dataset.txt; },4000); return; }
+    clearTimeout(b._t); b.classList.remove('sure'); b.textContent=b.dataset.txt; fn(); }); }
+function skipSec(id){ if(secUnlocked(id)||!isUnlocked(partOf(id).r)) return; ST.skip['s:'+id]=true; save(); applySecLocks(false); renderProgress();
+  const art=document.getElementById(id); if(art){ art.classList.remove('sunlock'); void art.offsetWidth; art.classList.add('sunlock'); setTimeout(()=>art.classList.remove('sunlock'),2600); }
+  openSection(id,true); }
+function undoSec(id){ if(!ST.skip['s:'+id]) return; delete ST.skip['s:'+id]; save(); applySecLocks(false); renderProgress(); }
 function buildAccordion(){
   secIds().forEach(id=>{ const art=document.getElementById(id); if(!art||art.classList.contains('acc')) return; const h=art.querySelector('.th');
     const body=document.createElement('div'); body.className='accb'; body.id=id+'-body'; body.hidden=true;
@@ -5286,6 +5299,9 @@ function buildAccordion(){
     const tt=document.createElement('span'); tt.className='ttl'; [...b.childNodes].filter(n=>n!==num&&!(n.nodeType===1&&n.tagName==='SMALL')).forEach(n=>tt.appendChild(n)); b.insertBefore(tt,b.querySelector('small')||null);
     b.insertAdjacentHTML('beforeend','<span class="sst" data-sst></span><span class="chev" aria-hidden="true">▾</span>');
     h.appendChild(b); art.classList.add('acc');
+    const sk=document.createElement('div'); sk.className='sskr'; sk.hidden=true;
+    sk.innerHTML=`<span class="sskt" data-sskt></span><button type="button" class="btn skipex sm" data-sskip="${id}">Desbloquear sección ⏭</button><button type="button" class="btn skipex sm" data-sundo="${id}" hidden>Volver a bloquear ↩</button>`;
+    art.insertBefore(sk,body); twoTap(sk.querySelector('[data-sskip]'),'¿Seguro? Toca otra vez para abrirla',()=>skipSec(id)); twoTap(sk.querySelector('[data-sundo]'),'¿Seguro? Toca otra vez para bloquearla',()=>undoSec(id));
     b.addEventListener('click',()=>{ if(OPEN===id) closeSection(id); else openSection(id,true); }); });
   applySecLocks(false);
   let o=null; try{ o=localStorage.getItem(OKEY); }catch(e){}
@@ -5313,6 +5329,9 @@ function applySecLocks(detect){
     art.querySelector('[data-sst]').innerHTML=!un?`<span class="slk">🔒</span><span class="swhy">Completa la sección ${prev?secNum(prev):''} (Comprueba ${prev?solvedIn(prev):0}/${prev?secTotal(prev):3}) para abrirla</span>`
       :dn?'<span class="sok">✓ Completa</span>':`${seg(n,t)}<span>${n}/${t}</span>`;
     document.querySelectorAll(`.toc [data-goto="${id}"]`).forEach(a=>a.closest('li').classList.toggle('slocked',!un));
+    const sk=art.querySelector(':scope>.sskr'); if(sk){ const skd=un&&prev&&!secDone(prev)&&!!ST.skip['s:'+id]; art.classList.toggle('sskd',skd); sk.hidden=!(!un||skd);
+      sk.querySelector('[data-sskip]').hidden=un; sk.querySelector('[data-sundo]').hidden=!skd;
+      sk.querySelector('[data-sskt]').textContent=!un?`🔒 Completa la sección ${prev?secNum(prev):''} o ábrela ya:`:skd?`⏭ Abierta sin completar la sección ${secNum(prev)}.`:''; }
     if(!un&&OPEN===id) closeSection(id); });
   if(detect&&SDONE){ const fresh=secIds().filter(id=>now[id]&&!SDONE[id]);
     if(fresh.length===1){ const id=fresh[0], art=document.getElementById(id), P=partOf(id), i=P.ids.indexOf(id), prev=i>0?P.ids[i-1]:null;
