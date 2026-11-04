@@ -523,7 +523,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (Insertar → Ecuación) y borrar esos recuadros. La plantilla de Word NO se cambió (el usuario pidió dejarla así). Lo de cómo
   escribir el código en MATLAB (paso 1, «Simulink por código») se deja como está.
 
-- **P2–P7 (en curso, una práctica a la vez; P2 lista → v35):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
+- **P2–P7 (en curso, una práctica a la vez; P2 → v35, P3 → v36):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
   cada cosa», sin «Simulink por código», sin la línea «dónde pegar el código» ni el script completo del anexo). Lo de MATLAB que ya
   tenían los pasos se deja como está.
 
@@ -544,6 +544,17 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `plantillas/Reporte_P2_Equipo_5.docx` (Fig. 2 y 9 = fotos de cálculos → se borran). `pz` de P2 ganó la opción `k1` (polos con K = 1).
 - Probado con Playwright a 390 y 1280/1500 px, claro y oscuro: 30 pasos, grupos I…X, «Para el Word» en todos, sin errores de KaTeX ni de
   consola, sin `{#…}` sin resolver; P1 sin cambios. PDF regenerado (201 págs.).
+
+## Hecho (v36): Resolución paso a paso de P3 en el orden del reporte en Word
+
+- Mismo patrón que P2 (v35). P3 = 30 pasos: I(1) · II(2–3) · III(4–13: K ref, polos, ec., LGDR, Routh, ζ, punto, magnitud,
+  transitorio, error a rampa) · IV(14–19: a = «¿basta subir K?» + atraso 20, b dipolo, c ecuación, d re‑búsqueda, e mejora) · V(20) ·
+  VI(21 ecuación/Routh/candidato, 22 = paso original «Polos y residuos» como VI·3, 23 error) · VII(24 verificación, 25 tabla 12,
+  26 ajuste 0.02/0.001 = VII·6, 27 Simulink a mano con Step → Ramp y variante) · VIII(28) · IX(29) · X(30). Tablas 1–13 y Figuras 1–12
+  de `plantillas/Reporte_P3_Equipo_5.docx` (Fig. 2 y 12 = fotos de cálculos → se borran). `pz` de P3 ganó `k1`.
+- Tabla 12 con el diseño 0.2/0.01 (18.31 % ✗, e 0.00784 «casi», ×19.48) y la variante en una fila aparte (15.33 %, ×19.95).
+- El resolvedor de `{#clave}` ahora también resuelve las etiquetas `l` de las fórmulas (P1–P3).
+- Probado igual que P2 (390/1280/1500, claro/oscuro, sin errores); PDF 208 págs.
 
 
 ## Otros artefactos del usuario (galería de claude.ai)
