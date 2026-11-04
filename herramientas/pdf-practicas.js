@@ -148,6 +148,9 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       .pdfcv{display:block;width:100%;height:auto}
       .pdfp .pasos,.pdfp .psbody,.pdfp .pstep{display:block!important}
       .pdfp .pstep>*+*{margin-top:10px}
+      .pdfp .psgrid,.pdfp .psA,.pdfp .psB,.pdfp .psf{display:block!important}
+      .pdfp .psA>*+*,.pdfp .psB>*+*,.pdfp .psgrid>*+*{margin-top:10px}
+      .pdfp .psf>*+*{margin-top:8px}
       .psh{break-after:avoid}
       .pdfp .pasos .psfig{width:60%}
       .pdfp .pasos .psfig{break-inside:avoid}

@@ -581,7 +581,22 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   de raíces, la **Tabla 5 llena** (p1, p2 dominantes con ζ y ωn; p3 a 3.92σ, no despreciable) y MATLAB `roots([1 12 44 48+45.53])`
   + `sum(p)` (sin usar la variable K, porque en el script completo K se calcula después). El paso del tercer polo ahora dice
   «Tabla 5: ya se llenó en el paso {#clref}». P1 = 30 pasos. Probado a 390 y 1280 px; PDF regenerado.
-- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36); **sigue P4** (luego P5, P6, P7).
+- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39); **sigue P5** (luego P6, P7).
+
+## Hecho (v39): Resolución paso a paso de P4 en el orden del reporte en Word
+
+- Mismo patrón que P2/P3 (v35/v36), sin lo de MATLAB de P1. Los 21 pasos originales pasan a `const C=[…]`. P4 = 30 pasos:
+  I(1) · II(2 plant, 3 specs) · III(4 kref con K = 1 → −0.042/−3.878/−6.079, 5 polos, 6 ec., 7 LGDR, 8 Routh + fila «Con K = 43.38»
+  (s¹ = 19.66), 9 ζ, 10 punto, 11 magnitud, 12 `clref` Tabla 5 con Observación, 13 transitorio, 14 error + Tabla 6 completa) ·
+  IV(15 a pdis, 16 b angd, 17 c cero = Figura 5, 18 d kc, 19 e neweq + fila «Tercer polo» −2.773 = Figura 6, 20 f errc = paso
+  original del error con PD) · V(21 `ctrl` = paso original «forma de ganancias» + Tabla 7) · VI(22 `ver12`: Tablas 8, 9 (Routh con
+  K = 47.47: 1|71.47, 10|142.6, 57.21|0) y 10, 23 `modos` = paso original de residuos + Tabla 11 + gráfica «sin el modo p3», 24 `ver5`) ·
+  VII(25 verif = Figuras 7 y 8, 26 `sim45` Tabla 12 + error simulado + «no hizo falta ajuste», 27 Simulink a mano = Figuras 1 y 9) ·
+  VIII(28 Tabla 13) · IX(29) · X(30; Figuras 2 y 10 = fotos → se borran). `pz` de P4 ganó `k1`.
+- Revisado contra `plantillas/Reporte_P4_Equipo_5.docx`: Tablas 1–13 y Figuras 1–10 tienen su paso con la solución.
+- **PDF:** `herramientas/pdf-practicas.js` ahora pone `.psgrid/.psA/.psB/.psf` en `display:block` (la fragmentación de grid de Chromium
+  encimaba el recuadro «Para el Word» con el «Resultado» en un salto de página; se recuperaron 7 recuadros en P1–P7). PDF: 218 págs.
+- Probado a 390, 1280 y 1500 px (oscuro): 30 pasos, sin `{#…}`, sin errores de KaTeX ni de consola, sin desbordes.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
