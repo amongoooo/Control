@@ -441,6 +441,12 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (el Reporte copia el recuadro con `outerHTML`). Ojo: `figure.bkq>figcaption` (con `>`) para no afectar al pie del diagrama.
 - PDF regenerado (179 págs.).
 
+## Hecho (v29): versión en la barra superior
+
+- `span.abver#abVer` justo después de `#abProg` (anillo de Teoría): `v1.día.mes.horaminuto` con la **hora del centro de México**
+  (p. ej. `v1.3.11.1503` = 3 de noviembre, 15:03); `title` con la fecha completa. Mono 11 px (9.5 px en ≤ 430 px); oculto al imprimir.
+- **Antes de cada commit que cambie `index.html`, correr `sh herramientas/version.sh`** (sella la hora actual) y luego hacer el commit.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
