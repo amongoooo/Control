@@ -523,6 +523,10 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (Insertar → Ecuación) y borrar esos recuadros. La plantilla de Word NO se cambió (el usuario pidió dejarla así). Lo de cómo
   escribir el código en MATLAB (paso 1, «Simulink por código») se deja como está.
 
+- **P2–P7 (pendiente):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
+  cada cosa», sin «Simulink por código», sin la línea «dónde pegar el código» ni el script completo del anexo). Lo de MATLAB que ya
+  tenían los pasos se deja como está.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
