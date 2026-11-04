@@ -523,7 +523,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (Insertar → Ecuación) y borrar esos recuadros. La plantilla de Word NO se cambió (el usuario pidió dejarla así). Lo de cómo
   escribir el código en MATLAB (paso 1, «Simulink por código») se deja como está.
 
-- **P2–P7 (en curso, una práctica a la vez; P2 → v35, P3 → v36):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
+- **P2–P7 (terminado; P2 → v35, P3 → v36, P4 → v39, P5 → v40, P6 → v41, P7 → v42):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
   cada cosa», sin «Simulink por código», sin la línea «dónde pegar el código» ni el script completo del anexo). Lo de MATLAB que ya
   tenían los pasos se deja como está.
 
@@ -581,7 +581,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   de raíces, la **Tabla 5 llena** (p1, p2 dominantes con ζ y ωn; p3 a 3.92σ, no despreciable) y MATLAB `roots([1 12 44 48+45.53])`
   + `sum(p)` (sin usar la variable K, porque en el script completo K se calcula después). El paso del tercer polo ahora dice
   «Tabla 5: ya se llenó en el paso {#clref}». P1 = 30 pasos. Probado a 390 y 1280 px; PDF regenerado.
-- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39), P5 (v40), P6 (v41); **sigue P7**.
+- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36), P4 (v39), P5 (v40), P6 (v41) y P7 (v42): **terminada**.
 
 ## Hecho (v39): Resolución paso a paso de P4 en el orden del reporte en Word
 
@@ -625,6 +625,22 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   con T_p/T_s analíticos del par re‑buscado) · IX(31) · X(32; Figura 10 = fotos → se borra). `pz` de P6 ganó `k1`.
 - Revisado contra `plantillas/Reporte_P6_Equipo_5.docx`: Tablas 1–13 y Figuras 1–10 tienen su paso con la solución.
 - Probado a 390 y 1280 px (claro/oscuro): 32 pasos, sin `{#…}`, sin errores de KaTeX ni de consola; P5 y P7 sin cambios. PDF: 235 págs.
+
+## Hecho (v42): Resolución paso a paso de P7 en el orden del reporte en Word
+
+- Mismo patrón (v35–v41), sin lo de MATLAB de P1. Los 20 pasos originales pasan a `const C=[…]` (Simulink = `C[19]`). P7 = 30 pasos:
+  I(1) · II(2 plant = Figura 1, 3 specs = Tabla 2) · III(4 kref con K = 1 → −6.854/−0.146, 5 polos = Tabla 3 + ecuación + reglas (Figura 2 →
+  se borra), 6 Routh + fila «Con K = 58.93» = Tabla 4, 7 ζ = Figura 3, 8 punto = K de referencia, 9 `clref` nuevo = Tabla 5, 10 inciso a) =
+  Figura 4, 11 inciso b) = Figura 5 + Tabla 6 completa con K<sub>v</sub>) · IV(12 a pdis, 13–14 b angd/polo, 15 b y c `kad`, 16 d atraso, 17 e `eqf` =
+  Figura 6, 18 e rebus) · V(19 `ctrl` = Tabla 7) · VI(20 `ver12`: Tablas 8, 9 (Routh de 4.º orden de los dos diseños y rango de K con K libre) y
+  10, 21 `modos` = Tabla 11 + gráfica «sólo el par dominante», 22 `ver5` = paso original «Error a rampa» + advertencia) · VII(23 verif =
+  Figuras 7 y 9, 24 `sim45` = Figura 8 + Tabla 12 + error simulado, 25 ajuste, 26 reverif = Figura 10, 27 Simulink a mano = Figuras 1 y 11) ·
+  VIII(28 Tabla 13) · IX(29) · X(30; Figura 12 = fotos → se borra). `pz` de P7 ganó `k1`.
+- **T<sub>s</sub> del libro unificado:** `TT.metrics` daba 0.6295 s y la tabla de pruebas 0.627 s (el valor del Word). Ahora `mB.ts` y `mA.ts` salen de
+  `tsOf` (banda de 2 % con paso de 1 ms): 0.627 y 0.569 en toda la Resolución. Con la suma exacta de modos da 0.6263 y 0.5683, así que MATLAB
+  puede mostrar eso (diferencia en el 3.er decimal).
+- Revisado contra `plantillas/Reporte_P7_Equipo_5.docx`: Tablas 1–13 y Figuras 1–12 tienen su paso con la solución.
+- Probado a 390 (claro/oscuro) y 1280 px: 30 pasos, sin `{#…}`, sin errores de KaTeX ni de consola; P5 y P6 sin cambios. PDF: 245 págs.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
