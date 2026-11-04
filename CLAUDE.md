@@ -17,6 +17,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   4. el **prompt** listo para copiar y pegar, escrito con cortesía ("por favor").
 - **No cambiar la plantilla de Word** (`plantillas/*.docx`, `herramientas/plantilla-reportes.js`, `herramientas/plantilla/datos.js`)
   ni `reportes.pdf`: el usuario pidió dejarlos como están. La Resolución paso a paso se adapta al Word, no al revés.
+  (Excepción pedida por el usuario, v43: `reportes.pdf` ahora es **su** Word resuelto convertido a PDF; cambiarlo solo si sube otro.)
 - El usuario muchas veces trabaja **solo desde el celular**: evitar pasos que requieran terminal o computadora;
   hacer todo lo posible desde la sesión en la nube.
 
@@ -500,7 +501,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - **Cuando el usuario suba su PDF de reportes P1–P7:** `python3 -I herramientas/reportes-pdf.py <pdf-subido>` → lo copia a
   `reportes.pdf` y reescribe `REP_PDF` buscando la portada de cada práctica («Práctica N» como renglón + «Tecnológico»; si no la
   encuentra, esa práctica abre al inicio). Luego `sh herramientas/version.sh`, commit y push a `main`.
-- Mientras no suba uno, `reportes.pdf` es la plantilla de Word (v31) convertida a PDF (64 págs.; P1 empieza en la 2).
+- Hasta v42, `reportes.pdf` era la plantilla de Word (v31) convertida a PDF; desde v43 es el Word resuelto del usuario (ver v43).
 
 ## Hecho (v34): Resolución paso a paso de P1 en el orden del reporte en Word + dónde va el código
 
@@ -641,6 +642,20 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   puede mostrar eso (diferencia en el 3.er decimal).
 - Revisado contra `plantillas/Reporte_P7_Equipo_5.docx`: Tablas 1–13 y Figuras 1–12 tienen su paso con la solución.
 - Probado a 390 (claro/oscuro) y 1280 px: 30 pasos, sin `{#…}`, sin errores de KaTeX ni de consola; P5 y P6 sin cambios. PDF: 245 págs.
+
+## Hecho (v43): «PDF de reportes» = Word resuelto del usuario
+
+- El usuario subió `Reporte_P1-P7_resuelto.docx` (su Word con P1–P7 resueltas, 948 ecuaciones) y pidió ponerlo como PDF en el
+  apartado «PDF de reportes» (botón `[data-rp-pdf]` de la ventana del Reporte, v32). `reportes.pdf` = ese Word en PDF (123 págs.);
+  `REP_PDF={p1:2,p2:17,p3:34,p4:51,p5:69,p6:86,p7:105}`. El .docx no se subió al repositorio (solo el PDF).
+- **Conversión:** LibreOffice (`soffice --headless --convert-to pdf`) necesita `apt-get install libreoffice-math` (antes `apt-get
+  update`), si no, las ecuaciones salen en blanco. Además su importador OMML pone «¿» con: `#`, corchetes sueltos `(−∞, −6]`, la palabra
+  `sim` (palabra clave de StarMath), un `=`/`+`/`<` sin término a la izquierda y celdas vacías de matrices (`<m:e/>`, arreglos de Routh).
+  `python3 -I herramientas/docx-ecuaciones.py entrada.docx salida.docx` arregla una **copia** (corridas → texto normal `m:nor`, cada
+  corchete en su propia corrida, celdas vacías con un espacio); luego convertir `salida.docx` y correr
+  `python3 -I herramientas/reportes-pdf.py salida.pdf`. Comprobar con `pdftotext rep.pdf - | grep "¿" | grep -v "?"` (debe salir vacío).
+- La P7 en el orden del Word ya estaba hecha (v42); se volvió a revisar contra `plantillas/Reporte_P7_Equipo_5.docx`: Tablas 1–13 y
+  Figuras 1–12 con su paso, 30 pasos, sin `{#…}` ni errores de consola. `practicas.pdf` ya estaba regenerado con v42.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
