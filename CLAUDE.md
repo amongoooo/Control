@@ -506,7 +506,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 
 - Pedido: que la solución de P1 incluya todos los pasos del Word (plantilla v31) para llenarlo y entender, y pasos que digan dónde
   pegar el código de MATLAB y en qué se diferencia de Simulink.
-- `PASOS.p1` ahora tiene **29 pasos**: los 16 de cálculo originales están en `const C=[…]` y se reacomodan en `steps` (con `tag()`) junto
+- `PASOS.p1` ahora tiene **29 pasos** (30 desde v38): los 16 de cálculo originales están en `const C=[…]` y se reacomodan en `steps` (con `tag()`) junto
   a pasos nuevos: 1 «Dónde va cada cosa» (Current Folder / Editor .m / Command Window / Figure / Simulink, SVG con las ventanas; su
   código va en la Command Window y no entra al script), 2 I Identificación, 4 II·4 Especificaciones, 5 III·1 K de referencia (no K = 1),
   19 V Controlador, 20 VI·1–2 (ecuación final, Routh con números, candidato vs. obtenido), 21 VI·3 modos y residuos (0.367 c/u y 0.134),
@@ -571,6 +571,17 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   La plantilla de Word no se tocó. PDF regenerado.
 - **Ojo al escribir TeX con Python en heredoc de bash:** `\\;` puede llegar como `\;` (se ve «;;»). Mejor escribir el JS en un archivo
   con la herramienta Write y reemplazarlo desde un script.
+
+## Hecho (v38): Tabla 5 de P1 con su propio paso
+
+- Pedido: «no viene solución para la tabla 5 en la P1» (plantilla: III · Paso 4, «Polos en lazo cerrado de referencia», columnas
+  Polo | Valor | Observación). Antes sólo se mencionaba de pasada en el paso del tercer polo (IV · e) y sin «Observación».
+- Paso nuevo `S_t5` (clave `clref`, sección III, «III · Paso 4 · Tabla 5», ahora paso 12/30, después de Routh): ecuación con
+  K = 45.53, par dominante (= s0, paso {#ang}), tercer polo por suma de raíces (−12 − 2σ = −7.9429), comprobación con el producto
+  de raíces, la **Tabla 5 llena** (p1, p2 dominantes con ζ y ωn; p3 a 3.92σ, no despreciable) y MATLAB `roots([1 12 44 48+45.53])`
+  + `sum(p)` (sin usar la variable K, porque en el script completo K se calcula después). El paso del tercer polo ahora dice
+  «Tabla 5: ya se llenó en el paso {#clref}». P1 = 30 pasos. Probado a 390 y 1280 px; PDF regenerado.
+- **Mejora de los pasos al orden del Word:** hechas P1 (v34), P2 (v35), P3 (v36); **sigue P4** (luego P5, P6, P7).
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
