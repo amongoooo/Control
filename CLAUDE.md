@@ -523,9 +523,28 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (Insertar → Ecuación) y borrar esos recuadros. La plantilla de Word NO se cambió (el usuario pidió dejarla así). Lo de cómo
   escribir el código en MATLAB (paso 1, «Simulink por código») se deja como está.
 
-- **P2–P7 (pendiente):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
+- **P2–P7 (en curso, una práctica a la vez; P2 lista → v35):** mismo acomodo por puntos I–X del Word que P1, pero **sin lo de MATLAB** que se agregó en P1 (sin paso «Dónde va
   cada cosa», sin «Simulink por código», sin la línea «dónde pegar el código» ni el script completo del anexo). Lo de MATLAB que ya
   tenían los pasos se deja como está.
+
+## Hecho (v35): Resolución paso a paso de P2 en el orden del reporte en Word
+
+- Mismo acomodo que P1 (v34) **sin lo de MATLAB de P1**: sin `script` (así no sale la línea «Va en el Editor…» ni el encabezado `%%`
+  al copiar), sin paso «Dónde va cada cosa», sin «Simulink por código» aparte y sin script completo en el anexo. Los pasos nuevos no
+  traen `ml`; los de cálculo conservan su MATLAB de antes.
+- Patrón (para P3–P7): los pasos originales pasan a `const C=[…]`; al final, pasos nuevos `S_id` (I), `S_sp` (II·4), `S_kr` (III·1),
+  `S_ct` (V), `S_v12` (VI·1–2: ecuación final, todas las raíces, Routh con números, candidato vs. obtenido), `S_md` (VI·3: residuos y
+  gráfica de modos), `S_v5` (VI·5 + advertencia), `S_45` (VII·4–6: tabla meta/obtenido/¿cumple?, error simulado, ajuste), `S_sl`
+  (Simulink a mano, `sl:1`, reutiliza `blk/vis/ml` del paso de Simulink original), `S_cp` (VIII, tabla 13), `S_cn` (IX + Resumen) y
+  `S_ax` (X: A código de la plantilla, B puntoZeta, C cálculos escritos; sin script). `tag(C[i],clave,sec,w,wd)` + `{#clave}` (también en
+  `blk`); `calc(w,fig)` arma la línea «copia la Sustitución y el Resultado… borra el recuadro de la Figura n». Devuelve `rl` con `NUM`.
+  `tb` (tabla HTML) y `e0` (error ≈ 0 → «0», evita `\times10` de `n()` en HTML) son locales.
+- P2 = 30 pasos: I(1) · II(2–3) · III(4–15: K ref, polos, ec., eje, asíntotas, ruptura, Routh, ζ, ángulo, magnitud, tercer polo y tiempos,
+  error) · IV(16–20: a–e) · V(21) · VI(22–24) · VII(25–27) · VIII(28) · IX(29) · X(30). Tablas 1–13 y Figuras 1–9 de
+  `plantillas/Reporte_P2_Equipo_5.docx` (Fig. 2 y 9 = fotos de cálculos → se borran). `pz` de P2 ganó la opción `k1` (polos con K = 1).
+- Probado con Playwright a 390 y 1280/1500 px, claro y oscuro: 30 pasos, grupos I…X, «Para el Word» en todos, sin errores de KaTeX ni de
+  consola, sin `{#…}` sin resolver; P1 sin cambios. PDF regenerado (201 págs.).
+
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
