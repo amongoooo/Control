@@ -486,6 +486,16 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   cambia los corchetes angulares de `\abs` por `|`. Valida con `validate.py` del skill docx. Para revisar en este contenedor hizo
   falta `apt-get install libreoffice-math` (sin él las ecuaciones salen en blanco al convertir a PDF).
 
+## Hecho (v32): «PDF de reportes» en la ventana del Reporte
+
+- El botón «Imprimir / PDF» de la barra del Reporte (v22) se cambió por `<a class="sy-b pri rp-prt" data-rp-pdf target="_blank">`
+  «PDF de reportes»: abre **`reportes.pdf`** (raíz) en la página donde empieza la práctica (`#page=N`; `open(pid)` pone el `href`
+  con el mapa `const REP_PDF={p1:…}; /*REP_PDF*/`). Ya no imprime desde el botón (Ctrl+P con la ventana abierta sigue usando `prep()`).
+- **Cuando el usuario suba su PDF de reportes P1–P7:** `python3 -I herramientas/reportes-pdf.py <pdf-subido>` → lo copia a
+  `reportes.pdf` y reescribe `REP_PDF` buscando la portada de cada práctica («Práctica N» como renglón + «Tecnológico»; si no la
+  encuentra, esa práctica abre al inicio). Luego `sh herramientas/version.sh`, commit y push a `main`.
+- Mientras no suba uno, `reportes.pdf` es la plantilla de Word (v31) convertida a PDF (64 págs.; P1 empieza en la 2).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
