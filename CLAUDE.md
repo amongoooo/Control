@@ -447,6 +447,14 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (p. ej. `v1.3.11.1503` = 3 de noviembre, 15:03); `title` con la fecha completa. Mono 11 px (9.5 px en ≤ 430 px); oculto al imprimir.
 - **Antes de cada commit que cambie `index.html`, correr `sh herramientas/version.sh`** (sella la hora actual) y luego hacer el commit.
 
+## Corregido (v29): indicador azul de la barra lateral desfasado
+
+- Al pasar a una práctica (o página) **de más abajo**, `.sb-ind` quedaba cubriendo los subtítulos de «En esta página»: el `place()` de
+  v19 corre antes que `renderSub()` de v26, y en ese momento la lista `.sb-sub` seguía bajo la página anterior (la barra era más alta),
+  así que medía un `offsetTop` de más. Ahora v19 expone `window.__lgdrSbPlace = place` y `renderSub()` lo vuelve a llamar después de
+  mover la lista; además `.sb-sub` lleva `position:relative; z-index:1` para que, pase lo que pase, quede encima del indicador.
+  Probado a 1440 y 1280 px: P1→P2→P5→Preguntas→P3→P1→Simulador→P7, el indicador coincide con el enlace actual (antes fallaba al bajar).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

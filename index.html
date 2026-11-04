@@ -1342,7 +1342,7 @@ html.sb-on.sb-off .wrap{--sbmax:1480px}
 html.sb-on.sb-off .sbar{visibility:hidden;translate:-100% 0;pointer-events:none}
 @media (prefers-reduced-motion:no-preference){html.sb-on .sbar{transition:top .25s ease,translate .28s cubic-bezier(.2,.8,.2,1),visibility .28s}}
 /* índice de la página dentro de la barra lateral (reemplaza la columna «En esta página») */
-.sb-sub{display:grid;gap:1px;margin:2px 0 6px 23px;padding-left:10px;border-left:1px solid var(--line)}
+.sb-sub{position:relative;z-index:1;display:grid;gap:1px;margin:2px 0 6px 23px;padding-left:10px;border-left:1px solid var(--line)}
 html.sb-rail .sb-sub{display:none}
 .sb-st{all:unset;box-sizing:border-box;display:grid;grid-template-columns:22px minmax(0,1fr);column-gap:8px;align-items:center;width:100%;padding:5px 8px;border-radius:8px;color:var(--muted);font:500 13px/1.3 var(--f-body);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .sb-st:hover{background:color-mix(in srgb,var(--accent-soft) 55%,transparent);color:var(--ink)}
@@ -6649,6 +6649,7 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
     if(sb.scrollHeight>sb.clientHeight){ const rs=sb.getBoundingClientRect(), ra=a.getBoundingClientRect();
       if(ra.top<rs.top+8) sb.scrollTop-=rs.top+8-ra.top; else if(ra.bottom>rs.bottom-8) sb.scrollTop+=ra.bottom-rs.bottom+8; }
     if(ind.classList.contains('instant')){ void ind.offsetHeight; ind.classList.remove('instant'); } };
+  window.__lgdrSbPlace=place;   // v26 lo vuelve a llamar cuando mueve la lista «En esta página» (cambia la altura de la barra)
 
   /* ---------- columna derecha «En esta página» ---------- */
   const toc=mk('aside','sbtoc'); toc.id='sbtoc'; toc.setAttribute('aria-label','En esta página');
@@ -9723,6 +9724,8 @@ window.__PASOS=PASOS;
         const b=mk('button','sb-h4',titleOf(el)); b.type='button'; b.title=b.textContent;
         b.addEventListener('click',()=>el.scrollIntoView({block:'start',behavior:reduce.matches?'auto':'smooth'})); sub.appendChild(b); spy.push([el,b]); }); }
     if(link&&sub.childNodes.length){ if(sub.previousElementSibling!==link) link.after(sub); } else sub.remove();
+    /* la lista cambió de lugar y con ella la altura de la barra: el indicador se vuelve a medir (si no, al ir a una página de abajo se queda tapando los subtítulos) */
+    if(typeof window.__lgdrSbPlace==='function'){ try{ window.__lgdrSbPlace(true); }catch(e){} }
     doSpy(); }
   /* lo que se está leyendo: el último subtítulo que ya pasó bajo la barra superior */
   let sq=0;
