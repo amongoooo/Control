@@ -419,7 +419,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright: 1880/1440/1100 (barra angosta, oscuro)/390 px, barra oculta, cambio de etapa, Reporte, Banco desde Simulink,
   Resumen/Preguntas/Teoría, consola limpia.
 
-## Hecho (v27): enunciado del libro en el Planteamiento de P1–P7
+## Hecho (v27–v28): enunciado del libro y diagrama de bloques en el Planteamiento de P1–P7
 
 - En cada `.card.statement`, el párrafo que resumía lo que se pide se reemplazó por `figure.bkq[data-bkq=pN]`
   («Enunciado del libro», referencia Nise · ejercicio · página · título del ejemplo) con el «PROBLEMA:» completo y sus incisos
@@ -427,10 +427,19 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Donde el libro dice «Dado el sistema de la figura», el contenido de la figura va entre corchetes (`.bkq-ed`).
   KaTeX ya renderizado (sin script). CSS «Enunciado del libro» antes del `</style>` principal.
 - El Reporte (v22) copia ese recuadro al inicio del punto 2 («Enunciado del libro», antes de «Modelo»).
-- **Texto:** redactado a partir del enunciado original de Nise (todos los datos e incisos), con el vocabulario de la edición
-  en español; en esta sesión no estaban las fotos del libro, así que **falta cotejar palabra por palabra** con la edición CECSA.
-  Si el usuario manda fotos de los enunciados, ajustar el texto en las 7 `figure.bkq` y volver a generar `practicas.pdf`.
-- PDF regenerado (177 págs.).
+- **Texto (v28): cotejado palabra por palabra con las fotos del libro** (edición CECSA) que mandó el usuario: «Problema:» en los
+  ejercicios y «*Problema*» (negrita cursiva, sin dos puntos) en los ejemplos; incisos «a)» con contador CSS (`ol.bkq-l li::before`).
+  Se respetan las erratas/traducción del libro tal cual: P2 «Dado que el sistema…», P3 «función en transferencia», P4 «con una
+  reducción de umbral en el tiempo de asentamiento» (el original dice «threefold»). P2 incluye todo el párrafo del Problema
+  (hasta «…nuevo lugar geométrico de las raíces»). No se copiaron «Respuestas» ni «Solución».
+- **Diagrama de bloques (v28)** dentro de cada `figure.bkq`, después del `blockquote`: `figure.bkq-fig` > `.bkq-sv` > `svg.bkq-svg`
+  + `figcaption.bkq-fc`. Del libro: P2 figura 9.4 a) y b) (Ganancia K · Planta / Compensador K(s+0.1)/s · Planta), P4 figura 9.17,
+  P6 figura 9.31, con su pie de figura literal. Ejercicios (P1, P3, P5, P7) no traen figura: diagrama con el mismo estilo, borde
+  punteado (`.nb`) y etiqueta `.bkq-tag` «No viene del libro». Colores con `var(--ink)/--surface` (claro/oscuro/impresión); fórmulas
+  con KaTeX_Main/KaTeX_Math. Ancho natural en `--bw`: escala hasta 1.15×, mínimo 0.7× (a 390 px solo P2 se desliza ~60 px).
+  Se genera con **`node herramientas/enunciados-libro.js`** (reemplaza los 7 `figure.bkq`; textos en `DATA`). Sin `id` en el SVG
+  (el Reporte copia el recuadro con `outerHTML`). Ojo: `figure.bkq>figcaption` (con `>`) para no afectar al pie del diagrama.
+- PDF regenerado (179 págs.).
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
