@@ -419,6 +419,19 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright: 1880/1440/1100 (barra angosta, oscuro)/390 px, barra oculta, cambio de etapa, Reporte, Banco desde Simulink,
   Resumen/Preguntas/Teoría, consola limpia.
 
+## Hecho (v27): enunciado del libro en el Planteamiento de P1–P7
+
+- En cada `.card.statement`, el párrafo que resumía lo que se pide se reemplazó por `figure.bkq[data-bkq=pN]`
+  («Enunciado del libro», referencia Nise · ejercicio · página · título del ejemplo) con el «PROBLEMA:» completo y sus incisos
+  (`ol.bkq-l`, a., b., c.…). Se conservan arriba las ecuaciones (`.mathd`) y a la derecha «Qué significa lo que se pide».
+  Donde el libro dice «Dado el sistema de la figura», el contenido de la figura va entre corchetes (`.bkq-ed`).
+  KaTeX ya renderizado (sin script). CSS «Enunciado del libro» antes del `</style>` principal.
+- El Reporte (v22) copia ese recuadro al inicio del punto 2 («Enunciado del libro», antes de «Modelo»).
+- **Texto:** redactado a partir del enunciado original de Nise (todos los datos e incisos), con el vocabulario de la edición
+  en español; en esta sesión no estaban las fotos del libro, así que **falta cotejar palabra por palabra** con la edición CECSA.
+  Si el usuario manda fotos de los enunciados, ajustar el texto en las 7 `figure.bkq` y volver a generar `practicas.pdf`.
+- PDF regenerado (177 págs.).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
