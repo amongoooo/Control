@@ -500,6 +500,23 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   encuentra, esa práctica abre al inicio). Luego `sh herramientas/version.sh`, commit y push a `main`.
 - Mientras no suba uno, `reportes.pdf` es la plantilla de Word (v31) convertida a PDF (64 págs.; P1 empieza en la 2).
 
+## Hecho (v34): Resolución paso a paso de P1 en el orden del reporte en Word + dónde va el código
+
+- Pedido: que la solución de P1 incluya todos los pasos del Word (plantilla v31) para llenarlo y entender, y pasos que digan dónde
+  pegar el código de MATLAB y en qué se diferencia de Simulink.
+- `PASOS.p1` ahora tiene **29 pasos**: los 16 de cálculo originales están en `const C=[…]` y se reacomodan en `steps` (con `tag()`) junto
+  a pasos nuevos: 1 «Dónde va cada cosa» (Current Folder / Editor .m / Command Window / Figure / Simulink, SVG con las ventanas; su
+  código va en la Command Window y no entra al script), 2 I Identificación, 4 II·4 Especificaciones, 5 III·1 K de referencia (no K = 1),
+  19 V Controlador, 20 VI·1–2 (ecuación final, Routh con números, candidato vs. obtenido), 21 VI·3 modos y residuos (0.367 c/u y 0.134),
+  22 VI·5 error + advertencia, 23 VII·4–5 tabla meta/obtenido/¿cumple?, 25 Simulink a mano (sin código, `sl:1`), 26 Simulink por código
+  (opcional, en el Editor), 27 VIII, 28 IX y 29 X (script completo armado con el código de todos los pasos, con `%% Paso n · título`).
+- Campos nuevos de cada paso (genéricos en el visor): `w` (etiqueta verde «Word · …»), `sec` (separadores Inicio, I…X en `.psnav`),
+  `wd` (recuadro «Para el Word» con Tabla n / Figura n / Escribe / Pega, numeradas como en la plantilla), `mlWhere` (línea `.mlwhere`
+  «dónde pegarlo»), `get` (comando propio en `.psget`), `noget`, `noScript`, `noHdr`, `mlOpen`. `{#clave}` en los textos = número del
+  paso con esa clave. El práctica devuelve `script` (nombre del .m: activa el texto «Va en el Editor…» y el encabezado `%%` al copiar) y
+  `rl` (reemplaza `RL.p1`). El botón «Ver el modelo · paso n» va al paso con `sl:1`. P2–P7 no cambian (no usan esos campos).
+- Probado a 390 y 1280/1440 px: 29 pasos sin desbordes ni errores de KaTeX/consola; P2 intacta. PDF regenerado (193 págs.).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
