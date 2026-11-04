@@ -455,6 +455,13 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   mover la lista; además `.sb-sub` lleva `position:relative; z-index:1` para que, pase lo que pase, quede encima del indicador.
   Probado a 1440 y 1280 px: P1→P2→P5→Preguntas→P3→P1→Simulador→P7, el indicador coincide con el enlace actual (antes fallaba al bajar).
 
+## Hecho (v30): botón «Guía del reporte»
+
+- Junto a «Reporte» en el `.phead` de P1–P7: `<a class="btn repbtn guiabtn" href="Guia_practicas_compensadores_LGDR.pdf" target="_blank">`
+  «Guía del reporte» (la guía de trabajo de 2 páginas que pasó el usuario; el PDF está en la raíz del repositorio). Reutiliza `.repbtn`
+  (así `herramientas/pdf-practicas.js` también lo oculta del PDF de prácticas); el reporte solo escucha `[data-rep]`, sin conflicto.
+  En ≤ 520 px `.phead .phr .src` ocupa su propia fila para que los dos botones queden juntos. `.repbtn{line-height:1.3}` iguala alturas.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
