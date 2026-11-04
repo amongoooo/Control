@@ -557,6 +557,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado igual que P2 (390/1280/1500, claro/oscuro, sin errores); PDF 208 págs.
 
 
+## Hecho (v37): punto de ruptura explicado en P1
+
+- Pregunta del usuario: ¿la guía o el problema piden el punto de ruptura? La guía (`Guia_practicas_compensadores_LGDR.pdf`) **no lo
+  pide por nombre**: en el análisis de referencia pide polos, ceros, tipo y ecuación característica, y como evidencia el «LGDR inicial».
+  El problema (Nise 8.6) pide «a) trazar el LGDR», y la ruptura es una de las reglas para trazarlo. Teoría **sí** lo trae: sección 12
+  «Reglas para trazar el LGDR» (`#t5`: «Ruptura / llegada: dK/ds = 0, N·D′ − N′·D = 0»), la simulación «reglas» y la pregunta `q3-5`.
+- Paso «Punto de ruptura» de P1 (`C[5]`, clave `rupt`, paso 10/29): filas nuevas «¿Qué son N y D?» (G = N/D, N = 1,
+  D = (s+2)(s+4)(s+6)), «¿De dónde sale K(σ)?» (1 + K·N/D = 0 → K = −D/N con s = σ), «Condición» (N·D′ − N′·D = 0) y «Ganancia en la
+  ruptura» en la forma |D(σb)/N(σb)| = |(−0.8453)(1.155)(3.155)/1| = 3.079 (números en vivo); `why` explica para qué sirve
+  (trazar el LGDR; K > Kb → polos complejos y sobrepaso, la K de diseño debe ser mayor). MATLAB: `[num, den] = tfdata(G, 'v')` y
+  `Kb = abs(polyval(den, sb(2)) / polyval(num, sb(2)))`. También una frase en «Forma del LGDR» de `#p1-ana` y en `R.p1.s3` del reporte.
+  La plantilla de Word no se tocó. PDF regenerado.
+- **Ojo al escribir TeX con Python en heredoc de bash:** `\\;` puede llegar como `\;` (se ve «;;»). Mejor escribir el JS en un archivo
+  con la herramienta Write y reemplazarlo desde un script.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
