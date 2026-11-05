@@ -699,6 +699,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - `reportes.pdf` = ese Word (P1 + P2 llenas) en PDF: 144 págs., `REP_PDF={p1:2,p2:27,p3:55,p4:72,p5:90,p6:107,p7:126}`.
   Conversión: `docx-ecuaciones.py` → imágenes a 1600 px → LibreOffice (con `libreoffice-math`) → `reportes-pdf.py`.
   Evitar `Re`/`Im` dentro de ecuaciones (LibreOffice los cambia por ℜ/ℑ) y escribir los términos con signo explícito (`+-` sale ±).
+- El Word también está en el repo (pedido del usuario): `reportes/Reporte_P1-P7_P1-P2.docx` (16.4 MB, imágenes originales).
+  Descarga: https://amongoooo.github.io/Control/reportes/Reporte_P1-P7_P1-P2.docx . Al llenar otra práctica, subir la versión nueva ahí.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
