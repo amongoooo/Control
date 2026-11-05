@@ -774,6 +774,35 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Los vínculos funcionan en el PDF (LibreOffice los convierte en saltos internos). `reportes.pdf` sigue con 153 págs. y el mismo `REP_PDF`;
   `reportes/Reporte_P1-P7.docx.enc` actualizado (mismo PIN).
 
+## Hecho (v52): P1 de la página en el orden del Word del usuario, con simulaciones en cada figura
+
+- Pedido: «que la P1 quede en el mismo orden que mi Word, organizada por secciones y pasos, y en cada paso con imágenes una
+  simulación del caso de la tarea que cambie al mover las variables». Solo P1 por ahora (P2–P7 sin cambios).
+- **Generador:** `python3 -I herramientas/word/p1-pagina.py <Word descifrado>` (PIN: pedírselo al usuario; descifrar con
+  `cifrar-docx.py descifrar` a un archivo del scratchpad). pandoc → HTML con TeX → secciones I–IX (`div.card.xsec.wsec#p1w-I…IX`,
+  `data-fk=w1…w9`, `data-short`), pasos `.xstep.wstep` (ids `p1w-<clave del anexo>` p. ej. `p1w-III3`, `p1w-TL6`, `p1w-IVb`, o `p1w-sN`),
+  «Trazo del LGDR» = `.wgrp` con `.wsub` («Trazo · Paso n»), «Resultado:» → `.wres`, anexo «C. Cálculos» dentro de cada paso
+  (`details.wcalc`), «✎ En MATLAB» → `.wml` (+ Copiar), vínculos del Word → `button.wgo[data-wgo]` (la página usa el #hash).
+  KaTeX se dibuja al generar con `herramientas/word/katex-batch.js` (el KaTeX de index.html, salida `html`). Palabras dentro de
+  fórmulas → `\text{}`. Reemplaza lo que hay entre `<!--p1w-->` y `<!--/p1w-->`. ~1 MB de HTML (se comprime bien en Pages).
+  **No se copian** (el Word va con PIN): portada (nombre, correo), Resumen, «Conclusión individual», Referencias, capturas.
+  Si el usuario cambia su Word: volver a correr el generador (y `practicas.pdf`).
+- Orden de `#p1`: secciones I–IX, Banco (B), `div.p1old[hidden]` (Planteamiento y tarjetas 1–4 viejas: el Reporte v22 todavía
+  copia de ahí sus figuras y tablas), Simulink (S), Código MATLAB (M). Se quitó la «Resolución paso a paso» de P1 (`PASOS.p1` sigue
+  en el código, sin tarjeta). v15: `wrap(x, x.dataset.fk || 'x'+num)`; v26: `short` desde `data-short`; `.sb-st` con columna de 26 px.
+- **Simulaciones** (script «v52 · P1 en el orden del Word» al final del `<body>`, CSS «v52» antes del `</style>` principal):
+  `div.wsim[data-wsim=fN]` dentro de `figure.wfig` (pie = el de la figura del Word); se arman al verse (IntersectionObserver),
+  botón «↺ Caso de la tarea», deslizadores `.kctl.wctl` con casilla. Planta K/[(s+2)(s+4)(s+a)], caso a = 6, K = 45.53 / 49.38.
+  f1 diagrama de bloques + T(s) + escalón (K, a) · f2 LGDR + recta de ζ + polos con K, ruptura, cruce jω, «Poner K sobre la recta»
+  (K, %OS, a) · f3 escalón 3.er vs 2.º orden + Tabla 6 en vivo (K, a) · f4 condición de ángulo: punto de prueba sobre la recta con
+  ángulos y ∑∠, «Buscar s₀» (%OS, σ) · f5 validez: |p₃|/σ y residuos, «K del 10 % con este polo» (K, a) · f6 Command Window con
+  `stepinfo`/`pole` (K, a) · f7 ajuste: K del LGDR vs K, meta de %OS, «Buscar K» por bisección (K, %OS) · f8 Simulink + Scope
+  (K, Step, Stop time). Depuración: `window.__lgdrP1W`. Caso de la tarea: 8.8254 % (el Word redondea 8.82), Ts 1.865, Tp 1.293,
+  Tr 0.5916; con 49.38 → 10.00 %.
+- `herramientas/pdf-practicas.js` arma las `.wsim` y las captura como imagen. PDF: 233 págs.
+- Probado con Playwright a 390 (claro/oscuro), 1280 y 1440 px: plegables, etapas y barra lateral (pasos con scrollspy), vínculos
+  inciso ↔ respuesta, botones de búsqueda, Reporte de P1, P2/Resumen/Teoría sin errores de consola.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

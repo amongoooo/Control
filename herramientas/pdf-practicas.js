@@ -35,10 +35,12 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       s.querySelectorAll('.bd[data-bd]').forEach(b => { if (!b.__bdDone && b.__bdRender) { b.__bdDone = 1; b.__bdRender(); } });
       // Resolución paso a paso: en papel van todos los pasos seguidos.
       s.querySelectorAll('.card.pasos').forEach(c => { const b = c.querySelector('[data-all]'); if (b && !c.classList.contains('all')) b.click(); });
+      // P1 en el orden del Word (v52): las simulaciones de las figuras se arman al verse; aquí se arman todas.
+      if (window.__lgdrP1W) s.querySelectorAll('.wsim[data-wsim]').forEach(b => window.__lgdrP1W.build(b));
     }, i);
     await page.waitForTimeout(700);
     await page.evaluate(n => {
-      document.querySelectorAll(`#p${n} .card.bench canvas, #p${n} .card.pasos canvas`).forEach(cv => {
+      document.querySelectorAll(`#p${n} .card.bench canvas, #p${n} .card.pasos canvas, #p${n} .wsim canvas`).forEach(cv => {
         const img = new Image(); img.src = cv.toDataURL('image/png'); img.className = 'pdfcv'; img.alt = '';
         img.style.aspectRatio = cv.clientWidth + ' / ' + cv.clientHeight;
         cv.replaceWith(img);
@@ -74,7 +76,7 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
     document.querySelectorAll('.card.bench').forEach(b => {
       const src = b.querySelector('.phead .src'); if (src) src.textContent = 'Captura con la K de diseño (en la página es interactivo)';
     });
-    document.querySelectorAll('.psnav, .psctl, .pasos [data-all], .mlbar, .fbar, .repbtn, .zbar, [data-mag], .kctl, .fxhead, [data-fx], .seg, [data-reset], [data-copy], .bd button, .bd .seg')
+    document.querySelectorAll('.psnav, .psctl, .pasos [data-all], .mlbar, .fbar, .repbtn, .zbar, [data-mag], .kctl, .fxhead, [data-fx], .seg, [data-reset], [data-copy], .bd button, .bd .seg, .wreset, .wact, .wcopy, .wctls, .wsim-h')
       .forEach(e => { e.style.setProperty('display', 'none', 'important'); });
     document.querySelectorAll('details').forEach(d => { d.open = true; });
     // Número de sección por CSS para que los marcadores digan «Análisis…» y no «1Análisis…».
