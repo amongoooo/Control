@@ -679,6 +679,27 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   paso, vínculos «→ cálculos» / «↑ volver al reporte» (marcadores `P1_c_*` / `P1_r_*`), anexo de cálculos en el mismo orden con la
   sustitución de cada término, ejemplos de redacción en gris, pasos de la verificación numerados seguido (VI 1–4, VII 5–7).
 
+## Hecho (v45): Práctica 2 del Word llenada con el formato de la P1
+
+- El usuario subió `Reporte_P1-P7_P1_v4.docx` (P1 terminada) y pidió llenar la P2 igual: portada individual (Bocanegra González
+  Jorge, 23030312@itcelaya.edu.mx), fórmulas OMML en Cambria Math 10.5 pt (runs con `sz=21`, letras en cursiva y números/operadores
+  `m:sty p`), «Resultado:» en cada paso, «→ cálculos» / «↑ volver al reporte» (marcadores `P2_r_*` / `P2_c_*`: III1–III5, IVa–IVe,
+  VI1–VI4, VII5–VII7), VI pasos 1–4 y VII pasos 5–7, anexo «C. Cálculos» (una columna, recuadros punteados) en el mismo orden, sin
+  etiquetas Sustitución/Resultado, redacción de ejemplo en gris (7F7F7F) y 7 recuadros grises «[ Pega aquí la imagen ]» con código
+  MATLAB completo (sin `sgrid(z,0)`: `rlocus` + `grid on` + recta de ζ con `plot`; Simulink armado con `add_block`/`add_line`).
+- Generador (fuera del repo, en el scratchpad de la sesión): `omml.py` (mini‑lenguaje → OMML: `\f{}{}`, `\r{}`, `\t{}`, `\d{}`,
+  `\a{}`, `\b{}`, `\lim{}` (+ fracción → `m:func`, si no LibreOffice mete la fracción dentro del lim), `\m{}` Routh, `_`/`^`),
+  `num2.py` (números con numpy/scipy) y `p2.py` (contenido); `assemble.py` reemplaza los elementos de la P2 del `document.xml`
+  conservando sus 3 `sectPr` (encabezados) y copia las Referencias de la P1. Validado con el XSD del skill docx.
+- Números P2: K_ref = 164.53 (s0 = −0.6936 ± j3.9255), K_b = 2.127 (σb = −1.4853), 0 < K < 396 (±j5.657), p3 = −11.613,
+  Kp = 8.227, e = 0.1084; dipolo −1.42° / 0.9959; con PI K = 158.10 (s0 = −0.6778 ± j3.8359), p3 = −11.554, p4 = −0.0902,
+  Routh 0 < K < 379.95 (±j5.547), residuos r1 = −0.3987 ± j0.2264, r3 = −0.1028, r4 = −0.0997; sim. sin comp. pico 1.3735,
+  tp 0.888, Ts 5.14, %OS 54.05; con PI pico 1.3961, tp 0.909, Ts 17.82 (= ln(|r4|/0.02)/|p4|), %OS 39.61. No hace falta ajuste
+  (Δpico 1.6 %, ΔTp 2.4 %, Dif 2.3 %). Mover el cero: zc = 0.01 → Ts ≈ 188 s (mismo residuo); zc = 0.5 → Ts 5.9 s pero K = 131.3.
+- `reportes.pdf` = ese Word (P1 + P2 llenas) en PDF: 144 págs., `REP_PDF={p1:2,p2:27,p3:55,p4:72,p5:90,p6:107,p7:126}`.
+  Conversión: `docx-ecuaciones.py` → imágenes a 1600 px → LibreOffice (con `libreoffice-math`) → `reportes-pdf.py`.
+  Evitar `Re`/`Im` dentro de ecuaciones (LibreOffice los cambia por ℜ/ℑ) y escribir los términos con signo explícito (`+-` sale ±).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
