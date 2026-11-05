@@ -702,6 +702,38 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - El Word también está en el repo (pedido del usuario): `reportes/Reporte_P1-P7_P1-P2.docx` (16.4 MB, imágenes originales).
   Descarga: https://amongoooo.github.io/Control/reportes/Reporte_P1-P7_P1-P2.docx . Al llenar otra práctica, subir la versión nueva ahí.
 
+## Hecho (v46): zoom en el visor de PDF
+
+- `dialog#pdfDlg` (v44): **Ctrl/⌘ + rueda** (incluye el pellizco del touchpad, que llega como Ctrl + rueda) y **pellizco con dos dedos**
+  en táctil. El punto bajo el cursor / entre los dedos se queda fijo (`anchorAt` = página + fracción; `zoomTo` cambia `zoom`, `sizeAll()` y
+  corrige `scrollTop` del diálogo y `scrollLeft` de `.pv-body`). Durante el gesto sólo se estiran los lienzos; 220 ms después se redibujan
+  nítidos (`gen++`, `observe()`). Rango 50–400 % (`ZMIN/ZMAX`, también para los botones − / +). `.pv-body{touch-action:pan-x pan-y}` y
+  `gesturestart/gesturechange` cancelados (Safari) para que el navegador no amplíe toda la página.
+
+## Hecho (v47): Práctica 3 del Word llenada con el formato de la P1/P2
+
+- Entrada: `reportes/Reporte_P1-P7_P1-P2.docx` (subido por el usuario). Salida: `reportes/Reporte_P1-P7_P1-P3.docx` (P1–P3 llenas) y
+  `reportes/Practica3_Bocanegra.pdf` (sólo la P3, 27 págs.). `reportes.pdf` = ese Word en PDF: 152 págs.,
+  `REP_PDF={p1:2,p2:27,p3:55,p4:82,p5:99,p6:116,p7:134}`.
+- **Generador guardado en el repo** (`herramientas/word/`, Python + lxml + numpy; no hay scipy ni python-control en el contenedor):
+  `omml.py` (mini‑lenguaje → OMML Cambria Math 10.5 pt: `\f{}{}`, `\r{}`, `\d{}` |x|, `\p{}`, `\b{}` [ ], `\lim{}{}` (func+limLow),
+  `\m{a&b\\c&d}` Routh, `\t{texto}` recto, `_`/`^`; letras en cursiva, lo demás `m:sty p`; el `%` va en su propia corrida),
+  `build.py` (párrafos con el XML exacto de la P2: portada, títulos, `h2link` con «→ cálculos», recuadro gris `figbox` con código,
+  tablas, «Resultado:», advertencia, anexo `calc_box` con «↑ volver al reporte»; texto con `$math$`, `**negritas**`, `~{sub}`, `^^{sup}`),
+  `num3.py` (números de P3 con residuos exactos: polos, `stepinfo` con c(∞) = 1, error a rampa), `p3.py` (reporte), `p3calc.py` (anexo C)
+  y `assemble.py` (reemplaza la P3 del `document.xml` conservando sus 3 `sectPr`; copia «C. Cálculos» y Referencias de la P2; bookmarks
+  `P3_r_*`/`P3_c_*` con ids arriba del máximo). Uso: desempacar el .docx, `python3 assemble.py in/word/document.xml out/word/document.xml`
+  (desde `herramientas/word/`), `zip -qXrD`, validar con `validate.py` del skill docx. **Para P4–P7:** copiar `num3.py/p3.py/p3calc.py`,
+  cambiar el contenido y en `assemble.py` el título buscado («Práctica N:») y el prefijo de los bookmarks (`P3_` en `build.py`).
+- PDF: `herramientas/docx-ecuaciones.py` → imágenes > 1600 px reducidas → `soffice` (con `libreoffice-math`) → `reportes-pdf.py`.
+  En LibreOffice el texto `\t{}` dentro de ecuaciones sale en cursiva (en Word sale recto); para frases largas usar párrafo con `$…$`.
+- Números P3: ζ = 0.5169 (θ = 58.87°, tan θ = 1.6560), s₀ = −3.5 ± j5.7959, K_ref = 45.84, K = 1 → −0.146/−6.854, K_b = 12.25,
+  estable ∀K; T_s 1.143 (sim 1.161), T_p 0.542, T_r 0.247; K_v 6.549, e = 0.1527. Atraso 0.2/0.01: dipolo −1.40° / 0.9858, ensayos
+  σ 3.2…3.5 → s₀ = −3.4019 ± j5.6335, K = 44.64, p₃ = −0.2062, r₃ = 0.0318, r₁ = −0.5159 ± j0.3109, K_v = 127.55, e = 0.00784,
+  mejora ×19.48 (libro ×19.58), Routh b₁ = 43.44, sim 18.31 % / t_p 0.557 / T_s 2.144, cola e(t) ≈ 0.00784 + 0.1541e^(−0.2062t).
+  Ajuste 0.02/0.001 (adoptado): s₀ = −3.4905 ± j5.7801, K = 45.73, p₃ = −0.02006, r₃ = 0.00293, 15.33 % / 0.858 s,
+  e = 0.00765 (×19.95), cola τ = 50 s (≈ 377 s hasta 1 %). Figuras 1–10 con código MATLAB completo (sin `sgrid`), Tablas 1–13.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
