@@ -7216,7 +7216,7 @@ calc:[String.raw`\sigma=7,\ \ \omega_d=13.66,\ \ \theta_p=79.19^\circ\Rightarrow
   function done(){ root.classList.remove('rp-print'); const p=document.getElementById('repPrint'); if(p) p.innerHTML=''; if(oldTitle!==null){ document.title=oldTitle; oldTitle=null; } }
   /* «PDF de reportes»: abre reportes.pdf (los reportes P1–P7 que sube el usuario) en la página donde empieza la práctica.
      Las páginas las escribe herramientas/reportes-pdf.py al actualizar el PDF. */
-  const REP_PDF={p1:2,p2:27,p3:55,p4:82,p5:99,p6:116,p7:134}; /*REP_PDF*/ window.__lgdrRepPdf=REP_PDF;
+  const REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:101,p6:118,p7:136}; /*REP_PDF*/ window.__lgdrRepPdf=REP_PDF;
   const pdfA=dlg.querySelector('[data-rp-pdf]');
   addEventListener('beforeprint',()=>{ if(!root.classList.contains('rp-print')) prep(); });
   addEventListener('afterprint',done);

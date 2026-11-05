@@ -754,6 +754,17 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   **Para llenar otra práctica:** pedir el PIN, `descifrar` el `.enc` a un archivo del scratchpad, generar, y volver a `cifrar` sobre
   `reportes/Reporte_P1-P7.docx.enc` (no subir el .docx sin cifrar).
 
+## Hecho (v50): Word y PDF de reportes con los 9 pasos del trazo del LGDR (P1)
+
+- El usuario subió su Word más reciente (`Reporte_P1-P7_Bocanegra_1.docx`: P1–P3 individuales, P4–P7 aún del Equipo 5). En la P1, sección III
+  (después del Paso 5, antes de «Evidencia de la etapa»), va «Trazo del LGDR (inciso a): 9 pasos» de Nise 8.5–8.6 (ramas, simetría, eje real,
+  inicio/término, asíntotas, ruptura, cruce jω, ángulos de salida, graficación y calibración), títulos `Ttulo3` con «→ cálculos»
+  (marcadores `P1_r_TL1…9` / `P1_c_TL1…9`) y sus recuadros en el anexo C; del Paso 2 se movieron eje real, asíntotas y ruptura a esos pasos.
+- `reportes/Reporte_P1-P7.docx.enc` = ese Word cifrado (mismo PIN; se comprobó descifrando). `reportes.pdf` = 153 págs.,
+  `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:101,p6:118,p7:136}`. `reportes/Practica3_Bocanegra.pdf` no se cambió (no está enlazado).
+- Conversión: además de `docx-ecuaciones.py`, un `*` solo dentro de una ecuación (p. ej. el conjugado `s^*`) sale «¿» en LibreOffice:
+  en la copia para el PDF se cambia por `∗` (U+2217). `libreoffice-math` hay que instalarlo en cada contenedor nuevo.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
