@@ -36,7 +36,8 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       // Resolución paso a paso: en papel van todos los pasos seguidos.
       s.querySelectorAll('.card.pasos').forEach(c => { const b = c.querySelector('[data-all]'); if (b && !c.classList.contains('all')) b.click(); });
       // P1 en el orden del Word (v52): las simulaciones de las figuras se arman al verse; aquí se arman todas.
-      if (window.__lgdrP1W) s.querySelectorAll('.wsim[data-wsim]').forEach(b => window.__lgdrP1W.build(b));
+      const WS = window['__lgdrP' + n + 'W'];   // v52: P1 · v53: P2
+      if (WS) s.querySelectorAll('.wsim[data-wsim]').forEach(b => WS.build(b));
     }, i);
     await page.waitForTimeout(700);
     await page.evaluate(n => {

@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""P1 de la página en el orden del Word del usuario (v52).
+"""Práctica N de la página en el orden del Word del usuario (v52: P1, v53: P2).
 
-  python3 -I herramientas/word/p1-pagina.py <Word descifrado .docx>
+  python3 -I herramientas/word/pagina-word.py <N> <Word descifrado .docx>
 
-Lee la «Práctica 1» del Word (pandoc → HTML con TeX), la separa en las secciones I–IX y sus pasos, mete el
+Lee la «Práctica N» del Word (pandoc → HTML con TeX), la separa en las secciones I–IX y sus pasos, mete el
 anexo «C. Cálculos» dentro de cada paso (plegable) y cambia cada figura por una simulación (`div.wsim[data-wsim=fN]`,
-la arma el script «P1 · simulaciones del Word» de index.html). Las fórmulas se dibujan con el KaTeX de la página.
-El resultado reemplaza lo que hay entre <!--p1w--> y <!--/p1w--> en index.html.
+la arma el script «vNN · PN en el orden del Word» de index.html). Si la figura del Word todavía es el recuadro
+«[ Pega aquí la imagen ]», su código MATLAB queda debajo de la simulación (`details.wfcode`, con Copiar).
+Las fórmulas se dibujan con el KaTeX de la página.
+El resultado reemplaza lo que hay entre <!--pNw--> y <!--/pNw--> en index.html.
 
 No se copian a la página (el Word va cifrado con PIN): portada (nombre, correo), Resumen, «Conclusión individual»,
 Referencias y las capturas de MATLAB."""
@@ -14,12 +16,14 @@ import sys, re, json, subprocess, html as H, os, urllib.parse
 from lxml import html as LH, etree
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-src = sys.argv[1]
+N = int(sys.argv[1]); src = sys.argv[2]
+P = 'P%d_' % N; W = 'p%dw-' % N        # prefijos: marcadores del Word (P2_c_III1) e ids de la página (p2w-III1)
 full = subprocess.run(['pandoc', '-f', 'docx', '-t', 'html', '--mathjax', '--wrap=none', src],
                       check=True, capture_output=True, text=True).stdout
-i = full.find('Práctica 1: Ajuste'); j = full.find('Práctica 2: Compensador integral')
-assert i > 0 and j > i, 'no encontré la Práctica 1'
-frag = full[full.rfind('<p', 0, i):full.rfind('<p', 0, j)]
+i = full.find('Práctica %d: ' % N); j = full.find('Práctica %d: ' % (N + 1))
+if j < 0: j = len(full)
+assert i > 0 and j > i, 'no encontré la Práctica %d' % N
+frag = full[full.rfind('<p', 0, i):full.rfind('<p', 0, j) if j < len(full) else j]
 doc = LH.fragment_fromstring('<div>' + frag + '</div>')
 kids = list(doc)
 
@@ -59,11 +63,12 @@ SECS = []          # {num,title,intro:[html],steps:[step]}
 cur = None; step = None; grp = None; annex = {}; ann_key = None
 mode = 'pre'
 pend_img = False
+pend_code = None   # recuadro «[ Pega aquí la imagen ]»: {'desc', 'code'}
 def new_step(h, sub=False):
     global step
-    a = h.xpath('.//a[starts-with(@href,"#P1_c_")]')
+    a = h.xpath('.//a[starts-with(@href,"#%sc_")]' % P)
     ck = a[0].get('href')[6:] if a else None
-    up = [x for x in h.xpath('.//a') if x.get('href', '').startswith('#P1_q_')]
+    up = [x for x in h.xpath('.//a') if x.get('href', '').startswith('#' + P + 'q_')]
     for x in h.xpath('.//a'): x.drop_tree()
     t = txt(h)
     step = {'title': t, 'ck': ck, 'slug': h.get('id'), 'body': [], 'up': [u.get('href')[6:] for u in up], 'sub': sub, 'kids': []}
@@ -78,7 +83,7 @@ for e in kids:
     if mode == 'annex':
         if e.tag == 'blockquote':
             for p in e:
-                sp = p.xpath('.//span[starts-with(@id,"P1_c_")]')
+                sp = p.xpath('.//span[starts-with(@id,"%sc_")]' % P)
                 if sp:
                     ann_key = sp[0].get('id')[5:]; annex[ann_key] = []; continue
                 if ann_key is None: continue
@@ -108,12 +113,29 @@ for e in kids:
         new_step(e, sub=True); continue
     if e.tag == 'p' and e.xpath('.//img') and not t:
         pend_img = True; continue
+    if e.tag == 'blockquote' and ('Pega aquí la imagen' in t or (e.xpath('.//img') and 'Código MATLAB' in t)):
+        # figura que el usuario todavía no pega (o ya pegó dentro del recuadro): se guarda su descripción y su código
+        desc, code, inC = '', [], False
+        for p in e:
+            raw = ''.join(p.itertext()).replace('\xa0', ' ').rstrip()
+            if 'Pega aquí la imagen' in raw or not raw.strip(): continue
+            if raw.strip().startswith('Código MATLAB'): inC = True; continue
+            if inC: code.append(raw.replace('−', '-').replace('‘', "'").replace('’', "'"))
+            elif not desc:
+                desc = re.sub(r'^<p>|</p>$', '', ser(p)); desc = re.sub(r'</?em>', '', desc)
+        pend_img = True; pend_code = {'desc': desc, 'code': '\n'.join(code)}; continue
     m = re.match(r'Figura (\d+):\s*(.*)', t)
     if e.tag == 'p' and m and pend_img:
         pend_img = False
+        cH = ''
+        if pend_code and pend_code['code']:
+            cH = ('<details class="wfcode"><summary>Código MATLAB de la Figura %s <small>· para la imagen del Word</small></summary>%s'
+                  '<div class="codebox"><button class="btn" data-copy>Copiar</button><pre>%s</pre></div></details>'
+                  % (m.group(1), ('<p class="wfd">%s</p>' % pend_code['desc']) if pend_code['desc'] else '', H.escape(pend_code['code'])))
+        pend_code = None
         add('<figure class="wfig" data-fig="%s"><div class="wsim" data-wsim="f%s"><p class="wsim-ld">Cargando la simulación…</p></div>'
-            '<figcaption><b>Figura %s:</b> %s <span class="wfsub">· simulación con el caso de la tarea</span></figcaption></figure>'
-            % (m.group(1), m.group(1), m.group(1), H.escape(m.group(2))))
+            '<figcaption><b>Figura %s:</b> %s <span class="wfsub">· simulación con el caso de la tarea</span></figcaption>%s</figure>'
+            % (m.group(1), m.group(1), m.group(1), H.escape(m.group(2)), cH))
         continue
     m = re.match(r'Tabla (\d+):\s*(.*)', t)
     if e.tag == 'p' and m and len(e) == 1 and e[0].tag == 'strong':
@@ -121,8 +143,10 @@ for e in kids:
     if e.tag == 'p' and t == 'Resultado:':
         add('\x01RES'); continue
     if e.tag == 'p' and t.startswith('✎'):
-        code = re.sub(r'^✎\s*En MATLAB:\s*', '', t)
-        if code != t: add('<p class="wml"><span>MATLAB</span><code>%s</code></p>' % H.escape(code.replace('−', '-')))
+        m = re.match(r'✎\s*(.*?)\s*\ben\s+MATLAB:\s*(.*)', t, flags=re.I)   # «✎ En MATLAB: …» o «✎ Residuos en MATLAB: …»
+        if m:
+            lab = 'MATLAB' + (' · ' + H.escape(m.group(1)) if m.group(1) else '')
+            add('<p class="wml"><span>%s</span><code>%s</code></p>' % (lab, H.escape(re.sub(r'\)\.$', ')', m.group(2)).replace('−', '-'))))
         else: add('<p class="wnote">%s</p>' % H.escape(t[1:].strip()))
         continue
     if e.tag == 'table':
@@ -132,8 +156,8 @@ for e in kids:
         e.attrib.clear()
         add('<div class="tablewrap"><table class="wtab">' + ''.join(ser(c) for c in e) + '</table></div>'); continue
     if e.tag == 'blockquote':
-        for sp in e.xpath('.//span[starts-with(@id,"P1_q_")]'):
-            p = sp.getparent(); p.set('id', 'p1w-q-' + sp.get('id')[5:]); p.set('class', 'winc'); sp.drop_tree()
+        for sp in e.xpath('.//span[starts-with(@id,"%sq_")]' % P):
+            p = sp.getparent(); p.set('id', W + 'q-' + sp.get('id')[5:]); p.set('class', 'winc'); sp.drop_tree()
         add('<div class="wq">' + ''.join(ser(c) for c in e) + '</div>'); continue
     add(ser(e))
 
@@ -144,14 +168,14 @@ for S in SECS:
     for s in S['steps']:
         for x in [s] + s['kids']:
             n += 1
-            x['id'] = 'p1w-' + (x['ck'] if x['ck'] else 's%d' % n)
+            x['id'] = W + (x['ck'] if x['ck'] else 's%d' % n)
             if x['slug']: SLUG[x['slug']] = x['id']
 def links(h):
     def a(m):
         href, inner = urllib.parse.unquote(H.unescape(m.group(1))), m.group(2)
         if href.startswith('#'):
             k = href[1:]
-            tgt = SLUG.get(k) or ('p1w-q-' + k[5:] if k.startswith('P1_q_') else None)
+            tgt = SLUG.get(k) or (W + 'q-' + k[5:] if k.startswith(P + 'q_') else None)
             if tgt: return '<button type="button" class="wgo" data-wgo="%s">%s</button>' % (tgt, inner)
         return inner
     return re.sub(r'<a href="([^"]*)"[^>]*>(.*?)</a>', a, h, flags=re.S)
@@ -167,7 +191,7 @@ def body(parts):
         out.append(p); i += 1
     return ''.join(out)
 def stepH(s, sec):
-    up = ''.join('<button type="button" class="wgo wup" data-wgo="p1w-q-%s">↑ inciso %s)</button>' % (u, u) for u in s['up'])
+    up = ''.join('<button type="button" class="wgo wup" data-wgo="%sq-%s">↑ inciso %s)</button>' % (W, u, u) for u in s['up'])
     cal = annex.get(s['ck']) if s['ck'] else None
     calH = ('<details class="wcalc"><summary>Cálculos <small>· anexo C</small></summary><div class="wcalc-b">%s</div></details>' % ''.join(cal)) if cal else ''
     pre = 'Trazo · ' if s['sub'] else ''
@@ -180,8 +204,8 @@ ROM = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X']
 out = []
 for S in SECS:
     k = 'w%d' % (ROM.index(S['num']) + 1)
-    out.append('<div class="card xsec wsec" id="p1w-%s" data-fk="%s" data-short="%s"><h3 class="xh"><span>%s</span>%s</h3>%s%s</div>'
-               % (S['num'], k, SHORT.get(S['num'], ''), S['num'], H.escape(S['title']),
+    out.append('<div class="card xsec wsec" id="%s%s" data-fk="%s" data-short="%s"><h3 class="xh"><span>%s</span>%s</h3>%s%s</div>'
+               % (W, S['num'], k, SHORT.get(S['num'], ''), S['num'], H.escape(S['title']),
                   ('<div class="wintro">' + body(S['intro']) + '</div>') if S['intro'] else '', ''.join(stepH(s, S) for s in S['steps'])))
 res = links(mathify('\n'.join(out)))
 res = re.sub(r'<p>\s*(\x00M\d+\x00)\s*</p>', r'<div class="mathd">\1</div>', res)
@@ -193,15 +217,17 @@ res = re.sub(r'\x00M(\d+)\x00', lambda m: K[int(m.group(1))], res)
 res = res.replace('<p></p>', '').replace('<strong>', '<b>').replace('</strong>', '</b>')
 assert '\x00' not in res and '\x01' not in res
 # privacidad: nada de la portada
-for bad in ('Bocanegra', '@itcelaya', '23030312', 'Conclusión individual'):
+for bad in ('Bocanegra', '@itcelaya', '23030312', 'Conclusión individual', 'Palabras Clave'):
     assert bad not in res, bad
+assert not re.search(r'[\w.]+@[\w-]+\.\w', res), 'hay un correo en el resultado'
 
 ix = open(os.path.join(ROOT, 'index.html'), encoding='utf-8').read()
-a, b = ix.find('<!--p1w-->'), ix.find('<!--/p1w-->')
-assert a > 0 and b > a, 'faltan los marcadores <!--p1w--> … <!--/p1w--> en index.html'
-ix = ix[:a + 10] + '\n' + res + '\n' + ix[b:]
+MA, MB = '<!--p%dw-->' % N, '<!--/p%dw-->' % N
+a, b = ix.find(MA), ix.find(MB)
+assert a > 0 and b > a, 'faltan los marcadores %s … %s en index.html' % (MA, MB)
+ix = ix[:a + len(MA)] + '\n' + res + '\n' + ix[b:]
 open(os.path.join(ROOT, 'index.html'), 'w', encoding='utf-8').write(ix)
-print('P1 (Word):', len(SECS), 'secciones,', sum(len(S['steps']) + sum(len(s['kids']) for s in S['steps']) for S in SECS), 'pasos,',
+print('P%d (Word):' % N, len(SECS), 'secciones,', sum(len(S['steps']) + sum(len(s['kids']) for s in S['steps']) for S in SECS), 'pasos,',
       len(MATH), 'fórmulas,', len(annex), 'cálculos del anexo,', res.count('data-wsim'), 'simulaciones,', len(res), 'bytes')
 missing = [s['ck'] for S in SECS for s in S['steps'] + [k for x in S['steps'] for k in x['kids']] if s['ck'] and s['ck'] not in annex]
 if missing: print('Sin cálculos en el anexo:', missing)

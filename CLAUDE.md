@@ -778,7 +778,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 
 - Pedido: «que la P1 quede en el mismo orden que mi Word, organizada por secciones y pasos, y en cada paso con imágenes una
   simulación del caso de la tarea que cambie al mover las variables». Solo P1 por ahora (P2–P7 sin cambios).
-- **Generador:** `python3 -I herramientas/word/p1-pagina.py <Word descifrado>` (PIN: pedírselo al usuario; descifrar con
+- **Generador:** `python3 -I herramientas/word/pagina-word.py 1 <Word descifrado>` (antes `p1-pagina.py`; desde v53 sirve para cualquier práctica) (PIN: pedírselo al usuario; descifrar con
   `cifrar-docx.py descifrar` a un archivo del scratchpad). pandoc → HTML con TeX → secciones I–IX (`div.card.xsec.wsec#p1w-I…IX`,
   `data-fk=w1…w9`, `data-short`), pasos `.xstep.wstep` (ids `p1w-<clave del anexo>` p. ej. `p1w-III3`, `p1w-TL6`, `p1w-IVb`, o `p1w-sN`),
   «Trazo del LGDR» = `.wgrp` con `.wsub` («Trazo · Paso n»), «Resultado:» → `.wres`, anexo «C. Cálculos» dentro de cada paso
@@ -802,6 +802,29 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - `herramientas/pdf-practicas.js` arma las `.wsim` y las captura como imagen. PDF: 233 págs.
 - Probado con Playwright a 390 (claro/oscuro), 1280 y 1440 px: plegables, etapas y barra lateral (pasos con scrollspy), vínculos
   inciso ↔ respuesta, botones de búsqueda, Reporte de P1, P2/Resumen/Teoría sin errores de consola.
+
+## Hecho (v53): P2 de la página en el orden del Word, con simulaciones en cada figura
+
+- Mismo pedido que v52 para la P2. El usuario dio el PIN en el chat (no se escribe aquí). El Word **no se modificó** (el usuario le
+  pondrá las imágenes de MATLAB). P3–P7 siguen como estaban.
+- **Generador común:** `python3 -I herramientas/word/pagina-word.py <N> <Word descifrado>` (reemplaza `p1-pagina.py`; con N = 1 da la P1
+  idéntica byte por byte). Busca «Práctica N: » hasta «Práctica N+1: », prefijos `PN_c_/PN_q_` del Word e ids `pNw-…`, marcadores
+  `<!--pNw-->` … `<!--/pNw-->`. Nuevo: si la figura del Word todavía es el recuadro «[ Pega aquí la imagen ]», su descripción y su
+  código MATLAB quedan debajo de la simulación en `details.wfcode` (con Copiar, `[data-copy]`); cuando el usuario pegue las imágenes,
+  la figura sale igual (ruta de `img`). «✎ Residuos en MATLAB: …» → `.wml` con etiqueta «MATLAB · Residuos».
+- `#p2`: secciones I–IX (`p2w-I…IX`, pasos `p2w-III1…`, `p2w-IVa…e`, `p2w-VI1…4`, `p2w-VII5…7`, `p2w-s10` = Evidencia, `p2w-s23` =
+  Modelo en Simulink), Banco, `div.p2old[hidden]` (Planteamiento y tarjetas 1–4 viejas para el Reporte), Simulink y Código MATLAB. Se
+  quitó la tarjeta «Resolución paso a paso» de P2 (`PASOS.p2` sigue en el código).
+- **Simulaciones** (script «v53 · P2 en el orden del Word» al final del `<body>`; usa `window.__lgdrW`, piezas que ahora exporta el script
+  de v52; los vínculos `.wgo` y el Copiar de `.wml` de v52 ahora valen para cualquier `.wsec`). Planta 1/[(s+1)(s+2)(s+10)], PI (s+zc)/s,
+  caso K = 164.5 / 158.1, zc = 0.1, ζ = 0.174. f1 diagrama tipo Simulink + T(s) + polos + escalón (Con PI / Sin compensar, K, zc) ·
+  f2 LGDR sin compensar + recta de ζ, s₀, ruptura y cruce jω (K, ζ) · f3 escalón 3.er vs 2.º orden + Tabla 6 en vivo (K, t final) ·
+  f4 LGDR sin compensar vs con PI, dipolo ∠Gc/|Gc|, s₀ con PI, vista «Cerca del origen» (K, zc, ζ) · f5 escalón sin comp. vs PI + Tabla 12
+  en vivo y modo lento con residuo (K sin, K PI, zc, t final; «K sobre ζ = 0.174 para este cero») · f6 Command Window `pole(Tc)`,
+  `stepinfo(Tu/Tc)`, `e_u/e_c` · f7 Simulink + Scope (K, zc, Step, Stop time). Pico afinado con parábola (`sinfo`): 1.3734 en 0.888 s y
+  1.3961 en 0.909 s, como con la suma exacta de modos. Depuración: `window.__lgdrP2W`. `herramientas/pdf-practicas.js` arma las de
+  cualquier `window.__lgdrPNW`. En celular el diagrama de Simulink (`.wsl2`, mín. 500 px) se desliza de lado.
+- PDF: 229 págs. Probado a 390 (claro/oscuro) y 1440 px (oscuro, barra lateral y etapas), Reporte de P2, P1 y otras páginas sin errores.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
