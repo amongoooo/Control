@@ -765,6 +765,15 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Conversión: además de `docx-ecuaciones.py`, un `*` solo dentro de una ecuación (p. ej. el conjugado `s^*`) sale «¿» en LibreOffice:
   en la copia para el PDF se cambia por `∗` (U+2217). `libreoffice-math` hay que instalarlo en cada contenedor nuevo.
 
+## Hecho (v51): vínculos de los incisos del problema a sus respuestas (Word y PDF de reportes)
+
+- En «1. Planteamiento» de P1 y P3 (la P2 no tiene incisos), cada inciso termina con «→ respuesta: … · valor» (estilo `Hipervnculo` 9 pt,
+  marcadores `P1_q_a…d` / `P3_q_a…d`), y el título de la respuesta lleva «↑ inciso x)» de regreso.
+  P1: a) → «Trazo del LGDR (inciso a): 9 pasos» (marcador nuevo `P1_r_TL0`), b) → IV a) (K = 45.53), c) → IV d), d) → IV e).
+  P3: a) → III · Paso 5 (e = 0.1527), b) → IV a) (Gc, K = 44.64), c) y d) → IV e) (e = 0.00784, ×19.48).
+- Los vínculos funcionan en el PDF (LibreOffice los convierte en saltos internos). `reportes.pdf` sigue con 153 págs. y el mismo `REP_PDF`;
+  `reportes/Reporte_P1-P7.docx.enc` actualizado (mismo PIN).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
