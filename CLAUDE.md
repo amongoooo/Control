@@ -699,8 +699,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - `reportes.pdf` = ese Word (P1 + P2 llenas) en PDF: 144 págs., `REP_PDF={p1:2,p2:27,p3:55,p4:72,p5:90,p6:107,p7:126}`.
   Conversión: `docx-ecuaciones.py` → imágenes a 1600 px → LibreOffice (con `libreoffice-math`) → `reportes-pdf.py`.
   Evitar `Re`/`Im` dentro de ecuaciones (LibreOffice los cambia por ℜ/ℑ) y escribir los términos con signo explícito (`+-` sale ±).
-- El Word también está en el repo (pedido del usuario): `reportes/Reporte_P1-P7_P1-P2.docx` (16.4 MB, imágenes originales).
-  Descarga: https://amongoooo.github.io/Control/reportes/Reporte_P1-P7_P1-P2.docx . Al llenar otra práctica, subir la versión nueva ahí.
+- (Hasta v48 el Word estaba sin cifrar en `reportes/`; desde v49 sólo va cifrado, ver v49.)
 
 ## Hecho (v46): zoom en el visor de PDF
 
@@ -739,7 +738,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - `a[data-word]` con `href="reportes/Reporte_P1-P7_P1-P3.docx"` y `download="Reporte_P1-P7_Bocanegra.docx"` en dos lugares: pestaña PDF
   (tarjeta «Reportes en Word», «Descargar Word (.docx)»; el de PDF ahora dice «Descargar PDF») y barra de la ventana del Reporte
   (`.sy-b.rp-prt`, ícono + «Word», sólo ícono en ≤ 420 px), antes de «PDF de reportes».
-- **Al llenar otra práctica:** subir el Word nuevo a `reportes/` y cambiar el `href` de los dos `a[data-word]` (buscar `data-word`).
+- Desde v49 los botones piden PIN (ver v49).
+
+## Hecho (v49): «Descargar Word» con PIN
+
+- El usuario pidió contraseña para descargar el Word. **El PIN NO se escribe en el repositorio** (ni aquí, ni en la página, ni en
+  commits): si hace falta, pedírselo al usuario.
+- El Word va **cifrado**: `reportes/Reporte_P1-P7.docx.enc` (AES-256-GCM, clave PBKDF2-SHA256 del PIN con 600 000 iteraciones; formato
+  `LGDR1` + iteraciones + sal + iv + cifrado). Se borraron del árbol `reportes/Reporte_P1-P7_P1-P2.docx` y `..._P1-P3.docx` (siguen en el
+  historial de git; el usuario decide si se reescribe). `reportes.pdf` y `reportes/Practica3_Bocanegra.pdf` siguen públicos.
+- Página: `a[data-word="reportes/Reporte_P1-P7.docx.enc"][data-dl="Reporte_P1-P7_Bocanegra.docx"]` (pestaña PDF y barra del Reporte) →
+  `dialog#pinDlg` (`input#pinIn` password/numérico, «PIN incorrecto.» si falla) → `fetch` + WebCrypto → descarga con `Blob`.
+  CSS «v49» antes del visor de PDF; `<script>` al final del `<body>`. Necesita https (Pages) o localhost.
+- Herramienta: `herramientas/word/cifrar-docx.py cifrar|descifrar entrada salida` (PIN por `LGDR_PIN` o pregunta).
+  **Para llenar otra práctica:** pedir el PIN, `descifrar` el `.enc` a un archivo del scratchpad, generar, y volver a `cifrar` sobre
+  `reportes/Reporte_P1-P7.docx.enc` (no subir el .docx sin cifrar).
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
