@@ -657,6 +657,28 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - La P7 en el orden del Word ya estaba hecha (v42); se volvió a revisar contra `plantillas/Reporte_P7_Equipo_5.docx`: Tablas 1–13 y
   Figuras 1–12 con su paso, 30 pasos, sin `{#…}` ni errores de consola. `practicas.pdf` ya estaba regenerado con v42.
 
+## Hecho (v44): visor de PDF dentro de la página + `reportes.pdf` con el Word más reciente
+
+- El usuario pidió poder abrir el PDF **dentro de la página** (como la ventana del Reporte). `dialog#pdfDlg.sync.rpd.pvd` (CSS «visor
+  de PDF» antes del `</style>` principal; `<script>` propio al final del `<body>`) con **PDF.js 4.10.38 legacy** incluido en
+  `lib/pdfjs/` (`pdf.min.mjs`, `pdf.worker.min.mjs`, LICENSE Apache-2.0; se carga con `import()` sólo al abrir; el contenedor no llega
+  a cdnjs, por eso va en el repo). Cualquier enlace con `data-pdfv="archivo.pdf"` abre el visor (+ `data-title`, `data-sub`,
+  `data-dl`, `data-dest` = destino con nombre, `data-rp=pN` = página de `REP_PDF`, o `#page=N` en el `href`). Páginas perezosas
+  (IntersectionObserver con raíz = diálogo; se liberan al alejarse), zoom 50–300 %, «n / N», índice con los marcadores del PDF,
+  vínculos internos activos (`getAnnotations` → `a.pv-lnk` en %), descargar. Ctrl/⌘‑clic abre el PDF normal. Depuración:
+  `window.__lgdrPdf.open(url,título,sub,dest,dl,página)`.
+- Botón «PDF de reportes» de la ventana del Reporte (`[data-rp-pdf]`) ahora abre el visor encima del Reporte, en la página de la
+  práctica (`window.__lgdrRepPdf = REP_PDF`, puesto en la misma línea de `/*REP_PDF*/`). Pestaña PDF: tarjeta «Reportes en Word
+  (P1–P7)» con Ver aquí / otra pestaña / Descargar y P1…P7; `practicas.pdf` y su lista también abren en el visor.
+- `reportes.pdf` = `Reporte_P1-P7_P1_v4.docx` del usuario (09:05, 5/11): **P1 ya es individual** (Jorge Bocanegra González,
+  23030312); P2–P7 siguen con los datos del Equipo 5 hasta que el usuario las llene. Conversión: copia con los arreglos de ecuaciones
+  (los de esta sesión, equivalentes a `herramientas/docx-ecuaciones.py`) + imágenes reducidas a 1600 px (16 MB → 0.85 MB de imágenes),
+  LibreOffice con `libreoffice-math`, y `python3 -I herramientas/reportes-pdf.py salida.pdf` → 133 págs., 2.9 MB,
+  `REP_PDF={p1:2,p2:27,p3:44,p4:61,p5:79,p6:96,p7:115}`.
+- El usuario llena su Word con este formato (P1 terminada): fórmulas en Cambria Math 10.5 pt, «Resultado:» con variable en cada
+  paso, vínculos «→ cálculos» / «↑ volver al reporte» (marcadores `P1_c_*` / `P1_r_*`), anexo de cálculos en el mismo orden con la
+  sustitución de cada término, ejemplos de redacción en gris, pasos de la verificación numerados seguido (VI 1–4, VII 5–7).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
