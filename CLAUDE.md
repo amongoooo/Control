@@ -734,6 +734,13 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Ajuste 0.02/0.001 (adoptado): s₀ = −3.4905 ± j5.7801, K = 45.73, p₃ = −0.02006, r₃ = 0.00293, 15.33 % / 0.858 s,
   e = 0.00765 (×19.95), cola τ = 50 s (≈ 377 s hasta 1 %). Figuras 1–10 con código MATLAB completo (sin `sgrid`), Tablas 1–13.
 
+## Hecho (v48): botón «Descargar Word»
+
+- `a[data-word]` con `href="reportes/Reporte_P1-P7_P1-P3.docx"` y `download="Reporte_P1-P7_Bocanegra.docx"` en dos lugares: pestaña PDF
+  (tarjeta «Reportes en Word», «Descargar Word (.docx)»; el de PDF ahora dice «Descargar PDF») y barra de la ventana del Reporte
+  (`.sy-b.rp-prt`, ícono + «Word», sólo ícono en ≤ 420 px), antes de «PDF de reportes».
+- **Al llenar otra práctica:** subir el Word nuevo a `reportes/` y cambiar el `href` de los dos `a[data-word]` (buscar `data-word`).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
