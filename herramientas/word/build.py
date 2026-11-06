@@ -78,13 +78,14 @@ def h2(t): return P('<w:pStyle w:val="Ttulo2"/>', R(t))
 
 
 BM = [900]
+PRE = ['P3']   # prefijo de los marcadores (P3_r_*, P3_c_*); assemble.py lo cambia según la práctica
 
 
 def h2link(t, key):
     BM[0] += 1; i = BM[0]
-    return ('<w:p><w:pPr><w:pStyle w:val="Ttulo2"/></w:pPr><w:bookmarkStart w:id="%d" w:name="P3_r_%s"/>' % (i, key) + R(t) + R('  ') +
-            '<w:hyperlink w:anchor="P3_c_%s" w:history="1"><w:r><w:rPr><w:rStyle w:val="Hipervnculo"/><w:b w:val="0"/><w:bCs w:val="0"/>'
-            '<w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>' % key + T('→ cálculos') + '</w:r></w:hyperlink><w:bookmarkEnd w:id="%d"/></w:p>' % i)
+    return ('<w:p><w:pPr><w:pStyle w:val="Ttulo2"/></w:pPr><w:bookmarkStart w:id="%d" w:name="%s_r_%s"/>' % (i, PRE[0], key) + R(t) + R('  ') +
+            '<w:hyperlink w:anchor="%s_c_%s" w:history="1"><w:r><w:rPr><w:rStyle w:val="Hipervnculo"/><w:b w:val="0"/><w:bCs w:val="0"/>'
+            '<w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>' % (PRE[0], key) + T('→ cálculos') + '</w:r></w:hyperlink><w:bookmarkEnd w:id="%d"/></w:p>' % i)
 
 
 # ---------- texto ----------
@@ -96,7 +97,7 @@ def labeled(lbl, s, g=False):
     c = GRAY if g else None
     return P('<w:spacing w:after="160"/><w:jc w:val="both"/>', R(lbl, b=True, color=c) + rich(' ' + s, color=c))
 def problem(s): return P('<w:spacing w:after="80"/><w:ind w:left="240"/><w:jc w:val="both"/>', rich(s))
-def resultado(): return P('<w:spacing w:after="40"/><w:jc w:val="both"/>', R('Resultado:', b=True))
+def resultado(): return P('<w:keepNext/><w:spacing w:after="40"/><w:jc w:val="both"/>', R('Resultado:', b=True))
 def eq(src): return P('<w:spacing w:before="40" w:after="80"/><w:jc w:val="center"/>', '<m:oMathPara>' + omath(src) + '</m:oMathPara>')
 def spacer(): return P('<w:spacing w:after="120"/><w:jc w:val="both"/>', '')
 def advert():
@@ -129,8 +130,8 @@ BRD = ('<w:tcBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="808080"
 MAR = '<w:tcMar><w:top w:w="40" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="40" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tcMar>'
 
 
-def cellp(s, center, bold=False):
-    return '<w:p><w:pPr>' + ('<w:jc w:val="center"/>' if center else '') + '</w:pPr>' + rich(s, b=bold, sz=19) + '</w:p>'
+def cellp(s, center, bold=False, keep=False):
+    return '<w:p><w:pPr>' + ('<w:keepNext/>' if keep else '') + ('<w:jc w:val="center"/>' if center else '') + '</w:pPr>' + rich(s, b=bold, sz=19) + '</w:p>'
 
 
 def table(widths, head, rows, boldfirst=False):
@@ -141,16 +142,17 @@ def table(widths, head, rows, boldfirst=False):
          '<w:insideV w:val="single" w:sz="4" w:space="0" w:color="auto"/></w:tblBorders><w:tblCellMar><w:left w:w="10" w:type="dxa"/>'
          '<w:right w:w="10" w:type="dxa"/></w:tblCellMar><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" '
          'w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid>' % tw) + ''.join('<w:gridCol w:w="%d"/>' % w for w in widths) + '</w:tblGrid>'
-    x += '<w:tr><w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>'
+    small = len(rows) <= 4          # tablas cortas: sin encabezado repetido y sin partirse (LibreOffice perdía la fila al pasar de columna)
+    x += '<w:tr><w:trPr><w:cantSplit/>' + ('' if small else '<w:tblHeader/>') + '</w:trPr>'
     for w, h in zip(widths, head):
         x += ('<w:tc><w:tcPr><w:tcW w:w="%d" w:type="dxa"/>' % w + BRD + '<w:shd w:val="clear" w:color="auto" w:fill="D9D9D9"/>' + MAR +
-              '<w:vAlign w:val="center"/></w:tcPr>' + cellp(h, True, True) + '</w:tc>')
+              '<w:vAlign w:val="center"/></w:tcPr>' + cellp(h, True, True, keep=True) + '</w:tc>')   # encabezado junto a la 1.ª fila
     x += '</w:tr>'
-    for r in rows:
+    for k, r in enumerate(rows):
         x += '<w:tr><w:trPr><w:cantSplit/><w:trHeight w:val="340"/></w:trPr>'
         for j, (w, c) in enumerate(zip(widths, r)):
             x += '<w:tc><w:tcPr><w:tcW w:w="%d" w:type="dxa"/>' % w + BRD + MAR + '<w:vAlign w:val="center"/></w:tcPr>'
-            x += ''.join(cellp(l, j > 0, boldfirst and j == 0) for l in c.split('\n'))
+            x += ''.join(cellp(l, j > 0, boldfirst and j == 0, keep=small and k < len(rows) - 1) for l in c.split('\n'))
             x += '</w:tc>'
         x += '</w:tr>'
     return [x + '</w:tbl>', spacer()]
@@ -160,8 +162,8 @@ def table(widths, head, rows, boldfirst=False):
 def calc_title(t, key):
     BM[0] += 1; i = BM[0]
     return ('<w:p><w:pPr><w:keepNext/>' + BOX + '<w:spacing w:before="40"/>' + IND + '<w:jc w:val="center"/></w:pPr>'
-            '<w:bookmarkStart w:id="%d" w:name="P3_c_%s"/>' % (i, key) + R(t, b=True, sz=22) + '<w:r>' + T('   ') + '</w:r>'
-            '<w:hyperlink w:anchor="P3_r_%s" w:history="1"><w:r><w:rPr><w:rStyle w:val="Hipervnculo"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>' % key
+            '<w:bookmarkStart w:id="%d" w:name="%s_c_%s"/>' % (i, PRE[0], key) + R(t, b=True, sz=22) + '<w:r>' + T('   ') + '</w:r>'
+            '<w:hyperlink w:anchor="%s_r_%s" w:history="1"><w:r><w:rPr><w:rStyle w:val="Hipervnculo"/><w:sz w:val="18"/><w:szCs w:val="18"/></w:rPr>' % (PRE[0], key)
             + T('↑ volver al reporte') + '</w:r></w:hyperlink><w:bookmarkEnd w:id="%d"/></w:p>' % i)
 
 

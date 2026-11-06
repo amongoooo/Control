@@ -858,6 +858,26 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Solo se movió HTML (el JS ya manejaba las claves `pasos`/`plant`/`banco`). El Reporte encuentra el enunciado con
   `#pN .statement figure.bkq` en cualquier lugar. PDF de prácticas: 314 págs.
 
+## Hecho (v56): Práctica 4 del Word llenada con el formato de la P1–P3
+
+- Mismo formato que la P3 (v47): portada individual, Resumen, I–IX, «Conclusión individual», anexo «C. Cálculos» y Referencias;
+  fórmulas OMML Cambria Math 10.5 pt, «Resultado:» en cada paso, «→ cálculos» / «↑ volver al reporte» (marcadores `P4_r_*` / `P4_c_*`:
+  III1–III5, IVa–IVf, VI1–VI4, VII5–VII7) y 8 recuadros «[ Pega aquí la imagen ]» con código MATLAB completo (Fig. 1 y 8: Simulink con
+  `PID Controller` en modo PD, `P = zc`, `D = 1`, `UseFilter = off`; Fig. 6: `pole`/`zero`/`stepinfo`/`residue`; Fig. 7: error a rampa).
+  P1–P3 y P5–P7 del Word no cambiaron (se comparó elemento por elemento). La P4 no trae incisos, así que no lleva «→ respuesta».
+- Generador: `herramientas/word/num4.py` (números), `p4.py` (reporte) y `p4calc.py` (anexo). `assemble.py` ahora recibe la práctica:
+  `python3 assemble.py in/word/document.xml out/word/document.xml 4` (el prefijo de marcadores va en `build.PRE`). Para P5–P7: copiar
+  `num4/p4/p4calc` y cambiar el contenido. `build.table`: tablas de ≤ 4 filas sin encabezado repetido y con «conservar con el siguiente»
+  (LibreOffice perdía la fila de datos de la Tabla 3 al pasar de columna); «Resultado:» se queda con su ecuación.
+- Números P4: ζ = 0.5039 (θ = 59.74°), s₀ = −1.2044 ± j2.0648, K_ref = 43.38, K = 1 → −0.042/−3.878/−6.079, σ_b = −1.5695 / K_b = 16.90,
+  0 < K < 240 (±j4.899), p₃ = −7.591 (6.30σ, residuo −0.127); 2.º orden 16 %, T_s 3.321, T_p 1.522, T_r 0.688; sim. 15.08 %, 3.471, 1.673,
+  0.733; K_v 1.807, e = 0.5533. PD: T_s,d = 1.107, s_d = −3.6133 ± j6.1943, ∠G(s_d) = −275.61° → θ_z = 95.61°, z_c = 3.0046, K = 47.47,
+  s³ + 10s² + 71.47s + 142.62, Routh b₁ = 57.21 (estable ∀K), p₃ = −2.7734 (r₃ = −0.1013, 19 % del dominante r₁ = −0.4494 ± j0.2848),
+  sim. 11.98 % / t_p 0.522 / T_s 1.152 (×3.01), K_v 5.943, e = 0.1683 (×3.29). Sin ajuste; comprobación: K = 57.11 daría 16.00 % y T_s 1.083
+  pero ζ = 0.460.
+- `reportes/Reporte_P1-P7.docx.enc` actualizado (mismo PIN; se comprobó descifrando). `reportes.pdf` = 164 págs.,
+  `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:128,p7:146}`.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
