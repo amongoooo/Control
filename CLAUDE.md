@@ -849,6 +849,15 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - PDF: 231 págs. Probado a 390 (claro/oscuro) y 1440 px (oscuro, barra lateral, vínculo inciso → respuesta), Reporte de P3, P1/P2/P4 y
   otras páginas sin errores de consola.
 
+## Hecho (v55): P1–P3 con Resolución paso a paso, Planteamiento y Banco arriba de la sección I
+
+- Pedido: volver a poner el desarrollo paso a paso al inicio (arriba de «Identificación») y el Planteamiento y el Banco «de antes»,
+  sin mover nada de lo que viene del Word. Orden de `#p1`, `#p2`, `#p3`: `div.card.pasos[data-pasos=pN]` (R) → `div.card.statement`
+  (P, sacado de `div.pNold`) → `div.card.bench` (B) → `<!--pNw-->` secciones I–IX `<!--/pNw-->` → `div.pNold[hidden]` (tarjetas 1–4
+  viejas para el Reporte) → Simulink → Código MATLAB. Todo fuera de los marcadores, así `pagina-word.py` no lo borra al regenerar.
+  Solo se movió HTML (el JS ya manejaba las claves `pasos`/`plant`/`banco`). El Reporte encuentra el enunciado con
+  `#pN .statement figure.bkq` en cualquier lugar. PDF de prácticas: 314 págs.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
