@@ -39,6 +39,8 @@ def word(m):
     w = m.group(0)
     if w in KEEP: return KEEP[w]
     if re.fullmatch(r'[A-Z]{1,2}', w) or re.fullmatch(r'd[A-Z]', w): return w      # KG, KN, OS, dK: siguen en cursiva
+    if re.fullmatch(r's?K[GsKz]?', w): return w                                    # sKG, sK, Ks, Kz (P3): variables, en cursiva
+    if w in ('sen', 'jsen'): return w[:-3] + r'\operatorname{sen}'                 # seno en español (P3)
     return r'\text{' + w + '}'
 def fixtex(t):
     t = t.replace(r'\mspace{6mu}', r'\;').replace(r'\text{~}', r'\,')

@@ -778,7 +778,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 
 - Pedido: «que la P1 quede en el mismo orden que mi Word, organizada por secciones y pasos, y en cada paso con imágenes una
   simulación del caso de la tarea que cambie al mover las variables». Solo P1 por ahora (P2–P7 sin cambios).
-- **Generador:** `python3 -I herramientas/word/pagina-word.py 1 <Word descifrado>` (antes `p1-pagina.py`; desde v53 sirve para cualquier práctica) (PIN: pedírselo al usuario; descifrar con
+- **Generador:** `python3 -I herramientas/word/pagina-word.py 1 <Word descifrado>` (antes `p1-pagina.py`; desde v53 sirve para cualquier práctica; P3 → v54) (PIN: pedírselo al usuario; descifrar con
   `cifrar-docx.py descifrar` a un archivo del scratchpad). pandoc → HTML con TeX → secciones I–IX (`div.card.xsec.wsec#p1w-I…IX`,
   `data-fk=w1…w9`, `data-short`), pasos `.xstep.wstep` (ids `p1w-<clave del anexo>` p. ej. `p1w-III3`, `p1w-TL6`, `p1w-IVb`, o `p1w-sN`),
   «Trazo del LGDR» = `.wgrp` con `.wsub` («Trazo · Paso n»), «Resultado:» → `.wres`, anexo «C. Cálculos» dentro de cada paso
@@ -825,6 +825,29 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   1.3961 en 0.909 s, como con la suma exacta de modos. Depuración: `window.__lgdrP2W`. `herramientas/pdf-practicas.js` arma las de
   cualquier `window.__lgdrPNW`. En celular el diagrama de Simulink (`.wsl2`, mín. 500 px) se desliza de lado.
 - PDF: 229 págs. Probado a 390 (claro/oscuro) y 1440 px (oscuro, barra lateral y etapas), Reporte de P2, P1 y otras páginas sin errores.
+
+## Hecho (v54): P3 de la página en el orden del Word, con simulaciones en cada figura
+
+- Mismo pedido que v52/v53 para la P3. El usuario dio el PIN en el chat (no se escribe aquí). El Word **no se modificó**. P4–P7 siguen
+  como estaban.
+- `python3 -I herramientas/word/pagina-word.py 3 <Word descifrado>`: `#p3` = secciones I–IX (`p3w-I…IX`; pasos `p3w-s1…s4` del
+  Planteamiento, `p3w-III1…5`, `p3w-s10` = Evidencia, `p3w-IVa…e`, `p3w-VI1…4`, `p3w-VII5…7`, `p3w-s23` = Modelo en Simulink), Banco,
+  `div.p3old[hidden]` (Planteamiento y tarjetas 1–4 viejas para el Reporte), Simulink y Código MATLAB. Se quitó la tarjeta «Resolución
+  paso a paso» de P3 (`PASOS.p3` sigue en el código).
+- Generador: `sKG`, `sK`, `Ks`, `Kz` dentro de fórmulas quedan en cursiva (variables) y `sen`/`jsen` como función (`\operatorname{sen}`);
+  por eso P1 y P2 también se regeneraron (sólo cambió eso; el texto quedó igual).
+- **Simulaciones** (script «v54 · P3 en el orden del Word» al final del `<body>`, usa `window.__lgdrW`; depuración `window.__lgdrP3W`).
+  Planta 1/[s(s+7)], atraso (s+zc)/(s+pc), %OS = 15. Caso: K = 45.84 sin compensar, 44.64 con 0.2/0.01, 45.73 con la variante 0.02/0.001.
+  `design()` toma el **último** cruce de la condición de ángulo sobre la recta de ζ (salta el círculo del dipolo, como `rmin` en MATLAB).
+  Error a rampa = escalón de (s+7)(s+pc)/D_T(s). f1 Simulink (Con atraso/Sin compensar, Step/Ramp) + T(s) + K_v · f2 LGDR sin compensar
+  + recta de ζ (K, %OS) · f3 escalón + Tabla 6 en vivo (K, t final) · f4 error a rampa sin compensar con 1/K_v · f5 LGDR sin comp. vs con
+  atraso, ∠/|Gc| del dipolo, vista «Cerca del origen» (K, zc, pc, %OS) · f6 escalón sin comp. vs atraso + Tabla 12 en vivo + residuo del
+  modo lento · f7 error a rampa de los dos (t final hasta 400 s; e a 20 s, asentamiento) · f8 Command Window (`pole(Tc)`, `stepinfo`,
+  `Kv_c`, `e_u`, `e_c`, `mejora`) · f9 variante vs libro: escalón y error a rampa + tabla (p₃, r₃, %OS, Ts, e, mejora, τ) · f10 Simulink +
+  Scope de la variante (K, zc, pc, Step, Stop time = 6). Comprobado: 18.31 % / t_p 0.557 / T_s 2.144; variante 15.33 % / 0.858 s;
+  r₃ 0.0318 / 0.00293; e(20 s) = 0.0103, e(60 s) = 0.00784; ±1 % de la cola de la variante ≈ 377 s; mejora ×19.4764.
+- PDF: 231 págs. Probado a 390 (claro/oscuro) y 1440 px (oscuro, barra lateral, vínculo inciso → respuesta), Reporte de P3, P1/P2/P4 y
+  otras páginas sin errores de consola.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
