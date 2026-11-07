@@ -1022,6 +1022,27 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   ángulo/radianes, Fix 3 + lineal, STO/VARIABLE, historial, catálogo, Complejos (∠G(s₀) ≈ −180°), Ecuación grado 3 de P1 (−7.943,
   −2.0285 ± j2.7677), sistema 3×3, Tabla de −(x+2)(x+4)(x+6) (máximo cerca de −2.8), SOLVE, f(x), «→ Respuesta» en la evaluación I, Esc; consola limpia.
 
+## Hecho (v64): calculadora ajustada a las fotos y a la investigación de la fx‑991CW
+
+- El usuario mandó 3 fotos de la fx‑991CW y una investigación (manual oficial, manual interactivo de Casio UK, reseñas). Se corrigió v63:
+  - **Sin ALPHA** (la CW no la tiene): las variables van con SHIFT + 4 5 6 1 2 3 0 . ×10ˣ (A B C D E F x y z); SHIFT 7/8/9 = π, e, i.
+  - **Teclas redondas** (cúpula gris oscuro, etiquetas SHIFT doradas con la marca «∟», SHIFT dorada con ⇧). Zona de arriba como la foto
+    (`KTOP`, cuadrícula de 6 × 3): ON · HOME | ▲ | ⇞⇟ (`.lc-pg`, página arriba/abajo); SETTINGS · BACK | ◀ OK ▶; SHIFT · VARIABLE ·
+    FUNCTION | ▼ | CATALOG · TOOLS. Etiqueta blanca encima de cada tecla de arriba, íconos SVG propios (`IC`).
+  - Filas de 6: `x`(QR) ■/□(mixta) √■(ⁿ√) x^■(x⁻¹) x²(log) log■□(ln) / Ans sin cos tan ((=) )(,). Numérico: 7(π) 8(e) 9(i) DEL(INS)
+    AC(OFF) / 4(A) 5(B) 6(C) × ÷ / 1(D) 2(E) 3(F) +(°′″) −((−)) / 0(x) .(y) ×10ˣ(z) FORMAT EXE(≈). Lo que no existe aquí (QR, fracción
+    mixta, INS, °′″) avisa con `NOTHAVE`; SHIFT AC (OFF) cierra la calculadora; ON = AC y cierra menús.
+  - **Solver dentro de Ecuación** (menú: Simultánea · Polinómica · Solver), como en la CW; ya no está en TOOLS de Calcular.
+  - Polinómica: grado 2 muestra x/y del mínimo o máximo; grado 3, máximo y mínimo locales (o «Sin máx./mín. local»); TOOLS › «Raíces
+    complejas» Sí/No («Sin raíces reales»). Con P1 (grado 3) el mínimo local −2.845 = punto de ruptura. Soluciones: ▼/EXE siguiente,
+    ▲/BACK anterior, EXE en la última → coeficientes. AC en el editor de coeficientes los pone todos en 0.
+  - Tabla: TOOLS › Tipo de tabla (f y g · solo f · solo g); máximo 30 filas con dos funciones y 45 con una.
+  - CATALOG con las categorías de la CW: (Complejos, solo en esa app) · Análisis de funciones · Probabilidad · Cálculo numérico ·
+    Hiperbólicas/trig. · Otros (Ans, π, e, √, ˣ√, ∛, ⁻¹, ², ³, ^(, eˣ, 10ˣ, (−), coma, paréntesis, =).
+  - HOME en cuadrícula de 3 columnas (ícono + nombre; la descripción va abajo). En menús AC cierra todo; con un resultado, BACK lo edita.
+- Probado con Playwright a 390×844 y 1440×900/720 (claro/oscuro): las mismas pruebas de v63 + Solver desde Ecuación, extremos, tipo de
+  tabla; consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

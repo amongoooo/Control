@@ -517,12 +517,13 @@ function edHTML(root,ed,lin,reg){
 /* ===================================================================================================== interfaz */
 const CSS=`
 .lc{--lc-ink:var(--ink,#111);--lc-mu:var(--muted,#5b6472);--lc-ln:var(--line,#d9dde3);--lc-ac:var(--accent,#1d4ed8);--lc-sf:var(--surface,#fff);--lc-bad:var(--bad,#b42318);--lc-ok:var(--ok,#157f3c);
-  --b0:#22262d;--b1:#2d323b;--kf:#3a404b;--kfh:#474e5b;--kn:#e9ebee;--knt:#15181d;--ky:#f2c14e;--kr:#ff8a80;--kex:#2f6fe4;--kdel:#e2793b;
-  --lcd:#e8ece4;--lcdi:#14181b;--lcdm:#5d6660;--lcdl:#c9d0c4;--lcds:#d9ecff;
+  --b0:#1c1d1f;--b1:#2a2b2e;--kf:#3b3c3f;--kfh:#4a4b4f;--ky:#e6c065;--kgold:#c6a65c;
+  --lcd:#d3d8ca;--lcdi:#16191a;--lcdm:#545b55;--lcdl:#b6bdae;--lcds:#e9f0ff;
   container-type:size;display:flex;flex-direction:column;height:100%;min-height:0;background:var(--b0);color:#f3f4f6;font:14px var(--f-body,system-ui,sans-serif);-webkit-tap-highlight-color:transparent;
-  --kh:clamp(23px,calc((100cqh - 380px) / 9.6),46px);--gap:clamp(4px,1.1cqh,7px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .lc{--lcd:#d3d9cf;--lcdl:#b7bfb1}}
-:root[data-theme=dark] .lc{--lcd:#d3d9cf;--lcdl:#b7bfb1}
+  --kd:clamp(28px,min(calc((100cqw - 44px) / 6 * .8),calc((100cqh - 390px) / 8.8)),54px);
+  --kn:min(calc(var(--kd) * 1.1),calc((100cqw - 40px) / 5 * .84))}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .lc{--lcd:#c5cbbb;--lcdl:#a9b0a1}}
+:root[data-theme=dark] .lc{--lcd:#c5cbbb;--lcdl:#a9b0a1}
 .lc *{box-sizing:border-box}
 :where(.lc) button{font:inherit;color:inherit;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 .lc:focus,.lc:focus-visible{outline:none}
@@ -561,9 +562,9 @@ const CSS=`
 .lc-li .r{margin-left:auto;font-size:12.5px;color:var(--lcdm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%}
 .lc-li.sel{background:var(--lcdi);color:var(--lcd)}.lc-li.sel .n,.lc-li.sel .r{color:var(--lcdl)}
 .lc-li[aria-disabled=true]{opacity:.45}
-.lc-home{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px 0}
-.lc-app{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 4px;border-radius:8px;border:1px solid var(--lcdl);cursor:pointer;text-align:center;font:600 12.5px var(--f-body,system-ui);line-height:1.2}
-.lc-app svg{width:24px;height:24px}
+.lc-home{display:grid;grid-template-columns:repeat(3,1fr);gap:4px 6px;padding:6px 0 2px}
+.lc-app{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 4px;border-radius:8px;border:1px solid var(--lcdl);cursor:pointer;text-align:center;font:500 13px var(--f-body,system-ui);line-height:1.15;border-color:transparent;padding:5px 2px 4px}
+.lc-app svg{width:26px;height:26px}
 .lc-app small{font-weight:500;font-size:10.5px;color:var(--lcdm)}
 .lc-app.sel{background:var(--lcdi);color:var(--lcd);border-color:var(--lcdi)}.lc-app.sel small{color:var(--lcdl)}
 .lc-fld{display:flex;align-items:center;gap:6px;padding:4px 4px;border-radius:5px;border:1px solid transparent;min-height:36px}
@@ -596,42 +597,48 @@ const CSS=`
 .lc-a[hidden]{display:none}
 .lc-msg{font-size:12px;color:#9be3b5;margin-left:auto;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lc-msg.bad{color:#ffb4ab}
-.lc-kp{flex:none;padding:4px 10px max(10px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:var(--gap)}
-.lc-top{display:grid;grid-template-columns:1fr 1fr 1.5fr 1fr 1fr;grid-template-rows:auto auto;column-gap:var(--gap);row-gap:calc(var(--gap) + 6px);align-items:end;padding-top:8px}
-.lc-g6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--gap);row-gap:calc(var(--gap) + 9px);padding-top:9px}
-.lc-g5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--gap);margin-top:4px}
-.lc-k{position:relative;display:flex;align-items:center;justify-content:center;height:var(--kh);border:0;border-radius:9px;background:var(--kf);color:#f5f6f8;cursor:pointer;padding:0 2px;line-height:1;font:600 15px var(--f-body,system-ui);box-shadow:0 2px 0 #14171c}
+.lc-kp{flex:none;padding:0 12px max(10px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:3px}
+.lc-g{display:grid;column-gap:4px;row-gap:2px;justify-items:center;align-items:end}
+.lc-gt{grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(3,auto);row-gap:0;margin-bottom:4px}
+.lc-g6{grid-template-columns:repeat(6,minmax(0,1fr))}
+.lc-g5{grid-template-columns:repeat(5,minmax(0,1fr));margin-top:2px}
+.lc-c{display:flex;flex-direction:column;align-items:center;width:100%;min-width:0}
+.lc-lg{height:14px;width:100%;display:flex;align-items:flex-end;justify-content:flex-start;padding:0 0 2px 1px;font:700 10px var(--f-body,system-ui);line-height:1;white-space:nowrap;overflow:visible;pointer-events:none}
+.lc-lg .ks{color:var(--ky);display:inline-flex;align-items:flex-end;gap:1px}
+.lc-lg .ks::after{content:"";width:5px;height:5px;border-left:1px solid currentColor;border-bottom:1px solid currentColor;margin:0 0 -1px 1px;opacity:.7}
+.lc-lg .tl{width:100%;text-align:center;color:#e9e9ea;font-size:8.5px;letter-spacing:.04em}
+.lc-k{position:relative;display:flex;align-items:center;justify-content:center;width:var(--kd);height:var(--kd);border:0;border-radius:50%;background:var(--kf);color:#f4f4f5;cursor:pointer;padding:0;line-height:1;font:600 15px var(--f-body,system-ui);box-shadow:inset 0 2px 1px rgba(255,255,255,.13),inset 0 -3px 4px rgba(0,0,0,.35),0 2px 3px rgba(0,0,0,.55)}
 .lc-k:hover{background:var(--kfh)}
-.lc-k:active,.lc-k.dn{transform:translateY(1px);box-shadow:0 1px 0 #14171c}
-.lc-k .kl{white-space:nowrap;pointer-events:none}
-.lc-k .ks,.lc-k .ka{position:absolute;top:-1.22em;font:700 9.5px var(--f-body,system-ui);white-space:nowrap;pointer-events:none;line-height:1.1}
-.lc-k .ks{left:2px;color:var(--ky)}.lc-k .ka{right:2px;color:var(--kr)}
-.lc-k .ks:only-of-type{left:0;right:0;text-align:center}
-.lc-k.sm{height:calc(var(--kh)*.78);font-size:10.5px;letter-spacing:.02em;border-radius:7px;background:#262a31;color:#e5e7eb}
-.lc-k.sm:hover{background:#30353e}
-.lc-k.shf{color:var(--ky)}.lc-k.alp{color:var(--kr)}
-.lc.s-sh .lc-k.shf{background:var(--ky);color:#1b1b1b}.lc.s-al .lc-k.alp{background:var(--kr);color:#1b1b1b}
-.lc.s-sh .lc-k .ks{text-decoration:underline;font-size:10.5px}.lc.s-al .lc-k .ka{text-decoration:underline;font-size:10.5px}
-.lc.s-sh .lc-k.hs .kl,.lc.s-al .lc-k.ha .kl{opacity:.4}
-.lc-k.n{background:var(--kn);color:var(--knt);font-size:19px;font-weight:600;box-shadow:0 2px 0 #9aa0a8}
-.lc-k.n:hover{background:#fff}
-.lc-k.o{background:var(--kn);color:var(--knt);font-size:20px;box-shadow:0 2px 0 #9aa0a8}
-.lc-k.dl{background:var(--kdel);color:#fff;font-size:13.5px;box-shadow:0 2px 0 #8a4318}
-.lc-k.ex{background:var(--kex);color:#fff;font-size:14px;box-shadow:0 2px 0 #183d8a}
-.lc-k.fm{font-size:11px}
+.lc-k:active,.lc-k.dn{transform:translateY(1px) scale(.97);box-shadow:inset 0 1px 1px rgba(255,255,255,.1),inset 0 -1px 3px rgba(0,0,0,.4),0 1px 1px rgba(0,0,0,.5)}
+.lc-k .kl{white-space:nowrap;pointer-events:none;display:inline-block;line-height:1}
+.lc-k svg{width:58%;height:58%;pointer-events:none}
+.lc-k .kl svg{width:1.35em;height:1.35em;vertical-align:middle}
+.lc-k.sm{font-size:13px}
+.lc-k.n{width:var(--kn);height:var(--kn);font-size:20px;font-weight:500}
+.lc-k.n.sm2{font-size:13.5px}
+.lc-k.n.fm{font-size:9.5px;font-weight:700;letter-spacing:.02em;flex-direction:column;gap:1px}
+.lc-k.tk{width:calc(var(--kd)*.8);height:calc(var(--kd)*.8);background:#141516}
+.lc-k.tk:hover{background:#26282b}
+.lc-k.tk.on{width:calc(var(--kd)*.62);height:calc(var(--kd)*.62);margin-top:calc(var(--kd)*.1)}
+.lc-k.shf{background:var(--kgold);color:#2a2410}
+.lc-k.shf:hover{background:#d6b56a}
+.lc.s-sh .lc-k.shf{box-shadow:0 0 0 2px var(--ky),0 0 10px rgba(242,193,78,.6)}
+.lc.s-sh .lc-lg .ks{text-decoration:underline}
+.lc.s-sh .lc-k.hs .kl{opacity:.45}
+.lc-k.ar{width:calc(var(--kd)*.72);height:calc(var(--kd)*.72);background:#1d1e20}
+.lc-k.ar:hover{background:#2c2e31}
+.lc-k.okk{width:calc(var(--kd)*.86);height:calc(var(--kd)*.86);background:#1d1e20;font:800 12px var(--f-body,system-ui)}
+.lc-pg{grid-column:6;grid-row:1/3;align-self:center;display:flex;flex-direction:column;width:calc(var(--kd)*.72);height:calc(var(--kd)*1.75);border-radius:999px;background:#141516;box-shadow:inset 0 2px 1px rgba(255,255,255,.1),0 2px 3px rgba(0,0,0,.55);overflow:hidden}
+.lc-pg button{all:unset;flex:1;display:grid;place-items:center;color:#e9e9ea;cursor:pointer}
+.lc-pg button:hover{background:#26282b}
+.lc-pg svg{width:52%;height:auto}
 .lc-k i{font-family:KaTeX_Math,Georgia,"Times New Roman",serif;font-weight:400;font-size:1.15em}
-.lc-k sup{font-size:.68em;line-height:0;vertical-align:.55em}
-.lc-k.dim,.lc.app-calc .lc-k.ki{opacity:.45}
-.lc-k .bx{display:inline-block;width:.62em;height:.62em;border:1.3px solid currentColor;border-radius:1px;vertical-align:-.05em}
-.lc-k .fr{display:inline-flex;flex-direction:column;align-items:center;gap:2px}.lc-k .fr .bx{width:.55em;height:.5em}.lc-k .fr hr{width:.9em;border:0;border-top:1.3px solid currentColor;margin:0}
-.lc-dp{grid-row:1/3;grid-column:3;justify-self:center;align-self:center;position:relative;width:min(100%,calc(var(--kh)*2.35));aspect-ratio:1;border-radius:50%;background:#1a1d22;box-shadow:inset 0 0 0 2px #3b414c,0 2px 0 #0e1013;display:grid;grid-template:1fr 1.15fr 1fr/1fr 1.15fr 1fr}
-.lc-dp button{all:unset;display:grid;place-items:center;color:#cfd3da;cursor:pointer;font-size:11px;border-radius:50%}
-.lc-dp button:hover{color:#fff}
-.lc-dp .u{grid-area:1/2}.lc-dp .l{grid-area:2/1}.lc-dp .r{grid-area:2/3}.lc-dp .d{grid-area:3/2}
-.lc-dp .ok{grid-area:2/2;background:#2f343d;font:700 11px var(--f-body,system-ui);box-shadow:inset 0 0 0 1px #4a515d}
-.lc-dp .ok:hover{background:#3a404b}
-.lc-dp .bk{position:absolute;right:-6%;bottom:-8%;width:34%;height:34%;background:#262a31;box-shadow:0 0 0 2px var(--b0);font-size:8.5px;font-weight:700;letter-spacing:.02em}
-.lc-k:focus-visible,.lc-dp button:focus-visible{outline:2px solid #8fb2ff;outline-offset:1px}
+.lc-k sup{font-size:.62em;line-height:0;vertical-align:.6em}
+.lc-k .bx{display:inline-block;width:.6em;height:.6em;border:1.3px solid currentColor;border-radius:1px;vertical-align:-.05em}
+.lc-k .bx.f{background:currentColor}
+.lc-k .bx.s{width:.42em;height:.42em}
+.lc-k .fr{display:inline-flex;flex-direction:column;align-items:center;gap:2px}.lc-k .fr .bx{width:.5em;height:.42em}.lc-k .fr hr{width:.8em;border:0;border-top:1.4px solid currentColor;margin:0}
+.lc-k:focus-visible,.lc-pg button:focus-visible{outline:2px solid #8fb2ff;outline-offset:2px}
 /* editor natural */
 .lc-e{font-family:KaTeX_Main,"Times New Roman",serif;line-height:1.25}
 .lc-e i{font-family:KaTeX_Math,"Times New Roman",serif;font-style:italic}
@@ -664,42 +671,58 @@ function injectCSS(){ if(document.getElementById('lgdr-calc-css')) return; const
 
 /* teclas: [etiqueta, acción, [SHIFT etiqueta, acción], [ALPHA etiqueta, acción], clase]
    Acciones: texto = se escribe; '#…' = plantilla; '@…' = tecla de control. */
-const BX='<span class="bx"></span>';
+/* teclas: [cara, acción, [leyenda SHIFT, acción con SHIFT] | null, clase]
+   Acciones: texto = se escribe; '#…' = plantilla; '@…' = tecla de control; '!…' = función que esta calculadora no tiene (avisa).
+   Distribución de la fx‑991CW (sin ALPHA: las variables van con SHIFT + 4 5 6 1 2 3 0 . ×10ˣ). */
+const BX='<span class="bx"></span>', BXF='<span class="bx f"></span>', BXS='<span class="bx s"></span>';
+const SV=(d,w)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w||2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC={
+  home:SV('<path d="M3.5 11 12 4l8.5 7"/><path d="M6 9.5V19h12V9.5"/>'),
+  set:SV('<path d="M4 7h16M4 12h16M4 17h16"/><circle cx="9" cy="7" r="1.8" fill="currentColor"/><circle cx="15" cy="12" r="1.8" fill="currentColor"/><circle cx="8" cy="17" r="1.8" fill="currentColor"/>',1.6),
+  back:SV('<path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/>'),
+  shift:SV('<path d="M12 4 5 11h4v8h6v-8h4z"/>',1.7),
+  vari:SV('<path d="M3 8h9M9 5l3 3-3 3M14 16H5M8 13l-3 3 3 3"/><text x="14.5" y="13" font-size="9" font-style="italic" font-family="Georgia,serif" fill="currentColor" stroke="none">x</text>',1.5),
+  fun:'<span style="font:italic 500 12.5px Georgia,serif">f(<i style="font-size:1em">x</i>)</span>',
+  cat:SV('<path d="M12 6.5c-2-1.6-5-2-8-1.5v13c3-.5 6-.1 8 1.5 2-1.6 5-2 8-1.5V5c-3-.5-6-.1-8 1.5z"/><path d="M12 6.5v13"/>',1.6),
+  tools:SV('<circle cx="5.5" cy="12" r="1.9" fill="currentColor"/><circle cx="12" cy="12" r="1.9" fill="currentColor"/><circle cx="18.5" cy="12" r="1.9" fill="currentColor"/>',1),
+  up:SV('<path d="M6 15l6-6 6 6"/>',2.4), dn:SV('<path d="M6 9l6 6 6-6"/>',2.4), lf:SV('<path d="M15 6l-6 6 6 6"/>',2.4), rt:SV('<path d="M9 6l6 6-6 6"/>',2.4),
+  pu:SV('<path d="M6 13l6-6 6 6M6 19l6-6 6 6"/>',2.2), pd:SV('<path d="M6 5l6 6 6-6M6 11l6 6 6-6"/>',2.2),
+  del:SV('<path d="M9 5h11v14H9l-6-7z" fill="currentColor" stroke="none"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5" stroke="#3a3b3e" stroke-width="2"/>',1),
+  fmt:'<span>FORMAT</span>'};
+/* zona de arriba: [leyenda arriba, cara, acción, columna, fila, clase] */
+const KTOP=[
+  ['ON','','@on',1,1,'tk on'],['HOME',IC.home,'@home',2,1,'tk'],['',IC.up,'@up',4,1,'ar'],
+  ['SETTINGS',IC.set,'@set',1,2,'tk'],['',IC.back,'@back',2,2,'tk'],['',IC.lf,'@left',3,2,'ar'],['','OK','@ok',4,2,'okk'],['',IC.rt,'@right',5,2,'ar'],
+  ['SHIFT',IC.shift,'@shift',1,3,'tk shf'],['VARIABLE',IC.vari,'@var',2,3,'tk'],['FUNCTION',IC.fun,'@fun',3,3,'tk'],['',IC.dn,'@down',4,3,'ar'],['CATALOG',IC.cat,'@cat',5,3,'tk'],['TOOLS',IC.tools,'@tools',6,3,'tk']];
+const TNAME={'@on':'Encender / borrar','@home':'HOME: menú de apps','@up':'Arriba','@set':'SETTINGS: configuración','@back':'BACK: regresar','@left':'Izquierda','@ok':'OK','@right':'Derecha','@shift':'SHIFT','@var':'VARIABLE: variables','@fun':'FUNCTION: f(x) y g(x)','@down':'Abajo','@cat':'CATALOG: catálogo de funciones','@tools':'TOOLS: herramientas'};
 const KEYS6=[
-  ['<i>x</i>','x',['=','='],null,'f'],
-  ['<span class="fr">'+BX+'<hr>'+BX+'</span>','#frac',['|x|','#abs'],null,'f'],
-  ['√'+BX,'#sqrt',['∛','#cbrt'],null,'f'],
-  ['<i>x</i><sup>2</sup>','#sq',['x³','#cube'],null,'f'],
-  ['<i>x</i><sup>▫</sup>','#pow',['ⁿ√','#root'],null,'f'],
-  ['log<sub style="font-size:.6em">▫</sub>','#logb',['10ˣ','#10x'],null,'f'],
-  ['(−)','−',['∠','∠'],['A','A'],'f'],
-  ['<i>x</i><sup>−1</sup>','#inv',['x!','!'],['B','B'],'f'],
-  ['sin','sin(',['sin⁻¹','sin⁻¹('],['C','C'],'f'],
-  ['cos','cos(',['cos⁻¹','cos⁻¹('],['D','D'],'f'],
-  ['tan','tan(',['tan⁻¹','tan⁻¹('],['E','E'],'f'],
-  ['ln','ln(',['eˣ','#ex'],['F','F'],'f'],
-  ['π','π',['e','e'],null,'f'],
-  ['(','(',[',',','],['y','y'],'f'],
-  [')',')',['log','log('],['z','z'],'f'],
-  ['<i>i</i>','i',['arg','arg('],null,'f ki'],
-  ['Ans','Ans',['Abs','Abs('],null,'f fm'],
-  ['M+','@m+',['M−','@m-'],['M','M'],'f fm']];
+  ['<i>x</i>','x',['QR','!QR'],''],
+  ['<span class="fr">'+BXF+'<hr>'+BX+'</span>','#frac',['<span style="font-size:8px">□□/□</span>','!mix'],''],
+  ['√'+BX,'#sqrt',['ⁿ√','#root'],''],
+  [BX+'<sup>'+BXS+'</sup>','#pow',['x⁻¹','#inv'],''],
+  [BX+'<sup>2</sup>','#sq',['log','log('],''],
+  ['log<sub style="font-size:.55em">'+BXS+'</sub>'+BX,'#logb',['ln','ln('],'sm'],
+  ['Ans','Ans',null,'sm'],
+  ['sin','sin(',['sin⁻¹','sin⁻¹('],''],
+  ['cos','cos(',['cos⁻¹','cos⁻¹('],''],
+  ['tan','tan(',['tan⁻¹','tan⁻¹('],''],
+  ['(','(',['=','='],''],
+  [')',')',[',',','],'']];
 const KEYS5=[
-  ['7','7',null,null,'n'],['8','8',null,null,'n'],['9','9',null,null,'n'],['DEL','@del',null,null,'dl'],['AC','@ac',null,null,'dl'],
-  ['4','4',null,null,'n'],['5','5',null,null,'n'],['6','6',null,null,'n'],['×','×',null,null,'o'],['÷','÷',null,null,'o'],
-  ['1','1',null,null,'n'],['2','2',null,null,'n'],['3','3',null,null,'n'],['+','+',null,null,'o'],['−','−',null,null,'o'],
-  ['0','0',null,null,'n'],['.','.',null,null,'n'],['×10<sup><i>x</i></sup>','ᴇ',null,null,'n'],['FORMAT','@fmt',null,null,'n fm'],['EXE','@exe',['≈','@approx'],null,'ex']];
-const KTOP=[['SHIFT','@shift','shf',1,1],['ALPHA','@alpha','alp',2,1],['HOME','@home','',4,1],['SETTINGS','@set','',5,1],
-  ['VARIABLE','@var','',1,2],['FUNCTION','@fun','',2,2],['CATALOG','@cat','',4,2],['TOOLS','@tools','',5,2]];
-const KNAME={'#frac':'Fracción','#abs':'Valor absoluto','#sqrt':'Raíz cuadrada','#cbrt':'Raíz cúbica','#sq':'Al cuadrado','#cube':'Al cubo','#pow':'Potencia','#root':'Raíz n‑ésima','#logb':'Logaritmo con base','#10x':'Diez a la','#inv':'Recíproco','#ex':'e a la','@m+':'Sumar a la memoria M','@m-':'Restar de la memoria M','@del':'Borrar','@ac':'Borrar todo','@exe':'Ejecutar (igual)','@approx':'Resultado decimal','@fmt':'Formato del resultado','@ins':'Insertar','ᴇ':'Por diez a la','−':'Menos o negativo','×':'Por','÷':'Entre','i':'Unidad imaginaria','x':'Variable x'};
+  ['7','7',['π','π'],''],['8','8',['e','e'],''],['9','9',['<i>i</i>','i'],''],['<span class="kl">'+IC.del+'</span>','@del',['INS','!INS'],''],['AC','@ac',['OFF','@off'],'sm2'],
+  ['4','4',['A','A'],''],['5','5',['B','B'],''],['6','6',['C','C'],''],['×','×',null,''],['÷','÷',null,''],
+  ['1','1',['D','D'],''],['2','2',['E','E'],''],['3','3',['F','F'],''],['+','+',['°′″','!DMS'],''],['−','−',['(−)','−'],''],
+  ['0','0',['<i>x</i>','x'],''],['.','.',['<i>y</i>','y'],''],['×10<sup><i>x</i></sup>','ᴇ',['<i>z</i>','z'],'sm2'],[IC.fmt,'@fmt',null,'fm'],['EXE','@exe',['≈','@approx'],'sm2']];
+const KNAME={'#frac':'Fracción','#sqrt':'Raíz cuadrada','#root':'Raíz n‑ésima','#sq':'Al cuadrado','#pow':'Potencia','#logb':'Logaritmo con base','#inv':'Recíproco','@del':'DEL: borrar','@ac':'AC: borrar todo','@exe':'EXE: ejecutar','@approx':'Resultado decimal','@fmt':'FORMAT: forma del resultado','@off':'Apagar (cerrar)','ᴇ':'Por diez a la','−':'Menos','×':'Por','÷':'Entre','x':'Variable x','i':'Unidad imaginaria','Ans':'Ans'};
+const NOTHAVE={'!QR':'QR: esta calculadora no genera códigos QR','!mix':'Fracción mixta: aquí se usan fracciones impropias','!INS':'INS: aquí el cursor siempre inserta','!DMS':'°′″ (sexagesimal) no se usa en LGDR'};
 
 const MEMS=['A','B','C','D','E','F','x','y','z','M'];
 const OPSTART=/^(?:[+−×÷!∠]|⁻¹|#sq|#cube|#pow|#inv)$/;
 const APPS=[
-  {id:'calc',n:'Calcular',d:'Operaciones con números reales y SOLVE',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="4" width="22" height="24" rx="3"/><path d="M10 10h12M11 16h2M16 16h0M21 16h0M11 21h0M16 21h0M21 21h0" stroke-width="2.6"/><path d="M11 16h0"/></svg>'},
-  {id:'cplx',n:'Complejos',d:'a+bi, r∠θ, |z|, arg z',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 26h22M8 29V4"/><path d="M8 26 22 9"/><circle cx="22" cy="9" r="2.2" fill="currentColor"/><path d="M14 26a6 6 0 0 0-1.8-4.3"/></svg>'},
-  {id:'eqn',n:'Ecuación',d:'Polinomio grado 2–4 · sistemas 2–4',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h8M5 20h8M18 12l4 4 4-4M22 16v8"/><path d="M15 9v14"/></svg>'},
-  {id:'tbl',n:'Tabla de función',d:'f(x) y g(x) en un rango',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="22" height="22" rx="2"/><path d="M5 11h22M13 5v22M5 17h22M5 23h22"/></svg>'}];
+  {id:'calc',n:'Calcular',d:'Operaciones con números reales (historial, Ans, variables)',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="4" width="22" height="24" rx="3"/><path d="M10 10h12M11 16h2M16 16h0M21 16h0M11 21h0M16 21h0M21 21h0" stroke-width="2.6"/><path d="M11 16h0"/></svg>'},
+  {id:'cplx',n:'Complejos',d:'a+bi y r∠θ; i con SHIFT 9; ∠, arg, conj en CATALOG',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 26h22M8 29V4"/><path d="M8 26 22 9"/><circle cx="22" cy="9" r="2.2" fill="currentColor"/><path d="M14 26a6 6 0 0 0-1.8-4.3"/></svg>'},
+  {id:'eqn',n:'Ecuación',d:'Sistemas de 2–4 incógnitas, polinomios de grado 2–4 y Solver',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h8M5 20h8M18 12l4 4 4-4M22 16v8"/><path d="M15 9v14"/></svg>'},
+  {id:'tbl',n:'Tabla',d:'Tabla de f(x) y g(x): hasta 30 filas con las dos o 45 con una',ic:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="5" width="22" height="22" rx="2"/><path d="M5 11h22M13 5v22M5 17h22M5 23h22"/></svg>'}];
 const NFLBL=nf=>nf.m==='fix'?'Fix '+nf.n:nf.m==='sci'?'Sci '+nf.n:'Norm '+nf.n;
 const IOLBL={MM:'Natural / Natural',MD:'Natural / Decimal',LL:'Lineal / Lineal',LD:'Lineal / Decimal'};
 
@@ -733,18 +756,18 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
 
   /* ---------- armado */
   const root=document.createElement('div'); root.className='lc'; root.tabIndex=0; root.setAttribute('role','application'); root.setAttribute('aria-label','Calculadora científica');
-  const keyBtn=(k)=>{ const [l,a,sh,al,cls]=k; const nm=KNAME[a]||l.replace(/<[^>]+>/g,'').replace('▫','');
-    return `<button type="button" class="lc-k ${cls||''}${sh?' hs':''}${al?' ha':''}" data-a="${escH(a)}"${sh?` data-s="${escH(sh[1])}"`:''}${al?` data-l="${escH(al[1])}"`:''} aria-label="${escH(nm)}${sh?' (SHIFT: '+escH(sh[0])+')':''}${al?' (ALPHA: '+escH(al[0])+')':''}">${sh?`<span class="ks">${sh[0]}</span>`:''}${al?`<span class="ka">${al[0]}</span>`:''}<span class="kl">${l}</span></button>`; };
+  const keyBtn=(k)=>{ const [l,a,sh,cls]=k; const nm=KNAME[a]||l.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()||a;
+    return `<div class="lc-c"><span class="lc-lg">${sh?`<span class="ks">${sh[0]}</span>`:''}</span><button type="button" class="lc-k n ${cls||''}${sh?' hs':''}" data-a="${escH(a)}"${sh?` data-s="${escH(sh[1])}"`:''} aria-label="${escH(nm)}${sh?' (SHIFT: '+escH(sh[0].replace(/<[^>]+>/g,''))+')':''}"><span class="kl">${l}</span></button></div>`; };
+  const topBtn=([t,l,a,col,row,cls])=>`<div class="lc-c" style="grid-column:${col};grid-row:${row}"><span class="lc-lg"><span class="tl">${t}</span></span><button type="button" class="lc-k ${cls}" data-a="${a}" aria-label="${escH(TNAME[a]||t)}" title="${escH(TNAME[a]||t)}">${l}</button></div>`;
   root.innerHTML=`<div class="lc-hd"><span class="lc-ttl">Calculadora<b data-appn></b></span><span class="lc-hsp"></span>${opts.onClose?'<button type="button" class="lc-x" data-close aria-label="Cerrar la calculadora" title="Cerrar (Esc)"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>':''}</div>
   <div class="lc-lcdw"><div class="lc-lcd"><div class="lc-st" data-st></div><div class="lc-scr" data-scr>
     <div class="lc-v lc-vc" data-vc><div class="lc-log" data-log></div><div class="lc-cur"><div class="lc-edl lc-e" data-ed></div><div class="lc-res"><span class="lc-rv" data-rv aria-live="polite"></span></div></div></div>
     <div class="lc-v" data-vo hidden></div></div></div></div>
   <div class="lc-bar"><button type="button" class="lc-a" data-copy hidden>Copiar</button><button type="button" class="lc-a" data-toans hidden title="Guardar en Ans">→ Ans</button><button type="button" class="lc-a pri" data-ansput hidden>→ Respuesta</button><span class="lc-msg" data-msg aria-live="polite"></span></div>
   <div class="lc-kp" data-kp role="group" aria-label="Teclado">
-    <div class="lc-top">${KTOP.map(([l,a,c,col,row])=>`<button type="button" class="lc-k sm ${c}" data-a="${a}" style="grid-column:${col};grid-row:${row}">${l}</button>`).join('')}
-      <div class="lc-dp" role="group" aria-label="Cursor"><button type="button" class="u" data-a="@up" aria-label="Arriba">▲</button><button type="button" class="l" data-a="@left" aria-label="Izquierda">◀</button><button type="button" class="ok" data-a="@ok">OK</button><button type="button" class="r" data-a="@right" aria-label="Derecha">▶</button><button type="button" class="d" data-a="@down" aria-label="Abajo">▼</button><button type="button" class="bk" data-a="@back" aria-label="Regresar (BACK)" title="BACK">BACK</button></div></div>
-    <div class="lc-g6">${KEYS6.map(keyBtn).join('')}</div>
-    <div class="lc-g5">${KEYS5.map(keyBtn).join('')}</div></div>`;
+    <div class="lc-g lc-gt">${KTOP.map(topBtn).join('')}<div class="lc-pg" role="group" aria-label="Página"><button type="button" data-a="@pgup" aria-label="Página arriba" title="Página arriba">${IC.pu}</button><button type="button" data-a="@pgdn" aria-label="Página abajo" title="Página abajo">${IC.pd}</button></div></div>
+    <div class="lc-g lc-g6">${KEYS6.map(keyBtn).join('').replace(/lc-k n /g,'lc-k ')}</div>
+    <div class="lc-g lc-g5">${KEYS5.map(keyBtn).join('')}</div></div>`;
   host.appendChild(root);
   const $=s=>root.querySelector(s);
   const scr=$('[data-scr]'), vc=$('[data-vc]'), vo=$('[data-vo]'), edEl=$('[data-ed]'), rv=$('[data-rv]'), logEl=$('[data-log]'), st=$('[data-st]'), msgEl=$('[data-msg]');
@@ -767,9 +790,9 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   /* ---------- teclado en pantalla */
   root.addEventListener('pointerdown',e=>{ if(e.target.closest('button,[data-k]')) e.preventDefault(); try{ root.focus({preventScroll:true}); }catch(err){} });
   $('[data-kp]').addEventListener('click',e=>{ const b=e.target.closest('[data-a]'); if(!b) return;
-    let a=b.dataset.a; if(a==='@shift'){ setMod(!shift,false); return; } if(a==='@alpha'){ setMod(false,!alpha); return; }
-    if(shift&&b.dataset.s) a=b.dataset.s; else if(alpha&&b.dataset.l) a=b.dataset.l;
-    setMod(false,false); key(a); });
+    let a=b.dataset.a; if(a==='@shift'){ setMod(!shift,false); return; }
+    if(shift&&b.dataset.s) a=b.dataset.s;
+    setMod(false,false); if(a[0]==='!'){ say(NOTHAVE[a]||'No disponible',true); return; } key(a); });
   function setMod(s,a){ shift=s; alpha=a; root.classList.toggle('s-sh',s); root.classList.toggle('s-al',a); renderSt(); }
 
   /* ---------- teclado físico */
@@ -820,6 +843,12 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if(a==='@var'){ openVar(false); return render(); }
     if(a==='@fun'){ openFun(); return render(); }
     if(a==='@tools'){ openTools(); return render(); }
+    if(a==='@off'){ if(opts.onClose) opts.onClose(); else say('Aquí no se puede apagar'); return; }
+    if(a==='@on'){ ovAll(); if(view==='calc'){ snap(); main.clear(); fresh=false; last=null; hsel=-1; } else goApp(S.app); return render(); }
+    if(a==='@pgup'||a==='@pgdn'){ const d=a==='@pgup'?-1:1, o=ov[ov.length-1];
+      if(o&&!o.home){ o.sel=Math.max(0,Math.min(o.items.length-1,o.sel+5*d)); return render(); }
+      if(view==='tbl'&&tRows){ tSel=[Math.max(0,Math.min(tRows.length-1,tSel[0]+8*d)),tSel[1]]; return render(); }
+      scr.scrollBy({top:d*scr.clientHeight*.8}); return; }
     if(ov.length){ ovKey(a); return render(); }
     if(a==='@fmt'){ openFormat(); return render(); }
     if(a==='@m+'||a==='@m-'){ memAdd(a==='@m+'?1:-1); return render(); }
@@ -834,7 +863,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if(a==='@exe'||a==='@approx'){ equals(a==='@approx'); return; }
     if(a==='@ok'){ return; }
     if(a==='@ac'){ snap(); main.clear(); fresh=false; last=null; hsel=-1; return; }
-    if(a==='@back'){ if(hsel>=0){ hsel=-1; return; } return; }
+    if(a==='@back'){ if(hsel>=0){ hsel=-1; return; } if(fresh){ fresh=false; main.end(); } return; }
     edKey(main,a); };
   function histMove(d){ const H=histShown(); if(!H.length) return; let k=hsel<0?(d<0?H.length:-1):H.indexOf(hsel);
     k+=d; if(k>=H.length){ hsel=-1; return; } if(k<0) k=0; hsel=H[k]; }
@@ -854,7 +883,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if(a==='@up'||a==='@down'){ if(E.vert(a==='@up'?-1:1)) return; sFld=sFld?0:1; if(sFld) sX0.repl=true; return; }
     if(a==='@exe'||a==='@ok'){ if(sFld===0){ sFld=1; sX0.repl=true; return; } doSolve(); return; }
     if(a==='@ac'){ E.clear(); sRes=null; return; }
-    if(a==='@back'){ view='calc'; return; }
+    if(a==='@back'){ view=S.app==='eqn'?'eqmenu':'calc'; return; }
     if(edKey(E,a)){ sRes=null; S.sol={e:sEq.ser().s.replace(/□/g,''),x0:sX0.ser().s.replace(/□/g,'')}; save(); } };
   function doSolve(){ const src=sEq.ser().s; if(sEq.empty()){ say('Escribe una ecuación con x',true); sFld=0; return; }
     if(!/x/.test(src.replace(/exp|Ans/g,''))){ say('La ecuación debe tener la variable x',true); sFld=0; return; }
@@ -869,9 +898,9 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   const eqDims=()=>S.eq.type==='poly'?[1,S.eq.n+1]:[S.eq.n,S.eq.n+1];
   function cellVal(r,k){ const c=cell(r,k); if(!c||!c.length) return C(0,0); return evaluate(parse(serRow(c).s),env()); }
   function cellTxt(r,k){ const c=cell(r,k); if(!c||!c.length) return '0'; try{ const z=tidy(cellVal(r,k)); const s=formatTxt(z,{nf:{m:'norm',n:1}}); return s.length>9?(+z.re.toPrecision(5)+(z.im?'…':'')):s; }catch(e){ return '?'; } }
-  VK.eqmenu=a=>{ if(a==='@up'||a==='@down'){ eqMenuSel=eqMenuSel?0:1; return; }
-    if(a==='1'||a==='2'){ eqMenuSel=+a-1; a='@ok'; }
-    if(a==='@ok'||a==='@exe'||a==='@right'){ S.eq.type=eqMenuSel?'poly':'sim'; save(); eqNSel=Math.max(0,Math.min(2,S.eq.n-2)); view='eqn'; } };
+  VK.eqmenu=a=>{ if(a==='@up'){ eqMenuSel=(eqMenuSel+2)%3; return; } if(a==='@down'){ eqMenuSel=(eqMenuSel+1)%3; return; }
+    if(/^[123]$/.test(a)){ eqMenuSel=+a-1; a='@ok'; }
+    if(a==='@ok'||a==='@exe'||a==='@right'){ if(eqMenuSel===2){ view='solve'; sFld=0; sRes=null; return; } S.eq.type=eqMenuSel?'poly':'sim'; save(); eqNSel=Math.max(0,Math.min(2,S.eq.n-2)); view='eqn'; } };
   VK.eqn=a=>{ if(a==='@up'){ eqNSel=(eqNSel+2)%3; return; } if(a==='@down'){ eqNSel=(eqNSel+1)%3; return; }
     if(/^[234]$/.test(a)){ eqNSel=+a-2; a='@ok'; }
     if(a==='@ok'||a==='@exe'||a==='@right'){ S.eq.n=eqNSel+2; save(); eqSel=[0,0]; eqEd=null; eqRes=null; view='eqedit'; return; }
@@ -890,7 +919,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if(a==='@up'){ eqMove(-1,0); return; } if(a==='@down'){ eqMove(1,0); return; }
     if(a==='@exe'){ eqSolve(); return; }
     if(a==='@ok'){ eqEd=new Ed(cloneRow(cell(...eqSel)||[])); return; }
-    if(a==='@ac'){ delete S.eq[eqKey()][eqSel.join(',')]; save(); return; }
+    if(a==='@ac'){ S.eq[eqKey()]={}; save(); say('Coeficientes en 0'); return; }
     if(a==='@back'){ view='eqn'; return; }
     if(a==='@del'){ eqEd=new Ed(cloneRow(cell(...eqSel)||[])); eqEd.del(); return; }
     if(a[0]!=='@'){ eqEd=new Ed([]); edKey(eqEd,a); } };
@@ -898,17 +927,24 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     try{ for(let r=0;r<R;r++){ const row=[]; for(let k=0;k<K;k++){ try{ row.push(tidy(cellVal(r,k))); }catch(e){ e.cell=[r,k]; throw e; } } M.push(row); } }
     catch(e){ if(!e.calc) throw e; eqSel=e.cell||eqSel; say(errText(e),true); return; }
     try{ if(S.eq.type==='poly'){ if(M[0][0].re===0&&M[0][0].im===0){ say('El coeficiente a no puede ser 0',true); eqSel=[0,0]; return; }
-        const roots=polyRoots(M[0]); eqRes={roots,exact:S.eq.n===2?quadExact(M[0]):null}; }
+        let roots=polyRoots(M[0]); const all=roots.length; if(S.eq.cx===false) roots=roots.filter(z=>z.im===0);
+        const extra=[]; if(M[0].every(z=>z.im===0)){ const c=M[0].map(z=>z.re);
+          if(S.eq.n===2){ const w=c[0]>0?'mín':'máx'; extra.push({l:'x '+w,z:C(-c[1]/(2*c[0]),0)},{l:'y '+w,z:C(c[2]-c[1]*c[1]/(4*c[0]),0)}); }
+          else if(S.eq.n===3){ const [a,b,cc,d]=c, Dd=4*b*b-12*a*cc;
+            if(Dd>0){ const q=Math.sqrt(Dd), f=x=>((a*x+b)*x+cc)*x+d; [(-2*b+q)/(6*a),(-2*b-q)/(6*a)].map(x=>({x,mx:6*a*x+2*b<0})).sort((u,v)=>v.mx-u.mx).forEach(({x,mx})=>{ const w=mx?'máx':'mín'; extra.push({l:'x '+w,z:C(x,0)},{l:'y '+w,z:C(f(x),0)}); }); }
+            else extra.push({l:'Sin máx./mín. local',z:null}); } }
+        eqRes={roots,exact:S.eq.n===2&&roots.length===all?quadExact(M[0]):null,extra,noReal:!roots.length}; }
       else { const r=linsolve(M.map(x=>x.slice(0,-1)),M.map(x=>x[x.length-1])); eqRes=r.x?{roots:r.x}:{none:r.none,inf:r.inf}; }
-      eqRS=0; eqDec=false; if(eqRes.roots) S.ans=z2a(eqRes.roots[0]); save(); view='eqsol'; }
+      eqRS=0; eqDec=false; if(eqRes.roots&&eqRes.roots.length) S.ans=z2a(eqRes.roots[0]); save(); view='eqsol'; }
     catch(e){ if(!e.calc) throw e; say(errText(e),true); } }
-  VK.eqsol=a=>{ const n=eqRes&&eqRes.roots?eqRes.roots.length:0;
+  const eqList=()=>eqRes&&eqRes.roots?eqRes.roots.map((z,k)=>({l:S.eq.type==='poly'?'x'+(k+1):UNK[k],z,k})).concat((eqRes.extra||[]).filter(e=>e.z)):[];
+  VK.eqsol=a=>{ const n=eqList().length;
     if(a==='@up'){ eqRS=Math.max(0,eqRS-1); return; } if(a==='@down'){ eqRS=Math.min(n-1,eqRS+1); return; }
     if(a==='@exe'){ if(eqRS<n-1) eqRS++; else view='eqedit'; return; }
     if(a==='@approx'){ eqDec=!eqDec; return; }
-    if(a==='@back'||a==='@ac'||a==='@left'){ view='eqedit'; return; }
-    if(a==='@ok'&&n){ S.ans=z2a(eqRes.roots[eqRS]); save(); say(nameSol(eqRS)+' → Ans'); } };
-  const nameSol=k=>S.eq.type==='poly'?'x'+(k+1):UNK[k];
+    if(a==='@back'){ if(eqRS>0) eqRS--; else view='eqedit'; return; }
+    if(a==='@ac'||a==='@left'){ view='eqedit'; return; }
+    if(a==='@ok'&&n){ const it=eqList()[eqRS]; S.ans=z2a(it.z); save(); say(it.l+' → Ans'); } };
 
   /* ---------- Tabla de función (y definir f/g desde FUNCTION) */
   function saveFn(){ S.fn={f:tF.json(),g:tG.json()}; save(); }
@@ -925,16 +961,20 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if(a==='@exe'||a==='@ok'){ if(rFld<2){ rFld++; tR[rFld].repl=true; return; } makeTable(); return; }
     if(a==='@ac'){ E.clear(); return; }
     if(a==='@back'){ view='tbdef'; return; }
-    if(edKey(E,a)) S.tb={start:tR[0].ser().s.replace(/□/g,''),end:tR[1].ser().s.replace(/□/g,''),step:tR[2].ser().s.replace(/□/g,'')}, save(); };
+    if(edKey(E,a)) S.tb={start:tR[0].ser().s.replace(/□/g,''),end:tR[1].ser().s.replace(/□/g,''),step:tR[2].ser().s.replace(/□/g,''),type:S.tb.type||'fg'}, save(); };
   function makeTable(){ let v;
     try{ v=tR.map((E,k)=>{ try{ const z=evaluate(parse(E.ser().s),env()); if(z.im!==0) throw MATH('Debe ser real'); return z.re; }catch(e){ e.f=k; throw e; } }); }
     catch(e){ if(!e.calc) throw e; rFld=e.f; say(['Inicio','Fin','Paso'][e.f]+': '+errText(e),true); return; }
     const [a,b,h]=v; if(h===0||(b-a)/h<-1e-9){ say('Paso inválido: con este paso no se llega del inicio al fin',true); rFld=2; return; }
-    const n=Math.floor((b-a)/h+1e-9)+1; if(n>45){ say(`Son ${n} filas: el máximo es 45 (sube el paso)`,true); rFld=2; return; }
-    const F=funcs(), E0=env(), ev=(fn,x)=>{ if(!F[fn]) return null; try{ const z=tidy(evaluate(F[fn],Object.assign({},E0,{vars:Object.assign({},E0.vars,{x:C(x,0)})}))); return z; }catch(e){ return 'err'; } };
+    const F=funcs(), ty=S.tb.type||'fg', uf=ty!=='g'&&!!F.f, ug=ty!=='f'&&!!F.g;
+    if(!uf&&!ug){ say(ty==='g'?'Define g(x) (TOOLS › Definir)':ty==='f'?'Define f(x) (TOOLS › Definir)':'Define f(x) o g(x)',true); view='tbdef'; return; }
+    const mx=uf&&ug?30:45, n=Math.floor((b-a)/h+1e-9)+1; if(n>mx){ say(`Son ${n} filas: el máximo es ${mx} (sube el paso${uf&&ug?' o usa una sola función':''})`,true); rFld=2; return; }
+    tCols=[0].concat(uf?[1]:[]).concat(ug?[2]:[]);
+    const E0=env(), ev=(fn,x)=>{ if(!F[fn]) return null; try{ const z=tidy(evaluate(F[fn],Object.assign({},E0,{vars:Object.assign({},E0.vars,{x:C(x,0)})}))); return z; }catch(e){ return 'err'; } };
     tRows=[]; for(let k=0;k<n;k++){ const x=+(a+k*h).toPrecision(12); tRows.push([C(x,0),ev('f',x),ev('g',x)]); }
-    tSel=[0,F.f?1:2]; view='tbl'; }
-  VK.tbl=a=>{ if(!tRows) { view='tbdef'; return; } const cols=[0].concat(S.fn.f.length?[1]:[]).concat(S.fn.g.length?[2]:[]);
+    tSel=[0,tCols[1]]; view='tbl'; }
+  let tCols=[0,1];
+  VK.tbl=a=>{ if(!tRows) { view='tbdef'; return; } const cols=tCols;
     let [r,c]=tSel; const ci=Math.max(0,cols.indexOf(c));
     if(a==='@up') r=Math.max(0,r-1); else if(a==='@down') r=Math.min(tRows.length-1,r+1);
     else if(a==='@left') c=cols[Math.max(0,ci-1)]; else if(a==='@right') c=cols[Math.min(cols.length-1,ci+1)];
@@ -947,12 +987,12 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   function openList(title,items,sel,extra){ ov.push(Object.assign({title,items,sel:sel||0},extra||{})); }
   function closeOv(){ ov.pop(); }
   function ovKey(a){ const o=ov[ov.length-1];
-    if(o.home){ const n=APPS.length; if(a==='@left') o.sel=(o.sel+n-1)%n; else if(a==='@right') o.sel=(o.sel+1)%n; else if(a==='@up') o.sel=(o.sel+n-2)%n; else if(a==='@down') o.sel=(o.sel+2)%n;
-      else if(/^[1-4]$/.test(a)){ o.sel=+a-1; goApp(APPS[o.sel].id); } else if(a==='@ok'||a==='@exe') goApp(APPS[o.sel].id); else if(a==='@back'||a==='@ac') closeOv(); return; }
+    if(o.home){ const n=APPS.length; if(a==='@left') o.sel=(o.sel+n-1)%n; else if(a==='@right') o.sel=(o.sel+1)%n; else if(a==='@up') o.sel=Math.max(0,o.sel-3); else if(a==='@down') o.sel=Math.min(n-1,o.sel+3);
+      else if(/^[1-4]$/.test(a)){ o.sel=+a-1; goApp(APPS[o.sel].id); } else if(a==='@ok'||a==='@exe') goApp(APPS[o.sel].id); else if(a==='@back') closeOv(); else if(a==='@ac') ovAll(); return; }
     const n=o.items.length;
     if(a==='@up') o.sel=(o.sel+n-1)%n; else if(a==='@down') o.sel=(o.sel+1)%n;
     else if(a==='@ok'||a==='@exe'||a==='@right') act(o,o.sel);
-    else if(a==='@back'||a==='@left'||a==='@ac') closeOv();
+    else if(a==='@back'||a==='@left') closeOv(); else if(a==='@ac') ovAll();
     else if(/^[1-9]$/.test(a)&&+a<=n) act(o,+a-1); }
   function act(o,k){ const it=o.items[k]; if(!it||it.dis){ if(it&&it.dis) say(it.dis,true); return; } o.sel=k; it.act(); }
   function ovAll(){ ov.length=0; }
@@ -975,14 +1015,13 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   function choose(title,opts2,get,set,closeN){ const cur=get(); openList(title,opts2.map(([l,v])=>({l,r:()=>v===cur?'●':'',act:()=>{ const keep=set(v); save(); if(keep!=='keep') for(let k=0;k<(closeN||1);k++) closeOv(); }})),Math.max(0,opts2.findIndex(x=>x[1]===cur))); }
   function insertAny(t){ ovAll(); const E=curEd(); if(!E){ say('Aquí no se puede escribir',true); return; } if(t==='i'&&S.app==='calc'){ say('Para usar i abre la app Complejos (HOME)',true); return; } edKey(E,t); }
   function openCatalog(){ ovAll();
-    const it=(l,t,r)=>({l,r:()=>r||'',act:()=>insertAny(t)});
-    const cats=[
-      ['Funciones',[it('|x|  valor absoluto','#abs'),it('x!  factorial','!'),it('∛  raíz cúbica','#cbrt'),it('ⁿ√  raíz n‑ésima','#root'),it('eˣ','#ex'),it('10ˣ','#10x'),it('log_a(b)','#logb'),it('x⁻¹','#inv')]],
-      ['Hiperbólicas',['sinh','cosh','tanh','sinh⁻¹','cosh⁻¹','tanh⁻¹'].map(f=>it(f,f+'('))],
-      ['Complejos',[it('i  unidad imaginaria','i'),it('∠  forma polar r∠θ','∠'),it('Abs(  módulo |z|','Abs('),it('arg(  argumento','arg('),it('conj(  conjugado','conj('),it('Re(  parte real','Re('),it('Im(  parte imaginaria','Im(')]],
-      ['Variables y Ans',[it('Ans','Ans')].concat(MEMS.map(k=>it(k,k,S.mem[k]?txt(a2z(S.mem[k])):'0')))],
-      ['f(x) y g(x)',[it('f(','f(',S.fn.f.length?'definida':'sin definir'),it('g(','g(',S.fn.g.length?'definida':'sin definir')]],
-      ['Constantes y símbolos',[it('π','π'),it('e','e'),it(', (coma)',','),it('= (para SOLVE)','=')]]];
+    const it=(l,t)=>({l,r:()=>'',act:()=>insertAny(t)}), cats=[];
+    if(S.app==='cplx') cats.push(['Complejos',[it('i  unidad imaginaria','i'),it('∠  ángulo (r∠θ)','∠'),it('Argumento  arg(','arg('),it('Conjugado  conj(','conj('),it('Parte real  Re(','Re('),it('Parte imaginaria  Im(','Im(')]]);
+    cats.push(['Análisis de funciones',[it('logₐb  logaritmo con base','#logb'),it('log  base 10','log('),it('ln  logaritmo natural','ln('),it('f(  función definida','f('),it('g(  función definida','g(')]],
+      ['Probabilidad',[it('x!  factorial','!')]],
+      ['Cálculo numérico',[it('Abs  valor absoluto','#abs')]],
+      ['Hiperbólicas / trig.',['sinh','cosh','tanh','sinh⁻¹','cosh⁻¹','tanh⁻¹','sin','cos','tan','sin⁻¹','cos⁻¹','tan⁻¹'].map(f=>it(f,f+'('))],
+      ['Otros',[it('Ans','Ans'),it('π','π'),it('e','e'),it('√  raíz cuadrada','#sqrt'),it('ˣ√  raíz n‑ésima','#root'),it('∛  raíz cúbica','#cbrt'),it('⁻¹  recíproco','#inv'),it('²  cuadrado','#sq'),it('³  cubo','#cube'),it('^(  potencia','#pow'),it('eˣ','#ex'),it('10ˣ','#10x'),it('(−)  negativo','−'),it(',  coma',','),it('(','('),it(')',')'),it('=  (para Solver)','=')]]);
     openList('Catálogo',cats.map(([n,items])=>({l:n,r:()=>'▶',act:()=>openList(n,items)}))); }
   function openVar(sto){ ovAll(); const z=sto?pick():null; if(sto&&!z){ say('No hay un resultado para guardar',true); }
     const items=MEMS.map(k=>({l:k,r:()=>S.mem[k]?txt(a2z(S.mem[k])):'0',act:()=>{ const o=ov[ov.length-1];
@@ -997,17 +1036,19 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
       {l:'Escribir g(…)',r:()=>pv('g'),act:()=>insertAny('g(')},
       {l:'Definir f(x) y g(x)',r:()=>'▶',act:()=>{ ovAll(); if(S.app==='tbl'){ view='tbdef'; } else { fdefBack=view==='fdef'?fdefBack:view; view='fdef'; } tF.set(cloneRow(S.fn.f)); tG.set(cloneRow(S.fn.g)); tFld=0; }}]); }
   function openTools(){ ovAll(); const L=[];
-    if(view==='calc'||view==='solve'){
-      if(S.app==='calc') L.push({l:'Resolver ecuación (SOLVE)',r:()=>'▶',act:()=>{ ovAll(); view='solve'; sFld=0; }});
+    if(view==='solve'){ L.push({l:'Volver al menú de Ecuación',r:()=>'',act:()=>{ ovAll(); view='eqmenu'; }}); }
+    else if(view==='calc'){
       L.push({l:'Deshacer',r:()=>'',act:()=>{ ovAll(); if(view!=='calc') view='calc'; const u=undo.pop(); if(!u){ say('Nada que deshacer',true); return; } main.set(JSON.parse(u.j)); fresh=false; }});
       L.push({l:'Sumar a la memoria (M+)',r:()=>'',act:()=>{ ovAll(); memAdd(1); }},{l:'Restar de la memoria (M−)',r:()=>'',act:()=>{ ovAll(); memAdd(-1); }});
       L.push({l:'Borrar historial',r:()=>'',act:()=>{ S.hist=[]; save(); histDirty=true; hsel=-1; ovAll(); say('Historial borrado'); }});
-      if(view==='solve') L.push({l:'Volver a Calcular',r:()=>'',act:()=>{ ovAll(); view='calc'; }}); }
+      }
     else if(S.app==='eqn'){ L.push({l:'Tipo de ecuación',r:()=>'▶',act:()=>{ ovAll(); eqEd=null; view='eqmenu'; }},
       {l:'Grado / incógnitas',r:()=>'▶',act:()=>{ ovAll(); eqEd=null; eqNSel=S.eq.n-2; view='eqn'; }},
-      {l:'Borrar coeficientes',r:()=>'',act:()=>{ S.eq[eqKey()]={}; save(); eqEd=null; ovAll(); view='eqedit'; say('Coeficientes en 0'); }}); }
+      {l:'Borrar coeficientes',r:()=>'',act:()=>{ S.eq[eqKey()]={}; save(); eqEd=null; ovAll(); view='eqedit'; say('Coeficientes en 0'); }},
+      {l:'Raíces complejas',r:()=>S.eq.cx===false?'No':'Sí',act:()=>{ S.eq.cx=S.eq.cx===false; save(); ovAll(); if(view==='eqsol') eqSolve(); say('Raíces complejas: '+(S.eq.cx===false?'No':'Sí')); }}); }
     else { L.push({l:'Definir f(x) y g(x)',r:()=>'▶',act:()=>{ ovAll(); view=S.app==='tbl'?'tbdef':'fdef'; tFld=0; }});
-      if(S.app==='tbl') L.push({l:'Rango de la tabla',r:()=>'▶',act:()=>{ ovAll(); view='tbrng'; rFld=0; }}); }
+      if(S.app==='tbl') L.push({l:'Rango de la tabla',r:()=>'▶',act:()=>{ ovAll(); view='tbrng'; rFld=0; }},
+        {l:'Tipo de tabla',r:()=>({fg:'f(x) y g(x)',f:'Solo f(x)',g:'Solo g(x)'})[S.tb.type||'fg'],act:()=>choose('Tipo de tabla',[['f(x) y g(x)  (máx. 30 filas)','fg'],['Solo f(x)  (máx. 45 filas)','f'],['Solo g(x)  (máx. 45 filas)','g']],()=>S.tb.type||'fg',v=>{ S.tb.type=v; if(view==='tbl') makeTable(); },2)}); }
     openList('Herramientas',L); }
   function openFormat(){ const z=pick(); if(!z){ say('FORMAT cambia la forma de un resultado',true); return; }
     const set=f=>{ ovAll(); if(view==='calc'){ lastF=f; } else if(view==='eqsol'){ eqDec=!!f.dec; } else fmtSel=f; };
@@ -1020,7 +1061,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   function pick(){ switch(view){
     case 'calc': return fresh&&last?last:(hsel>=0&&S.hist[hsel]?a2z(S.hist[hsel].r):null);
     case 'solve': return sRes?C(sRes.x,0):null;
-    case 'eqsol': return eqRes&&eqRes.roots?eqRes.roots[eqRS]:null;
+    case 'eqsol': { const it=eqList()[eqRS]; return it?it.z:null; }
     case 'tbl': return tCell(); }
     return null; }
 
@@ -1037,7 +1078,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if(view==='calc'){ vc.hidden=false; vo.hidden=true; renderCalc(); bar(); return; }
     vc.hidden=true; vo.hidden=false; vo.innerHTML=VH[view](); bar(); keepSel(); }
   function keepSel(){ const s=vo.querySelector('.sel,.lc-fld.sel'); if(s) s.scrollIntoView({block:'nearest'}); }
-  function homeHTML(o){ return `<div class="lc-ttl2">HOME · elige una app</div><div class="lc-home">${APPS.map((a,k)=>`<button type="button" class="lc-app${k===o.sel?' sel':''}" data-oi="${k}">${a.ic}<span>${k+1}: ${a.n}</span><small>${a.d}</small></button>`).join('')}</div><div class="lc-hint">◀ ▶ ▲ ▼ para elegir · OK para abrir · BACK para regresar</div>`; }
+  function homeHTML(o){ return `<div class="lc-home">${APPS.map((a,k)=>`<button type="button" class="lc-app${k===o.sel?' sel':''}" data-oi="${k}">${a.ic}<span>${a.n}</span></button>`).join('')}</div><div class="lc-hint"><b>${APPS[o.sel].n}:</b> ${APPS[o.sel].d}<br>◀ ▶ ▲ ▼ y OK · BACK regresa</div>`; }
   function listHTML(o){ return `<div class="lc-ttl2">${escH(o.title)}</div>`+o.items.map((it,k)=>`<button type="button" class="lc-li${k===o.sel?' sel':''}" data-oi="${k}"${it.dis?' aria-disabled="true"':''}><span class="n">${k<9?k+1+':':''}</span><span>${escH(it.l)}</span><span class="r">${escH(it.r?it.r():'')}</span></button>`).join('')+`<div class="lc-hint">▲ ▼ y OK (o el número) · BACK para regresar</div>`; }
   scr.addEventListener('click',e=>{ const b=e.target.closest('[data-oi]'); if(b&&ov.length){ const o=ov[ov.length-1]; if(o.home){ o.sel=+b.dataset.oi; goApp(APPS[o.sel].id); } else act(o,+b.dataset.oi); render(); return; }
     const c=e.target.closest('[data-v]'); if(c){ tapView(c.dataset.v); render(); } });
@@ -1075,11 +1116,11 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   function fitRes(el){ el.style.fontSize=''; if(el.classList.contains('err')) return; for(const f of [20,17,14,12]){ if(el.scrollWidth<=el.clientWidth+1) break; el.style.fontSize=f+'px'; } }
   const fld=(lbl,E,on,v)=>`<div class="lc-fld${on?' sel':''}" data-v="${v}"><span class="fl">${lbl}</span><span class="fe">${EH(E,on)}</span></div>`;
   const VH={};
-  VH.solve=()=>{ let r=`<div class="lc-ttl2">SOLVE · resolver una ecuación con <i>x</i> (sin «=» se resuelve … = 0)</div>`+fld('',sEq,sFld===0,'sf:0')+fld('x₀ =',sX0,sFld===1,'sf:1');
+  VH.solve=()=>{ let r=`<div class="lc-ttl2">Solver · resolver una ecuación con <i>x</i> (sin «=» se resuelve … = 0)</div>`+fld('',sEq,sFld===0,'sf:0')+fld('x₀ =',sX0,sFld===1,'sf:1');
     if(sRes) r+=`<div class="lc-sols"><div class="lc-sr sel"><span class="sx">x =</span><span class="sv">${fmtHTML(C(sRes.x,0),fmtSel||{})}</span></div><div class="lc-sr"><span class="sx">L−R =</span><span class="sv">${fmtHTML(C(sRes.lr,0),{dec:true})}</span></div></div>`;
-    else r+=`<button type="button" class="lc-go" data-v="sgo">Resolver (EXE)</button><div class="lc-hint">«=» está en SHIFT + <i>x</i> (o en CATALOG). x₀ es el valor inicial de la búsqueda.</div>`;
+    else r+=`<button type="button" class="lc-go" data-v="sgo">Resolver (EXE)</button><div class="lc-hint">«=» está en SHIFT + ( (o en CATALOG › Otros). x₀ es el valor inicial de la búsqueda.</div>`;
     return r; };
-  VH.eqmenu=()=>`<div class="lc-ttl2">Ecuación · tipo</div>`+[['Simultánea (sistema lineal)','2 a 4 incógnitas'],['Polinómica','grado 2 a 4']].map(([l,r],k)=>`<button type="button" class="lc-li${k===eqMenuSel?' sel':''}" data-v="em:${k}"><span class="n">${k+1}:</span><span>${l}</span><span class="r">${r}</span></button>`).join('');
+  VH.eqmenu=()=>`<div class="lc-ttl2">Ecuación · tipo</div>`+[['Simultánea (sistema lineal)','2 a 4 incógnitas'],['Polinómica','grado 2 a 4'],['Solver','f(x) = g(x), Newton']].map(([l,r],k)=>`<button type="button" class="lc-li${k===eqMenuSel?' sel':''}" data-v="em:${k}"><span class="n">${k+1}:</span><span>${l}</span><span class="r">${r}</span></button>`).join('');
   VH.eqn=()=>`<div class="lc-ttl2">${S.eq.type==='poly'?'Polinómica · grado':'Simultánea · número de incógnitas'}</div>`+[2,3,4].map((n,k)=>`<button type="button" class="lc-li${k===eqNSel?' sel':''}" data-v="en:${k}"><span class="n">${n}:</span><span>${S.eq.type==='poly'?tex(eqForm(n)):n+' incógnitas ('+UNK.slice(0,n).split('').join(', ')+')'}</span></button>`).join('');
   function eqForm(n){ const t=[]; for(let k=0;k<=n;k++){ const p=n-k; t.push(LET[k]+(p>1?'x^{'+p+'}':p===1?'x':'')); } return t.join('+')+'=0'; }
   VH.eqedit=()=>{ const [R,K]=eqDims(), poly=S.eq.type==='poly';
@@ -1096,11 +1137,13 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     return h; };
   VH.eqsol=()=>{ let h=`<div class="lc-ttl2">${S.eq.type==='poly'?'Raíces de '+tex(eqForm(S.eq.n)):'Solución del sistema'}</div>`;
     if(!eqRes||!eqRes.roots) return h+`<div class="lc-rv err" style="text-align:left">${eqRes&&eqRes.inf?'Infinitas soluciones':'Sin solución'}</div><button type="button" class="lc-go" data-v="eback">Volver a los coeficientes</button>`;
-    h+='<div class="lc-sols">'+eqRes.roots.map((z,k)=>{ const ex=!eqDec&&natOut()&&!linOut()&&eqRes.exact&&eqRes.exact[k]; return `<button type="button" class="lc-sr${k===eqRS?' sel':''}" data-v="es:${k}"><span class="sx">${S.eq.type==='poly'?'x<sub>'+(k+1)+'</sub>':UNK[k]} =</span><span class="sv">${ex?tex(ex):fmtHTML(z,{dec:eqDec})}</span></button>`; }).join('')+'</div>';
+    const L=eqList(), nl=s2=>s2.replace(/^x(\d)$/,'<i>x</i><sub>$1</sub>').replace(/^([xy]) (m..)$/,'<i>$1</i> <small>$2</small>');
+    h+=(eqRes.noReal?'<div class="lc-rv err" style="text-align:left">Sin raíces reales</div>':'')+'<div class="lc-sols">'+L.map((it,k)=>{ const ex=it.k!=null&&!eqDec&&natOut()&&!linOut()&&eqRes.exact&&eqRes.exact[it.k]; return `<button type="button" class="lc-sr${k===eqRS?' sel':''}" data-v="es:${k}"><span class="sx">${nl(it.l)} =</span><span class="sv">${ex?tex(ex):fmtHTML(it.z,{dec:eqDec})}</span></button>`; }).join('')
+      +(eqRes.extra||[]).filter(e=>!e.z).map(e=>`<div class="lc-hint">${e.l}</div>`).join('')+'</div>';
     return h+`<div class="lc-hint">▲ ▼ elige · OK la guarda en Ans · FORMAT o SHIFT EXE: decimal · BACK: coeficientes</div>`; };
   VH.tbdef=VH.fdef=()=>`<div class="lc-ttl2">${view==='fdef'?'Definir f(x) y g(x) · se usan como f(2), g(A)…':'Tabla de función · define f(x) y, si quieres, g(x)'}</div>`+fld('<i>f</i>(<i>x</i>) =',tF,tFld===0,'tf:0')+fld('<i>g</i>(<i>x</i>) =',tG,tFld===1,'tf:1')+(view==='tbdef'?`<button type="button" class="lc-go" data-v="tgo">Siguiente: rango (EXE)</button><div class="lc-hint">Ejemplo LGDR: <i>f</i>(<i>x</i>) = −(x+2)(x+4)(x+6) para buscar la K máxima en el eje real (ruptura).</div>`:`<div class="lc-hint">EXE guarda · BACK regresa</div>`);
-  VH.tbrng=()=>`<div class="lc-ttl2">Rango de la tabla (máximo 45 filas)</div>`+fld('Inicio =',tR[0],rFld===0,'rf:0')+fld('Fin =',tR[1],rFld===1,'rf:1')+fld('Paso =',tR[2],rFld===2,'rf:2')+`<button type="button" class="lc-go" data-v="rgo">Ver la tabla (EXE)</button>`;
-  VH.tbl=()=>{ if(!tRows) return ''; const hf=S.fn.f.length, hg=S.fn.g.length; const cell2=v=>v==null?'':v==='err'?'ERROR':escH(formatTxt(v,{nf:S.nf.m==='norm'?{m:'norm',n:1}:S.nf}));
+  VH.tbrng=()=>`<div class="lc-ttl2">Rango de la tabla (máximo ${(S.tb.type||'fg')==='fg'&&S.fn.f.length&&S.fn.g.length?30:45} filas)</div>`+fld('Inicio =',tR[0],rFld===0,'rf:0')+fld('Fin =',tR[1],rFld===1,'rf:1')+fld('Paso =',tR[2],rFld===2,'rf:2')+`<button type="button" class="lc-go" data-v="rgo">Ver la tabla (EXE)</button>`;
+  VH.tbl=()=>{ if(!tRows) return ''; const hf=tCols.includes(1), hg=tCols.includes(2); const cell2=v=>v==null?'':v==='err'?'ERROR':escH(formatTxt(v,{nf:S.nf.m==='norm'?{m:'norm',n:1}:S.nf}));
     let h=`<table class="lc-tb"><thead><tr><th></th><th>x</th>${hf?'<th>f(x)</th>':''}${hg?'<th>g(x)</th>':''}</tr></thead><tbody>`;
     tRows.forEach((r,i)=>{ h+=`<tr><td class="n">${i+1}</td>`+[0,1,2].filter(c=>c===0||(c===1&&hf)||(c===2&&hg)).map(c=>`<td class="${tSel[0]===i&&tSel[1]===c?'sel':''}" data-v="tc:${i}:${c}">${cell2(r[c])}</td>`).join('')+'</tr>'; });
     const z=tCell(); h+=`</tbody></table><div class="lc-tbv">${z?fmtHTML(z,fmtSel||{}):(tRows[tSel[0]]&&tRows[tSel[0]][tSel[1]]==='err'?'ERROR':'')}</div>`; return h; };
@@ -1120,7 +1163,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     refresh(){ histDirty=true; render(); },
     insert(t){ if(view!=='calc'){ ovAll(); if(S.app!=='calc'&&S.app!=='cplx') goApp('calc'); view='calc'; } fromText(t).forEach(it=>{ prepEdit(main,it.v); main.row.splice(main.i,0,it); main.i++; }); render(); },
     answerChanged(){ bar(); },
-    setTab(t){ if(t==='eqn') goApp('eqn'); else if(t==='solve'){ goApp('calc'); view='solve'; } else if(t==='tbl') goApp('tbl'); else if(t==='cplx') goApp('cplx'); else goApp('calc'); render(); },
+    setTab(t){ if(t==='eqn') goApp('eqn'); else if(t==='solve'){ goApp('eqn'); view='solve'; } else if(t==='tbl') goApp('tbl'); else if(t==='cplx') goApp('cplx'); else goApp('calc'); render(); },
     key(a){ key(a); },
     get ans(){ return a2z(S.ans); },
     get state(){ return {app:S.app,view,ov:ov.length}; },
