@@ -1158,6 +1158,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   como debe), `Ans-1` → 0 (b ✓), complejo en casilla normal → aviso; Teoría «Comprueba» igual (6); los otros 4 ejercicios sin errores;
   sin desbordes ni errores de consola.
 
+## Hecho (v69): «Plan para el examen» en Resumen + la Ruta brinca las evaluaciones saltadas
+
+- Pedido: examen el **lunes 9 nov 2026 a la 1:00 p. m.**; barra de progreso aproximada de lo que debería avanzar para estudiar todo.
+  Tarjeta `div#exPlan.card.ex-plan` en `#resumen`, justo después de `#rtMini` (CSS «v69» tras las reglas `.rt-mini`; `<script>` al final del
+  `<body>`, `window.__lgdrExam.{render,load,studyMs}`). Avance = % global de la Ruta (`__lgdrRuta.data().tot`). Marca ▼ «deberías llevar» =
+  `b0 + (100 − b0)·(horas de estudio desde t0)/(horas de estudio hasta la meta)`, meta = 100 % **una hora antes** del examen; solo cuentan
+  las horas de estudio (por omisión 9:00–23:00). El plan empieza la primera vez que se ve (`t0`, `b0` = % de ese momento). Muestra: cuenta
+  regresiva, estado (adelantado / al día ±3 / atrasado), meta de hoy, horas de estudio que quedan y % por hora, plan por día (rayitas en la
+  barra) y «Lo que sigue» de la Ruta. «Ajustar»: fecha y hora del examen, horario de estudio y «Reiniciar el plan desde ahora».
+  `localStorage['lgdr-examen-v1'] = {at, s, e, t0, b0}` (solo este dispositivo, no se sincroniza). Se actualiza cada minuto en Resumen.
+- **Ruta:** la evaluación saltada ⏭ y no aprobada lleva `def:1`; `cur` (lo que sigue) = primer elemento incompleto que no sea `def`
+  (si solo quedan esas, vuelve a ellas). Probado: II saltada → «Sección 13 · Compensación»; sin saltar → «Presenta la evaluación II».
+- Probado con Playwright (reloj simulado, zona America/Mexico_City) a 390 px claro y 1440 px oscuro: sábado 12:40 (meta de hoy 39 %, plan
+  sáb 39 → dom 89 → 100 % lun 12:00), domingo 18:00 sin avance (atrasado 69), Ajustar (fin 22:00), reiniciar, después del examen; sin errores.
+
 ## Hecho (v66): botón «i» con la información de la app
 
 - La versión ya no va suelta en la barra: `button#abInfo.abicon` (ícono «i», antes de Sincronizar) abre `dialog#infoDlg.sync.ifd` con la versión

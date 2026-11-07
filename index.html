@@ -1671,6 +1671,37 @@ details.wfcode pre{max-height:360px;overflow:auto}
 .rt-mini small{color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rt-mini .rt-mg{color:var(--accent);font-weight:600;font-size:13px;white-space:nowrap}
 .rt-mini .rt-ring .rt-rb,.rt-mini .rt-ring .rt-rf{stroke-width:6}
+/* v69 · Plan para el examen (Resumen) */
+.ex-plan{padding:12px 14px;display:grid;gap:8px}
+.ex-hd{display:flex;gap:10px;align-items:flex-start}
+.ex-ttl{flex:1;min-width:0;display:grid;gap:1px}
+.ex-ttl b{font-size:15.5px}
+.ex-ttl small{color:var(--muted);font-size:12.5px}
+.ex-ed{font:600 12.5px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:999px;padding:5px 11px;cursor:pointer;white-space:nowrap}
+.ex-bar{position:relative;height:16px;border-radius:999px;background:color-mix(in srgb,var(--accent) 12%,var(--surface));margin:22px 0 2px}
+.ex-fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--accent);min-width:6px}
+.ex-fill.ok{background:var(--ok)}
+.ex-fill.bad{background:var(--warn,#d97706)}
+.ex-mk{position:absolute;top:-5px;bottom:-5px;width:0;border-left:2px solid var(--ink);transform:translateX(-1px)}
+.ex-mk span{position:absolute;bottom:100%;left:0;transform:translateX(-50%);font:600 11px var(--f-mono);color:var(--ink);white-space:nowrap;padding-bottom:1px}
+.ex-mk span::after{content:"▼";display:block;text-align:center;font-size:8px;line-height:1}
+.ex-tk{position:absolute;top:3px;bottom:3px;width:2px;background:color-mix(in srgb,var(--ink) 30%,transparent);transform:translateX(-1px)}
+.ex-nums{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.ex-nums b{color:var(--ink)}
+.ex-st{margin:0;font-weight:600;font-size:14px}
+.ex-st.ok{color:var(--ok)}
+.ex-st.bad{color:var(--warn,#d97706)}
+.ex-st.done{color:var(--muted)}
+.ex-l{margin:0;padding-left:18px;font-size:13.5px;display:grid;gap:3px}
+.ex-nx{display:flex;gap:8px;align-items:center;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px}
+.ex-nx span{color:var(--muted);font-size:12px;white-space:nowrap}
+.ex-nx b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ex-nx i{color:var(--accent);font-style:normal;font-weight:700}
+.ex-form{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;border-top:1px dashed var(--line);padding-top:10px;font-size:13px}
+.ex-form label{display:inline-flex;gap:6px;align-items:center}
+.ex-form input,.ex-form select{font:13px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 7px}
+.ex-note{flex-basis:100%;margin:0;color:var(--muted);font-size:12px}
+@media print{.ex-plan{display:none}}
 @media (max-width:560px){
   .rt-hero{gap:14px}.rt-hr{width:76px;height:76px}.rt-hr svg{width:76px;height:76px}.rt-hv{font-size:21px}
   .rt-st{grid-template-columns:30px minmax(0,1fr);gap:8px}.rt-mk{width:30px;height:30px;font-size:14px}.rt-st:not(:last-child)::before{left:14px;top:34px}
@@ -1912,10 +1943,11 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 12:26 (hora del centro de México)">v1.7.11.1226</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 12:46 (hora del centro de México)">v1.7.11.1246</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
+    <li><b>Plan para el examen</b> (en Resumen): barra con lo que llevas y lo que deberías llevar para llegar al 100 % antes del examen. La Ruta ya no se detiene en una evaluación saltada ⏭.</li>
     <li><b>Entrenar · calculadora en los ejercicios (etapa 3):</b> «→ Respuesta» también pone complejos en el plano s (Re e Im a la vez) y, desde Ecuación, todas las raíces de un toque; botones por inciso que abren Ecuación con el grado correcto; y en las casillas puedes escribir <code>Ans</code> o una memoria (A–F, M).</li>
     <li><b>Entrenar · plano s (etapa 2):</b> responde ubicando polos (×), ceros (○) y puntos (•) en el plano, con imán a la cuadrícula y al eje real, casillas Re/Im para afinar y un círculo de tolerancia. Ejercicio de muestra en el tema 1.</li>
     <li><b>Entrenar (etapa 1):</b> ejercicios con el caso de la tarea o variantes aleatorias, modo práctica o examen, ±1 % de tolerancia, calificación con arrastre y la calculadora a un toque.</li>
@@ -15020,7 +15052,7 @@ window.__PASOS=PASOS;
         nx:sn?{t:`Sección ${sn.n} · ${sn.t}`,how:`Lee la sección y responde sus ${sn.tot} preguntas (llevas ${sn.s}).`,go:'sec:'+sn.id}:null})];
       if(P.xt){ const x=P.xn; out.push(it({k:'x'+r,t:'Experimentos de sus simulaciones',sub:`${P.xd}/${P.xt} indicaciones y retos`,v:P.xd/P.xt,go:x?`demo:${x.k}:${x.sid}`:'part:'+r,lock:L,
         nx:x?{t:`Simulación de la sección ${x.n}${x.t?' · '+x.t:''}`,how:'Sigue sus indicaciones y retos moviendo los deslizadores.',go:`demo:${x.k}:${x.sid}`}:null})); }
-      out.push(it({k:'e'+r,t:`Evaluación ${r} (80 % para aprobar)`,sub:P.passed?`Aprobada · mejor ${Math.round(P.best*100)} %`:P.tried?`Mejor ${Math.round(P.best*100)} %${P.skip?' · saltada ⏭':''}`:P.skip?'Saltada ⏭ (preséntala cuando puedas)':'Pendiente',v:ex,go:'ex:'+r,lock:L,
+      out.push(it({k:'e'+r,t:`Evaluación ${r} (80 % para aprobar)`,sub:P.passed?`Aprobada · mejor ${Math.round(P.best*100)} %`:P.tried?`Mejor ${Math.round(P.best*100)} %${P.skip?' · saltada ⏭':''}`:P.skip?'Saltada ⏭ · la Ruta sigue sin ella (preséntala cuando puedas)':'Pendiente',v:ex,go:'ex:'+r,lock:L,def:P.skip&&!P.passed,
         nx:P.passed?null:{t:`Presenta la evaluación ${r}`,how:'Necesitas 80 % para aprobar; puedes intentarlo las veces que quieras.',go:'ex:'+r}}));
       return out; };
     const prac=p=>{ const N=nSteps(p), r=Math.min(R.ps[p]||0,N||0), fs=N?r/N:0, b=!!R.m[p+':banco'], w=!!R.m[p+':rep'];
@@ -15055,7 +15087,8 @@ window.__PASOS=PASOS;
     ];
     S.forEach(s=>{ const its=s.items.filter(x=>!x.soon); s.v=its.length?its.reduce((a,x)=>a+x.v,0)/its.length:0; });
     const all=S.flatMap(s=>s.items.filter(x=>!x.soon));
-    const tot=all.reduce((a,x)=>a+x.v,0)/all.length, cur=all.find(x=>x.v<1);
+    /* v69: una evaluación saltada (⏭) no detiene la ruta: «lo que sigue» la brinca y solo vuelve a ella cuando no queda nada más */
+    const tot=all.reduce((a,x)=>a+x.v,0)/all.length, cur=all.find(x=>x.v<1&&!x.def)||all.find(x=>x.v<1);
     /* lo completo (elementos y partes de cada práctica), para avisar al terminar algo */
     const done={}, own={}; all.forEach(x=>{ if(x.v>=1) done[x.k]=x.t; (x.steps||[]).forEach(s=>{ own[s.k]=x; if(s.v>=1) done[s.k]=`${x.t.split(' · ')[0]} · ${s.t}`; }); });
     return {S,tot,cur,done,own,ndone:all.filter(x=>x.v>=1).length,n:all.length};
@@ -15347,6 +15380,104 @@ window.__PASOS=PASOS;
   dlg.querySelector('[data-if-copy]').addEventListener('click',e=>{ const btn=e.currentTarget, url=location.href.split(/[?#]/)[0];
     (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ btn.textContent='¡Copiado!'; },()=>{ btn.textContent=url; })
       .finally(()=>setTimeout(()=>{ btn.textContent='Copiar enlace de la página'; },1800)); });
+})();
+</script>
+<script>
+/* ==== v69 · Plan para el examen (tarjeta en «Resumen», solo presentación) ====
+   Barra con tu avance real (el % global de la Ruta del curso, window.__lgdrRuta.data().tot) y una marca con lo que «deberías llevar»
+   ahora para llegar al 100 % una hora antes del examen. Lo esperado sube solo en horas de estudio (de s a e horas, por omisión
+   9:00–23:00): esperado = base + (100 − base) · (horas de estudio desde el inicio del plan) / (horas de estudio hasta la meta).
+   El plan empieza la primera vez que se ve la tarjeta (base = tu % de ese momento). Se puede cambiar la fecha del examen, el
+   horario y reiniciar el plan. localStorage['lgdr-examen-v1'] = {at:'AAAA-MM-DDTHH:MM', s, e, t0, b0} (solo este dispositivo). */
+(()=>{
+  const d=document, KEY='lgdr-examen-v1', page=d.getElementById('resumen');
+  if(!page) return;
+  const DEF={at:'2026-11-09T13:00',s:9,e:23};
+  const load=()=>{ try{ return Object.assign({},DEF,JSON.parse(localStorage.getItem(KEY)||'{}')); }catch(e){ return Object.assign({},DEF); } };
+  const save=o=>{ try{ localStorage.setItem(KEY,JSON.stringify(o)); }catch(e){} };
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const BUF=60*60e3;                       /* meta: 100 % una hora antes del examen (esa hora es para repasar fórmulas y descansar) */
+  const toDate=s=>{ const m=/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(s||''); return m?new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5]):null; };
+  /* horas de estudio entre a y b (ms) contando solo de s a e horas de cada día */
+  function studyMs(a,b,s,e){ if(b<=a) return 0; let t=0; const day=new Date(a); day.setHours(0,0,0,0);
+    for(let x=day.getTime();x<b;){ const D=new Date(x), w0=new Date(D).setHours(s,0,0,0), w1=e>=24?new Date(D).setHours(24,0,0,0):new Date(D).setHours(e,0,0,0);
+      t+=Math.max(0,Math.min(b,w1)-Math.max(a,w0)); D.setDate(D.getDate()+1); x=D.getTime(); }
+    return t; }
+  const fmtH=ms=>{ const h=ms/36e5; return h>=10?Math.round(h)+' h':h>=1?(Math.round(h*2)/2).toString().replace('.',',')+' h':Math.max(1,Math.round(ms/6e4))+' min'; };
+  const fmtLeft=ms=>{ if(ms<=0) return 'ya es la hora'; const m=Math.floor(ms/6e4), dd=Math.floor(m/1440), hh=Math.floor(m%1440/60), mm=m%60;
+    return (dd?dd+' d ':'')+(dd||hh?hh+' h ':'')+(dd?'':mm+' min'); };
+  const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const fmtWhen=D=>`${DIAS[D.getDay()]} ${D.getDate()} de ${D.toLocaleDateString('es-MX',{month:'long'})}, ${D.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})}`;
+  const hm=h=>(h>=24?'24':String(h).padStart(2,'0'))+':00';
+  function cur(){ const R=window.__lgdrRuta; if(!R||!R.data) return null; try{ const D=R.data(); return {p:Math.max(0,Math.min(100,100*D.tot)),N:R.next()}; }catch(e){ return null; } }
+
+  let card=null, edit=false, tick=0;
+  function place(){ if(!card){ card=d.createElement('div'); card.id='exPlan'; card.className='card ex-plan'; card.addEventListener('click',onClick); card.addEventListener('change',onChange); }
+    const mini=d.getElementById('rtMini');
+    if(mini&&mini.parentNode===page){ if(mini.nextElementSibling!==card) mini.after(card); }
+    else if(card.parentNode!==page) page.insertBefore(card,page.firstElementChild); }
+  function render(){
+    const C=cur(); if(!C) return; place();
+    const o=load(), now=Date.now(), ex=toDate(o.at);
+    if(!ex){ card.innerHTML='<p>Fecha del examen no válida.</p>'; return; }
+    const goal=ex.getTime()-BUF;
+    if(o.t0==null||o.b0==null||o.t0>goal){ o.t0=now; o.b0=Math.round(C.p); save(o); }
+    const p=C.p, tot=studyMs(o.t0,goal,o.s,o.e), done=studyMs(o.t0,Math.min(now,goal),o.s,o.e), left=studyMs(Math.max(now,o.t0),goal,o.s,o.e);
+    const exp=now>=goal?100:o.b0+(100-o.b0)*(tot?done/tot:1);
+    const endToday=new Date(now); endToday.setHours(Math.min(o.e,24),0,0,0);
+    const tEnd=Math.min(Math.max(endToday.getTime(),now),goal), expEnd=tEnd>=goal?100:o.b0+(100-o.b0)*(tot?studyMs(o.t0,tEnd,o.s,o.e)/tot:1);
+    const diff=Math.round(p-exp), rate=left>0?(100-p)/(left/36e5):Infinity;
+    const passed=now>=ex.getTime();
+    /* tramos del plan: cuánto deberías llevar al final de cada día de estudio hasta la meta */
+    const marks=[]; { const D=new Date(Math.max(now,o.t0)); D.setHours(0,0,0,0);
+      for(let k=0;k<6&&D.getTime()<goal;k++){ const w1=new Date(D); w1.setHours(Math.min(o.e,24),0,0,0); const t=Math.min(w1.getTime(),goal);
+        if(t>now){ const v=t>=goal?100:o.b0+(100-o.b0)*studyMs(o.t0,t,o.s,o.e)/tot; marks.push({D:new Date(D),t,v,last:t>=goal}); }
+        D.setDate(D.getDate()+1); } }
+    const st=passed?{c:'done',t:'El examen ya pasó. ¡Suerte con el resultado! Cambia la fecha si tienes otro.'}
+      :p>=99.5?{c:'ok',t:'¡Completaste todo! Usa el tiempo que queda para repasar fórmulas, Entrenar y descansar.'}
+      :diff>=3?{c:'ok',t:`Vas adelantado ${diff} puntos. Sigue así.`}
+      :diff>-3?{c:'ok',t:'Vas al día con el plan.'}
+      :{c:"bad",t:`Vas atrasado ${-diff} puntos respecto al plan: avanza con «Lo que sigue» para alcanzarlo.`};
+    const N=C.N;
+    card.innerHTML=`
+      <div class="ex-hd"><div class="ex-ttl"><b>Plan para el examen</b><small>${esc(fmtWhen(ex))} · ${now>=ex.getTime()?'ya pasó':'faltan '+fmtLeft(ex.getTime()-now)}</small></div>
+        <button type="button" class="ex-ed" data-ex="edit" aria-expanded="${edit}">${edit?'Listo':'Ajustar'}</button></div>
+      <div class="ex-bar" role="img" aria-label="Llevas ${Math.round(p)} %; según el plan deberías llevar ${Math.round(exp)} %">
+        <div class="ex-fill ${st.c}" style="width:${p.toFixed(1)}%"></div>
+        ${passed?'':`<div class="ex-mk" style="left:${Math.min(100,exp).toFixed(1)}%"><span style="transform:translateX(${exp<6?'-15%':exp>94?'-85%':'-50%'})">${Math.round(exp)} %</span></div>`}
+        ${marks.filter(m=>!m.last).map(m=>`<div class="ex-tk" style="left:${m.v.toFixed(1)}%" title="Fin del ${DIAS[m.D.getDay()]}: ${Math.round(m.v)} %"></div>`).join('')}
+      </div>
+      <div class="ex-nums"><span><b>${Math.round(p)} %</b> llevas</span>${passed?'':`<span class="ex-dot">▼ <b>${Math.round(exp)} %</b> deberías llevar ahora</span>`}</div>
+      <p class="ex-st ${st.c}">${esc(st.t)}</p>
+      ${passed||p>=99.5?'':`<ul class="ex-l">
+        <li>Meta de hoy (hasta las ${hm(Math.min(o.e,24))}): <b>${Math.round(Math.max(expEnd,p))} %</b>${expEnd>p?` · te faltan ${Math.round(expEnd-p)} puntos`:' ✓'}</li>
+        <li>Te quedan ~<b>${fmtH(left)}</b> de estudio (de ${hm(o.s)} a ${hm(o.e)}) hasta la meta: ${Number.isFinite(rate)?`unos <b>${(Math.round(rate*10)/10).toString().replace('.',',')} %</b> por hora`:'ya no queda tiempo de estudio en el plan'}.</li>
+        ${marks.length>1?`<li>Plan: ${marks.map(m=>m.last?`<b>100 %</b> a las ${new Date(m.t).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})} del ${DIAS[m.D.getDay()]} (una hora antes, solo repaso)`:`${DIAS[m.D.getDay()]} <b>${Math.round(m.v)} %</b>`).join(' → ')}.</li>`:''}
+      </ul>`}
+      ${N&&!passed?`<a class="ex-nx" href="#ruta"><span>Lo que sigue</span><b>${esc(N.t)}</b><i aria-hidden="true">→</i></a>`:''}
+      ${edit?`<div class="ex-form">
+        <label>Examen <input type="datetime-local" data-ex="at" value="${esc(o.at)}"></label>
+        <label>Estudio de <select data-ex="s">${Array.from({length:24},(_,h)=>`<option value="${h}"${h===o.s?' selected':''}>${hm(h)}</option>`).join('')}</select></label>
+        <label>a <select data-ex="e">${Array.from({length:24},(_,h)=>h+1).map(h=>`<option value="${h}"${h===o.e?' selected':''}>${hm(h)}</option>`).join('')}</select></label>
+        <button type="button" class="ex-ed" data-ex="reset">Reiniciar el plan desde ahora (${Math.round(p)} %)</button>
+        <p class="ex-note">El avance es el % de la Ruta del curso (teoría, evaluaciones, prácticas, reportes, preguntas…). Lo que «deberías llevar» solo sube en tus horas de estudio y llega al 100 % una hora antes del examen. Se guarda solo en este dispositivo.</p>
+      </div>`:''}`;
+  }
+  function onClick(e){ const b=e.target.closest('[data-ex]'); if(!b||b.tagName!=='BUTTON') return;
+    if(b.dataset.ex==='edit'){ edit=!edit; render(); return; }
+    if(b.dataset.ex==='reset'){ const o=load(), C=cur(); o.t0=Date.now(); o.b0=C?Math.round(C.p):0; save(o); render(); } }
+  function onChange(e){ const t=e.target, k=t.dataset&&t.dataset.ex; if(!k) return; const o=load();
+    if(k==='at'){ if(!toDate(t.value)) return; o.at=t.value; if(o.t0>toDate(o.at).getTime()-BUF) delete o.t0; }
+    else { o[k]=+t.value; if(o.e<=o.s){ if(k==='s') o.e=Math.min(24,o.s+1); else o.s=Math.max(0,o.e-1); } }
+    save(o); render(); }
+  const onRes=()=>{ const h=location.hash||''; return h===''||h==='#'||h==='#resumen'; };
+  function go(){ if(!onRes()) return; (window.requestIdleCallback||(f=>setTimeout(f,300)))(()=>{ try{ render(); }catch(err){} }); }
+  addEventListener('hashchange',go);
+  addEventListener('storage',e=>{ if(e.key===KEY||e.key==='lgdr-ruta-v1') go(); });
+  d.addEventListener('visibilitychange',()=>{ if(!d.hidden) go(); });
+  clearInterval(tick); tick=setInterval(()=>{ if(!d.hidden&&onRes()&&card&&!card.contains(d.activeElement)) try{ render(); }catch(err){} },60e3);
+  if(d.readyState==='complete') setTimeout(go,600); else addEventListener('load',()=>setTimeout(go,600));
+  window.__lgdrExam={render,load,studyMs};
 })();
 </script>
 </body></html>
