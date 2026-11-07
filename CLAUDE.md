@@ -991,14 +991,36 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright a 390×844 (táctil) y 1440×900 (claro/oscuro): teclas, teclado físico, Ans, STO/VAR, polar, error, Ecuación (P1:
   −7.943, −2.0285 ± j2.7677), SOLVE, «→ Respuesta», formulario + calculadora, plegado/ocultar/resaltado del índice, barra de P1; consola limpia.
 
-## Pedido pendiente (después de v62): calculadora con la forma de la fx‑991CW
+## Hecho (v63): calculadora con la forma y el uso de una fx‑991CW (diseño propio, sin marca)
 
-- El usuario vio la v62 y le gusta, pero prefiere que `entrenar/calc.js` **se vea y se use como la Casio fx‑991CW** (distribución de teclas,
-  menú de apps, pantalla natural con plantillas y cursor dentro de fracciones/raíces, SETTINGS, TOOLS), con **solo 4 modos (apps)** en vez de
-  todos. **Config** solo lo básico de *Calc Settings* (p. ej. unidad de ángulo, formato de entrada/salida natural o lineal, formato de
-  números Norm/Fix/Sci, forma compleja a+bi / r∠θ). **Catálogo:** el usuario no sabe si hace falta (proponerlo opcional). **En celular la
-  calculadora se abre a pantalla completa.** Sin el logotipo ni la marca de Casio (diseño propio con la misma distribución y flujo).
-  Mantener la API `LGDRCalc.mount/engine` y lo que ya funciona (motor, «→ Respuesta», historial, memorias, `lgdr-calc-v1`).
+- `entrenar/calc.js` reescrita (v2, ~100 KB; se carga con `?v=2`). Misma API: `LGDRCalc.mount(el,{storageKey,katex,answer,onClose})` →
+  `{el, engine, focus, refresh, insert, answerChanged, setTab('calc'|'cplx'|'eqn'|'tbl'|'solve'), key(acción), ans, state, destroy}`.
+  Motor igual que v62 + `f(`/`g(` (funciones definidas), formato de número (`dec(x,nf)`, nf = `{m:'norm',n:1|2}` · `{m:'fix',n}` ·
+  `{m:'sci',n}`), salida lineal `formatLin` (fracciones `p⌟q`), `linsolve` (sistemas, «Sin solución» / «Infinitas soluciones»).
+- **Distribución de teclas (de memoria; el manual de Casio está bloqueado por la red del contenedor — si el usuario manda foto, ajustar
+  `KTOP`, `KEYS6`, `KEYS5`):** arriba SHIFT · ALPHA | cruceta con OK y BACK | HOME · SETTINGS; VARIABLE · FUNCTION | CATALOG · TOOLS.
+  Filas de 6: `x`, ■/□, √■, x², x^■, log■□ / (−), x⁻¹, sin, cos, tan, ln / π, (, ), i, Ans, M+ (leyendas SHIFT amarillas y ALPHA rojas:
+  = |x| ∛ x³ ⁿ√ 10ˣ / ∠ x! sin⁻¹ cos⁻¹ tan⁻¹ eˣ / e , log arg Abs M−; ALPHA A–F, y, z, M). Numérico: 7 8 9 DEL AC / 4 5 6 × ÷ /
+  1 2 3 + − / 0 . ×10ˣ FORMAT EXE (SHIFT EXE = ≈ decimal). Teclado físico también (Enter, ←→↑↓, ^ = potencia, s/c/t/l/r/p…).
+- **Editor natural** (`class Ed`): árbol de filas con plantillas `frac/sqrt/root/pow/logb/abs`; cursor (fila, índice); ◀ ▶ entran/salen de los
+  huecos, ▲ ▼ entre numerador y denominador; tocar la fórmula pone el cursor. ■/□ jala el número de antes al numerador (como la calculadora).
+  `serRow()` lo pasa a texto para el motor con mapa de posiciones (el error de sintaxis deja el cursor donde falló). HTML propio (`edHTML`,
+  clases `.e-*`); en entrada lineal se dibuja en una línea. Resultados con KaTeX (exactos) o texto (lineal).
+- **HOME con 4 apps:** Calcular (reales; i → aviso «usa Complejos»; TOOLS: SOLVE, Deshacer, M+/M−, borrar historial), Complejos (a+bi / r∠θ),
+  Ecuación (Simultánea 2–4 incógnitas o Polinómica grado 2–4: tabla de coeficientes, EXE guarda y avanza, EXE otra vez resuelve; raíces
+  exactas en grado 2) y Tabla de función (f(x), g(x), Inicio/Fin/Paso, máx. 45 filas). f/g se comparten: FUNCTION → escribir `f(`/`g(` o definirlas.
+- **SETTINGS:** unidad de ángulo, entrada/salida (Natural/Natural, Natural/Decimal, Lineal/Lineal, Lineal/Decimal), formato de número
+  (Norm 1 por omisión, Norm 2, Fix 0–9, Sci 1–10), resultado complejo, restablecer. **CATALOG:** Funciones, Hiperbólicas, Complejos, Variables y
+  Ans, f(x)/g(x), Constantes y símbolos (= para SOLVE). **FORMAT:** Estándar, Decimal, a+bi, r∠θ. **VARIABLE:** recuperar o guardar (STO).
+- Historial: ▲ selecciona, OK/EXE lo reutiliza; un toque selecciona, dos lo cargan; tocar un resultado lo escribe. Barra bajo la pantalla:
+  Copiar · → Ans · → Respuesta n (también para raíces, x de SOLVE y celdas de la tabla).
+- `lgdr-calc-v1` sigue (v:1) con campos nuevos `app, io, nf, fn, eq{type,n,P,M}, tb`; el historial viejo (solo texto) se lee con `fromText`,
+  y los coeficientes de la v1 pasan a la Polinómica.
+- **index.html:** en celular (< 700 px) `dialog#ccDlg` ocupa toda la pantalla (`inset:0`, 100dvh, z-index 60, sin scroll del fondo); en computadora
+  sigue a la derecha con `--ccW: clamp(320px,26vw,380px)`. Se quitó `--ccH` y lo de dejar espacio abajo.
+- Probado con Playwright a 390×844 (táctil) y 1440×900/720 (claro y oscuro): plantillas y cursor, Ans tras operador, DEL en plantillas,
+  ángulo/radianes, Fix 3 + lineal, STO/VARIABLE, historial, catálogo, Complejos (∠G(s₀) ≈ −180°), Ecuación grado 3 de P1 (−7.943,
+  −2.0285 ± j2.7677), sistema 3×3, Tabla de −(x+2)(x+4)(x+6) (máximo cerca de −2.8), SOLVE, f(x), «→ Respuesta» en la evaluación I, Esc; consola limpia.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
