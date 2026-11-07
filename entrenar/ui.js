@@ -1,15 +1,17 @@
 /* =====================================================================================================
-   entrenar/ui.js · Pestaña «Entrenar» del Laboratorio LGDR · etapa 1 (pestaña, motor y guardado)
+   entrenar/ui.js · Pestaña «Entrenar» del Laboratorio LGDR · etapa 1 (pestaña, motor y guardado) + etapa 2 (plano s)
    ---------------------------------------------------------------------------------------------------
    index.html la carga con import() la primera vez que se abre #entrenar y llama init(section) cada vez que se muestra.
    Vistas: inicio (avance, modo, temas con sus ejercicios, historial) y ejercicio (enunciado, incisos con casillas,
    Comprobar / Ver solución en modo práctica, Entregar en modo examen, resultado).
    Calculadora: la de la página (entrenar/calc.js vía window.__lgdrCalcUI). Con un ejercicio abierto aparece su botón
    flotante y «→ Respuesta» escribe en la última casilla tocada (o la primera vacía).
-   Preferencias (modo y caso/variante) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
+   Casillas de plano s (etapa 2): entrenar/plano.js; lo ubicado se guarda en ST.A[campo] como texto (motor.ptsStr).
+   Preferencias (modo, caso/variante e imán) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
-import * as M from './motor.js?v=1';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=1';
+import * as M from './motor.js?v=2';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=2';
+import { mountPlane, fmtList } from './plano.js?v=1';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
 const K_ = () => window.katex;
@@ -25,8 +27,9 @@ const nT = v => { if (v && typeof v === 'object') v = v.re; if (!Number.isFinite
   return String(+v.toPrecision(a >= 100 ? 5 : 4)); };
 const H = { tx, n: nT, f: v => M.fmt(v) };
 
-let SEC = null, BOX = null, view = 'home', X = null, ST = null, built = false;
-const pref = () => { try { return Object.assign({ mode: 'p', src: 't' }, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { return { mode: 'p', src: 't' }; } };
+let SEC = null, BOX = null, view = 'home', X = null, ST = null, built = false, PL = {};
+const dropPlanes = () => { Object.values(PL).forEach(p => p.destroy()); PL = {}; };
+const pref = () => { try { return Object.assign({ mode: 'p', src: 't', mag: 1 }, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { return { mode: 'p', src: 't', mag: 1 }; } };
 const setPref = o => { try { localStorage.setItem(PREF, JSON.stringify(Object.assign(pref(), o))); } catch (e) {} };
 
 /* ------------------------------------------------------------------ calculadora */
@@ -42,7 +45,7 @@ function pctTag(e){
   return b >= M.PASS ? `<span class="pill ok">Dominado · ${b} %</span>` : `<span class="pill warn">Mejor ${b} %</span>`;
 }
 function home(){
-  view = 'home'; X = null; calcOn(false);
+  view = 'home'; X = null; calcOn(false); dropPlanes();
   const D = M.load(), S = M.stats(EJ), P = pref(), cur = M.loadCur(), cd = cur && byId(cur.e);
   const ring = S.tot ? S.dom / S.tot : 0;
   const when = t => { const x = new Date(t); return x.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }) + ' ' + x.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }); };
@@ -89,6 +92,7 @@ function start(id, seed, mode, restore){
 const save = () => M.saveCur(ST && !ST.done ? ST : null);
 
 function fieldHTML(inc, fl){
+  if (M.isPlane(fl)) return `<div class="en-f en-pf" data-pk="${fl.k}"><span class="en-fl">${fl.l}</span><div class="en-pl" data-pl="${fl.k}" data-inc="${inc.k}"></div></div>`;
   const id = `en-${inc.k}-${fl.k}`, v = ST.A[fl.k] || '';
   return `<label class="en-f" for="${id}"><span class="en-fl">${fl.l}</span><span class="en-fi"><input id="${id}" data-ans data-k="${fl.k}" data-inc="${inc.k}" data-label="${esc(inc.k + ') ' + strip(fl.l))}" value="${esc(v)}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="${esc(strip(fl.l))}">${fl.u ? `<span class="en-u">${fl.u}</span>` : ''}<span class="en-st" aria-hidden="true"></span></span><span class="en-pv" data-pv="${fl.k}"></span></label>`;
 }
@@ -116,8 +120,43 @@ function render(){
     <div class="en-res" data-res hidden></div>
     <div class="en-row" data-endb><button class="btn primary" data-fin>${ex ? 'Entregar examen' : 'Terminar y guardar'}</button></div>
   </div>`;
+  mountPlanes();
   if (!ex) def.inc.forEach(inc => { if (ST.ck[inc.k]) check(inc.k, true); if (ST.seen[inc.k]) showSol(inc.k); });
   preview();
+}
+/* planos s de las casillas con plane:true */
+function mountPlanes(){
+  dropPlanes();
+  X.def.inc.forEach(inc => M.fields(inc, X.P).forEach(fl => {
+    if (!M.isPlane(fl)) return;
+    const host = BOX.querySelector(`[data-pl="${fl.k}"]`); if (!host) return;
+    PL[fl.k] = mountPlane(host, {
+      view: fl.view || X.P.view, marks: fl.marks || ['x'], sym: !!fl.sym, real: !!fl.real, snap: fl.snap != null ? fl.snap : 0.5, max: fl.max || 12,
+      magnet: pref().mag !== 0, value: M.readPts(ST.A[fl.k]), label: `${inc.k}) ${strip(fl.l)}`,
+      onChange: reps => onPlane(inc.k, fl.k, reps),
+      onMagnet: on => { setPref({ mag: on ? 1 : 0 }); Object.values(PL).forEach(p => p.setMagnet(on)); }
+    });
+  }));
+}
+function onPlane(ik, k, reps){
+  if (!ST || ST.done) return;
+  if (reps.length) ST.A[k] = M.ptsStr(reps); else delete ST.A[k];
+  save(); clearInc(BOX.querySelector(`.en-inc[data-i="${ik}"]`));
+}
+/* al cambiar una respuesta se borra la calificación que tenía el inciso */
+function clearInc(li){
+  if (!li || !li.dataset.st) return;
+  delete li.dataset.st;
+  li.querySelectorAll('.en-f').forEach(f => { f.dataset.st = 'vacio'; });
+  li.querySelectorAll('[data-pl]').forEach(h => { const p = PL[h.dataset.pl]; if (p) p.mark(null); });
+  const fb = li.querySelector('[data-fb]'); fb.textContent = ''; fb.className = 'en-fb';
+}
+/* detalle de una casilla de plano mal ubicada: cuántos coinciden, sobran o faltan */
+function planeDet(r){
+  const out = [];
+  X.def.inc.forEach(inc => M.fields(inc, X.P).forEach(fl => { const f = r.f[fl.k]; if (!M.isPlane(fl) || !f || !f.pm || f.st === 'ok' || f.st === 'arr') return;
+    const m = f.pm; out.push(`${strip(fl.l)}: ${m.h} de ${m.n} bien ubicados${m.m > m.n ? ` · sobran ${m.m - m.n}` : m.m < m.n ? ` · faltan ${m.n - m.m}` : ''}`); }));
+  return out.length ? ' (' + out.join('; ') + ')' : '';
 }
 function preview(){
   BOX.querySelectorAll('input[data-ans]').forEach(i => { const pv = BOX.querySelector(`[data-pv="${i.dataset.k}"]`); if (!pv) return;
@@ -133,18 +172,20 @@ function check(k, quiet){
   const g = M.grade(X, ST.A), r = g.inc[k], li = BOX.querySelector(`.en-inc[data-i="${k}"]`); if (!li || !r) return r;
   paintInc(li, r);
   const fb = li.querySelector('[data-fb]'), errs = Object.values(r.f).filter(f => f.err).map(f => f.err);
-  fb.className = 'en-fb ' + r.st; fb.textContent = r.st === 'err' ? errs[0] : MSG[r.st];
+  fb.className = 'en-fb ' + r.st; fb.textContent = r.st === 'err' ? errs[0] : MSG[r.st] + (r.st === 'no' ? planeDet(r) : '');
   if (!quiet) { ST.ck[k] = r.st; save(); }
   return r;
 }
 function paintInc(li, r){
   li.dataset.st = r.st;
   li.querySelectorAll('input[data-ans]').forEach(i => { const f = r.f[i.dataset.k] || {}; i.closest('.en-f').dataset.st = f.st || 'vacio'; });
+  li.querySelectorAll('[data-pk]').forEach(w => { const k = w.dataset.pk, f = r.f[k] || {}; w.dataset.st = f.st || 'vacio'; if (PL[k]) PL[k].mark(f.pm ? f.pm.good : null); });
 }
 function showSol(k){
   const g = M.grade(X, ST.A), r = g.inc[k], inc = X.def.inc.find(i => i.k === k), box = BOX.querySelector(`[data-sl="${k}"]`); if (!box) return;
-  const fs = M.fields(inc, X.P);
-  box.innerHTML = `<div class="en-sh">Solución</div>${inc.how(X.P, r.T, r.S, H)}<p class="en-ans">Respuesta: ${fs.map(fl => `${fl.l} = <b>${M.fmt(r.S[fl.k], 5)}</b>${fl.u ? ' ' + fl.u : ''}`).join(' · ')}</p>${r.st === 'arr' ? `<p class="en-mut">Con tus valores anteriores daba: ${fs.map(fl => `${fl.l} = ${M.fmt(r.Sc[fl.k], 5)}`).join(' · ')}.</p>` : ''}`;
+  const fs = M.fields(inc, X.P), val = (fl, v) => M.isPlane(fl) ? fmtList(v, fl.marks) : M.fmt(v, 5);
+  box.innerHTML = `<div class="en-sh">Solución</div>${inc.how(X.P, r.T, r.S, H)}<p class="en-ans">Respuesta: ${fs.map(fl => M.isPlane(fl) ? `${fl.l}: <b>${val(fl, r.S[fl.k])}</b>` : `${fl.l} = <b>${val(fl, r.S[fl.k])}</b>${fl.u ? ' ' + fl.u : ''}`).join(' · ')}</p>${fs.some(M.isPlane) ? '<p class="en-mut">En el plano, la respuesta correcta se ve en verde con su círculo de tolerancia.</p>' : ''}${r.st === 'arr' ? `<p class="en-mut">Con tus valores anteriores daba: ${fs.map(fl => `${fl.l} = ${val(fl, r.Sc[fl.k])}`).join(' · ')}.</p>` : ''}`;
+  fs.forEach(fl => { if (M.isPlane(fl) && PL[fl.k]) PL[fl.k].solution(r.S[fl.k], b => M.ptTol(b, fl)); });
   box.hidden = false;
   const b = BOX.querySelector(`[data-sol="${k}"]`); if (b) { b.textContent = 'Solución abierta'; b.disabled = true; }
 }
@@ -157,8 +198,9 @@ function finish(){
   ST.done = 1; save();
   BOX.querySelectorAll('.en-inc').forEach(li => { const k = li.dataset.i, r = g.inc[k]; paintInc(li, r);
     const fb = li.querySelector('[data-fb]'); fb.className = 'en-fb ' + r.st;
-    fb.textContent = (!ex && ST.seen[k] ? 'Solución vista: este inciso no cuenta. ' : '') + (r.st === 'err' ? 'No se entendió lo que escribiste.' : MSG[r.st].replace(' Revisa tu cálculo e inténtalo otra vez, o abre la solución.', ''));
-    showSol(k); li.querySelectorAll('input').forEach(i => { i.readOnly = true; }); li.querySelectorAll('[data-chk],[data-sol]').forEach(b => b.remove()); });
+    fb.textContent = (!ex && ST.seen[k] ? 'Solución vista: este inciso no cuenta. ' : '') + (r.st === 'err' ? 'No se entendió lo que escribiste.' : MSG[r.st].replace(' Revisa tu cálculo e inténtalo otra vez, o abre la solución.', '') + (r.st === 'no' ? planeDet(r) : ''));
+    showSol(k); li.querySelectorAll('input[data-ans]').forEach(i => { i.readOnly = true; }); li.querySelectorAll('[data-chk],[data-sol]').forEach(b => b.remove()); });
+  Object.values(PL).forEach(p => p.readOnly(true));
   const ok = g.pct >= M.PASS, res = BOX.querySelector('[data-res]');
   const cnt = s => Object.values(g.inc).filter(r => r.st === s).length;
   res.innerHTML = `<div class="en-score ${ok ? 'ok' : 'bad'}"><b>${g.pct} %</b><span>${g.pts} de ${g.max} incisos${cnt('arr') ? ` · ${cnt('arr')} con arrastre` : ''}${!ex && Object.keys(ST.seen).length ? ` · ${Object.keys(ST.seen).length} con la solución vista` : ''}</span></div>
@@ -192,7 +234,7 @@ function onClick(e){
 function onInput(e){
   const i = e.target; if (!i.matches || !i.matches('input[data-ans]') || !ST || ST.done) return;
   ST.A[i.dataset.k] = i.value; save();
-  const li = i.closest('.en-inc'); if (li && li.dataset.st) { delete li.dataset.st; i.closest('.en-f').dataset.st = 'vacio'; const fb = li.querySelector('[data-fb]'); fb.textContent = ''; fb.className = 'en-fb'; }
+  clearInc(i.closest('.en-inc'));
   preview();
 }
 function onKey(e){

@@ -1,5 +1,5 @@
 /* =====================================================================================================
-   entrenar/motor.js · Motor de ejercicios del apartado «Entrenar» (Laboratorio LGDR) · etapa 1
+   entrenar/motor.js · Motor de ejercicios del apartado «Entrenar» (Laboratorio LGDR) · etapas 1–2
    ---------------------------------------------------------------------------------------------------
    Sin interfaz. Lo usa entrenar/ui.js.
      · Variantes: cada ejercicio se arma con una semilla (0 = el caso de la tarea; otra = variante aleatoria
@@ -11,6 +11,10 @@
      · Calificación con arrastre: cada inciso calcula su solución dos veces, con los valores correctos de los
        incisos anteriores y con los que escribió el alumno. Si el alumno se equivocó antes pero aquí aplicó bien
        el método con su propio valor, el inciso cuenta completo y se marca «con arrastre».
+     · Casillas de plano s (etapa 2, campo con plane:true): la respuesta es una lista de polos (x), ceros (o) y puntos (.)
+       guardada como texto «x:-2,0;o:-1,0» (ptsStr / readPts). Con sym:true se guarda un representante por par conjugado
+       (Im ≥ 0) y expandPts agrega el conjugado; con real:true todo va sobre el eje real. Se califica emparejando cada punto
+       esperado con uno del mismo tipo a ±max(tol·|s|, abs) (abs por omisión 0.15): ni de más ni de menos (matchPts).
      · Guardado (localStorage['lgdr-entrena-v1'], entra en la sincronización): solo números y una lista, para
        que la combinación genérica (máximo de cada número, la lista más larga) funcione:
          {v:1, tot, ex:{<id>:{n, ok, best, t, var, tarea, m:{<inciso>:fallos}}}, h:[{e, s, t, x, r}]}
@@ -80,6 +84,47 @@ export function fmt(v, sig){
   return one(v);
 }
 
+/* ------------------------------------------------------------------ plano s (etapa 2) */
+export const isPlane = fl => !!(fl && fl.plane);
+const r4 = v => Math.round(v * 1e4) / 1e4;
+/* lista de representantes → texto para guardar (y al revés) */
+export const ptsStr = L => (L || []).map(p => `${p.t}:${r4(p.re)},${r4(p.im)}`).join(';');
+export function readPts(raw){
+  const out = [];
+  String(raw == null ? '' : raw).split(';').forEach(s => { const m = /^\s*([xo.]):(-?[\d.]+(?:e-?\d+)?),(-?[\d.]+(?:e-?\d+)?)\s*$/i.exec(s);
+    if (m && Number.isFinite(+m[2]) && Number.isFinite(+m[3])) out.push({ t: m[1].toLowerCase(), re: +m[2], im: +m[3] }); });
+  return out;
+}
+/* representantes → lista completa (con sym agrega el conjugado justo después; mismo orden que entrenar/plano.js) */
+export function expandPts(reps, fl){
+  const out = [];
+  reps.forEach(p => { const im = fl.real ? 0 : p.im; out.push({ t: p.t, re: p.re, im });
+    if (fl.sym && !fl.real && Math.abs(im) > 1e-9) out.push({ t: p.t, re: p.re, im: -im }); });
+  return out;
+}
+export function parsePts(raw, fl){
+  const reps = readPts(raw);
+  if (!reps.length) return { ok: false, empty: true };
+  return { ok: true, v: expandPts(reps, fl) };
+}
+/* tolerancia de un punto esperado b */
+export const ptTol = (b, fl) => Math.max((fl.tol != null ? fl.tol : TOL) * Math.hypot(b.re, b.im), fl.abs != null ? fl.abs : 0.15);
+/* empareja lo ubicado (got) con lo esperado (exp): los pares más cercanos primero, solo del mismo tipo y dentro de la tolerancia.
+   → {ok, good:[bool por cada ubicado], hit:[bool por cada esperado], n:esperados, m:ubicados, h:aciertos} */
+export function matchPts(got, exp, fl){
+  got = got || []; exp = exp || [];
+  const one = !fl.marks || fl.marks.length < 2, ty = p => one ? '*' : (p.t || fl.marks[0]);
+  const pairs = [];
+  got.forEach((a, i) => exp.forEach((b, j) => { if (ty(a) !== ty(b)) return; const d = Math.hypot(a.re - b.re, a.im - b.im); if (d <= ptTol(b, fl)) pairs.push([d, i, j]); }));
+  pairs.sort((u, v) => u[0] - v[0]);
+  const good = got.map(() => false), hit = exp.map(() => false);
+  pairs.forEach(([, i, j]) => { if (!good[i] && !hit[j]) { good[i] = true; hit[j] = true; } });
+  const h = hit.filter(Boolean).length;
+  return { ok: h === exp.length && got.length === exp.length, good, hit, n: exp.length, m: got.length, h };
+}
+/* ¿a y b son la misma respuesta para esta casilla? */
+const same = (a, b, fl) => isPlane(fl) ? matchPts(a, b, fl).ok : close(a, b, fl);
+
 /* ------------------------------------------------------------------ armar un ejercicio
    Definición de ejercicio (ver entrenar/ejercicios.js):
      {id, tema, t, nivel, gen(r, tarea) → P, enun(P, h) → html, inc:[{k, q(P,h), f:[{k, l, u, tol, abs, ang}], sol(P, A) → {campo: valor}, how(P, A, S, h) → html}]}
@@ -102,18 +147,19 @@ export function grade(X, answers, only){
     let all = true, okT = true, okC = true, any = false, bad = false;
     const fs = fields(inc, P);
     fs.forEach(fl => {
-      const p = parseAns(answers[fl.k]);
+      const p = isPlane(fl) ? parsePts(answers[fl.k], fl) : parseAns(answers[fl.k]);
       const fr = r.f[fl.k] = { st: 'vacio' };
       if (p.empty) { all = false; okT = okC = false; return; }
       any = true;
       if (!p.ok) { fr.st = 'err'; fr.err = p.err; bad = true; okT = okC = false; return; }
       fr.v = p.v;
-      const t = close(p.v, S[fl.k], fl), c = close(p.v, Sc[fl.k], fl);
+      const t = same(p.v, S[fl.k], fl), c = same(p.v, Sc[fl.k], fl);
       fr.st = t ? 'ok' : c ? 'arr' : 'no';
+      if (isPlane(fl)) fr.pm = matchPts(p.v, !t && c ? Sc[fl.k] : S[fl.k], fl);
       if (!t) okT = false; if (!c) okC = false;
     });
     /* lo que se arrastra a los incisos siguientes: lo escrito si se entiende; si no, lo correcto */
-    fs.forEach(fl => { const fr = r.f[fl.k]; T[fl.k] = S[fl.k]; A[fl.k] = fr && fr.v ? (isC(S[fl.k]) || fr.v.im ? fr.v : fr.v.re) : S[fl.k]; });
+    fs.forEach(fl => { const fr = r.f[fl.k]; T[fl.k] = S[fl.k]; A[fl.k] = fr && fr.v ? (isPlane(fl) ? fr.v : isC(S[fl.k]) || fr.v.im ? fr.v : fr.v.re) : S[fl.k]; });
     if (!any) r.st = 'vacio';
     else if (bad) r.st = 'err';
     else if (all && okT) r.st = 'ok';
@@ -125,7 +171,7 @@ export function grade(X, answers, only){
   });
   return { inc: out, pts, max, pct: max ? Math.round(100 * pts / max) : 0 };
 }
-const differs = (S, Sc, fs) => fs.some(fl => !close(Sc[fl.k], S[fl.k], fl));
+const differs = (S, Sc, fs) => fs.some(fl => !same(Sc[fl.k], S[fl.k], fl));
 /* casillas de un inciso (pueden depender de la variante: f puede ser una función de P) */
 export const fields = (inc, P) => typeof inc.f === 'function' ? inc.f(P) : inc.f;
 

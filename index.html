@@ -1912,10 +1912,11 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 11:37 (hora del centro de México)">v1.7.11.1137</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 12:01 (hora del centro de México)">v1.7.11.1201</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
+    <li><b>Entrenar · plano s (etapa 2):</b> responde ubicando polos (×), ceros (○) y puntos (•) en el plano, con imán a la cuadrícula y al eje real, casillas Re/Im para afinar y un círculo de tolerancia. Ejercicio de muestra en el tema 1.</li>
     <li><b>Entrenar (etapa 1):</b> ejercicios con el caso de la tarea o variantes aleatorias, modo práctica o examen, ±1 % de tolerancia, calificación con arrastre y la calculadora a un toque.</li>
     <li><b>Calculadora</b> con la forma y el uso de una científica tipo fx‑991CW, en las evaluaciones, en «Comprueba» y en Entrenar.</li>
     <li><b>Reportes en Word</b> de P1–P7 llenos; el PDF se abre aquí mismo (pestaña PDF).</li>
@@ -15181,7 +15182,7 @@ window.__PASOS=PASOS;
       i=box?[...box.querySelectorAll('[data-body]:not([hidden]) .cnum input:not(:disabled)')].find(x=>!x.value.trim()):null;
       if(!i){ const ch=[...d.querySelectorAll('[data-chk]')].find(onScreen); i=ch?[...ch.querySelectorAll('.cnum input:not(:disabled)')].find(x=>!x.value.trim()):null; } }
     if(!i) return null; const q=i.closest('.cq'), n=q&&q.querySelector('.cqn'); return {input:i,label:'Respuesta '+(n?n.textContent.trim():'')}; }
-  d.addEventListener('focusin',e=>{ const t=e.target; if(t&&t.matches&&t.matches('.exam .cnum input, [data-chk] .cnum input, #entrenar input[data-ans]')){ lastInp=t; if(calc) calc.answerChanged(); } });
+  d.addEventListener('focusin',e=>{ const t=e.target; if(t&&t.matches&&t.matches('.exam .cnum input, [data-chk] .cnum input, #entrenar input[data-ans], #entrenar input[data-pc]')){ lastInp=t; if(calc) calc.answerChanged(); } });
   function sync(on){ fab.setAttribute('aria-expanded',String(on)); fab.setAttribute('aria-label',on?'Cerrar la calculadora':'Abrir la calculadora');
     d.querySelectorAll('.exbar .excc').forEach(b=>b.setAttribute('aria-expanded',String(on))); }
   function open(){ if(dlg.open){ if(calc&&fine.matches) calc.focus(); return; }
@@ -15305,8 +15306,8 @@ window.__PASOS=PASOS;
 (()=>{
   const PI=window.__pageInit=window.__pageInit||{}, prev=PI.entrenar; let mod=null, loading=null;
   function load(){ if(loading) return loading;
-    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=1'; l.onload=l.onerror=res; document.head.appendChild(l); });
-    loading=Promise.all([css,import('./entrenar/ui.js?v=1')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
+    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=2'; l.onload=l.onerror=res; document.head.appendChild(l); });
+    loading=Promise.all([css,import('./entrenar/ui.js?v=2')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
     return loading; }
   PI.entrenar=()=>{ if(prev) prev(); const sec=document.getElementById('entrenar'); if(!sec) return;
     load().then(m=>m.init(sec)).catch(()=>{ const b=sec.querySelector('[data-en]'); if(b) b.innerHTML='<p class="note">No se pudieron cargar los ejercicios. Revisa tu conexión y vuelve a abrir la pestaña.</p>'; }); };

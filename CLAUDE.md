@@ -958,7 +958,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
-- **Etapa 1 hecha (v66).** Sigue la etapa 2 (plano s interactivo para responder ubicando polos, ceros y puntos).
+- **Etapa 1 hecha (v66). Etapa 2 hecha (v67).** Sigue la etapa 3 (calculadora dentro de los ejercicios: pegar resultado, EQN/SOLVE
+  ya existen en `entrenar/calc.js`; revisar qué falta del plan) y luego la etapa 4 (temas 1–12 con el piloto P1).
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1091,6 +1092,40 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Ruta: «Entrenar: ejercicios con calculadora» ya cuenta (dominados / `tot`, va a `#entrenar`); el simulacro sigue «próximamente».
 - Probado con Playwright a 390×844 (táctil) y 1440×900: caso de la tarea con arrastre (a mal → b y c «con arrastre», 67 %), solución vista,
   examen con variante (100 %), «→ Respuesta» desde la calculadora, sincronización, Ruta y barra lateral, sin desbordes ni errores de consola.
+
+## Hecho (v67 · Entrenar etapa 2): plano s interactivo para responder
+
+- **`entrenar/plano.js`** (módulo ES, sin dependencias): `mountPlane(host, {view:{x0,x1,y0,y1}, marks:['x','o','.'], sym, real, snap, max,
+  magnet, ro, value, label, onChange(lista), onMagnet(on)})` → `{get, set, setMagnet, readOnly, mark(estados), solution(lista, tol), destroy}`;
+  también exporta `MK`, `fmtPt`, `fmtList`. SVG a escala 1:1 (ancho del contenedor, alto ≤ min(60vh, 480 px)), cuadrícula fina = paso del
+  imán (solo si ≥ 8 px) y gruesa con números (≥ 44 px). Barra: herramienta Polo × / Cero ○ / Punto • (si hay más de una), «Imán»,
+  «+ Agregar» (en el centro, para escribir Re/Im), «Quitar», «Limpiar». Tocar el plano agrega y se puede arrastrar sin soltar; tocar uno
+  lo selecciona/arrastra; casillas Re/Im del seleccionado (`input[data-pc]`, la calculadora «→ Respuesta» también escribe ahí); chips con lo
+  ubicado (tocar = seleccionar); teclado: flechas (Mayús = 0.01), Supr, Esc, N (siguiente). Etiqueta con las coordenadas (verde si quedó
+  pegado). `touch-action:none` en el plano.
+  **Imán:** cada coordenada se pega a la línea más cercana (múltiplo de `snap`) si está a ≤ 10 px (14 en táctil) **y** ≤ 30 % del paso; la
+  parte imaginaria se pega al eje real a ≤ 13 px (18 táctil). Regla para los ejercicios: `abs` > 0.3·snap (el imán nunca vuelve incorrecto un
+  punto bien puesto). Preferencia `mag` en `lgdr-entrena-pref`.
+  `sym`: se guarda un representante por par (Im ≥ 0) y se dibuja también el conjugado; `real`: todo sobre el eje real (sin casilla Im).
+  **Ojo:** `host.querySelector('svg.pl-svg')` (los íconos de la barra también son `svg`).
+- **Motor** (`motor.js?v=2`): casilla con `plane:true` → la respuesta se guarda en `ST.A[k]` como texto `«x:-2,0;o:-1,0;.:-2.85,0»`
+  (`ptsStr`/`readPts`), `expandPts` agrega conjugados (mismo orden que el plano), `matchPts(got, exp, fl)` empareja por cercanía y tipo
+  (si `marks` tiene uno solo, sin tipo) a ±max(tol·|s|, abs) (abs por omisión 0.15) → `{ok, good[], hit[], n, m, h}`: correcto solo si
+  coinciden todos y no sobra ninguno. El arrastre funciona igual (`same()` compara listas en el plano). `ptTol` para el círculo de tolerancia.
+- **UI** (`ui.js?v=2`): `fieldHTML` arma `div.en-f.en-pf[data-pk]` > `div.en-pl[data-pl]`; `mountPlanes()` tras cada `render()`
+  (`dropPlanes()` al salir); al cambiar, `clearInc()` borra la calificación del inciso; `paintInc` colorea cada elemento (verde/rojo) y el
+  borde; el mensaje dice «n de N bien ubicados · sobran/faltan»; «Ver solución» y el final dibujan la respuesta en verde con su círculo
+  de tolerancia y la lista en texto (`fmtList`). Al terminar, los planos quedan de solo lectura.
+- **Ejercicio de muestra** `plano` (tema 1, `ejercicios.js?v=2`): a) polos × y ceros ○ de G(s) (snap 0.5, abs 0.2), b) tipo (número),
+  c) punto(s) de ruptura/llegada • (solo eje real, vista ±1.5, snap 0.25, abs 0.15; raíces de N·D′ − N′·D que caen en el LGDR) y
+  d) polos de T(s) con la K dada (× en pares conjugados, snap 0.25, abs 0.15). Caso de la tarea: P1, K = 45.53 → ruptura −2.8453,
+  polos −2.0285 ± j2.7677 y −7.943. Variantes: 3 polos enteros (a veces uno en 0) y a veces un cero; se busca K con lazo cerrado estable,
+  ruptura en el LGDR y par complejo con 0.8 ≤ |Im| ≤ 6.5. Utilidades nuevas en `ejercicios.js`: `padd, pmul, pder, pscale, roots`
+  (Durand–Kerner), `polyTeX`, `onLocus`.
+- `index.html`: `entrenar.css?v=2`, `ui.js?v=2`, la calculadora reconoce `#entrenar input[data-pc]`; «Lo nuevo» del botón «i».
+- Probado con Playwright a 390×844 (táctil) y 1440×900, claro y oscuro: imán (−2.1 + j0.12 → −2), quitar, arrastrar, conjugado
+  automático, Re/Im, «2 de 3 bien ubicados», «sobran 1», solución con tolerancia, continuar tras recargar, examen con variante (100 %),
+  ejercicios de la etapa 1 iguales, sin desbordes ni errores de consola.
 
 ## Hecho (v66): botón «i» con la información de la app
 
