@@ -173,3 +173,26 @@ html.en-ex #entrenar{padding-bottom:70px}
 .en-tb{display:inline-flex;align-items:center;gap:6px}
 .en-tb svg{flex:none}
 @media print{#entrenar .en-tl,#entrenar .en-calch{display:none}}
+
+/* ---- etapa 4 · casillas de opción (Sí / No) y figuras del plano s en los enunciados ---- */
+.en-seg button{min-height:36px;min-width:58px;font-size:14px}
+.en-seg button:disabled{cursor:default}
+.en-cf[data-st="ok"] .en-seg,.en-cf[data-st="arr"] .en-seg{border-color:var(--ok)}
+.en-cf[data-st="ok"] .en-seg button[aria-pressed="true"],.en-cf[data-st="arr"] .en-seg button[aria-pressed="true"]{background:var(--ok-soft);color:var(--ok);font-weight:600}
+.en-cf[data-st="no"] .en-seg{border-color:var(--bad)}
+.en-cf[data-st="no"] .en-seg button[aria-pressed="true"]{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.en-cf[data-st="ok"] .en-st::before,.en-cf[data-st="arr"] .en-st::before{content:'✓';color:var(--ok)}
+.en-cf[data-st="no"] .en-st::before{content:'✗';color:var(--bad)}
+.en-fig{margin:10px auto 4px;max-width:440px}
+.en-fig svg{display:block;width:100%;height:auto;max-height:300px;overflow:visible}
+.en-fig figcaption{font-size:12.5px;color:var(--muted);text-align:center;margin-top:4px}
+.en-fig .fg-g{stroke:var(--line);stroke-width:.7;fill:none}
+.en-fig .fg-ax{stroke:var(--muted);stroke-width:1.2;fill:none}
+.en-fig .fg-tk text{font:11px var(--f-mono);fill:var(--muted)}
+.en-fig .fg-v{stroke:var(--accent);stroke-width:1.6;stroke-dasharray:5 4;fill:none}
+.en-fig .fg-l{font:600 11.5px var(--f-body);fill:var(--accent)}
+.en-fig .fg-p{stroke:var(--ink);stroke-width:2.2;stroke-linecap:round;fill:none}
+.en-fig .fg-z{stroke:var(--ink);stroke-width:2;fill:var(--surface)}
+.en-fig .fg-s{fill:var(--warn);stroke:var(--surface);stroke-width:1.5}
+.en-fig .fg-s.c{opacity:.55}
+.en-fig .fg-sl{font:600 13px var(--f-body);fill:var(--warn)}

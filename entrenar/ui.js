@@ -9,10 +9,11 @@
    Casillas de plano s (etapa 2): entrenar/plano.js; lo ubicado se guarda en ST.A[campo] como texto (motor.ptsStr).
    Etapa 3 (calculadora en los ejercicios): «→ Respuesta» también escribe en los planos (complejos y todas las raíces de
    «Ecuación»), botones por inciso que abren Ecuación grado n / Solver / Complejos (inc.tools), y Ans y memorias en las casillas.
+   Etapa 4: casillas de opción (fl.ch = [{v, l}], p. ej. Sí / No) como botones; la respuesta guardada es el número v.
    Preferencias (modo, caso/variante e imán) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
 import * as M from './motor.js?v=3';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=3';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=4';
 import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
@@ -116,6 +117,7 @@ const save = () => M.saveCur(ST && !ST.done ? ST : null);
 
 function fieldHTML(inc, fl){
   if (M.isPlane(fl)) return `<div class="en-f en-pf" data-pk="${fl.k}"><span class="en-fl">${fl.l}</span><div class="en-pl" data-pl="${fl.k}" data-inc="${inc.k}"></div></div>`;
+  if (fl.ch) return `<div class="en-f en-cf" data-ck="${fl.k}"><span class="en-fl">${fl.l}</span><span class="en-fi"><span class="seg en-seg" role="group" aria-label="${esc(inc.k + ') ' + strip(fl.l))}">${fl.ch.map(c => `<button type="button" data-cv="${inc.k}:${fl.k}:${c.v}" aria-pressed="${ST.A[fl.k] === String(c.v)}">${c.l}</button>`).join('')}</span><span class="en-st" aria-hidden="true"></span></span></div>`;
   const id = `en-${inc.k}-${fl.k}`, v = ST.A[fl.k] || '';
   return `<label class="en-f" for="${id}"><span class="en-fl">${fl.l}</span><span class="en-fi"><input id="${id}" data-ans data-k="${fl.k}" data-inc="${inc.k}" data-label="${esc(inc.k + ') ' + strip(fl.l))}" value="${esc(v)}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="${esc(strip(fl.l))}">${fl.u ? `<span class="en-u">${fl.u}</span>` : ''}<span class="en-st" aria-hidden="true"></span></span><span class="en-pv" data-pv="${fl.k}"></span></label>`;
 }
@@ -206,16 +208,19 @@ function check(k, quiet){
 function paintInc(li, r){
   li.dataset.st = r.st;
   li.querySelectorAll('input[data-ans]').forEach(i => { const f = r.f[i.dataset.k] || {}; i.closest('.en-f').dataset.st = f.st || 'vacio'; });
+  li.querySelectorAll('[data-ck]').forEach(w => { const f = r.f[w.dataset.ck] || {}; w.dataset.st = f.st || 'vacio'; });
   li.querySelectorAll('[data-pk]').forEach(w => { const k = w.dataset.pk, f = r.f[k] || {}; w.dataset.st = f.st || 'vacio'; if (PL[k]) PL[k].mark(f.pm ? f.pm.good : null); });
 }
 function showSol(k){
   const g = M.grade(X, ST.A), r = g.inc[k], inc = X.def.inc.find(i => i.k === k), box = BOX.querySelector(`[data-sl="${k}"]`); if (!box) return;
-  const fs = M.fields(inc, X.P), val = (fl, v) => M.isPlane(fl) ? fmtList(v, fl.marks) : M.fmt(v, 5);
+  const fs = M.fields(inc, X.P), val = (fl, v) => M.isPlane(fl) ? fmtList(v, fl.marks) : fl.ch ? chLbl(fl, v) : M.fmt(v, 5);
   box.innerHTML = `<div class="en-sh">Solución</div>${inc.how(X.P, r.T, r.S, H)}<p class="en-ans">Respuesta: ${fs.map(fl => M.isPlane(fl) ? `${fl.l}: <b>${val(fl, r.S[fl.k])}</b>` : `${fl.l} = <b>${val(fl, r.S[fl.k])}</b>${fl.u ? ' ' + fl.u : ''}`).join(' · ')}</p>${fs.some(M.isPlane) ? '<p class="en-mut">En el plano, la respuesta correcta se ve en verde con su círculo de tolerancia.</p>' : ''}${r.st === 'arr' ? `<p class="en-mut">Con tus valores anteriores daba: ${fs.map(fl => `${fl.l} = ${val(fl, r.Sc[fl.k])}`).join(' · ')}.</p>` : ''}`;
   fs.forEach(fl => { if (M.isPlane(fl) && PL[fl.k]) PL[fl.k].solution(r.S[fl.k], b => M.ptTol(b, fl)); });
   box.hidden = false;
   const b = BOX.querySelector(`[data-sol="${k}"]`); if (b) { b.textContent = 'Solución abierta'; b.disabled = true; }
 }
+/* texto de una opción (v puede venir como número o complejo del motor) */
+const chLbl = (fl, v) => { const n = Math.round(v && typeof v === 'object' ? v.re : +v), c = fl.ch.find(o => o.v === n); return c ? c.l : M.fmt(v); };
 function finish(){
   freezeAll();
   const g = M.grade(X, ST.A), ex = ST.mode === 'x';
@@ -227,7 +232,7 @@ function finish(){
   BOX.querySelectorAll('.en-inc').forEach(li => { const k = li.dataset.i, r = g.inc[k]; paintInc(li, r);
     const fb = li.querySelector('[data-fb]'); fb.className = 'en-fb ' + r.st;
     fb.textContent = (!ex && ST.seen[k] ? 'Solución vista: este inciso no cuenta. ' : '') + (r.st === 'err' ? 'No se entendió lo que escribiste.' : MSG[r.st].replace(' Revisa tu cálculo e inténtalo otra vez, o abre la solución.', '') + (r.st === 'no' ? planeDet(r) : ''));
-    showSol(k); li.querySelectorAll('input[data-ans]').forEach(i => { i.readOnly = true; }); li.querySelectorAll('[data-chk],[data-sol]').forEach(b => b.remove()); });
+    showSol(k); li.querySelectorAll('input[data-ans]').forEach(i => { i.readOnly = true; }); li.querySelectorAll('[data-cv]').forEach(b => { b.disabled = true; }); li.querySelectorAll('[data-chk],[data-sol]').forEach(b => b.remove()); });
   Object.values(PL).forEach(p => p.readOnly(true));
   const ok = g.pct >= M.PASS, res = BOX.querySelector('[data-res]');
   const cnt = s => Object.values(g.inc).filter(r => r.st === s).length;
@@ -245,6 +250,9 @@ function onClick(e){
   const b = e.target.closest('button'); if (!b || !BOX.contains(b)) return;
   const P = pref();
   if (b.closest('[data-pref]')) { const k = b.closest('[data-pref]').dataset.pref; setPref({ [k]: b.dataset.v }); home(); return; }
+  if (b.dataset.cv) { if (!ST || ST.done) return; const [ik, k, v] = b.dataset.cv.split(':');
+    ST.A[k] = v; save(); b.parentNode.querySelectorAll('[data-cv]').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+    clearInc(b.closest('.en-inc')); return; }
   if (b.dataset.ej) { start(b.dataset.ej, P.src === 'v' ? M.newSeed() : 0, P.mode); return; }
   if ('cont' in b.dataset) { const c = M.loadCur(); if (c) start(c.e, c.seed, c.mode, c); return; }
   if ('drop' in b.dataset) { M.saveCur(null); home(); return; }

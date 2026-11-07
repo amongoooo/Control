@@ -958,8 +958,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
-- **Etapa 1 hecha (v66). Etapa 2 hecha (v67). Etapa 3 hecha (v68).** Sigue la etapa 4 (temas 1–12 con el piloto P1; usar
-  `tools` en los incisos que piden raíces de polinomios, ver v68).
+- **Etapas 1 (v66), 2 (v67), 3 (v68) y 4 (v70) hechas.** Sigue la etapa 5 (temas 13–15: compensadores, verificación, Simulink;
+  mismo formato de ejercicio que v70).
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1172,6 +1172,28 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (si solo quedan esas, vuelve a ellas). Probado: II saltada → «Sección 13 · Compensación»; sin saltar → «Presenta la evaluación II».
 - Probado con Playwright (reloj simulado, zona America/Mexico_City) a 390 px claro y 1440 px oscuro: sábado 12:40 (meta de hoy 39 %, plan
   sáb 39 → dom 89 → 100 % lun 12:00), domingo 18:00 sin avance (atrasado 69), Ajustar (fin 22:00), reiniciar, después del examen; sin errores.
+
+## Hecho (v70 · Entrenar etapa 4): ejercicios de los temas 1–12 con el piloto de P1
+
+- `entrenar/ejercicios.js?v=4` (lo importa `ui.js?v=4`; `index.html` carga `ui.js?v=4` y `entrenar.css?v=4`). **13 ejercicios** (se conservan
+  los ids de las etapas 1–2 para no perder el progreso): `polos` (1: denominador expandido → raíces en el plano con «Ecuación», n, m, tipo,
+  ramas), `plano` (1), `ecuacion` (2: a₂ a₁ a₀, b₂ b₁ b₀ con K, T(0), K = −D(σ)/N(σ); tarea σ = −7.943 → 45.53), `ejereal` (3: extremos de
+  cada tramo, polos/ceros a la derecha de σ, Sí/No), `asint` (4), `ruptura` (5: coeficientes de N·D′ − N′·D, raíces en el LGDR con «Ecuación»,
+  K_b; tarea 3, 24, 44 → −2.8453, 3.079), `routh` (6), `zeta` (7, + inciso e) ubicar s₀ en el plano), `angulo` (8: θ de cada polo/cero con
+  «Complejos», ∠G, Δ, Sí/No; en variantes la mitad de las veces s₀ queda fuera del LGDR), `magnitud` (9: distancias, K, K en el cruce
+  j√a₁ = K crítica de Routh, ¿estable?), `lazo` (10: b₂ b₁ b₀, polos de T(s) en el plano con «Ecuación · grado 3», p₃, |p₃|/σ, ¿2.º orden?),
+  `transitoria` (11: ω_n, ζ, T_s, T_p, %OS; tarea −2.0285 ± j2.7677 → 10 %) y `error` (12).
+- Caso de la tarea = P1 (G = K/[(s+2)(s+4)(s+6)], %OS 10, s₀ = −2.0285 + j2.7677, K = 45.53). Variantes: 3 polos enteros (a veces uno en 0)
+  y a veces un cero; `design(P, ζ)` busca el primer punto de la recta de ζ con ∠G = −180° (`plantDesign`). Utilidades nuevas: `segments`,
+  `angG`, `magK`, `realRoots`, `figS` (figura SVG de solo lectura en el enunciado: polos, ceros, s₀ y vectores; clases `.en-fig .fg-*`).
+- **Casilla de opción** nueva: `{k, l, ch:[{v:1,l:'Sí'},{v:0,l:'No'}]}` → botones `.seg.en-seg` (`data-cv="inciso:campo:v"`); la respuesta se
+  guarda como el número v, así el motor no cambió. `ui.js`: `fieldHTML`, `paintInc`, `chLbl` en la solución, se desactivan al terminar.
+- TeX: un número antes de `^\circ` va entre llaves (`{${h.n(x)}}^\circ`): con valores muy chicos `h.n` da `…\times10^{-4}` y KaTeX marcaba
+  «Double superscript».
+- Probado: Node (tarea + 300 variantes de cada uno con las respuestas correctas → 100 %, sin NaN; arrastre en 10 casos) y Playwright a 1440×900 y
+  390×844 (táctil, oscuro): los 13 en práctica con el caso de la tarea (Comprobar en cada inciso, `lazo` con la calculadora de verdad: botón del
+  inciso → coeficientes → «→ las 3 raíces») y en examen con una variante, todos al 100 %; «Ver solución» de los 13 con 3 semillas sin errores
+  de KaTeX ni desbordes; consola limpia.
 
 ## Hecho (v66): botón «i» con la información de la app
 
