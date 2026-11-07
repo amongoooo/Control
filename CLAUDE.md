@@ -893,6 +893,20 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:136,p7:154}`. Conversión como en v47/v50 (`libreoffice-math`, `docx-ecuaciones.py`,
   imágenes a 1600 px, `*` → `∗`). En LibreOffice evitar `\t{Re}` (sale ℜ) y ecuaciones largas en dos columnas (se cortan).
 
+## Hecho (v58): pestaña «Ruta del curso»
+
+- Pedido: orden sugerido de todo (teoría, simuladores, prácticas, repaso, exámenes) con palomitas, barras y porcentajes.
+- `<a href="#ruta">Ruta</a>` después de Resumen; `section#ruta.page` (con `div[data-rt]`); en la barra lateral va en «Inicio» (ícono `IC.ruta`)
+  con su % (`.sb-v`). Arriba de Resumen, tarjeta `a#rtMini` (anillo + % + siguiente paso). CSS «v58 · Ruta del curso» antes del `</style>`
+  principal y `<script>` propio al final del `<body>` (`window.__lgdrRuta.{data,render,R}`).
+- Orden: 1 Empieza aquí (Resumen) · 2 Teoría I · 3 Teoría II + Simulador · 4 P1 · 5 Teoría III · 6 P2–P7 · 7 Repaso (Preguntas, PDF de prácticas,
+  Entrenar «próximamente») · 8 Exámenes (las tres evaluaciones aprobadas sin saltar; simulacro «próximamente»).
+- Automático: preguntas/secciones/evaluación de cada parte (`window.__lgdrTeo()`, agregado junto a `renderProgress`), experimentos por parte
+  (`__GUIDES` + `lgdr-guias-v1`, ubicando cada `[data-demo]` en su sección), Preguntas dominadas (`window.__lgdrQTot()`), paso más lejano de cada
+  Resolución paso a paso (lee `lgdr-pasos-pN` tras clics/teclas en `.card.pasos`). A mano: Resumen, Simulador, PDF, y en cada práctica «Banco de
+  pruebas» y «Reporte» (chips). Visitar una página sin marcarla cuenta 50 %. Cada práctica = (pasos + banco + reporte)/3; % global = promedio.
+- Guarda en `lgdr-ruta-v1` = `{m:{clave:1}, v:{página:1}, ps:{pN:pasos}}`; se agregó a la sincronización (`KEYS.r`, el código acepta `r`).
+
 ## Plan aprobado: apartado «Entrenar» (después de los Word de P5–P7)
 
 - El usuario aprobó todo lo recomendado: calculadora **propia** con las funciones útiles de la fx‑991CW (pantalla natural, complejos,
