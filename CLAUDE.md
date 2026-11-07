@@ -991,6 +991,15 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright a 390×844 (táctil) y 1440×900 (claro/oscuro): teclas, teclado físico, Ans, STO/VAR, polar, error, Ecuación (P1:
   −7.943, −2.0285 ± j2.7677), SOLVE, «→ Respuesta», formulario + calculadora, plegado/ocultar/resaltado del índice, barra de P1; consola limpia.
 
+## Pedido pendiente (después de v62): calculadora con la forma de la fx‑991CW
+
+- El usuario vio la v62 y le gusta, pero prefiere que `entrenar/calc.js` **se vea y se use como la Casio fx‑991CW** (distribución de teclas,
+  menú de apps, pantalla natural con plantillas y cursor dentro de fracciones/raíces, SETTINGS, TOOLS), con **solo 4 modos (apps)** en vez de
+  todos. **Config** solo lo básico de *Calc Settings* (p. ej. unidad de ángulo, formato de entrada/salida natural o lineal, formato de
+  números Norm/Fix/Sci, forma compleja a+bi / r∠θ). **Catálogo:** el usuario no sabe si hace falta (proponerlo opcional). **En celular la
+  calculadora se abre a pantalla completa.** Sin el logotipo ni la marca de Casio (diseño propio con la misma distribución y flujo).
+  Mantener la API `LGDRCalc.mount/engine` y lo que ya funciona (motor, «→ Respuesta», historial, memorias, `lgdr-calc-v1`).
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
