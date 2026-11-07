@@ -907,6 +907,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   pruebas» y «Reporte» (chips). Visitar una página sin marcarla cuenta 50 %. Cada práctica = (pasos + banco + reporte)/3; % global = promedio.
 - Guarda en `lgdr-ruta-v1` = `{m:{clave:1}, v:{página:1}, ps:{pN:pasos}}`; se agregó a la sincronización (`KEYS.r`, el código acepta `r`).
 
+## Hecho (v59): Ruta — «lo que sigue» y anillo en la barra superior
+
+- Pedido: «al completar algo que aparezca lo que sigue» y «un circulito arriba como el de Teoría».
+- `#abRuta` (`.abpill.abrt`, antes de `#abProg`): anillo verde con el % global; clic → `#ruta`; en ≤ 400 px conserva la etiqueta «Ruta» y
+  en ≤ 430 px se oculta `.abver` para que quepa.
+- Cada elemento sin completar dice qué sigue (`nx`: sección concreta de Teoría con `window.__lgdrTeoGo`, simulación con retos pendientes
+  `demo:k:sid`, evaluación…). P1–P7: lista de 3 partes (Resolución → Banco → Reporte) con «Marcar hecho» / «Ir →»; la pendiente se resalta y
+  explica qué hacer. El elemento actual lleva `.now` y «👉 Sigue»; el hero dice «Lo que sigue» con «Ir a lo que sigue →» y «Ver en la ruta ↓».
+- Aviso al completar algo (`lgdr-ruta-hecho` guarda lo completo, sólo local): en la Ruta, banner `[data-rtdone]`; en otras páginas, `#rtToast`
+  flotante (14 s) «✓ Completaste: X · Lo que sigue: Y [Ir →] [Ruta]». Si lo completado es parte de una práctica, sigue la parte pendiente de esa
+  misma práctica; si no, el siguiente de la ruta. Se revisa 0.5 s después de clics/teclas/cambios y al cambiar de página.
+
 ## Plan aprobado: apartado «Entrenar» (después de los Word de P5–P7)
 
 - El usuario aprobó todo lo recomendado: calculadora **propia** con las funciones útiles de la fx‑991CW (pantalla natural, complejos,
