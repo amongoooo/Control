@@ -15123,7 +15123,7 @@ window.__PASOS=PASOS;
   const fxw=()=>{ if(fx&&fx.offsetWidth) root.style.setProperty('--fxw',(fx.offsetWidth+10)+'px'); };
   if(fx){ fxw(); if('ResizeObserver' in window) new ResizeObserver(fxw).observe(fx); }
   function load(){ if(window.LGDRCalc) return Promise.resolve(); if(loading) return loading;
-    loading=new Promise((res,rej)=>{ const s=d.createElement('script'); s.src='entrenar/calc.js?v=2'; s.async=true; s.onload=res; s.onerror=()=>{ loading=null; s.remove(); rej(); }; d.head.appendChild(s); });
+    loading=new Promise((res,rej)=>{ const s=d.createElement('script'); s.src='entrenar/calc.js?v=3'; s.async=true; s.onload=res; s.onerror=()=>{ loading=null; s.remove(); rej(); }; d.head.appendChild(s); });
     return loading; }
   /* casilla de respuesta: la última que tocaste (si sigue activa) o la primera vacía de la evaluación abierta */
   const okInp=i=>i&&i.isConnected&&!i.disabled&&i.closest('[data-body]:not([hidden])');

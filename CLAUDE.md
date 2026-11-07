@@ -993,7 +993,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 
 ## Hecho (v63): calculadora con la forma y el uso de una fx‑991CW (diseño propio, sin marca)
 
-- `entrenar/calc.js` reescrita (v2, ~100 KB; se carga con `?v=2`). Misma API: `LGDRCalc.mount(el,{storageKey,katex,answer,onClose})` →
+- `entrenar/calc.js` reescrita (v2, ~100 KB; se carga con `?v=3` desde v64). Misma API: `LGDRCalc.mount(el,{storageKey,katex,answer,onClose})` →
   `{el, engine, focus, refresh, insert, answerChanged, setTab('calc'|'cplx'|'eqn'|'tbl'|'solve'), key(acción), ans, state, destroy}`.
   Motor igual que v62 + `f(`/`g(` (funciones definidas), formato de número (`dec(x,nf)`, nf = `{m:'norm',n:1|2}` · `{m:'fix',n}` ·
   `{m:'sci',n}`), salida lineal `formatLin` (fracciones `p⌟q`), `linsolve` (sistemas, «Sin solución» / «Infinitas soluciones»).
