@@ -1721,6 +1721,17 @@ details.wfcode pre{max-height:360px;overflow:auto}
 @keyframes rtIn2{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 @media (max-width:560px){.rt-steps li{grid-template-columns:20px minmax(0,1fr)}.rt-sact{grid-column:2;justify-content:flex-start}.rt-it.now{margin:0 -6px;padding:10px 6px}.rt-toast{flex-wrap:wrap}.rt-tb{width:100%;justify-content:flex-end}}
 @media print{.rt-toast{display:none!important}}
+/* ---- v66 · botón «i» con la información de la app (la versión va dentro) ---- */
+#infoDlg .abver{display:inline;font-size:13px;color:var(--ink);user-select:all}
+.if-ver{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:4px 0 2px;padding:10px 12px;border-radius:10px;background:var(--accent-soft)}
+.if-vl{font:600 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.if-vd{font-size:12.5px;color:var(--muted)}
+.if-h{margin:16px 0 4px;font-size:15px}
+.if-p{margin:6px 0;font-size:14px;line-height:1.5}
+.if-sm{font-size:12.5px;color:var(--muted)}
+.if-l{margin:6px 0;padding-left:20px;font-size:14px;line-height:1.5;display:grid;gap:4px}
+.if-b{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 2px}
+@media print{#abInfo{display:none}}
 /* ---- v62 · calculadora en las evaluaciones (entrenar/calc.js) ---- */
 :root{--ccW:clamp(320px,26vw,380px)}
 .cc-fab{position:fixed;right:calc(max(16px,env(safe-area-inset-right,0px)) + var(--fxw,168px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;display:inline-flex;align-items:center;gap:7px;min-height:50px;padding:0 16px 0 13px;border:1.5px solid var(--accent);border-radius:999px;background:var(--surface);color:var(--accent);font:600 15px var(--f-body);box-shadow:0 8px 24px rgba(0,0,0,.22);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:opacity .2s,transform .2s}
@@ -1841,7 +1852,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
       <span class="brand-tx"><b>Laboratorio LGDR</b><small>Control · Nise cap. 8–9</small></span>
     </a>
     <button type="button" class="abpill abrt" id="abRuta" title="Ruta del curso: avance en todo el curso" aria-label="Ruta del curso"><span class="ring" aria-hidden="true"></span><span class="abpl">Ruta</span><span class="abpv">0 %</span></button><button type="button" class="abpill" id="abProg" hidden><span class="ring" aria-hidden="true"></span><span class="abpl">Teoría</span><span class="abpv">0 %</span></button>
-    <span class="abver" id="abVer" title="Versión del 7/11/2026, 11:24 (hora del centro de México)">v1.7.11.1124</span>
+    <button type="button" class="abicon abinfo" id="abInfo" aria-label="Información de la app" title="Información de la app" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><path d="M12 7.6v.01" stroke-width="2.6"/></svg></button>
     <button type="button" class="abicon" id="abSync" aria-label="Sincronizar progreso entre dispositivos" title="Sincronizar progreso"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.4-4.7L4 8"/><path d="M4 3.5V8h4.5"/><path d="M4 13a8 8 0 0 0 14.4 4.7L20 16"/><path d="M20 20.5V16h-4.5"/></svg></button>
     <button type="button" class="abicon" id="abTheme" aria-label="Cambiar modo claro u oscuro"><svg class="ic-moon" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="ic-sun" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg></button>
     <button type="button" class="abicon" id="abFull" aria-label="Pantalla completa" title="Pantalla completa" aria-pressed="false"><svg class="ic-fs" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="ic-fsx" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
@@ -1859,6 +1870,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
   <a href="#p6">P6 <small>PID</small></a>
   <a href="#p7">P7 <small>Adelanto‑atraso</small></a>
   <a href="#preguntas">Preguntas</a>
+  <a href="#entrenar">Entrenar</a>
   <a href="#pdf">PDF</a>
 </nav>
 </div>
@@ -1896,6 +1908,26 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
   <button type="button" class="abicon" data-pv-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
 </div>
 <div class="pv-body" id="pvBody"><p class="pv-msg" id="pvMsg"></p><div class="pv-pages" id="pvPages"></div></div>
+</dialog>
+<dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
+<div class="sy-in">
+  <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 11:37 (hora del centro de México)">v1.7.11.1137</span> <span class="if-vd" data-if-date></span></div>
+  <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
+  <h3 class="if-h">Lo nuevo</h3>
+  <ul class="if-l">
+    <li><b>Entrenar (etapa 1):</b> ejercicios con el caso de la tarea o variantes aleatorias, modo práctica o examen, ±1 % de tolerancia, calificación con arrastre y la calculadora a un toque.</li>
+    <li><b>Calculadora</b> con la forma y el uso de una científica tipo fx‑991CW, en las evaluaciones, en «Comprueba» y en Entrenar.</li>
+    <li><b>Reportes en Word</b> de P1–P7 llenos; el PDF se abre aquí mismo (pestaña PDF).</li>
+  </ul>
+  <h3 class="if-h">Tu progreso</h3>
+  <p class="if-p">Se guarda solo en este navegador<span data-if-app></span>. Para pasarlo a otro dispositivo usa «Sincronizar progreso».</p>
+  <div class="if-b"><button type="button" class="sy-b pri" data-if-sync>Sincronizar progreso</button><button type="button" class="sy-b" data-if-copy>Copiar enlace de la página</button></div>
+  <h3 class="if-h">Referencia</h3>
+  <p class="if-p">Nise, N. S., <i>Sistemas de control para ingeniería</i>, Compañía Editorial Continental (CECSA), México, 2006.</p>
+  <h3 class="if-h">Incluye</h3>
+  <p class="if-p if-sm">KaTeX (MIT) · qrcode-generator 1.4.4 (MIT) · PDF.js 4.10.38 (Apache‑2.0). Sin servidor ni cuentas: todo funciona desde <a href="https://amongoooo.github.io/Control/" target="_blank" rel="noopener">amongoooo.github.io/Control</a>.</p>
+</div>
 </dialog>
 <dialog class="sync" id="syncDlg" aria-labelledby="syncTtl">
 <div class="sy-in">
@@ -5832,6 +5864,10 @@ legend('sin comp.','adelanto-atraso'); ylabel('e(t)')</pre></div><div class="bd"
   <div class="qtoc" data-qtoc></div>
   <div data-qlist class="qlist"></div>
 </section>
+<section class="page" id="entrenar" data-page hidden>
+  <div class="phead"><h2>Entrenar</h2><span class="src">Ejercicios con calculadora: el caso de la tarea o variantes aleatorias, con calificación con arrastre</span></div>
+  <div data-en><p class="en-load" style="color:var(--muted)">Cargando los ejercicios…</p></div>
+</section>
 <section class="page" id="pdf" data-page hidden>
   <div class="phead"><h2>Prácticas en PDF</h2><span class="src">Mi reporte y las 7 prácticas: se leen aquí mismo, sin conexión o impresos</span></div>
   <div class="card pdfme" style="display:grid;gap:14px">
@@ -8214,7 +8250,7 @@ window.__lgdrQR=qrcode;
 /* ---------- Sincronizar progreso entre dispositivos: código, enlace (?p=) y QR ----------
    Solo lee y escribe las claves de progreso de localStorage; al combinar, recarga la página. */
 (function(){
-  const KEYS={t:'lgdr-teoria-v1',g:'lgdr-guias-v1',p:'lgdr-preguntas-v1',r:'lgdr-ruta-v1'};
+  const KEYS={t:'lgdr-teoria-v1',g:'lgdr-guias-v1',p:'lgdr-preguntas-v1',r:'lgdr-ruta-v1',e:'lgdr-entrena-v1'};
   const BAD=new Set(['__proto__','constructor','prototype']);
   const isObj=v=>!!v&&typeof v==='object'&&!Array.isArray(v);
   const $=id=>document.getElementById(id);
@@ -8243,7 +8279,8 @@ window.__lgdrQR=qrcode;
     let q=0,qt=0,x=0,xt=0;
     Object.keys(CHK).forEach(sid=>(CHK[sid]||[]).forEach((_,j)=>{ qt++; if(sv[sid+'-'+j]) q++; }));
     Object.entries(G).forEach(([k,g])=>{ const d=(D.g||{})[k]||{}; xt+=g.ind.length+g.ret.length; x+=Object.keys(d.ind||{}).length+Object.keys(d.ret||{}).length; });
-    return {q,qt,x,xt,e:Object.values(T.exam||{}).filter(v=>v&&v.passed).length,m:Object.keys(D.p||{}).length}; };
+    const E=(D.e&&D.e.ex)||{}, en=Object.keys(E).filter(k=>E[k]&&(E[k].best||0)>=80).length;
+    return {q,qt,x,xt,e:Object.values(T.exam||{}).filter(v=>v&&v.passed).length,m:Object.keys(D.p||{}).length,en,ent:(D.e&&D.e.tot)||0}; };
 
   const toB64=u=>{ let s=''; for(let i=0;i<u.length;i+=0x8000) s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000)); return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); };
   const fromB64=s=>{ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; const b=atob(s), u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; };
@@ -8256,7 +8293,7 @@ window.__lgdrQR=qrcode;
     if(m[1]==='1'){ if(!('DecompressionStream' in window)) throw new Error('navegador'); u=await pipe(u,new DecompressionStream('deflate-raw')); }
     if(u.length>2e6) throw new Error('formato');
     const o=JSON.parse(new TextDecoder().decode(u)); if(!isObj(o)||o.v!==1) throw new Error('formato');
-    const D={}; ['t','g','p','r'].forEach(s=>{ if(isObj(o[s])) D[s]=clean(o[s]); });
+    const D={}; Object.keys(KEYS).forEach(s=>{ if(isObj(o[s])) D[s]=clean(o[s]); });
     if(!Object.keys(D).length) throw new Error('formato'); return D; }
   const extract=s=>{ s=String(s||'').trim(); const m=/[?&#]p=([01]\.[A-Za-z0-9_-]+)/.exec(s); return m?m[1]:s.replace(/\s+/g,''); };
 
@@ -8269,7 +8306,7 @@ window.__lgdrQR=qrcode;
   const tabs=[...dlg.querySelectorAll('[data-sy-tab]')], panes=[...dlg.querySelectorAll('[data-sy-pane]')];
   const pane=name=>{ panes.forEach(p=>p.hidden=p.dataset.syPane!==name);
     tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.syTab===(name==='confirm'?'recv':name)))); };
-  const fmt=s=>s.q+'/'+s.qt+' preguntas de teoría · '+s.e+'/3 evaluaciones aprobadas · '+s.x+'/'+s.xt+' experimentos'+(s.m?' · '+s.m+(s.m===1?' pregunta marcada como dominada':' preguntas marcadas como dominadas'):'');
+  const fmt=s=>s.q+'/'+s.qt+' preguntas de teoría · '+s.e+'/3 evaluaciones aprobadas · '+s.x+'/'+s.xt+' experimentos'+(s.m?' · '+s.m+(s.m===1?' pregunta marcada como dominada':' preguntas marcadas como dominadas'):'')+(s.en?' · '+s.en+' '+(s.en===1?'ejercicio dominado':'ejercicios dominados')+' en Entrenar':'');
   const msg=(t,bad)=>{ const m=$('syMsg'); m.textContent=t||''; m.className='sy-msg'+(bad?' bad':''); };
   const cleanUrl=()=>{ if(/[?&]p=/.test(location.search)) history.replaceState(null,'',base+location.hash); };
 
@@ -8285,10 +8322,10 @@ window.__lgdrQR=qrcode;
     let D; try{ D=await decode(code); }
     catch(e){ pane('recv'); msg(e&&e.message==='navegador'?'Tu navegador no puede leer este código. Actualízalo o prueba con otro navegador.':'Ese código o enlace no es válido o está incompleto. Revisa que lo copiaste completo.',true); return; }
     const L=readLocal(), M={};
-    ['t','g','p'].forEach(s=>{ const v=merge(L[s],D[s]); if(v!==undefined&&v!==null) M[s]=v; });
+    Object.keys(KEYS).forEach(s=>{ const v=merge(L[s],D[s]); if(v!==undefined&&v!==null) M[s]=v; });
     const a=stats(L), b=stats(M), nuevo=JSON.stringify(L)!==JSON.stringify(M);
     const row=(l,x,y,t)=>'<tr><td>'+l+'</td><td>'+x+(t?'/'+t:'')+'</td><td'+(y>x?' class="up"':'')+'>'+y+(t?'/'+t:'')+'</td></tr>';
-    $('syCmp').innerHTML=row('Preguntas de teoría',a.q,b.q,a.qt)+row('Evaluaciones aprobadas',a.e,b.e,3)+row('Experimentos',a.x,b.x,a.xt)+row('Marcadas como dominadas',a.m,b.m);
+    $('syCmp').innerHTML=row('Preguntas de teoría',a.q,b.q,a.qt)+row('Evaluaciones aprobadas',a.e,b.e,3)+row('Experimentos',a.x,b.x,a.xt)+row('Marcadas como dominadas',a.m,b.m)+row('Ejercicios dominados (Entrenar)',a.en,b.en,Math.max(a.ent,b.ent)||0);
     $('syConfTxt').innerHTML=(fromLink?'Este enlace trae progreso de otro dispositivo.':'El código es válido.')+
       (nuevo?' Al combinar te quedas con lo mejor de los dos: nada de lo que ya tienes aquí se pierde.':' <b>No agrega nada nuevo:</b> ya tienes todo ese avance en este dispositivo.');
     $('syDo').hidden=!nuevo; $('syCancel').textContent=nuevo?'Cancelar':'Cerrar';
@@ -9361,10 +9398,11 @@ window.__lgdrMag={on:()=>on,list:()=>[...ALL].map(S=>({id:S.inp.id,marks:S.list.
     simulador:sv('<path d="M3.5 3.5v17h17"/><path d="M7 15.5c2.2 0 2.6-8 5-8s2.4 5.5 4.5 5.5c1.3 0 2-1.4 3-3"/>'),
     preguntas:sv('<circle cx="12" cy="12" r="9"/><path d="M9.4 9.3a2.7 2.7 0 1 1 3.7 2.5c-.7.3-1.1.9-1.1 1.7v.5"/><path d="M12 17.3v.01"/>'),
     ruta:sv('<circle cx="6" cy="18" r="2.2"/><circle cx="18" cy="6" r="2.2"/><path d="M8.2 18h7.3a3.2 3.2 0 0 0 0-6.4h-7a3.2 3.2 0 0 1 0-6.4h7.3"/>'),
+    entrenar:sv('<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>'),
     pdf:sv('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 11v6m-2.5-2.5L12 17l2.5-2.5"/>')
   };
   const LOCK='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 10V8a4 4 0 0 1 8 0v2" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><rect x="5" y="10" width="14" height="11" rx="2.5"/></svg>';
-  const GROUP={resumen:'Inicio',ruta:'Inicio',teoria:'Aprender',preguntas:'Repasar'};
+  const GROUP={resumen:'Inicio',ruta:'Inicio',teoria:'Aprender',preguntas:'Repasar',entrenar:'Repasar'};
   const mk=(tag,cls,txt)=>{ const e=d.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; };
 
   /* estado de cada práctica, tal como lo dice la tabla de Resumen (Cumple / Ajuste propuesto / …) */
@@ -14993,6 +15031,11 @@ window.__PASOS=PASOS;
     const Pn=T.filter(P=>P.passed).length;
     let qd=0; try{ const m=JSON.parse(localStorage.getItem('lgdr-preguntas-v1')||'{}')||{}; qd=Object.keys(m).filter(k=>m[k]).length; }catch(e){}
     const qt=window.__lgdrQTot?window.__lgdrQTot():71, ef=T.find(P=>!P.passed);
+    /* v66: Entrenar = ejercicios dominados (80 % o más) de los disponibles */
+    const ent=()=>{ let E={}; try{ E=JSON.parse(localStorage.getItem('lgdr-entrena-v1')||'{}')||{}; }catch(e){}
+      const ex=E.ex||{}, tot=E.tot||0, dom=Object.keys(ex).filter(k=>ex[k]&&(ex[k].best||0)>=80).length, v=tot?Math.min(1,dom/tot):0;
+      return it({k:'ent',t:'Entrenar: ejercicios con calculadora',sub:tot?`${dom}/${tot} ejercicios dominados`:'Aún no empiezas',v,go:'#entrenar',
+        nx:v<1?{t:'Entrenar',how:'Resuelve los ejercicios (caso de la tarea y variantes) hasta sacar 80 % o más en cada uno.',go:'#entrenar'}:null}); };
     const S=[
       {n:'1',t:'Empieza aquí',d:'Qué hay en el laboratorio y cómo se usa.',items:[man('resumen','Lee el Resumen','Resultados de las 7 prácticas, el método y cómo usar el banco','#resumen','resumen','Léelo y toca «Marcar hecho».')]},
       {n:'2',t:'Teoría · Parte I',d:'Señales, polos, respuesta de primer y segundo orden.',items:part('I')},
@@ -15003,7 +15046,7 @@ window.__PASOS=PASOS;
       {n:'7',t:'Repaso',d:'Para fijar lo aprendido antes de los exámenes.',items:[
         it({k:'preg',t:'Preguntas de repaso',sub:`${qd}/${qt} marcadas como «La domino»`,v:qt?qd/qt:0,go:'#preguntas',nx:qd<qt?{t:'Preguntas de repaso',how:'Respóndelas y marca «La domino» en las que ya sepas.',go:'#preguntas'}:null}),
         man('pdfp','Repasa con el PDF de prácticas','Las 7 prácticas completas, para leer o imprimir','#pdf','pdf','Léelo y toca «Marcar hecho».'),
-        it({k:'ent',t:'Entrenar: ejercicios con calculadora y plano',sub:'Próximamente',soon:1})]},
+        ent()]},
       {n:'8',t:'Exámenes',d:'Demuestra que ya lo dominas.',items:[
         it({k:'exall',t:'Aprueba las tres evaluaciones (sin saltarlas)',sub:`${Pn}/3 aprobadas`,v:Pn/3,go:'ex:'+(ef||{r:'I'}).r,nx:ef?{t:`Aprueba la evaluación ${ef.r}`,how:'Con 80 % o más; las saltadas cuentan hasta que las apruebes.',go:'ex:'+ef.r}:null}),
         it({k:'sim2',t:'Simulacro de examen en Entrenar',sub:'Próximamente',soon:1})]}
@@ -15128,14 +15171,17 @@ window.__PASOS=PASOS;
     loading=new Promise((res,rej)=>{ const s=d.createElement('script'); s.src='entrenar/calc.js?v=4'; s.async=true; s.onload=res; s.onerror=()=>{ loading=null; s.remove(); rej(); }; d.head.appendChild(s); });
     return loading; }
   /* casilla de respuesta: la última que tocaste (si sigue activa) o la primera vacía de la evaluación abierta */
-  const okInp=i=>i&&i.isConnected&&!i.disabled&&(i.closest('[data-body]:not([hidden])')||i.closest('[data-chk]'));
+  const okInp=i=>i&&i.isConnected&&!i.disabled&&!i.readOnly&&(i.closest('[data-body]:not([hidden])')||i.closest('[data-chk]')||(location.hash==='#entrenar'&&i.closest('#entrenar')));
   const onScreen=b=>{ const r=b.getBoundingClientRect(); return r.bottom>0&&r.top<innerHeight&&r.height>0; };
   function target(){ let i=okInp(lastInp)?lastInp:null;
+    /* v66: en «Entrenar», la última casilla tocada o la primera vacía del ejercicio */
+    if(location.hash==='#entrenar'){ if(!i||!i.closest('#entrenar')) i=[...d.querySelectorAll('#entrenar input[data-ans]:not([readonly])')].find(x=>!x.value.trim())||null;
+      return i?{input:i,label:'Respuesta '+(i.dataset.label||'')}:null; }
     if(!i){ const box=d.querySelector('.exam.exfull')||[...d.querySelectorAll('.exam')].find(b=>{ const r=b.getBoundingClientRect(); return r.bottom>0&&r.top<innerHeight; });
       i=box?[...box.querySelectorAll('[data-body]:not([hidden]) .cnum input:not(:disabled)')].find(x=>!x.value.trim()):null;
       if(!i){ const ch=[...d.querySelectorAll('[data-chk]')].find(onScreen); i=ch?[...ch.querySelectorAll('.cnum input:not(:disabled)')].find(x=>!x.value.trim()):null; } }
     if(!i) return null; const q=i.closest('.cq'), n=q&&q.querySelector('.cqn'); return {input:i,label:'Respuesta '+(n?n.textContent.trim():'')}; }
-  d.addEventListener('focusin',e=>{ const t=e.target; if(t&&t.matches&&t.matches('.exam .cnum input, [data-chk] .cnum input')){ lastInp=t; if(calc) calc.answerChanged(); } });
+  d.addEventListener('focusin',e=>{ const t=e.target; if(t&&t.matches&&t.matches('.exam .cnum input, [data-chk] .cnum input, #entrenar input[data-ans]')){ lastInp=t; if(calc) calc.answerChanged(); } });
   function sync(on){ fab.setAttribute('aria-expanded',String(on)); fab.setAttribute('aria-label',on?'Cerrar la calculadora':'Abrir la calculadora');
     d.querySelectorAll('.exbar .excc').forEach(b=>b.setAttribute('aria-expanded',String(on))); }
   function open(){ if(dlg.open){ if(calc&&fine.matches) calc.focus(); return; }
@@ -15147,11 +15193,11 @@ window.__PASOS=PASOS;
   function close(){ if(dlg.open) dlg.close(); }
   dlg.addEventListener('close',()=>{ root.classList.remove('ccside'); sync(false); });
   fab.addEventListener('click',()=>dlg.open?close():open());
-  addEventListener('hashchange',()=>{ if(location.hash!=='#teoria') close(); });
+  addEventListener('hashchange',()=>{ if(location.hash!=='#teoria'&&location.hash!=='#entrenar') close(); });
   /* precarga cuando aparece el botón (así abre al instante) */
   /* v65: el botón también sale cuando un recuadro «Comprueba» de Teoría está en pantalla (sin el formulario: va solo, a la derecha) */
   const chkVis=new Set();
-  function ccSync(){ const ex=!!fx&&!fx.classList.contains('off'), on=ex||chkVis.size>0;
+  function ccSync(){ const ex=!!fx&&!fx.classList.contains('off'), en=root.classList.contains('en-ex')&&location.hash==='#entrenar', on=ex||(chkVis.size>0&&location.hash==='#teoria')||en;
     fab.classList.toggle('off',!on); fab.classList.toggle('up',ex&&fx.classList.contains('up')); fab.classList.toggle('solo',!ex&&on);
     fab.tabIndex=on?0:-1; fab.setAttribute('aria-hidden',String(!on));
     if(on) (window.requestIdleCallback||setTimeout)(()=>load().catch(()=>{})); }
@@ -15161,7 +15207,7 @@ window.__PASOS=PASOS;
     watch(); new MutationObserver(()=>{ clearTimeout(watch.t); watch.t=setTimeout(watch,300); }).observe(d.getElementById('teoria')||d.body,{childList:true,subtree:true}); }
   if(fx) new MutationObserver(ccSync).observe(fx,{attributes:true,attributeFilter:['class']});
   ccSync();
-  window.__lgdrCalcUI={open,close,toggle:()=>dlg.open?close():open(),isOpen:()=>dlg.open,both:()=>wide.matches,get calc(){ return calc; }};
+  window.__lgdrCalcUI={open,close,load,toggle:()=>dlg.open?close():open(),isOpen:()=>dlg.open,both:()=>wide.matches,get calc(){ return calc; }};
 })();
 </script>
 <script>
@@ -15249,6 +15295,41 @@ window.__PASOS=PASOS;
   let tt=0; const od=window.__lgdrDemo; if(typeof od==='function') window.__lgdrDemo=el=>{ od(el); if(page.contains(el)){ clearTimeout(tt); tt=setTimeout(()=>{ subFor=undefined; soon(); },80); } };
   setTimeout(soon,300);
   window.__lgdrToc={spy,setOff,fold:(r,on)=>{ const g=parts.find(p=>p.dataset.tocp===r); if(g) g.__fold(on,true); }};
+})();
+</script>
+<script>
+/* ==== v66 · «Entrenar» (etapa 1: pestaña, motor y guardado) ====
+   El código está aparte (entrenar/ui.js, motor.js, ejercicios.js y entrenar.css, módulos ES) y se carga la primera vez que
+   se abre #entrenar. Avance en localStorage['lgdr-entrena-v1'] (entra en la sincronización); intento en curso en
+   'lgdr-entrena-actual' y preferencias en 'lgdr-entrena-pref' (solo este dispositivo). Usa la calculadora de v62. */
+(()=>{
+  const PI=window.__pageInit=window.__pageInit||{}, prev=PI.entrenar; let mod=null, loading=null;
+  function load(){ if(loading) return loading;
+    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=1'; l.onload=l.onerror=res; document.head.appendChild(l); });
+    loading=Promise.all([css,import('./entrenar/ui.js?v=1')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
+    return loading; }
+  PI.entrenar=()=>{ if(prev) prev(); const sec=document.getElementById('entrenar'); if(!sec) return;
+    load().then(m=>m.init(sec)).catch(()=>{ const b=sec.querySelector('[data-en]'); if(b) b.innerHTML='<p class="note">No se pudieron cargar los ejercicios. Revisa tu conexión y vuelve a abrir la pestaña.</p>'; }); };
+  if(location.hash==='#entrenar') PI.entrenar();   /* la primera llamada a show() fue antes de este script */
+  window.__lgdrEntrenar=()=>mod&&mod.api;
+})();
+</script>
+<script>
+/* ==== v66 · información de la app (botón «i» de la barra; la versión #abVer va dentro del diálogo) ==== */
+(()=>{
+  const d=document, b=d.getElementById('abInfo'), dlg=d.getElementById('infoDlg'); if(!b||!dlg) return;
+  if(typeof dlg.showModal!=='function'){ b.hidden=true; return; }
+  const v=d.getElementById('abVer'), dt=dlg.querySelector('[data-if-date]');
+  if(v){ const t=(v.getAttribute('title')||'').replace(/^Versión del /,''); if(dt) dt.textContent=t; b.title='Información de la app · '+v.textContent.trim(); b.setAttribute('aria-label','Información de la app, versión '+v.textContent.trim()); }
+  const app=matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches||navigator.standalone;
+  const ap=dlg.querySelector('[data-if-app]'); if(ap&&app) ap.textContent=' (abierta como app desde el ícono de inicio, que tiene su propio almacenamiento)';
+  b.addEventListener('click',()=>dlg.showModal());
+  dlg.querySelector('[data-if-close]').addEventListener('click',()=>dlg.close());
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.close(); });
+  dlg.querySelector('[data-if-sync]').addEventListener('click',()=>{ dlg.close(); const s=d.getElementById('abSync'); if(s) s.click(); });
+  dlg.querySelector('[data-if-copy]').addEventListener('click',e=>{ const btn=e.currentTarget, url=location.href.split(/[?#]/)[0];
+    (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(()=>{ btn.textContent='¡Copiado!'; },()=>{ btn.textContent=url; })
+      .finally(()=>setTimeout(()=>{ btn.textContent='Copiar enlace de la página'; },1800)); });
 })();
 </script>
 </body></html>

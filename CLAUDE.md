@@ -958,6 +958,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
+- **Etapa 1 hecha (v66).** Sigue la etapa 2 (plano s interactivo para responder ubicando polos, ceros y puntos).
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1056,6 +1057,46 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   El ✕ sigue cerrando el panel. `calc.js?v=4`.
 - Probado con Playwright a 390×844 y 1440×900: botón en «Comprueba» de la sección 1, «→ Respuesta 3» escribe 6, AC deja el historial en 0 y
   Ans = 6, OFF/ON (Ans se conserva), teclas sin efecto mientras está apagada; consola limpia.
+
+## Hecho (v66 · Entrenar etapa 1): pestaña, motor de ejercicios y guardado
+
+- Pestaña «Entrenar» (`<a href="#entrenar">` después de Preguntas; en la barra lateral, grupo «Repasar» con ícono `IC.entrenar`) →
+  `section#entrenar.page` con `div[data-en]`. El script «v66 · Entrenar» (al final del `<body>`) carga **la primera vez que se abre**
+  `entrenar/entrenar.css?v=1` y `import('./entrenar/ui.js?v=1')`, y llama `init(section)` en cada `show()` (también al cargar con `#entrenar`).
+  Depuración: `window.__lgdrEntrenar()` → `{M, EJ, TEMAS, start(id, seed, mode), home, X, ST}`. **Al cambiar un archivo de `entrenar/`,
+  subir su `?v=` (los imports de ui.js también llevan `?v=1`).**
+- `entrenar/motor.js` (sin interfaz): `rng(seed)` mulberry32 (`int/pick/step/distinct`); semilla 0 = caso de la tarea, otra = variante
+  reproducible; `parseAns` lee con `LGDRCalc.engine.calc` (expresiones, `sqrt(40)`, `12*44-48`, coma decimal, `%`, `°`); `close` ±1 % (`TOL`) con
+  mínimo absoluto por casilla (`abs`, por omisión 1e‑3) y ángulos módulo 360° (`ang`); `grade(X, respuestas)` → por inciso `ok | arr | no |
+  vacio | err`, con `S` (correcta), `Sc` (con los valores del alumno), `T`/`A` (valores anteriores correctos / del alumno). **Arrastre:** si el
+  inciso coincide con lo que da el método usando los valores (equivocados) que el alumno escribió antes, cuenta completo y se marca «con arrastre».
+  `record()` guarda el intento; `PASS = 80` % = dominado.
+- **Guardado** `localStorage['lgdr-entrena-v1']` = `{v:1, tot, ex:{id:{n, ok, best, t, tarea, var, m:{inciso:fallos}}}, h:[{e, s, t, x, r}] (≤ 50, el más
+  nuevo primero)}`: solo números y una lista, para que la combinación genérica de la sincronización (máximo / lista más larga) funcione.
+  Agregado a la sincronización (`KEYS.e`; resumen y fila «Ejercicios dominados (Entrenar)»). **Corregido de paso:** al combinar solo se
+  tomaban `t, g, p`; ahora todas las claves de `KEYS` (la Ruta `r` no se combinaba). Intento en curso: `lgdr-entrena-actual` y preferencias
+  (modo, caso/variante): `lgdr-entrena-pref` (solo este dispositivo).
+- `entrenar/ejercicios.js`: `TEMAS` (los 16 del plan, con la etapa en que llegan) y `EJ`. Formato: `{id, tema, t, d, gen(r, tarea) → P,
+  enun(P, h), inc:[{k, q(P, h), f:[{k, l, u, tol, abs, ang}] | (P) → [...], sol(P, A) → {campo: valor}, how(P, A, S, h)}]}` con
+  `h = {tx (KaTeX), n (número TeX), f (texto)}`. Etapa 1 trae **4 de muestra** con la planta de P1 y variantes de 3 polos enteros (a veces uno en
+  el origen o un cero): asíntotas (tema 4: n − m, σa con arrastre, ángulos según la variante), Routh (tema 6: a₂ a₁ a₀ → K crít → ω, con arrastre),
+  ζ y recta (tema 7: %OS 10 % y σ = 2.0285 → ζ 0.5912, θ, tan θ, ωd 2.7677) y error (tema 12: K = 45.53 → Kp 0.9485, e 0.5132; tipo 1 → Kv).
+  En la etapa 4 se reemplazan por los ejercicios de los temas 1–12.
+- `entrenar/ui.js` + `entrenar.css`: inicio (anillo de dominados, Modo Práctica/Examen, Datos Caso de la tarea/Variante aleatoria, «Continuar»,
+  temas con sus ejercicios y «Mejor n %», últimos 8 intentos, «Borrar mi progreso de Entrenar» con dos toques) y ejercicio (enunciado, incisos con
+  casillas, vista previa «= valor» de las expresiones; práctica: Comprobar / Ver solución (ese inciso deja de contar); examen: solo «Entregar»;
+  resultado con %, arrastres, soluciones y Otra variante / Repetir). Enter pasa a la siguiente casilla (y comprueba el inciso en práctica).
+- Calculadora (v62): con un ejercicio abierto `html.en-ex` y el botón flotante aparece solo; «→ Respuesta b) K crít» escribe en la última casilla
+  tocada (o la primera vacía); no se cierra al ir a `#entrenar`. `__lgdrCalcUI.load` expuesto. «Comprueba» de Teoría ya solo cuenta en `#teoria`.
+- Ruta: «Entrenar: ejercicios con calculadora» ya cuenta (dominados / `tot`, va a `#entrenar`); el simulacro sigue «próximamente».
+- Probado con Playwright a 390×844 (táctil) y 1440×900: caso de la tarea con arrastre (a mal → b y c «con arrastre», 67 %), solución vista,
+  examen con variante (100 %), «→ Respuesta» desde la calculadora, sincronización, Ruta y barra lateral, sin desbordes ni errores de consola.
+
+## Hecho (v66): botón «i» con la información de la app
+
+- La versión ya no va suelta en la barra: `button#abInfo.abicon` (ícono «i», antes de Sincronizar) abre `dialog#infoDlg.sync.ifd` con la versión
+  (`span#abVer` sigue igual, así `herramientas/version.sh` funciona), la fecha, qué contiene, «Lo nuevo» (editar a mano en el HTML), tu progreso
+  (Sincronizar / Copiar enlace), referencia del libro y bibliotecas. CSS «v66 · botón i» antes del de v62; `<script>` al final del `<body>`.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 
