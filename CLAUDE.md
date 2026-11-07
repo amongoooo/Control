@@ -907,6 +907,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - `reportes.pdf` = 173 págs., `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:136,p7:155}`; Word cifrado actualizado (mismo PIN).
   En ecuaciones evitar también «Sim.» (StarMath `sim` → «¿») y «re‑» al inicio de una palabra (sale ℜ).
 
+## Hecho (v61): Práctica 7 del Word llenada con el formato de la P1–P6 (las 7 prácticas del Word quedan llenas)
+
+- Mismo formato (v56/v57/v60), con incisos a) y b) → III · Paso 5 (Tₛ = 1.143 s, e = 0.1188; el título lleva «↑ inciso a)» y «↑ inciso b)»,
+  `h2q(t, key, 'ab')`) y c) → IV · e). Generador `herramientas/word/num7.py`, `p7.py`, `p7calc.py`; `assemble.py … 7`. **`assemble.py` ya maneja la
+  última práctica** (sólo 2 `sectPr` en párrafos; la tercera es el `sectPr` del `body`, que se conserva). 9 figuras (1 Simulink con dos Transfer Fcn,
+  2 LGDR, 3 escalón + error a rampa de referencia, 4 LGDR sin comp./adelanto/adelanto‑atraso, 5 escalón, 6 Command Window, 7 error a rampa 130 s,
+  8 ajuste con `rlocfind` en un `for`, 9 Scope) y Tablas 1–13. IV: a) punto (Tₛ/2), b) ángulo y polo del adelanto, c) K_ad y razón del atraso,
+  d) atraso (p = 0.01), e) re‑búsqueda.
+- Números: ζ = 0.4559, s₀ = −3.5 ± j6.832, K_ref = 58.93, Tₛ = 1.143 (sim. 1.085), K_v = 8.418, e = 0.1188. Libro: s_d = −7 ± j13.664, θ_p = 79.19°,
+  p_ad = 9.609, K_ad = 204.96, K_v,ad = 9.142, razón 9.208 → z_at = 0.0921; dipolo −0.27°; re‑búsqueda −6.966 ± j13.598, K = 203.67, polos −2.593
+  (r −0.1565) y −0.0929 (r 0.0094), sim. Tₛ 0.626 ✗, 9.49 %, K_v 83.65, e 0.01195 (×9.94). Pruebas Tₛ,d 0.571/0.54/0.51/0.48 → Tₛ 0.626/0.605/0.585/0.568;
+  ajustado Tₛ,d = 0.48: s_d = −8.333 ± j16.267, p_ad = 12.286, z_at = 0.0827, K = 290.31, Tₛ 0.568 ✓, 9.05 %, K_v 83.78, e 0.01194 (×9.95).
+  Estable ∀K en los dos (barrido).
+- `reportes.pdf` = 172 págs., `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:136,p7:155}`; Word cifrado actualizado (mismo PIN).
+
 ## Hecho (v58): pestaña «Ruta del curso»
 
 - Pedido: orden sugerido de todo (teoría, simuladores, prácticas, repaso, exámenes) con palomitas, barras y porcentajes.
@@ -933,7 +948,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   flotante (14 s) «✓ Completaste: X · Lo que sigue: Y [Ir →] [Ruta]». Si lo completado es parte de una práctica, sigue la parte pendiente de esa
   misma práctica; si no, el siguiente de la ruta. Se revisa 0.5 s después de clics/teclas/cambios y al cambiar de página.
 
-## Plan aprobado: apartado «Entrenar» (después de los Word de P5–P7)
+## Plan aprobado: apartado «Entrenar» (siguiente tarea: los Word de P1–P7 ya están llenos)
 
 - El usuario aprobó todo lo recomendado: calculadora **propia** con las funciones útiles de la fx‑991CW (pantalla natural, complejos,
   EQN polinomios 2–4, SOLVE, historial/Ans/memorias, pegar resultado en la respuesta), variantes aleatorias además del caso de la tarea,

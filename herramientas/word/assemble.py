@@ -26,7 +26,8 @@ i_t2 = next(i for i, e in enumerate(kids) if txt(e).strip().startswith('Práctic
 i_t2n = next(i for i, e in enumerate(kids) if txt(e).strip().startswith('Práctica 3:'))
 start = max(i for i in range(i_t3) if is_sect(kids[i])) + 1           # después del sectPr final de la práctica anterior
 sects = [i for i in range(i_t3, len(kids)) if is_sect(kids[i])][:3]
-end = sects[2]
+last = len(sects) < 3          # la última práctica termina con el sectPr del body (no va dentro de un párrafo)
+end = len(kids) - 2 if last else sects[2]
 print('P%d de' % N, start, 'a', end, 'sects', sects)
 # piezas de la P2 que se reutilizan tal cual
 p2end = max(i for i in range(i_t2n) if is_sect(kids[i])) + 1
@@ -44,10 +45,11 @@ def parse(chunks):
     return list(etree.fromstring(xml.encode('utf-8')))
 
 
-s1, s2, s3 = (kids[i] for i in sects)
+s1, s2 = kids[sects[0]], kids[sects[1]]
+s3 = None if last else kids[sects[2]]
 o = pN.out
 j1 = o.index('#SECT1'); j2 = o.index('#SECT2')
-new = parse(o[:j1]) + [s1] + parse(o[j1 + 1:j2]) + [s2] + calc_h + parse(pNcalc.C) + refs + [s3]
+new = parse(o[:j1]) + [s1] + parse(o[j1 + 1:j2]) + [s2] + calc_h + parse(pNcalc.C) + refs + ([] if last else [s3])
 for e in kids[start:end + 1]:
     body.remove(e)
 anchor = kids[start - 1]
