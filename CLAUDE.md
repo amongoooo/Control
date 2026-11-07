@@ -893,6 +893,20 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:136,p7:154}`. Conversión como en v47/v50 (`libreoffice-math`, `docx-ecuaciones.py`,
   imágenes a 1600 px, `*` → `∗`). En LibreOffice evitar `\t{Re}` (sale ℜ) y ecuaciones largas en dos columnas (se cortan).
 
+## Hecho (v60): Práctica 6 del Word llenada con el formato de la P1–P5
+
+- Mismo formato que la P4/P5 (v56/v57); ejemplo sin incisos (sin «→ respuesta»). Generador `herramientas/word/num6.py`, `p6.py`, `p6calc.py`;
+  `python3 assemble.py in/word/document.xml out/word/document.xml 6`. 8 figuras (1 Simulink con un solo PID Controller P/I/D = K1/K2/K3 sin
+  filtro, 2 LGDR, 3 escalón ref., 4 LGDR sin comp./PD/PID, 5 escalón sin comp./PD/PID, 6 Command Window, 7 error al escalón e(t) = 1 − c(t),
+  8 Scope) y Tablas 1–13. IV: a) punto (T_p·2/3), b) ángulo y cero PD, c) K_PD y verificación PD, d) PI (−0.5), e) re‑búsqueda con el PID.
+- Números: ζ = 0.4559, s₀ = −5.4156 ± j10.571, K_ref = 121.55, p₃ = −8.169 (r 0.0211), T_p 0.2972, T_s 0.739 (sim. 20.73 %, 0.295, 0.701),
+  K_p 5.402, e = 0.1562; σ_b = −4.6231, K_b = 3.558. PD: s_d = −8.1233 ± j15.857, ∠G = −198.34° → θ_z = 18.34°, z = 55.96, K = 5.326 (sim. 21.74 %,
+  0.177 s, e 0.0702). PI: dipolo −1.45° / 0.9875. PID: s₀ = −7.5127 ± j14.665, K = 4.5915 → K1 = 259.25, K2 = 128.48, K3 = 4.5915; polos −8.099
+  (r 0.0124) y −0.4675 (r −0.0661), Routh b₁ = 303.0, c₁ = 2302.5 (estable ∀K, barrido 10⁻⁴…10⁶); sim. 14.15 %, t_p 0.194, T_s 2.558
+  (= ln(|r₄|/0.02)/|p₄|), K_v 5.71, e(12 s) = 0.00024.
+- `reportes.pdf` = 173 págs., `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:136,p7:155}`; Word cifrado actualizado (mismo PIN).
+  En ecuaciones evitar también «Sim.» (StarMath `sim` → «¿») y «re‑» al inicio de una palabra (sale ℜ).
+
 ## Hecho (v58): pestaña «Ruta del curso»
 
 - Pedido: orden sugerido de todo (teoría, simuladores, prácticas, repaso, exámenes) con palomitas, barras y porcentajes.
