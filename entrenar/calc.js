@@ -597,7 +597,7 @@ const CSS=`
 .lc-bar{flex:none;display:flex;align-items:center;gap:6px;padding:6px 10px 2px;min-height:34px;flex-wrap:wrap}
 .lc-a{border:1px solid #4a515d;background:var(--b1);color:#e5e7eb;font:600 12px var(--f-body,system-ui);padding:4px 10px;border-radius:999px;cursor:pointer;min-height:28px}
 .lc-a:hover{border-color:#9aa3b2}
-.lc-a.pri{border-color:#5b8cff;color:#cfe0ff;background:#22345e}
+.lc-a.pri{border-color:#5b8cff;color:#cfe0ff;background:#22345e;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lc-a[hidden]{display:none}
 .lc-msg{font-size:12px;color:#9be3b5;margin-left:auto;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lc-msg.bad{color:#ffb4ab}
@@ -767,7 +767,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   <div class="lc-lcdw"><div class="lc-lcd"><div class="lc-st" data-st></div><div class="lc-scr" data-scr>
     <div class="lc-v lc-vc" data-vc><div class="lc-log" data-log></div><div class="lc-cur"><div class="lc-edl lc-e" data-ed></div><div class="lc-res"><span class="lc-rv" data-rv aria-live="polite"></span></div></div></div>
     <div class="lc-v" data-vo hidden></div></div></div></div>
-  <div class="lc-bar"><button type="button" class="lc-a" data-copy hidden>Copiar</button><button type="button" class="lc-a" data-toans hidden title="Guardar en Ans">→ Ans</button><button type="button" class="lc-a pri" data-ansput hidden>→ Respuesta</button><span class="lc-msg" data-msg aria-live="polite"></span></div>
+  <div class="lc-bar"><button type="button" class="lc-a" data-copy hidden>Copiar</button><button type="button" class="lc-a" data-toans hidden title="Guardar en Ans">→ Ans</button><button type="button" class="lc-a pri" data-ansput hidden>→ Respuesta</button><button type="button" class="lc-a pri" data-ansall hidden title="Todas las raíces al plano">→ todas</button><span class="lc-msg" data-msg aria-live="polite"></span></div>
   <div class="lc-kp" data-kp role="group" aria-label="Teclado">
     <div class="lc-g lc-gt">${KTOP.map(topBtn).join('')}<div class="lc-pg" role="group" aria-label="Página"><button type="button" data-a="@pgup" aria-label="Página arriba" title="Página arriba">${IC.pu}</button><button type="button" data-a="@pgdn" aria-label="Página abajo" title="Página abajo">${IC.pd}</button></div></div>
     <div class="lc-g lc-g6">${KEYS6.map(keyBtn).join('').replace(/lc-k n /g,'lc-k ')}</div>
@@ -775,7 +775,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   host.appendChild(root);
   const $=s=>root.querySelector(s);
   const scr=$('[data-scr]'), vc=$('[data-vc]'), vo=$('[data-vo]'), edEl=$('[data-ed]'), rv=$('[data-rv]'), logEl=$('[data-log]'), st=$('[data-st]'), msgEl=$('[data-msg]');
-  const bCopy=$('[data-copy]'), bAns=$('[data-toans]'), bPut=$('[data-ansput]');
+  const bCopy=$('[data-copy]'), bAns=$('[data-toans]'), bPut=$('[data-ansput]'), bAll=$('[data-ansall]');
   if(opts.onClose) $('[data-close]').addEventListener('click',()=>opts.onClose());
 
   /* ---------- estado de la sesión */
@@ -1155,13 +1155,20 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     let h=`<table class="lc-tb"><thead><tr><th></th><th>x</th>${hf?'<th>f(x)</th>':''}${hg?'<th>g(x)</th>':''}</tr></thead><tbody>`;
     tRows.forEach((r,i)=>{ h+=`<tr><td class="n">${i+1}</td>`+[0,1,2].filter(c=>c===0||(c===1&&hf)||(c===2&&hg)).map(c=>`<td class="${tSel[0]===i&&tSel[1]===c?'sel':''}" data-v="tc:${i}:${c}">${cell2(r[c])}</td>`).join('')+'</tr>'; });
     const z=tCell(); h+=`</tbody></table><div class="lc-tbv">${z?fmtHTML(z,fmtSel||{}):(tRows[tSel[0]]&&tRows[tSel[0]][tSel[1]]==='err'?'ERROR':'')}</div>`; return h; };
+  /* «→ Respuesta»: opts.answer() da la casilla ({input,label}) o, en un plano s, {label, put(z), putAll(lista)}
+     (put acepta complejos; putAll recibe todas las raíces de «Ecuación») */
+  const eqRoots=()=>view==='eqsol'&&eqRes&&eqRes.roots?eqRes.roots:[];
   function bar(){ const z=pick(), t=opts.answer&&opts.answer();
-    bCopy.hidden=!z; bAns.hidden=!z||view==='calc'; bPut.hidden=!(z&&t&&t.input); if(t&&t.label) bPut.textContent='→ '+t.label; }
+    bCopy.hidden=!z; bAns.hidden=!z||view==='calc'; bPut.hidden=!(z&&t&&(t.input||t.put)); if(t&&t.label) bPut.textContent='→ '+t.label;
+    const n=eqRoots().length; bAll.hidden=!(t&&t.putAll&&n>1); bAll.textContent='→ las '+n+' raíces'; }
   bCopy.addEventListener('click',()=>{ const z=pick(); if(!z) return; const t=plain(z); (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>say('Copiado: '+t),()=>say(t)); });
   bAns.addEventListener('click',()=>{ const z=pick(); if(!z) return; S.ans=z2a(z); save(); say('→ Ans'); });
-  bPut.addEventListener('click',()=>{ const t=opts.answer&&opts.answer(), z0=pick(); if(!t||!t.input||!z0) return; const z=tidy(z0);
-    if(z.im!==0){ say('La respuesta debe ser un número real',true); return; }
+  bPut.addEventListener('click',()=>{ const t=opts.answer&&opts.answer(), z0=pick(); if(!t||!(t.input||t.put)||!z0) return; const z=tidy(z0);
+    if(t.put){ const r=t.put(z)||{}; say(r.err||r.msg||'Listo',!!r.err); bar(); return; }
+    if(z.im!==0){ say('Esta casilla solo acepta un número real (las raíces complejas van en el plano s)',true); return; }
     const v=String(+z.re.toPrecision(7)); t.input.value=v; t.input.dispatchEvent(new Event('input',{bubbles:true})); say(`Escrito ${v} en ${t.label||'la respuesta'}`); });
+
+  bAll.addEventListener('click',()=>{ const t=opts.answer&&opts.answer(), L=eqRoots(); if(!t||!t.putAll||!L.length) return; const r=t.putAll(L.map(tidy))||{}; say(r.err||r.msg||'Listo',!!r.err); bar(); });
 
   /* ---------- inicio */
   goApp(S.app); render();
@@ -1173,6 +1180,10 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     answerChanged(){ bar(); },
     setTab(t){ if(t==='eqn') goApp('eqn'); else if(t==='solve'){ goApp('eqn'); view='solve'; } else if(t==='tbl') goApp('tbl'); else if(t==='cplx') goApp('cplx'); else goApp('calc'); render(); },
     key(a){ key(a); },
+    /* etapa 3 de «Entrenar»: abrir una app directo desde un ejercicio */
+    poly(n){ n=Math.max(2,Math.min(4,n|0)); if(off) key('@on'); goApp('eqn'); S.eq.type='poly'; if(S.eq.n!==n){ S.eq.n=n; S.eq.P={}; } save(); eqSel=[0,0]; eqEd=null; eqRes=null; view='eqedit'; render(); },
+    solver(){ if(off) key('@on'); goApp('eqn'); view='solve'; sFld=0; sRes=null; render(); },
+    app(id){ if(off) key('@on'); goApp(id==='cplx'?'cplx':'calc'); render(); },
     get ans(){ return a2z(S.ans); },
     get state(){ return {app:S.app,view,ov:ov.length}; },
     destroy(){ root.remove(); }

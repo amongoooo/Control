@@ -43,7 +43,31 @@ const isC = v => v && typeof v === 'object' && 're' in v;
 export const C = (re, im) => ({ re: +re || 0, im: +im || 0 });
 const toC = v => isC(v) ? v : C(v, 0);
 
-/* lee lo que escribió el alumno → {ok, v:{re,im}} o {ok:false, err} */
+/* etapa 3 · Ans y memorias (A–F, x, y, z, M) de la calculadora en las casillas: se leen de lo que la calculadora guardó
+   (localStorage['lgdr-calc-v1'], que se actualiza con cada cálculo). La interfaz cambia la expresión por su valor al salir de
+   la casilla (freeze), para que la calificación no cambie si después se usa la calculadora otra vez. */
+const CALC_KEY = 'lgdr-calc-v1', MEMS = ['A', 'B', 'C', 'D', 'E', 'F', 'x', 'y', 'z', 'M'];
+const toZ = a => Array.isArray(a) && Number.isFinite(+a[0]) && Number.isFinite(+a[1]) ? C(+a[0], +a[1]) : null;
+export function calcEnv(){
+  let S = null; try { S = JSON.parse(localStorage.getItem(CALC_KEY) || 'null'); } catch (e) {}
+  const vars = {}, mem = (S && S.mem) || {};
+  MEMS.forEach(k => { const z = toZ(mem[k]); if (z) vars[k] = z; });
+  return { deg: true, vars, ans: toZ(S && S.ans) || C(0, 0) };
+}
+/* ¿la expresión usa Ans o una memoria? */
+export function usesVars(n){
+  if (!n || typeof n !== 'object') return false;
+  if (n.k === 'var' || n.k === 'ans') return true;
+  return Object.values(n).some(v => Array.isArray(v) ? v.some(usesVars) : (v && typeof v === 'object' && usesVars(v)));
+}
+/* valor para dejar en la casilla en lugar de la expresión con Ans / memorias (null si no hace falta) */
+export function freeze(raw){
+  const p = parseAns(raw); if (!p.ok || !p.vars) return null;
+  const t = v => String(+v.toPrecision(10));
+  return p.v.im ? `${t(p.v.re)}${p.v.im < 0 ? '-' : '+'}${t(Math.abs(p.v.im))}i` : t(p.v.re);
+}
+
+/* lee lo que escribió el alumno → {ok, v:{re,im}, vars} o {ok:false, err} */
 export function parseAns(raw){
   let s = String(raw == null ? '' : raw).trim();
   if (!s) return { ok: false, empty: true };
@@ -54,7 +78,8 @@ export function parseAns(raw){
   if (s !== '' && Number.isFinite(n)) return { ok: true, v: C(n, 0) };
   const E = window.LGDRCalc && window.LGDRCalc.engine;
   if (!E) return { ok: false, err: 'Escribe solo un número (la calculadora aún no carga).' };
-  try { const z = E.calc(s, { deg: true }); if (Number.isFinite(z.re) && Number.isFinite(z.im)) return { ok: true, v: C(z.re, z.im) }; }
+  try { const node = E.parse(s), vars = usesVars(node), z = E.evaluate(node, calcEnv());
+    if (Number.isFinite(z.re) && Number.isFinite(z.im)) return { ok: true, v: C(z.re, z.im), vars }; }
   catch (e) { return { ok: false, err: e && e.calc === 'math' ? 'Error matemático en lo que escribiste.' : 'No entiendo lo que escribiste (revisa paréntesis y signos).' }; }
   return { ok: false, err: 'No entiendo lo que escribiste.' };
 }

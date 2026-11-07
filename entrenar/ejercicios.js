@@ -6,7 +6,7 @@
            variantes aleatorias, para probar el motor: arrastre, ángulos, complejos y casillas que cambian con la variante.
    Formato de un ejercicio (lo lee entrenar/motor.js):
      {id, tema, t, d, gen(r, tarea) → P, enun(P,h) → html,
-      inc:[{k, q(P,h) → html, f:[{k, l, u, tol, abs, ang}] | (P) → [...], sol(P, A) → {campo: valor}, how(P, A, S, h) → html}]}
+      inc:[{k, q(P,h) → html, tools?: (P) → [{app:'eqn', n} | {app:'solve'} | {app:'cplx'}], f:[{k, l, u, tol, abs, ang}] | (P) → [...], sol(P, A) → {campo: valor}, how(P, A, S, h) → html}]}
    Casilla de plano s (etapa 2): {k, l, plane:true, marks:['x','o','.'], sym, real, snap, abs, tol, max}; su solución es una lista
    [{t, re, im}] completa (con los dos conjugados). Muestra: «plano» (tema 1) con polos/ceros, ruptura y polos de T(s).
    A = valores de los incisos anteriores (los correctos o los del alumno, para el arrastre).
@@ -220,11 +220,13 @@ const plano = {
       sol: P => ({ N: P.N }),
       how: (P, A, S, h) => `<p>${P.N ? 'Hay un polo en el origen (un integrador)' : 'Ningún polo está en el origen'}: tipo ${S.N}. ${P.N ? 'Error finito a la rampa y cero al escalón.' : 'Error finito al escalón.'}</p>` },
     { k: 'c', q: (P, h) => `Marca sobre el eje real ${P.rb.length > 1 ? 'los puntos' : 'el punto'} de <b>ruptura o de llegada</b> del LGDR (•). Pista: ${h.tx("\\tfrac{dK}{d\\sigma} = 0 \\iff N D' - N' D = 0")}, y solo valen las raíces que caen en un tramo del LGDR.`,
+      tools: P => [{ app: 'eqn', n: Math.max(2, Math.min(4, P.R.length - 1)) }],
       f: P => [{ k: 'rb', l: 'Ruptura', plane: true, marks: ['.'], real: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 4, view: Object.assign({}, P.view, { y0: -1.5, y1: 1.5 }) }],
       sol: P => ({ rb: P.rb.map(x => ({ t: '.', re: x, im: 0 })) }),
       how: (P, A, S, h) => { const all = roots(P.R).filter(w => !w.im).map(w => w.re);
         return `<p>Con ${h.tx(`N(s) = ${polyTeX(P.Nu, h)}`)} y ${h.tx(`D(s) = ${polyTeX(P.D, h)}`)}:</p>${h.tx(`N D' - N' D = ${polyTeX(P.R, h)} = 0`, true)}<p>Raíces reales: ${all.map(x => `${h.tx(`\\sigma = ${h.n(x)}`)} ${onLocus(x, P) ? '<b>✓ está en el LGDR</b>' : '✗ no está en el LGDR (a su derecha hay un número par de polos y ceros)'}`).join(' · ') || 'ninguna'}.</p><p>En la calculadora: Ecuación › Polinómica con los coeficientes ${P.R.map(v => h.f(v)).join(', ')}.</p>`; } },
     { k: 'd', q: (P, h) => `Con ${h.tx(`K = ${h.n(P.K)}`)}, ubica los <b>polos en lazo cerrado</b> (×), es decir, las raíces de ${h.tx('D(s) + K\\,N(s) = 0')}. Los complejos se ponen en par conjugado: basta con ubicar uno. Usa la calculadora: <i>Ecuación › Polinómica</i>.`,
+      tools: P => [{ app: 'eqn', n: Math.max(2, Math.min(4, P.ch.length - 1)) }],
       f: [{ k: 'cl', l: 'Polos de T(s)', plane: true, marks: ['x'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 6 }],
       sol: P => ({ cl: P.cl.map(w => ({ t: 'x', re: w.re, im: w.im })) }),
       how: (P, A, S, h) => `${h.tx(`\\begin{aligned}&D(s) + ${h.n(P.K)}\\,N(s) \\\\ &= ${polyTeX(P.ch, h)} = 0\\end{aligned}`, true)}<p>Raíces: ${h.tx(P.cl.filter(w => w.im >= 0).map(w => w.im ? `s = ${h.n(w.re)} \\pm j${h.n(w.im)}` : `s = ${h.n(w.re)}`).join(',\\; '))}.</p><p>En la calculadora: Ecuación › Polinómica, grado ${P.ch.length - 1}, coeficientes ${P.ch.map(v => h.f(v)).join(', ')}.${P.cl.some(w => w.im) ? ' Activa «Raíces complejas» en TOOLS si no las muestra.' : ''}</p>` }

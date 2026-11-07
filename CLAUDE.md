@@ -958,8 +958,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
-- **Etapa 1 hecha (v66). Etapa 2 hecha (v67).** Sigue la etapa 3 (calculadora dentro de los ejercicios: pegar resultado, EQN/SOLVE
-  ya existen en `entrenar/calc.js`; revisar qué falta del plan) y luego la etapa 4 (temas 1–12 con el piloto P1).
+- **Etapa 1 hecha (v66). Etapa 2 hecha (v67). Etapa 3 hecha (v68).** Sigue la etapa 4 (temas 1–12 con el piloto P1; usar
+  `tools` en los incisos que piden raíces de polinomios, ver v68).
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1126,6 +1126,37 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright a 390×844 (táctil) y 1440×900, claro y oscuro: imán (−2.1 + j0.12 → −2), quitar, arrastrar, conjugado
   automático, Re/Im, «2 de 3 bien ubicados», «sobran 1», solución con tolerancia, continuar tras recargar, examen con variante (100 %),
   ejercicios de la etapa 1 iguales, sin desbordes ni errores de consola.
+
+## Hecho (v68 · Entrenar etapa 3): calculadora dentro de los ejercicios
+
+- Revisión del plan: pantalla natural, complejos, EQN grado 2–4, SOLVE, historial, Ans y memorias ya estaban en `entrenar/calc.js`.
+  Faltaba usarlos **desde los ejercicios**:
+  - **«→ Respuesta» en los planos s.** Comprobado antes del cambio: un real sí se escribía en la casilla Re/Im del seleccionado, pero un
+    complejo (las raíces de Ecuación) daba «debe ser un número real». Ahora `opts.answer()` puede devolver `{label, put(z), putAll(lista)}`
+    en lugar de `{input, label}`; el script v62 de `index.html` recuerda lo último tocado (`lastPl` = el plano o su `input[data-pc]`, con
+    `focusin` y `pointerup` en captura) y llama a `host.__pl.put(z, part)` (`plano.js?v=2`): con la casilla Re o Im tocada cambia el
+    **seleccionado** (complejo → Re e Im; real → solo esa parte); con el plano tocado **agrega** uno nuevo con la herramienta actual (así
+    varias raíces seguidas no se pisan). Etiqueta del botón: «→ d) Polos de T(s) · agregar polo» / «… · Im del seleccionado».
+    Plano real (ruptura) rechaza complejos; fuera de la vista → aviso; `sym` guarda |Im|.
+  - **«→ las n raíces»** (`[data-ansall]` en la barra de la calculadora, solo en la vista de soluciones de Ecuación y con un plano como
+    destino): `putAll` agrega todas (con `sym`, un representante por par; omite repetidas y las que ya están). Mensaje con lo agregado,
+    también dentro del plano (`.pl-msg`).
+  - Casilla normal + complejo: «Esta casilla solo acepta un número real (las raíces complejas van en el plano s)».
+  - **Botones por inciso** (`inc.tools: P => [{app:'eqn', n} | {app:'solve'} | {app:'cplx'}]`, fila `.en-tl` «Calculadora: Ecuación ·
+    grado n»): `__lgdrCalcUI.setTarget(plano o primera casilla vacía del inciso)` + `__lgdrCalcUI.use(c => c.poly(n))`. API nueva de
+    `calc.js?v=5`: `poly(n)` (Ecuación › Polinómica grado n en la tabla de coeficientes; borra los coeficientes si cambia el grado),
+    `solver()`, `app('calc'|'cplx')` (las tres encienden la calculadora si estaba apagada). En el ejercicio `plano`: c) grado de N·D′ − N′·D
+    y d) grado de D + K·N. También en modo examen (la calculadora se permite).
+  - **Ans y memorias en las casillas** (`motor.js?v=3`): `parseAns` evalúa con `calcEnv()` (lee `S.ans` y `S.mem` de
+    `localStorage['lgdr-calc-v1']`; antes `Ans` y `A` valían 0 sin avisar). `usesVars(nodo)` detecta `Ans`/memorias y `freeze(texto)`
+    devuelve el valor: la interfaz cambia la expresión por su número al salir de la casilla (`change`), con Enter, al Comprobar y al
+    Entregar (`freezeIn/freezeAll` en `ui.js?v=3`), así la calificación no cambia si luego se usa la calculadora. Vista previa
+    «= valor (de la calculadora)» y después «tomado de la calculadora». Nota `.en-calch` arriba del enunciado explica todo esto.
+- Versiones: `calc.js?v=5`, `ui.js?v=3` (importa `motor.js?v=3`, `ejercicios.js?v=3`, `plano.js?v=2`), `entrenar.css?v=3`.
+- Probado con Playwright a 1440×900 y 390×844 (táctil, claro y oscuro): Ecuación grado 3 desde el inciso d) → «→ las 3 raíces» = −7.94 y
+  −2.03 ± j2.77 (d ✓), −2 + 3i en Im del seleccionado → −2 ± j3, 2.7677 → solo Im, ruptura con «→ las 2 raíces» (−2.85 ✓ y −5.15 «sobra»,
+  como debe), `Ans-1` → 0 (b ✓), complejo en casilla normal → aviso; Teoría «Comprueba» igual (6); los otros 4 ejercicios sin errores;
+  sin desbordes ni errores de consola.
 
 ## Hecho (v66): botón «i» con la información de la app
 

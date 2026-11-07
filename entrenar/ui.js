@@ -7,11 +7,13 @@
    Calculadora: la de la página (entrenar/calc.js vía window.__lgdrCalcUI). Con un ejercicio abierto aparece su botón
    flotante y «→ Respuesta» escribe en la última casilla tocada (o la primera vacía).
    Casillas de plano s (etapa 2): entrenar/plano.js; lo ubicado se guarda en ST.A[campo] como texto (motor.ptsStr).
+   Etapa 3 (calculadora en los ejercicios): «→ Respuesta» también escribe en los planos (complejos y todas las raíces de
+   «Ecuación»), botones por inciso que abren Ecuación grado n / Solver / Complejos (inc.tools), y Ans y memorias en las casillas.
    Preferencias (modo, caso/variante e imán) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
-import * as M from './motor.js?v=2';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=2';
-import { mountPlane, fmtList } from './plano.js?v=1';
+import * as M from './motor.js?v=3';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=3';
+import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
 const K_ = () => window.katex;
@@ -35,6 +37,27 @@ const setPref = o => { try { localStorage.setItem(PREF, JSON.stringify(Object.as
 /* ------------------------------------------------------------------ calculadora */
 function calcOn(on){ root.classList.toggle('en-ex', !!on); if (window.__lgdrCcSync) window.__lgdrCcSync(); }
 function calcOpen(){ const cu = window.__lgdrCalcUI; if (cu) cu.toggle(); }
+/* etapa 3 · botones de herramienta de cada inciso (inc.tools): abren la calculadora en esa app y dejan «→ Respuesta»
+   apuntando al inciso (su plano o su primera casilla vacía). t = {app:'eqn', n} | {app:'solve'} | {app:'cplx'} */
+const TOOL_ICO = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01" stroke-width="2.4"/></svg>';
+const toolsOf = (inc, P) => { const t = typeof inc.tools === 'function' ? inc.tools(P) : inc.tools; return Array.isArray(t) ? t.filter(Boolean) : []; };
+const toolLbl = t => t.app === 'eqn' ? `Ecuación · grado ${t.n}` : t.app === 'solve' ? 'Solver' : t.app === 'cplx' ? 'Complejos' : 'Calculadora';
+function toolGo(k, j){
+  const inc = X.def.inc.find(i => i.k === k), t = inc && toolsOf(inc, X.P)[+j], cu = window.__lgdrCalcUI; if (!t || !cu || !cu.use) return;
+  const li = BOX.querySelector(`.en-inc[data-i="${k}"]`), ins = [...li.querySelectorAll('input[data-ans]:not([readonly])')];
+  cu.setTarget(li.querySelector('.en-pl') || ins.find(i => !i.value.trim()) || ins[0]);
+  cu.use(c => { if (t.app === 'eqn' && c.poly) c.poly(t.n); else if (t.app === 'solve' && c.solver) c.solver(); else if (c.app) c.app(t.app); });
+}
+/* Ans o memorias en una casilla → su valor (al salir de la casilla, al comprobar y al entregar) */
+function freezeIn(i){
+  if (!i || !ST || ST.done || i.readOnly) return false;
+  const v = M.freeze(i.value); if (v == null) return false;
+  const pv = BOX.querySelector(`[data-pv="${i.dataset.k}"]`);
+  i.value = v; ST.A[i.dataset.k] = v; save();
+  if (pv) { pv.textContent = 'tomado de la calculadora'; pv.classList.remove('bad'); pv.dataset.frz = '1'; }
+  return true;
+}
+const freezeAll = scope => (scope || BOX).querySelectorAll('input[data-ans]').forEach(freezeIn);
 /* para leer expresiones en las casillas hace falta el motor de la calculadora */
 function needCalc(){ const cu = window.__lgdrCalcUI; if (window.LGDRCalc || !cu || !cu.load) return Promise.resolve(); return cu.load().catch(() => {}); }
 
@@ -108,10 +131,12 @@ function render(){
     <button class="btn" data-new="v">Otra variante</button>${X.tarea ? '' : '<button class="btn" data-new="t">Caso de la tarea</button>'}
     <button class="btn en-cbtn" data-calc><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01" stroke-width="2.4"/></svg>Calculadora</button>
   </div>
+  <p class="en-mut en-calch">En las casillas puedes escribir operaciones (<code>12*44-48</code>, <code>sqrt(40)</code>), <code>Ans</code> o una memoria de la calculadora (<code>A</code>–<code>F</code>, <code>M</code>); al salir de la casilla se cambia por su valor. «→ Respuesta» de la calculadora escribe en la última casilla o plano que tocaste.</p>
   <div class="card en-enun">${def.enun(P, H)}</div>
   <ol class="en-incs">${def.inc.map(inc => `<li class="card en-inc" data-i="${inc.k}">
       <div class="en-q"><span class="en-ik">${inc.k})</span><div>${inc.q(P, H)}</div></div>
       <div class="en-fs">${M.fields(inc, P).map(fl => fieldHTML(inc, fl)).join('')}</div>
+      ${toolsOf(inc, P).length ? `<div class="en-row en-tl"><span class="en-mut">Calculadora:</span>${toolsOf(inc, P).map((t, j) => `<button class="btn sm en-tb" data-tool="${inc.k}:${j}">${TOOL_ICO}${toolLbl(t)}</button>`).join('')}</div>` : ''}
       ${ex ? '' : `<div class="en-row en-ib"><button class="btn primary sm" data-chk="${inc.k}">Comprobar</button><button class="btn sm" data-sol="${inc.k}">Ver solución</button></div>`}
       <div class="en-fb" data-fb="${inc.k}" role="status" aria-live="polite"></div>
       <div class="en-sol" data-sl="${inc.k}" hidden></div>
@@ -160,8 +185,9 @@ function planeDet(r){
 }
 function preview(){
   BOX.querySelectorAll('input[data-ans]').forEach(i => { const pv = BOX.querySelector(`[data-pv="${i.dataset.k}"]`); if (!pv) return;
-    const s = i.value.trim(); if (!s || Number.isFinite(Number(s.replace(',', '.')))) { pv.textContent = ''; return; }
-    const p = M.parseAns(s); pv.textContent = p.ok ? '= ' + M.fmt(p.v, 6) : (p.err || ''); pv.classList.toggle('bad', !p.ok); });
+    const s = i.value.trim(); if (pv.dataset.frz) { delete pv.dataset.frz; return; }
+    if (!s || Number.isFinite(Number(s.replace(',', '.')))) { pv.textContent = ''; return; }
+    const p = M.parseAns(s); pv.textContent = p.ok ? '= ' + M.fmt(p.v, 6) + (p.vars ? ' (de la calculadora)' : '') : (p.err || ''); pv.classList.toggle('bad', !p.ok); });
 }
 const MSG = {
   ok: '✓ Correcto.', arr: '✓ Correcto con arrastre: usaste bien el valor que obtuviste antes (aunque ese valor estaba mal).',
@@ -169,6 +195,7 @@ const MSG = {
 };
 /* califica un inciso (modo práctica) y pinta sus casillas */
 function check(k, quiet){
+  if (!quiet) freezeAll(BOX.querySelector(`.en-inc[data-i="${k}"]`));
   const g = M.grade(X, ST.A), r = g.inc[k], li = BOX.querySelector(`.en-inc[data-i="${k}"]`); if (!li || !r) return r;
   paintInc(li, r);
   const fb = li.querySelector('[data-fb]'), errs = Object.values(r.f).filter(f => f.err).map(f => f.err);
@@ -190,6 +217,7 @@ function showSol(k){
   const b = BOX.querySelector(`[data-sol="${k}"]`); if (b) { b.textContent = 'Solución abierta'; b.disabled = true; }
 }
 function finish(){
+  freezeAll();
   const g = M.grade(X, ST.A), ex = ST.mode === 'x';
   /* en práctica, los incisos con la solución abierta no cuentan */
   let pts = 0; Object.entries(g.inc).forEach(([k, r]) => { if (!ex && ST.seen[k]) r.pts = 0; pts += r.pts; });
@@ -224,6 +252,7 @@ function onClick(e){
   if (b.dataset.new) { start(X.def.id, b.dataset.new === 'v' ? M.newSeed() : 0, ST ? ST.mode : P.mode); return; }
   if ('again' in b.dataset) { start(X.def.id, X.seed, ST.mode); return; }
   if ('calc' in b.dataset) { calcOpen(); return; }
+  if (b.dataset.tool) { const [k, j] = b.dataset.tool.split(':'); toolGo(k, j); return; }
   if (b.dataset.chk) { check(b.dataset.chk); return; }
   if (b.dataset.sol) { ST.seen[b.dataset.sol] = 1; save(); showSol(b.dataset.sol); return; }
   if ('fin' in b.dataset) { finish(); return; }
@@ -241,6 +270,7 @@ function onKey(e){
   const i = e.target; if (e.key !== 'Enter' || !i.matches || !i.matches('input[data-ans]')) return;
   e.preventDefault();
   const all = [...BOX.querySelectorAll('input[data-ans]:not([readonly])')], li = i.closest('.en-inc'), mine = [...li.querySelectorAll('input[data-ans]')];
+  freezeIn(i);
   if (i === mine[mine.length - 1] && ST.mode !== 'x' && !ST.done) check(li.dataset.i);
   const n = all[all.indexOf(i) + 1]; if (n) n.focus({ preventScroll: false });
 }
@@ -254,6 +284,7 @@ export async function init(section){
     BOX.addEventListener('click', onClick);
     BOX.addEventListener('input', onInput);
     BOX.addEventListener('keydown', onKey);
+    BOX.addEventListener('change', e => { if (e.target.matches && e.target.matches('input[data-ans]')) freezeIn(e.target); });
     addEventListener('hashchange', () => { if (location.hash !== '#entrenar') calcOn(false); else if (view === 'ex' && ST && !ST.done) calcOn(true); });
     await needCalc();
     home();

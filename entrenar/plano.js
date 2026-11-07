@@ -254,12 +254,52 @@ export function mountPlane(host, opts){
   function get(){ return items.map(p => ({ t: p.t, re: r2(p.re), im: o.real ? 0 : r2(p.im) })); }
   function set(v){ items = (v || []).filter(p => p && MK[p.t] && Number.isFinite(p.re) && Number.isFinite(p.im)).map(p => ({ t: o.marks.includes(p.t) ? p.t : o.marks[0], re: p.re, im: o.real ? 0 : o.sym ? Math.abs(p.im) : p.im })); sel = -1; marks = null; paint(); }
   set(o.value);
-  return {
-    el: host, get, set,
+  /* etapa 3 · la calculadora escribe aquí («→ Respuesta»). part = 're' | 'im' si la última casilla tocada fue Re o Im del
+     seleccionado: entonces se cambia ese elemento (un complejo pone Re e Im; un real, solo esa parte). Si lo último tocado fue
+     el plano (part = null), se agrega uno nuevo con la herramienta actual, así varias raíces seguidas no se pisan. */
+  const inView = p => p.re >= V.x0 - 1e-9 && p.re <= V.x1 + 1e-9 && p.im >= V.y0 - 1e-9 && p.im <= V.y1 + 1e-9;
+  const fmtZ = z => fmtPt({ re: r2(z.re), im: r2(z.im) }, false);
+  const ptTxt = q => fmtPt({ re: q.re, im: o.real ? 0 : q.im }, o.sym && Math.abs(q.im) > 1e-9);
+  function put(z, part){
+    if (ro) return { err: 'Este plano ya no se puede cambiar.' };
+    const cx = Math.abs(z.im) > 1e-9, q = part ? items[sel] : null;
+    if (o.real && cx) return { err: 'Aquí solo van puntos sobre el eje real (Im = 0).' };
+    let p = q && !cx ? (part === 'im' ? { re: q.re, im: z.re } : { re: z.re, im: q.im }) : { re: z.re, im: o.real ? 0 : z.im };
+    p = { re: r2(p.re), im: r2(p.im) };
+    if (!inView(p) && !(o.sym && inView({ re: p.re, im: -p.im }))) return { err: `${fmtZ(p)} queda fuera de la vista del plano.` };
+    let msg;
+    if (q) { moveTo(sel, p); msg = `${MK[q.t].n} movido a ${ptTxt(q)}`; }
+    else { const i = add(tool, p); if (i < 0) { paint(); return { err: `Máximo ${o.max} en este plano: quita uno antes.` }; } msg = `${MK[items[i].t].n} agregado en ${ptTxt(items[i])}`; }
+    paint(); emit(); say(msg); return { ok: true, msg };
+  }
+  /* todas las raíces de «Ecuación» de una vez (con sym, un representante por par; se omiten las repetidas) */
+  function putAll(list){
+    if (ro) return { err: 'Este plano ya no se puede cambiar.' };
+    let L = list.map(z => ({ re: r2(z.re), im: o.real ? 0 : r2(z.im) }));
+    if (o.real && list.some(z => Math.abs(z.im) > 1e-9)) L = L.filter((z, k) => Math.abs(list[k].im) <= 1e-9);
+    if (o.sym) L = L.filter(z => z.im >= 0);
+    L = L.filter((z, k) => L.findIndex(w => Math.abs(w.re - z.re) < 0.005 && Math.abs(w.im - z.im) < 0.005) === k);
+    const out = L.filter(z => !inView(z) && !(o.sym && inView({ re: z.re, im: -z.im })));
+    if (out.length) return { err: `${out.map(fmtZ).join(', ')} queda${out.length > 1 ? 'n' : ''} fuera de la vista del plano.` };
+    const added = [];
+    for (const z of L) {
+      if (items.some(q => q.t === tool && Math.abs(q.re - z.re) < 0.005 && Math.abs((o.sym ? Math.abs(q.im) : q.im) - z.im) < 0.005)) continue;
+      const i = add(tool, z); if (i < 0) break; added.push(items[i]);
+    }
+    sel = -1; paint(); if (added.length) emit();
+    if (added.length < L.length && total() >= o.max) { const msg = `Máximo ${o.max} en este plano: no cupieron todas.`; say(msg); return { ok: !!added.length, err: added.length ? null : msg, msg }; }
+    const msg = added.length ? `Agregado${added.length > 1 ? 's' : ''}: ${added.map(ptTxt).join(' · ')}` : 'Ya estaban en el plano.';
+    say(msg); return { ok: true, msg };
+  }
+  const info = () => ({ label: o.label, sel: sel >= 0 && !!items[sel], tool: MK[tool].n, ro, real: !!o.real, sym: !!o.sym });
+  const api = {
+    el: host, get, set, put, putAll, info,
     setMagnet(b){ mag = !!b; side(); },
     readOnly(b){ ro = !!b; if (ro) { sel = -1; drag = null; } paint(); },
     mark(m){ marks = m || null; paint(); },
     solution(lst, tol){ sol = lst ? { list: lst, tol: typeof tol === 'function' ? tol : () => tol || 0.15 } : null; draw(); },
-    destroy(){ ro_.disconnect(); host.innerHTML = ''; host.classList.remove('pl', 'ro'); }
+    destroy(){ ro_.disconnect(); host.innerHTML = ''; host.classList.remove('pl', 'ro'); delete host.__pl; }
   };
+  host.__pl = api;
+  return api;
 }

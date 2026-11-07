@@ -165,3 +165,11 @@ html.en-ex #entrenar{padding-bottom:70px}
 @media (pointer:coarse){.pl-ed input{font-size:16px}}
 @media (max-width:560px){.pl-sp{display:none}.pl-bar .btn.sm{padding-inline:9px}.pl-ed{gap:6px 10px}.pl-edk{flex:1 1 100%}.pl-ed input{width:5.6em}}
 @media print{.pl-bar,.pl-ed{display:none}}
+/* etapa 3 · calculadora dentro de los ejercicios */
+#entrenar .en-calch{font-size:13px;margin:-4px 0 12px;line-height:1.45}
+#entrenar .en-calch code{font:12px var(--f-mono);background:var(--surface-2,rgba(127,127,127,.12));padding:1px 4px;border-radius:4px}
+.en-tl{align-items:center;gap:6px}
+.en-tl .en-mut{font-size:13px}
+.en-tb{display:inline-flex;align-items:center;gap:6px}
+.en-tb svg{flex:none}
+@media print{#entrenar .en-tl,#entrenar .en-calch{display:none}}

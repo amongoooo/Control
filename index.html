@@ -1912,10 +1912,11 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 12:01 (hora del centro de México)">v1.7.11.1201</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 12:26 (hora del centro de México)">v1.7.11.1226</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
+    <li><b>Entrenar · calculadora en los ejercicios (etapa 3):</b> «→ Respuesta» también pone complejos en el plano s (Re e Im a la vez) y, desde Ecuación, todas las raíces de un toque; botones por inciso que abren Ecuación con el grado correcto; y en las casillas puedes escribir <code>Ans</code> o una memoria (A–F, M).</li>
     <li><b>Entrenar · plano s (etapa 2):</b> responde ubicando polos (×), ceros (○) y puntos (•) en el plano, con imán a la cuadrícula y al eje real, casillas Re/Im para afinar y un círculo de tolerancia. Ejercicio de muestra en el tema 1.</li>
     <li><b>Entrenar (etapa 1):</b> ejercicios con el caso de la tarea o variantes aleatorias, modo práctica o examen, ±1 % de tolerancia, calificación con arrastre y la calculadora a un toque.</li>
     <li><b>Calculadora</b> con la forma y el uso de una científica tipo fx‑991CW, en las evaluaciones, en «Comprueba» y en Entrenar.</li>
@@ -15164,25 +15165,36 @@ window.__PASOS=PASOS;
   const d=document, root=d.documentElement, fab=d.getElementById('ccFab'), dlg=d.getElementById('ccDlg'), body=d.getElementById('ccBody'), fx=d.getElementById('fxFab');
   if(!fab||!dlg||typeof dlg.show!=='function'){ if(fab) fab.remove(); if(dlg) dlg.remove(); return; }
   const wide=matchMedia('(min-width:1200px)'), fine=matchMedia('(pointer:fine)');
-  let calc=null, loading=null, lastInp=null;
+  let calc=null, loading=null, lastInp=null, lastPl=null;
   /* el botón va a la izquierda del de «Formulario», que cambia de ancho */
   const fxw=()=>{ if(fx&&fx.offsetWidth) root.style.setProperty('--fxw',(fx.offsetWidth+10)+'px'); };
   if(fx){ fxw(); if('ResizeObserver' in window) new ResizeObserver(fxw).observe(fx); }
   function load(){ if(window.LGDRCalc) return Promise.resolve(); if(loading) return loading;
-    loading=new Promise((res,rej)=>{ const s=d.createElement('script'); s.src='entrenar/calc.js?v=4'; s.async=true; s.onload=res; s.onerror=()=>{ loading=null; s.remove(); rej(); }; d.head.appendChild(s); });
+    loading=new Promise((res,rej)=>{ const s=d.createElement('script'); s.src='entrenar/calc.js?v=5'; s.async=true; s.onload=res; s.onerror=()=>{ loading=null; s.remove(); rej(); }; d.head.appendChild(s); });
     return loading; }
   /* casilla de respuesta: la última que tocaste (si sigue activa) o la primera vacía de la evaluación abierta */
   const okInp=i=>i&&i.isConnected&&!i.disabled&&!i.readOnly&&(i.closest('[data-body]:not([hidden])')||i.closest('[data-chk]')||(location.hash==='#entrenar'&&i.closest('#entrenar')));
   const onScreen=b=>{ const r=b.getBoundingClientRect(); return r.bottom>0&&r.top<innerHeight&&r.height>0; };
   function target(){ let i=okInp(lastInp)?lastInp:null;
-    /* v66: en «Entrenar», la última casilla tocada o la primera vacía del ejercicio */
-    if(location.hash==='#entrenar'){ if(!i||!i.closest('#entrenar')) i=[...d.querySelectorAll('#entrenar input[data-ans]:not([readonly])')].find(x=>!x.value.trim())||null;
+    /* v66: en «Entrenar», la última casilla tocada o la primera vacía del ejercicio.
+       Etapa 3: si lo último tocado es un plano s (el plano o sus casillas Re/Im), «→ Respuesta» llama a su put(z), que acepta
+       complejos (Re e Im a la vez); desde «Ecuación» también se pueden mandar todas las raíces (putAll). */
+    if(location.hash==='#entrenar'){
+      const plOf=x=>{ const h=x&&x.isConnected&&x.closest&&x.closest('#entrenar .en-pl'); return h&&h.__pl&&!h.__pl.info().ro?h:null; };
+      let h=plOf(lastPl);
+      if(!h&&(!i||!i.closest('#entrenar'))){ i=[...d.querySelectorAll('#entrenar input[data-ans]:not([readonly])')].find(x=>!x.value.trim())||null;
+        if(!i) h=[...d.querySelectorAll('#entrenar .en-pl')].map(plOf).find(Boolean)||null; }
+      if(h){ const P=h.__pl, inf=P.info(), part=lastPl&&lastPl.matches&&lastPl.matches('input[data-pc]')&&inf.sel?lastPl.dataset.pc:null;
+        return {label:inf.label+(part?' · '+(part==='re'?'Re':'Im')+' del seleccionado':' · agregar '+inf.tool.toLowerCase()), put:z=>P.put(z,part), putAll:part?null:L=>P.putAll(L)}; }
       return i?{input:i,label:'Respuesta '+(i.dataset.label||'')}:null; }
     if(!i){ const box=d.querySelector('.exam.exfull')||[...d.querySelectorAll('.exam')].find(b=>{ const r=b.getBoundingClientRect(); return r.bottom>0&&r.top<innerHeight; });
       i=box?[...box.querySelectorAll('[data-body]:not([hidden]) .cnum input:not(:disabled)')].find(x=>!x.value.trim()):null;
       if(!i){ const ch=[...d.querySelectorAll('[data-chk]')].find(onScreen); i=ch?[...ch.querySelectorAll('.cnum input:not(:disabled)')].find(x=>!x.value.trim()):null; } }
     if(!i) return null; const q=i.closest('.cq'), n=q&&q.querySelector('.cqn'); return {input:i,label:'Respuesta '+(n?n.textContent.trim():'')}; }
-  d.addEventListener('focusin',e=>{ const t=e.target; if(t&&t.matches&&t.matches('.exam .cnum input, [data-chk] .cnum input, #entrenar input[data-ans], #entrenar input[data-pc]')){ lastInp=t; if(calc) calc.answerChanged(); } });
+  d.addEventListener('focusin',e=>{ const t=e.target; if(t&&t.matches&&t.matches('.exam .cnum input, [data-chk] .cnum input, #entrenar input[data-ans]')){ lastInp=t; lastPl=null; if(calc) calc.answerChanged(); } });
+  /* etapa 3: planos s de «Entrenar» (tocar el plano, un elemento, un chip o las casillas Re/Im) */
+  const plTouch=e=>{ const t=e.target, h=t&&t.closest&&t.closest('#entrenar .en-pl'); if(!h) return; lastPl=t.matches('input[data-pc]')?t:h; lastInp=null; if(calc) setTimeout(()=>calc&&calc.answerChanged(),0); };
+  d.addEventListener('focusin',plTouch); d.addEventListener('pointerup',plTouch,true);
   function sync(on){ fab.setAttribute('aria-expanded',String(on)); fab.setAttribute('aria-label',on?'Cerrar la calculadora':'Abrir la calculadora');
     d.querySelectorAll('.exbar .excc').forEach(b=>b.setAttribute('aria-expanded',String(on))); }
   function open(){ if(dlg.open){ if(calc&&fine.matches) calc.focus(); return; }
@@ -15208,7 +15220,11 @@ window.__PASOS=PASOS;
     watch(); new MutationObserver(()=>{ clearTimeout(watch.t); watch.t=setTimeout(watch,300); }).observe(d.getElementById('teoria')||d.body,{childList:true,subtree:true}); }
   if(fx) new MutationObserver(ccSync).observe(fx,{attributes:true,attributeFilter:['class']});
   ccSync();
-  window.__lgdrCalcUI={open,close,load,toggle:()=>dlg.open?close():open(),isOpen:()=>dlg.open,both:()=>wide.matches,get calc(){ return calc; }};
+  /* etapa 3: abrir la calculadora en una app desde un ejercicio (fn recibe la calculadora ya montada) y elegir a qué casilla
+     o plano va «→ Respuesta» */
+  function use(fn){ open(); return load().then(()=>{ if(calc&&fn) fn(calc); if(calc) calc.answerChanged(); }).catch(()=>{}); }
+  function setTarget(el){ if(!el) return; if(el.closest&&el.closest('.en-pl')){ lastPl=el; lastInp=null; } else { lastInp=el; lastPl=null; } if(calc) calc.answerChanged(); }
+  window.__lgdrCalcUI={open,close,load,use,setTarget,toggle:()=>dlg.open?close():open(),isOpen:()=>dlg.open,both:()=>wide.matches,get calc(){ return calc; }};
 })();
 </script>
 <script>
@@ -15306,8 +15322,8 @@ window.__PASOS=PASOS;
 (()=>{
   const PI=window.__pageInit=window.__pageInit||{}, prev=PI.entrenar; let mod=null, loading=null;
   function load(){ if(loading) return loading;
-    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=2'; l.onload=l.onerror=res; document.head.appendChild(l); });
-    loading=Promise.all([css,import('./entrenar/ui.js?v=2')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
+    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=3'; l.onload=l.onerror=res; document.head.appendChild(l); });
+    loading=Promise.all([css,import('./entrenar/ui.js?v=3')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
     return loading; }
   PI.entrenar=()=>{ if(prev) prev(); const sec=document.getElementById('entrenar'); if(!sec) return;
     load().then(m=>m.init(sec)).catch(()=>{ const b=sec.querySelector('[data-en]'); if(b) b.innerHTML='<p class="note">No se pudieron cargar los ejercicios. Revisa tu conexión y vuelve a abrir la pestaña.</p>'; }); };
