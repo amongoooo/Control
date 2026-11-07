@@ -959,6 +959,38 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
 
+## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
+
+- **Módulo aparte `entrenar/calc.js`** (para reutilizarlo en «Entrenar»): `window.LGDRCalc = {mount(el, opts), engine}`. Sin
+  dependencias (usa `window.katex` si existe; el CSS va dentro con clases `.lc-*` y las variables de color de la página).
+  `mount(el,{storageKey:'lgdr-calc-v1', katex, answer:()=>({input,label})|null, onClose})` → `{focus, refresh, answerChanged,
+  insert, setTab, ans}`. Motor: `parse/evaluate/calc/toTeX/format/formatTxt/plain/natural/polyRoots/quadExact/solve`.
+  Funciones tipo fx‑991CW: pantalla natural (lo escrito se dibuja con KaTeX; resultado exacto p/q, a√b/c, pπ/q; **S⇔D** a decimal
+  con 10 cifras), complejos `i` (o `j`), `a+bi` / `r∠θ` (entrada con `∠`, salida con el chip), `Abs/arg/Re/Im/conj`, DEG/RAD
+  (seno/coseno exactos en múltiplos de 30° y 90°), SHIFT (inversas, x!, ∛, x³, ⁿ√ = `root(n,x)`, 10ˣ, eˣ, `,` y `=`), `log(a,b)` = logₐb,
+  ×10ˣ = `ᴇ` (también `2e3`), Ans (si empiezas con un operador tras «=», se antepone Ans), memorias A–F, x, y, z, M (VAR / STO, M+ / M−),
+  historial (40, toca para reutilizar; tocar el resultado lo inserta), «Ecuación» grado 2–4 (Durand–Kerner en paralelo + Newton; raíces
+  múltiples pulidas en la derivada; exactas (−b ± s√f)/2a en grado 2) y «SOLVE» (Newton amortiguado + búsqueda de cambio de signo; x → memoria x).
+  Prioridad: la multiplicación implícita va antes que × ÷ (1÷2π = 1/(2π)), −2² = −4, `∠` entre + y ×. Campos con `inputmode="none"`
+  (en celular no sale el teclado del sistema; el teclado propio escribe en el campo activo). `localStorage['lgdr-calc-v1']` (no se sincroniza).
+- **En la página:** `button#ccFab.cc-fab` a la izquierda de «∑ Formulario» (mismo momento en que aparece; `--fxw` = ancho del formulario),
+  `.excc` en `.exbar` de la evaluación en pantalla completa (en ≤ 560 px «Salir» y «Calculadora» solo con ícono), panel
+  `dialog#ccDlg.sync.ccd` sin modal: derecha (`--ccW`) en ≥ 700 px, abajo (`--ccH` = min(57dvh, 480px)) en celular. `html.ccside` encoge la
+  evaluación (o pone `padding` al `body` fuera de ella) para no tapar «Calificar». < 1200 px: formulario o calculadora (uno cierra al
+  otro); ≥ 1200 px los dos. Esc cierra primero la calculadora. «→ Respuesta n» escribe el resultado (7 cifras) en la última casilla
+  numérica tocada (o la primera vacía). Se carga con `<script>` la primera vez (precarga cuando aparece el botón). Script «v62 · calculadora»
+  al final del `<body>`; `window.__lgdrCalcUI`, y v3 expone `window.__lgdrFx`. CSS «v62» antes del `</style>` principal.
+- **Índice de Teoría (`nav.toc`):** encabezado `.toch` con «Ocultar / Mostrar» (`.toc[data-off]`, `.theory[data-tocoff]` → tira de 44 px en
+  computadora); cada parte se pliega tocando su `span.tocg` (`role=button`, `.toc[data-fold-i|ii|iii]`); la sección actual sigue a la
+  vista aunque su parte esté plegada. Resaltado (scrollspy): `li[data-cur]` / `.tocex[data-cur]` + `aria-current="location"`, y bajo la
+  sección abierta `ul.tocsub` (Explicación · Simulación: título · Comprobación) con el apartado que se lee. Se usan atributos `data-*`
+  y no clases porque v19 redibuja la barra lateral con cada cambio de `class` dentro de `nav.toc`. En computadora el índice tiene alto
+  máximo y su propio desplazamiento (lo resaltado se mantiene a la vista). Estado en `localStorage['lgdr-indice-v1']` = `{off, I, II, III, pr}`.
+- **Barra lateral de las prácticas (v26):** la etapa abierta lleva flechita `.sb-fold` para plegar sus pasos (`pr` en `lgdr-indice-v1`) y el
+  subtítulo resaltado se mantiene a la vista dentro de `#sbar` (`keepSb`).
+- Probado con Playwright a 390×844 (táctil) y 1440×900 (claro/oscuro): teclas, teclado físico, Ans, STO/VAR, polar, error, Ecuación (P1:
+  −7.943, −2.0285 ± j2.7677), SOLVE, «→ Respuesta», formulario + calculadora, plegado/ocultar/resaltado del índice, barra de P1; consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
