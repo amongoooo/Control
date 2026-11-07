@@ -1,5 +1,5 @@
 /* =====================================================================================================
-   entrenar/motor.js · Motor de ejercicios del apartado «Entrenar» (Laboratorio LGDR) · etapas 1–5
+   entrenar/motor.js · Motor de ejercicios del apartado «Entrenar» (Laboratorio LGDR) · etapas 1–6
    ---------------------------------------------------------------------------------------------------
    Sin interfaz. Lo usa entrenar/ui.js.
      · Variantes: cada ejercicio se arma con una semilla (0 = el caso de la tarea; otra = variante aleatoria
@@ -17,12 +17,14 @@
        esperado con uno del mismo tipo a ±max(tol·|s|, abs) (abs por omisión 0.15): ni de más ni de menos (matchPts).
      · Guardado (localStorage['lgdr-entrena-v1'], entra en la sincronización): solo números y una lista, para
        que la combinación genérica (máximo de cada número, la lista más larga) funcione:
-         {v:1, tot, ex:{<id>:{n, ok, best, t, var, tarea, m:{<inciso>:fallos}}}, h:[{e, s, t, x, r}]}
+         {v:1, tot, ex:{<id>:{n, ok, best, t, var, tarea, m:{<inciso>:fallos}, mz:{<inciso>:fallos ya corregidos}}}, h:[{e, s, t, x, r}],
+          xh:[{t, n, s, d}] (exámenes de varios ejercicios), xn (cuántos), xb (mejor % de un simulacro de 6 o más)}
        El intento en curso va aparte (localStorage['lgdr-entrena-actual'], solo este dispositivo).
    ===================================================================================================== */
 
 export const KEY = 'lgdr-entrena-v1';
 export const CUR = 'lgdr-entrena-actual';
+export const EXK = 'lgdr-entrena-examen';   // examen de varios ejercicios en curso o terminado (solo este dispositivo)
 export const TOL = 0.01;          // ±1 %
 export const PASS = 80;           // % para dar por dominado un ejercicio
 
@@ -159,6 +161,8 @@ export function build(def, seed){
   /* semilla 0 = caso de la tarea; semilla −N = caso de la práctica N (ejercicios con def.casos, etapa 5); > 0 = variante */
   const tarea = seed <= 0;
   const P = def.gen(rng(seed > 0 ? seed : 1), tarea ? (seed < 0 ? -seed : true) : false);
+  /* etapa 6: ejercicios cuyos incisos dependen de los datos (tema 16) → copia de la definición con su lista */
+  if (def.incOf) def = Object.assign({}, def, { inc: def.incOf(P) });
   return { def, seed, tarea, P };
 }
 
@@ -220,14 +224,40 @@ export function record(X, res, mode, seen){
   e.t = now;
   if (X.tarea) e.tarea = Math.max(e.tarea || 0, pct); else e.var = Math.max(e.var || 0, pct);
   if (!isObj(e.m)) e.m = {};
-  Object.entries(res.inc).forEach(([k, r]) => { if (r.pts < 1 || (seen && seen[k])) e.m[k] = (e.m[k] || 0) + 1; });
+  if (!isObj(e.mz)) e.mz = {};
+  /* m = fallos de cada inciso (solo suben); mz = cuántos de esos ya se corrigieron (al acertar el inciso sin ver la solución,
+     mz alcanza a m). Pendientes = m − mz (repaso de errores). Los dos solo suben, así la sincronización (máximo) no los rompe. */
+  Object.entries(res.inc).forEach(([k, r]) => { if (r.pts < 1 || (seen && seen[k])) e.m[k] = (e.m[k] || 0) + 1; else if (e.m[k]) e.mz[k] = e.m[k]; });
   D.h.unshift({ e: id, s: pct, t: now, x: mode === 'x' ? 1 : 0, r: X.seed });
   if (D.h.length > 50) D.h.length = 50;
   save(D);
   return D;
 }
+/* etapa 6 · examen de varios ejercicios: historial (≤ 20) y mejor calificación de un simulacro (6 ejercicios o más) */
+export const SIM_N = 6;
+export function recordExam(n, pct, ms){
+  const D = load();
+  if (!Array.isArray(D.xh)) D.xh = [];
+  D.xh.unshift({ t: Date.now(), n, s: pct, d: Math.round(ms || 0) });
+  if (D.xh.length > 20) D.xh.length = 20;
+  D.xn = (D.xn || 0) + 1;
+  if (n >= SIM_N) D.xb = Math.max(D.xb || 0, pct);
+  save(D); return D;
+}
+/* etapa 6 · repaso de errores: ejercicios con incisos fallados que aún no se corrigen, del que más tiene al que menos
+   → [{id, p (pendientes), m (fallos en total), ks:[[inciso, pendientes]], best}] */
+export function pending(defs){
+  const D = load(), out = [];
+  defs.forEach(def => { const e = D.ex[def.id]; if (!e || !isObj(e.m)) return;
+    const mz = isObj(e.mz) ? e.mz : {}, ks = Object.keys(e.m).map(k => [k, Math.max(0, (e.m[k] || 0) - (mz[k] || 0))]).filter(x => x[1] > 0).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
+    if (!ks.length) return;
+    out.push({ id: def.id, p: ks.reduce((a, x) => a + x[1], 0), m: Object.values(e.m).reduce((a, v) => a + (v || 0), 0), ks, best: e.best || 0 }); });
+  return out.sort((a, b) => b.p - a.p || a.best - b.best);
+}
 export function setTotal(n){ const D = load(); if (D.tot !== n) { D.tot = n; save(D); } }
-export function resetAll(){ try { localStorage.removeItem(KEY); localStorage.removeItem(CUR); } catch (e) {} }
+export function resetAll(){ try { localStorage.removeItem(KEY); localStorage.removeItem(CUR); localStorage.removeItem(EXK); } catch (e) {} }
+export function loadExam(){ try { const o = JSON.parse(localStorage.getItem(EXK) || 'null'); return isObj(o) && Array.isArray(o.items) && o.items.length ? o : null; } catch (e) { return null; } }
+export function saveExam(o){ try { if (o) localStorage.setItem(EXK, JSON.stringify(o)); else localStorage.removeItem(EXK); } catch (e) {} }
 
 /* intento en curso (solo este dispositivo) */
 export function loadCur(){ try { const o = JSON.parse(localStorage.getItem(CUR) || 'null'); return isObj(o) ? o : null; } catch (e) { return null; } }

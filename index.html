@@ -1943,10 +1943,11 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 14:00 (hora del centro de México)">v1.7.11.1400</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 16:22 (hora del centro de México)">v1.7.11.1622</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
+    <li><b>Entrenar · etapa 6:</b> tema 16 «Problema completo» de principio a fin (referencia, diseño, verificación y Simulink) con el caso de P1–P7 y variantes; <b>examen de varios ejercicios</b> seguidos (4, 6 u 8; sin calificación hasta entregar, con tiempo, calificación final y revisión de cada uno) que, con 6 o más y 80 %, cuenta como simulacro en la Ruta; y <b>repaso de errores</b> con los ejercicios que más has fallado.</li>
     <li><b>Entrenar · temas 13–15 (etapa 5):</b> 9 ejercicios nuevos: PI (P2), atraso (P3), PD (P4), adelanto (P5), PID (P6) y adelanto‑atraso (P7) con el caso de cada práctica y variantes; verificación del diseño (ecuación final, polos, modos, simulación contra las metas y ajuste) y Simulink (parámetros de los bloques). En los temas 14 y 15 eliges la práctica con los botones P2…P7.</li>
     <li><b>Entrenar · temas 1–12 (etapa 4):</b> 13 ejercicios con el caso de la tarea (P1) y variantes: polos y ceros, ecuación característica, eje real, asíntotas, ruptura, Routh, recta de ζ, condición de ángulo y de magnitud, polos en lazo cerrado, respuesta transitoria y error. Respuestas en el plano s donde conviene, preguntas Sí/No y botones de calculadora (Ecuación, Complejos) en los incisos que lo piden.</li>
     <li><b>Plan para el examen</b> (en Resumen): barra con lo que llevas y lo que deberías llevar para llegar al 100 % antes del examen. La Ruta ya no se detiene en una evaluación saltada ⏭.</li>
@@ -15085,7 +15086,11 @@ window.__PASOS=PASOS;
         ent()]},
       {n:'8',t:'Exámenes',d:'Demuestra que ya lo dominas.',items:[
         it({k:'exall',t:'Aprueba las tres evaluaciones (sin saltarlas)',sub:`${Pn}/3 aprobadas`,v:Pn/3,go:'ex:'+(ef||{r:'I'}).r,nx:ef?{t:`Aprueba la evaluación ${ef.r}`,how:'Con 80 % o más; las saltadas cuentan hasta que las apruebes.',go:'ex:'+ef.r}:null}),
-        it({k:'sim2',t:'Simulacro de examen en Entrenar',sub:'Próximamente',soon:1})]}
+        (()=>{ /* v72: simulacro = examen de 6 o más ejercicios en Entrenar (mejor % en lgdr-entrena-v1 → xb) */
+          let E={}; try{ E=JSON.parse(localStorage.getItem('lgdr-entrena-v1')||'{}')||{}; }catch(e){}
+          const b=+E.xb||0, v=Math.min(1,b/80);
+          return it({k:'sim2',t:'Simulacro de examen en Entrenar',sub:b?`Mejor simulacro: ${b} % (meta 80 %)`:'Examen de 6 u 8 ejercicios seguidos',v,go:'#entrenar',
+            nx:v<1?{t:'Simulacro de examen',how:'En Entrenar › «Examen de varios ejercicios», elige 6 u 8 ejercicios y saca 80 % o más.',go:'#entrenar'}:null}); })()]}
     ];
     S.forEach(s=>{ const its=s.items.filter(x=>!x.soon); s.v=its.length?its.reduce((a,x)=>a+x.v,0)/its.length:0; });
     const all=S.flatMap(s=>s.items.filter(x=>!x.soon));
@@ -15357,8 +15362,8 @@ window.__PASOS=PASOS;
 (()=>{
   const PI=window.__pageInit=window.__pageInit||{}, prev=PI.entrenar; let mod=null, loading=null;
   function load(){ if(loading) return loading;
-    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=5'; l.onload=l.onerror=res; document.head.appendChild(l); });
-    loading=Promise.all([css,import('./entrenar/ui.js?v=5')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
+    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=6'; l.onload=l.onerror=res; document.head.appendChild(l); });
+    loading=Promise.all([css,import('./entrenar/ui.js?v=6')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
     return loading; }
   PI.entrenar=()=>{ if(prev) prev(); const sec=document.getElementById('entrenar'); if(!sec) return;
     load().then(m=>m.init(sec)).catch(()=>{ const b=sec.querySelector('[data-en]'); if(b) b.innerHTML='<p class="note">No se pudieron cargar los ejercicios. Revisa tu conexión y vuelve a abrir la pestaña.</p>'; }); };

@@ -958,8 +958,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
-- **Etapas 1 (v66), 2 (v67), 3 (v68), 4 (v70) y 5 (v71) hechas.** Sigue la etapa 6 (tema 16 problema completo, modo examen
-  con varios ejercicios, variantes y repaso de errores).
+- **Etapas 1 (v66), 2 (v67), 3 (v68), 4 (v70), 5 (v71) y 6 (v72) hechas: el plan de «Entrenar» está terminado.**
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1225,6 +1224,36 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado: Node (casos P2–P7 y 300 variantes de cada uno con las respuestas correctas → 100 %, sin NaN; arrastre) y Playwright a 390×844
   (táctil, oscuro) y 1440×900: los 9 ejercicios con el caso de cada práctica (temas 14–15 con P2…P7) y variantes, Comprobar en cada inciso,
   Terminar (100 %), soluciones sin errores de KaTeX, sin desbordes, botón P4, consola limpia.
+
+## Hecho (v72 · Entrenar etapa 6): problema completo, examen de varios ejercicios y repaso de errores
+
+- `entrenar/ejercicios.js?v=6`, `motor.js?v=5`, `ui.js?v=6`, `entrenar.css?v=6` (index.html carga `ui.js?v=6` y `entrenar.css?v=6`). **23 ejercicios.**
+- **Tema 16 · `completo`** («Problema completo (P1–P7)»), `casos: [1…7]` (botones P1…P7; semilla −1 = P1). Variantes: un tipo al azar
+  (`p` = solo ganancia, doble probabilidad, o los 6 compensadores). Los incisos dependen del tipo: el ejercicio trae `incOf(P)` y
+  `motor.build` hace una copia de la definición con esa lista (letras seguidas a, b, c…). Partes (`inc.sec` → `li.en-sech` en la interfaz):
+  Referencia (`R16`: ζ y θ —en P2 se da ζ y se pide %OS—, s₀ con la condición de ángulo, K de referencia, K<sub>p</sub>/K<sub>v</sub> y error según el tipo
+  de la planta) → Diseño (P1: `R16p` polos de T(s) en el plano, tercer polo |p₃|/σ y regla de 5, T<sub>s</sub>/T<sub>p</sub>; compensadores: los incisos del
+  tema 13 con `adopt(inc, 'd_')`, sin repetir el error sin compensar en PI y atraso) → Verificación (verifpol a–c con `v_`, verifsim a–e con `s_`;
+  P1: %OS, cumple y «¿hace falta ajustar?» con la K del 10 % por bisección, 49.38) → Simulink (simulink e–f con `l_`).
+  `adopt` pone un prefijo a las casillas para que no choquen y quita el prefijo al llamar `sol/how`; `map` pasa valores de la referencia
+  (atraso: `eu ← re`, así el error con arrastre llega al diseño). Las «Metas» de la simulación (`meta16`) no dan los valores sin compensar.
+  Casos iguales a la página (P1 45.53 / 8.82 %, P2 158.10, P3 44.64, P4 47.47, P5 476.2, P6 4.592, P7 203.67). `PASOS`/página sin cambios.
+- **Examen de varios ejercicios** (tarjeta en el inicio): 4/6/8 ejercicios, contenido Todo / Temas 1–12 / Temas 13–16 / Mis errores, datos
+  Variantes / Casos de la tarea (preferencias `xn, xc, xd` en `lgdr-entrena-pref`). Se eligen al azar y se ordenan por tema. Estado en
+  `localStorage['lgdr-entrena-examen']` (`XM = {items:[{e, seed}], A:[…], i, el (ms con el examen a la vista), done, res, tot, tf, c}`, solo este
+  dispositivo). Barra `.en-xbar` (números; azul = con respuestas), cronómetro `[data-clock]`, Anterior / Siguiente / «Entregar examen» (dos toques,
+  avisa cuántos van sin respuestas). Sin «Comprobar» ni soluciones hasta entregar. Al entregar: cada ejercicio se registra como intento en modo
+  examen y el examen con `M.recordExam` (en `lgdr-entrena-v1`: `xh` historial ≤ 20, `xn`, `xb` = mejor % de un simulacro de 6 o más). Resultados:
+  promedio, incisos, tiempo, tabla por ejercicio con «Revisar» (el ejercicio de solo lectura con todas las soluciones) y «Nuevo examen igual».
+  Salir a medio examen lo guarda («Continuar examen» / «Abandonar» en el inicio).
+- **Repaso de errores** (tarjeta en el inicio): `motor.pending` = ejercicios con incisos fallados (o con la solución vista) aún no corregidos.
+  En cada ejercicio `m[k]` (fallos, solo sube) y ahora `mz[k]` (= `m[k]` al acertar el inciso sin ver la solución); pendientes = m − mz (los dos solo
+  suben: la sincronización por máximo no los rompe). «Repasar» abre una variante en práctica con `ST.rp` y la etiqueta «Fallaste aquí n veces» en
+  esos incisos (no en el tema 16, cuyas letras dependen del tipo). «Examen con mis errores» = examen con contenido «Mis errores».
+- **Ruta:** «Simulacro de examen en Entrenar» ya cuenta (`min(1, xb/80)`), ya no dice «próximamente».
+- Probado: Node (casos P1–P7 y 300 variantes del tema 16 con las respuestas correctas → 100 %, arrastre, pendientes y su limpieza) y Playwright a
+  1440×900 y 390×844 (táctil, oscuro): tema 16 en práctica (P4, P1, variante) al 100 %, examen de 4 (respuestas buenas, una mala y una vacía →
+  100/100/80/0), cronómetro, continuar tras salir, revisión, repaso con etiquetas, simulacro de 6 → Ruta al 100 %; sin desbordes ni errores de consola.
 
 ## Hecho (v66): botón «i» con la información de la app
 

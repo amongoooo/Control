@@ -1,10 +1,11 @@
 /* =====================================================================================================
-   entrenar/ejercicios.js · Temas y ejercicios del apartado «Entrenar» · etapas 1–5
+   entrenar/ejercicios.js · Temas y ejercicios del apartado «Entrenar» · etapas 1–6
    ---------------------------------------------------------------------------------------------------
    TEMAS = los 16 temas del plan (los que aún no tienen ejercicios dicen en qué etapa llegan).
    EJ    = ejercicios. Etapa 4: temas 1–12 con el piloto de la P1 (caso de la tarea: G = K/[(s+2)(s+4)(s+6)], %OS = 10,
            s₀ = −2.0285 ± j2.7677, K = 45.53) y variantes aleatorias (3 polos enteros, a veces uno en el origen o un cero).
    Etapa 5: temas 13–15 (compensadores con el caso de P2–P7, verificación y Simulink; ver más abajo).
+   Etapa 6: tema 16, problema completo con el caso de P1–P7 (incOf(P): los incisos dependen del tipo de diseño).
    Formato de un ejercicio (lo lee entrenar/motor.js):
      {id, tema, t, d, gen(r, tarea) → P, enun(P,h) → html,
       inc:[{k, q(P,h) → html, tools?: (P) → [{app:'eqn', n} | {app:'solve'} | {app:'cplx'}], f:[{k, l, u, tol, abs, ang}] | (P) → [...], sol(P, A) → {campo: valor}, how(P, A, S, h) → html}]}
@@ -1186,7 +1187,182 @@ const simulink = {
   ]
 };
 
+/* =====================================================================================================
+   Etapa 6 · Tema 16 · Problema completo, de principio a fin, con el caso de cada práctica (P1–P7) y variantes
+   ---------------------------------------------------------------------------------------------------
+   Referencia sin compensar (ζ y θ, s₀ con la condición de ángulo, K con la de magnitud y el error) → diseño (los incisos del
+   tema 13 del compensador que toque; P1 = solo ganancia: polos de T(s), tercer polo y transitorio de 2.º orden) →
+   verificación (ecuación final, polos y estabilidad del tema 14; simulación contra las metas) → Simulink (fuente y error).
+   Los incisos dependen del tipo: el ejercicio trae incOf(P) y motor.build arma la lista (letras a, b, c… seguidas).
+   Los incisos reutilizados llevan sus casillas con un prefijo (d_ diseño, v_ ecuación final, s_ simulación, l_ Simulink) para
+   que no choquen; el arrastre funciona dentro de cada parte, de la referencia al diseño solo para el error del atraso (map).
+   ===================================================================================================== */
+function adopt(inc, pre, o){
+  o = o || {};
+  const map = o.map || {}, pf = fl => Object.assign({}, fl, { k: pre + fl.k });
+  const un = A => { const r = {}; Object.keys(A || {}).forEach(k => { if (k.startsWith(pre)) r[k.slice(pre.length)] = A[k]; });
+    Object.keys(map).forEach(k => { if (r[k] == null && A && A[map[k]] != null) r[k] = A[map[k]]; }); return r; };
+  const ad = S => { const r = {}; Object.keys(S).forEach(k => { r[pre + k] = S[k]; }); return r; };
+  const out = Object.assign({}, inc, {
+    f: typeof inc.f === 'function' ? P => inc.f(P).map(pf) : inc.f.map(pf),
+    sol: (P, A) => ad(inc.sol(P, un(A))),
+    how: (P, A, S, h) => inc.how(P, un(A), un(S), h)
+  });
+  if (o.q) out.q = o.q;
+  if (o.sec) out.sec = o.sec;
+  return out;
+}
+const pickInc = (def, ks) => def.inc.filter(i => ks.includes(i.k));
+const PNUM = { p: 1, pi: 2, atraso: 3, pd: 4, adelanto: 5, pid: 6, adatr: 7 };
+const TN16 = Object.assign({ p: 'ajuste de ganancia' }, TN);
+/* ganancia que da exactamente el sobrepaso meta (bisección sobre la simulación; solo para la explicación del ajuste de la P1) */
+function kForOS(P, os){
+  let lo = P.K * 0.5, hi = P.K * 2.5;
+  const f = K => simStep(P.F, K).os - os;
+  if (f(lo) > 0 || f(hi) < 0) return null;
+  for (let i = 0; i < 26; i++) { const m = (lo + hi) / 2; if (f(m) > 0) hi = m; else lo = m; }
+  return (lo + hi) / 2;
+}
+/* P1 (o variante de solo ganancia): planta de 3 polos y el par sobre la recta de ζ */
+function genP(r, tarea){
+  for (let g = 0; g < 60; g++) {
+    const P = tarea ? { caso: 'P1', p: [2, 4, 6], z: [], os: 10 } : plantDesign(r, false, { zero: 0.3, os: [5, 20] });
+    P.tipo = 'p'; P.z_ = zetaOf(P.os);
+    const d = design(P, P.z_); if (!d) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0); P.K = P.K0; P.sd = P.s0;
+    P.gc = { z: [], p: [] }; finDesign(P);
+    if (!tarea && !stable(P)) continue;
+    const re = P.cl.filter(w => !w.im).sort((a, b) => b.re - a.re);
+    if (!re.length) continue;
+    P.p3 = re[0].re; P.meta = { k: 'os', v: P.os }; P.blk = [];
+    if (!tarea && Math.abs(Math.abs(P.p3) / d.sg - 5) < 0.25) continue;
+    return P;
+  }
+  return genP(r, true);
+}
+/* referencia: los cuatro incisos comunes */
+const R16 = [
+  { sec: 'Referencia: el sistema sin compensar (solo la ganancia K)',
+    q: (P, h) => P.tipo === 'pi' ? `El problema da ${h.tx(`\\zeta = ${h.n(P.z_)}`)}. Calcula el sobrepaso que le corresponde, ${h.tx('\\%OS = 100\\,e^{-\\zeta\\pi/\\sqrt{1-\\zeta^2}}')}, y el ángulo de la recta de ζ, ${h.tx('\\theta = \\cos^{-1}\\zeta')}.`
+      : `Del sobrepaso pedido (${h.f(P.os)} %): ${h.tx('\\zeta = \\dfrac{-\\ln(\\%OS/100)}{\\sqrt{\\pi^2 + \\ln^2(\\%OS/100)}}')} y el ángulo de la recta de ζ, ${h.tx('\\theta = \\cos^{-1}\\zeta')} (medido desde el eje real negativo).`,
+    f: P => P.tipo === 'pi' ? [{ k: 'os', l: '%OS', u: '%', abs: 0.05 }, { k: 'th', l: 'θ', u: '°' }] : [{ k: 'z', l: 'ζ' }, { k: 'th', l: 'θ', u: '°' }],
+    sol: P => P.tipo === 'pi' ? { os: osOf(P.z_), th: Math.acos(P.z_) * DEG } : { z: P.z_, th: Math.acos(P.z_) * DEG },
+    how: (P, A, S, h) => P.tipo === 'pi' ? h.tx(`\\%OS = 100\\,e^{-${h.n(P.z_)}\\pi/\\sqrt{1-${h.n(P.z_)}^2}} = ${h.n(S.os)}\\,\\%,\\qquad \\theta = \\cos^{-1}(${h.n(P.z_)}) = {${h.n(S.th)}}^\\circ`, true)
+      : h.tx(`\\zeta = \\dfrac{-\\ln(${h.n(P.os / 100)})}{\\sqrt{\\pi^2 + \\ln^2(${h.n(P.os / 100)})}} = ${h.n(S.z)},\\qquad \\theta = \\cos^{-1}(${h.n(S.z)}) = {${h.n(S.th)}}^\\circ`, true) },
+  { q: (P, h) => `Busca el punto ${h.tx('s_0 = -\\sigma + j\\omega_d')} de la recta de ζ (${h.tx('\\omega_d = \\sigma\\tan\\theta')}) que cumple la <b>condición de ángulo</b> ${h.tx('\\angle G(s_0) = -180^\\circ')}: prueba valores de σ (el primer cruce desde el origen) evaluando ${h.tx('\\angle G')} con la calculadora en <i>Complejos</i>.`,
+    tools: () => [{ app: 'cplx' }],
+    f: [{ k: 'sg', l: 'σ (s₀ = −σ + jω<sub>d</sub>)' }, { k: 'wd', l: 'ω<sub>d</sub>' }],
+    sol: (P, A) => { const z = Number.isFinite(A.th) ? Math.cos(A.th / DEG) : P.z_;
+      const d = Math.abs(z - P.z_) < 1e-6 ? { sg: -P.s0.re, wd: P.s0.im } : design(P, z) || { sg: -P.s0.re, wd: P.s0.im };
+      return { sg: d.sg, wd: d.wd }; },
+    how: (P, A, S, h) => { const s = { re: -S.sg, im: S.wd };
+      return `${h.tx(`\\begin{aligned}\\angle G(s_0) &= ${angVals(P, s, h).replace(/s_d/g, 's_0')} \\\\ &= {${h.n(angG(P, s))}}^\\circ\\end{aligned}`, true)}<p>Con ${h.tx(`\\sigma = ${h.n(S.sg)}`)}: ${h.tx(`s_0 = ${h.n(s.re)} \\pm j${h.n(s.im)}`)}. Antes del cruce la suma queda de un lado de −180° y después del otro: con dos σ de prueba a los lados, parte el intervalo a la mitad hasta llegar (bisección). En MATLAB: <code>rlocus(G); sgrid(${n4(P.z_)}, 0)</code> y lee el cruce.</p>`; } },
+  { q: (P, h) => `Ganancia de referencia en ${h.tx('s_0')} con la <b>condición de magnitud</b>: ${h.tx('K = \\dfrac{\\prod|s_0 + p_i|}{\\prod|s_0 + z_i|}')}.`,
+    tools: () => [{ app: 'cplx' }],
+    f: [{ k: 'K0', l: 'K de referencia' }],
+    sol: (P, A) => ({ K0: magK(P, { re: -A.sg, im: A.wd }) }),
+    how: (P, A, S, h) => { const s = { re: -A.sg, im: A.wd };
+      return h.tx(`K = \\dfrac{${P.p.map(p => h.n(dist(s, p))).join('\\cdot')}}{${P.z.length ? P.z.map(z => h.n(dist(s, z))).join('\\cdot') : '1'}} = ${h.n(S.K0)}`, true) + `<p>Cada factor es la distancia de ${h.tx('s_0')} a un polo (arriba) o a un cero (abajo): ${h.tx(`|s_0 + a| = \\sqrt{(a - ${h.n(A.sg)})^2 + ${h.n(A.wd)}^2}`)}.</p>`; } },
+  { q: (P, h) => P.q ? `La planta es tipo 1: con esa K, constante de velocidad ${h.tx('K_v = \\lim_{s\\to0} sKG(s)')} y error ante la <b>rampa</b> unitaria.` : `La planta es tipo 0: con esa K, constante de posición ${h.tx('K_p = \\lim_{s\\to0} KG(s)')} y error ante el <b>escalón</b> unitario.`,
+    f: P => [{ k: 'kk', l: P.q ? 'K<sub>v</sub>' : 'K<sub>p</sub>' }, { k: 're', l: 'e(∞)', abs: 1e-4 }],
+    sol: (P, A) => { const e = errOf({ p: P.p, z: P.z }, A.K0, P.q); return { kk: e.kk, re: e.e }; },
+    how: (P, A, S, h) => { const zn = nz(P.z), pn = nz(P.p), fr = `\\dfrac{${h.n(A.K0)}${zn.length ? '\\cdot' + zn.join('\\cdot') : ''}}{${pn.join('\\cdot') || '1'}}`;
+      return h.tx(P.q ? `K_v = ${fr} = ${h.n(S.kk)},\\qquad e(\\infty) = \\dfrac{1}{K_v} = ${h.n(S.re)}` : `K_p = ${fr} = ${h.n(S.kk)},\\qquad e(\\infty) = \\dfrac{1}{1 + K_p} = ${h.n(S.re)}`, true); } }
+];
+/* P1: lo que sigue al K (polos de T(s), tercer polo, transitorio de 2.º orden y ajuste) */
+const R16p = [
+  { sec: 'Diseño por ajuste de ganancia: polos del lazo cerrado y validez del 2.º orden',
+    q: (P, h) => `Con la K de referencia, ubica los <b>polos en lazo cerrado</b> (×): raíces de ${h.tx('D(s) + K\\,N(s) = 0')} (basta con uno de cada par conjugado).`,
+    tools: P => [{ app: 'eqn', n: Math.max(2, Math.min(4, P.ch.length - 1)) }],
+    f: P => [{ k: 'cl', l: 'Polos de T(s)', plane: true, marks: ['x'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 6, view: P.view }],
+    sol: (P, A) => ({ cl: roots(closedPoly(P, A.K0)).map(w => ({ t: 'x', re: w.re, im: w.im })) }),
+    how: (P, A, S, h) => `${h.tx(`${polyTeX(closedPoly(P, A.K0), h)} = 0`, true)}<p>Raíces: ${h.tx(rootsTeX(S.cl, h))}. En la calculadora: Ecuación › Polinómica con ${closedPoly(P, A.K0).map(v => h.f(v)).join(', ')}.</p>` },
+  { q: (P, h) => `Tercer polo ${h.tx('p_3')} (el real), qué tan lejos está comparado con la parte real del par, ${h.tx('|p_3|/\\sigma')}, y si vale la aproximación de 2.º orden (regla: 5 veces o más).`,
+    f: [{ k: 'p3', l: 'p<sub>3</sub>' }, { k: 'rt', l: '|p<sub>3</sub>|/σ' }, { k: 'ok', l: '¿Vale el 2.º orden?', ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No' }] }],
+    sol: (P, A) => { const L = (A.cl || []).filter(w => Math.abs(w.im) < 0.05).sort((a, b) => b.re - a.re);
+      const p3 = L.length ? L[0].re : P.p3, rt = Math.abs(p3) / A.sg; return { p3, rt, ok: rt >= 5 ? 1 : 0 }; },
+    how: (P, A, S, h) => `${h.tx(`\\dfrac{|p_3|}{\\sigma} = \\dfrac{${h.n(Math.abs(S.p3))}}{${h.n(A.sg)}} = ${h.n(S.rt)}`, true)}<p>${S.ok ? '≥ 5: el polo extra se apaga mucho antes que el par, la aproximación vale.' : '< 5: el polo extra no está lo bastante lejos; la aproximación es solo una guía y hay que simular (el sobrepaso real sale distinto).'} Otra forma de decidir: la suma de las raíces es ${h.tx(`-${h.n(P.ch[1])}`)}, así que ${h.tx(`p_3 = -${h.n(P.ch[1])} + 2\\sigma`)}.</p>` },
+  { q: (P, h) => `Respuesta del par dominante (2.º orden): ${h.tx('T_s = 4/\\sigma')} y ${h.tx('T_p = \\pi/\\omega_d')}.`,
+    f: [{ k: 'ts', l: 'T<sub>s</sub>', u: 's' }, { k: 'tp', l: 'T<sub>p</sub>', u: 's' }],
+    sol: (P, A) => ({ ts: 4 / A.sg, tp: Math.PI / A.wd }),
+    how: (P, A, S, h) => h.tx(`T_s = \\dfrac{4}{${h.n(A.sg)}} = ${h.n(S.ts)}\\ \\text{s},\\qquad T_p = \\dfrac{\\pi}{${h.n(A.wd)}} = ${h.n(S.tp)}\\ \\text{s}`, true) }
+];
+const R16pAj = { q: () => 'Con lo que da la simulación, ¿hace falta ajustar K para cumplir la meta de sobrepaso?',
+  f: [{ k: 'aj', l: 'Respuesta', ch: [{ v: 0, l: 'No: cumple (o casi)' }, { v: 1, l: 'Sí: bajar K (se pasa del sobrepaso)' }] }],
+  sol: (P, A) => ({ aj: A.s_c1 === 0 ? 1 : 0 }),
+  how: (P, A, S, h) => { const k = kForOS(P, P.os);
+    return `<p>${S.aj ? 'Se pasa de la meta: se baja K (menos K → más ζ → menos sobrepaso) hasta llegar al valor pedido.' : 'Queda dentro de la meta: no es obligatorio ajustar.'}${k ? ` La K que da exactamente ${h.f(P.os)} % en la simulación es ${h.tx(`K \\approx ${h.n(k)}`)}${P.caso === 'P1' ? ' (la página de la P1 la usa como ajuste: 10 % justos y un poco más rápido)' : ''}.` : ''}</p>`; } };
+/* qué pide el problema (sin dar los valores de la referencia) */
+function pide(P, h){
+  const os = `sobrepaso de ${h.f(P.os)} %`;
+  switch (P.tipo) {
+    case 'p': return `Se pide un <b>${os}</b> ajustando solo la ganancia ${h.tx('K')}. Traza la referencia, encuentra K, revisa si vale la aproximación de 2.º orden y verifica con la simulación.`;
+    case 'pi': return `El sistema trabaja con ${h.tx(`\\zeta = ${h.n(P.z_)}`)}. Se pide <b>error cero ante el escalón</b> sin cambiar el transitorio, con un PI ideal ${h.tx(`G_c(s) = \\dfrac{s + ${h.n(P.zc)}}{s}`)}.`;
+    case 'atraso': return `Con un <b>${os}</b>, se pide <b>mejorar ${P.M} veces el error ante la rampa</b> con un compensador de atraso con el polo en ${h.tx(`p_c = ${h.n(P.pc)}`)}: ${h.tx('G_c(s) = \\dfrac{s + z_c}{s + p_c}')}.`;
+    case 'pd': return `Con un <b>${os}</b>, se pide el mismo sobrepaso con un <b>tiempo de asentamiento ${P.Fx} veces menor</b> usando un PD ideal ${h.tx('G_c(s) = s + z_c')}.`;
+    case 'adelanto': return `Con un <b>${os}</b>, se pide el mismo sobrepaso con un <b>tiempo de asentamiento ${P.Fx} veces menor</b> con un compensador de adelanto con el cero en ${h.tx(`-${h.n(P.zl)}`)}: ${h.tx(`G_c(s) = \\dfrac{s + ${h.n(P.zl)}}{s + p_c}`)}.`;
+    case 'pid': return `Con un <b>${os}</b>, se pide el mismo sobrepaso, un <b>tiempo pico ${P.f < 0.6 ? 'de la mitad' : 'de 2/3'}</b> del actual y <b>error cero al escalón</b>: primero un PD ideal ${h.tx('s + z_{PD}')} y luego un PI ideal ${h.tx(`\\dfrac{s + ${h.n(P.zpi)}}{s}`)}.`;
+    case 'adatr': return `Con un <b>${os}</b>, se pide el mismo sobrepaso, un <b>T<sub>s</sub> ${P.Fx} veces menor</b> y el <b>error a la rampa ${P.M} veces menor</b>: primero un adelanto con el cero en ${h.tx(`-${h.n(P.zl)}`)} y luego un atraso con el polo en ${h.tx(`-${h.n(P.pa)}`)}, ${h.tx(`G_c(s) = \\dfrac{s + ${h.n(P.zl)}}{s + p_{ad}}\\cdot\\dfrac{s + z_{at}}{s + ${h.n(P.pa)}}`)}.`;
+  }
+  return '';
+}
+/* incisos de diseño de cada compensador (del tema 13; sin repetir lo de la referencia) */
+const D16 = {
+  pi: () => pickInc(exPI, ['b', 'c', 'd', 'e']).map(i => adopt(i, 'd_')),
+  atraso: () => pickInc(exAtr, ['b', 'c', 'd', 'e']).map(i => adopt(i, 'd_', { map: { eu: 're' } })),
+  pd: () => exPD.inc.map(i => adopt(i, 'd_')),
+  adelanto: () => exAd.inc.map(i => adopt(i, 'd_')),
+  pid: () => exPID.inc.map(i => adopt(i, 'd_')),
+  adatr: () => exAA.inc.map(i => adopt(i, 'd_', i.k === 'd' ? { q: (P, h) => `Atraso: la ${h.tx('K_v')} requerida (${P.M} veces la ${h.tx('K_v')} sin compensar del inciso de referencia), la razón ${h.tx('z_{at}/p_{at}')} que falta y el cero ${h.tx('z_{at}')}.` } : null))
+};
+const SEC_D = { pi: 'Diseño: PI ideal', atraso: 'Diseño: compensador de atraso', pd: 'Diseño: PD ideal', adelanto: 'Diseño: compensador de adelanto', pid: 'Diseño: PID (primero el PD, luego el PI)', adatr: 'Diseño: adelanto y luego atraso' };
+/* verificación con la simulación: el primer inciso lleva la gráfica */
+/* metas sin los valores de la referencia (son respuestas de incisos anteriores) */
+const meta16 = (P, h) => { const k = P.meta.k, os = `${h.tx(`\\%OS \\le ${h.n(P.os)}\\,\\%`)}`;
+  const two = k === 'ts' ? `${h.tx(`T_s \\le T_{s,\\text{sin}}/${P.Fx}`)}` : k === 'tp' ? `${h.tx(`T_p \\le ${P.f < 0.6 ? '\\tfrac12' : '\\tfrac23'}T_{p,\\text{sin}}`)}`
+    : k === 'e' ? `error a la rampa ${P.M} veces menor que sin compensar` : k === 'e0' ? 'error cero al escalón' : '';
+  return `<p><b>${two ? 'Metas' : 'Meta'}:</b> sobrepaso ${os}${two ? ` y ${two} (con los valores sin compensar de la referencia)` : ''}.</p>`; };
+const simQ = (P, h) => `${meta16(P, h)}${figStep(P.si, P)}<p>Con el diseño final, la simulación del modelo completo da la respuesta de arriba. Sobrepaso obtenido: ${h.tx('\\%OS = \\dfrac{c_{max} - c_{final}}{c_{final}}\\cdot100')}.</p>`;
+
+const completo = {
+  id: 'completo', tema: 16, t: 'Problema completo (P1–P7)', d: 'De principio a fin: referencia, diseño, verificación con la simulación y Simulink.',
+  casos: [1, 2, 3, 4, 5, 6, 7],
+  gen(r, tarea){
+    const n = tarea === true ? 1 : tarea;
+    let P;
+    for (let g = 0; g < 40; g++) {
+      if (n) P = n === 1 ? genP(r, true) : GENS[PRAC[n]](r, true);
+      else { const t = r.pick(['p', 'p', 'pi', 'atraso', 'pd', 'adelanto', 'pid', 'adatr']); P = t === 'p' ? genP(r, false) : GENS[t](r, false); if (P.caso) continue; }
+      P.si = simStep(P.F, P.K);
+      if (n) break;
+      const v2 = P.meta.k === 'ts' ? P.si.ts : P.meta.k === 'tp' ? P.si.tp : P.meta.k === 'os' ? P.si.os : P.err.e;
+      const rs = [P.si.os / P.os, P.meta.v ? v2 / P.meta.v : 0];
+      if (rs.every(x => Math.abs(x - 1.01) > 0.006 && Math.abs(x - 1.05) > 0.006) && P.si.os > 0.3) break;
+    }
+    P.tE = Math.min(P.si.H, Math.max(P.si.ts * 1.35, P.si.tp * 3));
+    return P;
+  },
+  enun: (P, h) => `<p><b>${P.caso ? `Práctica ${P.caso.slice(1)}` : 'Variante'} · ${TN16[P.tipo]}.</b> Sistema con realimentación unitaria:</p>${h.tx(GTeX(P), true)}<p>${pide(P, h)}</p><p class="en-mut">Resuélvelo de principio a fin en el orden del reporte: <b>referencia</b> sin compensar, <b>diseño</b>, <b>verificación</b> con la simulación y <b>Simulink</b>. Cada parte usa tus resultados anteriores donde se puede (con arrastre); los valores que el diseño necesita de una búsqueda numérica (la K re‑buscada) vienen en el inciso.</p>`,
+  inc: [],
+  incOf(P){
+    const ref = R16.map(i => Object.assign({}, i));
+    let mid, ver;
+    if (P.tipo === 'p') {
+      mid = R16p.map(i => Object.assign({}, i));
+      ver = [adopt(verifsim.inc[0], 's_', { q: simQ, sec: 'Verificación con la simulación' }), adopt(verifsim.inc[1], 's_'), Object.assign({}, R16pAj)];
+    } else {
+      mid = D16[P.tipo](); mid[0].sec = SEC_D[P.tipo];
+      ver = pickInc(verifpol, ['a', 'b', 'c']).map(i => adopt(i, 'v_'));
+      ver[0].sec = 'Verificación: ecuación final y polos';
+      ver = ver.concat(verifsim.inc.map((i, j) => adopt(i, 's_', j ? null : { q: simQ, sec: 'Verificación con la simulación y ajuste' })));
+    }
+    const sl = pickInc(simulink, ['e', 'f']).map(i => adopt(i, 'l_'));
+    sl[0].sec = 'Simulink: medir el error';
+    return ref.concat(mid, ver, sl).map((i, j) => Object.assign(i, { k: String.fromCharCode(97 + j) }));
+  }
+};
+
 /* orden: por tema (la página los agrupa por tema) */
 export const EJ = [polos, plano, ecuacion, ejereal, asint, ruptura, routh, zeta, angulo, magnitud, lazo, transitoria, error,
-  exPI, exAtr, exPD, exAd, exPID, exAA, verifpol, verifsim, simulink];
+  exPI, exAtr, exPD, exAd, exPID, exAA, verifpol, verifsim, simulink, completo];
 export const byId = id => EJ.find(e => e.id === id);
