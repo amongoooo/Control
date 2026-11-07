@@ -878,6 +878,32 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - `reportes/Reporte_P1-P7.docx.enc` actualizado (mismo PIN; se comprobó descifrando). `reportes.pdf` = 164 págs.,
   `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:128,p7:146}`.
 
+## Hecho (v57): Práctica 5 del Word llenada con el formato de la P1–P4
+
+- Mismo formato que la P4 (v56). La P5 sí trae incisos: «→ respuesta» (a → III · Paso 5, Tₛ = 1.143 s; b → IV · d), libro) y «↑ inciso»
+  en esos títulos (funciones `inciso()` y `h2q()` dentro de `p5.py`). P1–P4 y P6–P7 del Word no cambiaron (comparado elemento por elemento).
+- Generador: `herramientas/word/num5.py`, `p5.py`, `p5calc.py`; `python3 assemble.py in/word/document.xml out/word/document.xml 5`.
+  9 figuras (1 Simulink con Transfer Fcn [1 10]/[1 pc], 2 LGDR, 3 escalón ref., 4 LGDR con adelanto, 5 escalón sin comp./libro/ajustado,
+  6 Command Window, 7 error a rampa, 8 ajuste %OS vs ζ_d con `fzero`, 9 Scope) y Tablas 1–13 (Tabla 7, 8, 9, 11 y 12 con libro y ajustado).
+- Números: ζ = 0.5169, σ = 3.5 fijo, s₀ = −3.5 ± j5.7959, K_ref = 45.84, Tₛ = 1.143 (sim. 1.161), K_v 6.549, e = 0.1527. Libro: s_d = −10.5 ± j17.388,
+  ∠ = −130.86° → θ_p = 49.14°, p_c = 25.54, K = 476.2, p₃ = −11.541 (r₃ = +0.2095, no cancelado), sim. 21.07 % ✗ / Tₛ 0.390 (casi), e 0.0375.
+  Ajuste (σ_d y cero fijos, bisección en ζ_d): ζ_d = 0.6274, s_d = −10.5 ± j13.033, p_c = 27.00, K = 364.1, p₃ = −12.997 (r₃ 0.4768),
+  15.00 % / Tₛ 0.362 s / t_p 0.213, e = 0.0519. Pruebas ζ_d 0.55/0.60/0.65 → 19.05/16.33/13.97 %.
+- `reportes/Reporte_P1-P7.docx.enc` actualizado (mismo PIN; comprobado descifrando). `reportes.pdf` = 171 págs.,
+  `REP_PDF={p1:2,p2:29,p3:57,p4:84,p5:111,p6:136,p7:154}`. Conversión como en v47/v50 (`libreoffice-math`, `docx-ecuaciones.py`,
+  imágenes a 1600 px, `*` → `∗`). En LibreOffice evitar `\t{Re}` (sale ℜ) y ecuaciones largas en dos columnas (se cortan).
+
+## Plan aprobado: apartado «Entrenar» (después de los Word de P5–P7)
+
+- El usuario aprobó todo lo recomendado: calculadora **propia** con las funciones útiles de la fx‑991CW (pantalla natural, complejos,
+  EQN polinomios 2–4, SOLVE, historial/Ans/memorias, pegar resultado en la respuesta), variantes aleatorias además del caso de la tarea,
+  tolerancia ±1 % con calificación con arrastre, modo práctica (solución por inciso) y modo examen (al final).
+- Seguir en HTML (sin React), pero el código nuevo en archivos aparte (`entrenar/*.js`, módulos ES cargados al abrir la pestaña).
+- Ejercicios por tema (16): polos/ceros/tipo en plano, ecuación característica, eje real, asíntotas, ruptura, Routh, ζ y recta, ángulo,
+  magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
+  problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
+  5 temas 13–15 · 6 examen, variantes, repaso de errores.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
