@@ -1043,6 +1043,20 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright a 390×844 y 1440×900/720 (claro/oscuro): las mismas pruebas de v63 + Solver desde Ecuación, extremos, tipo de
   tabla; consola limpia.
 
+## Hecho (v65): calculadora en «Comprueba», AC y OFF/ON como la calculadora real
+
+- **Botón en los recuadros «Comprueba»** de Teoría (`[data-chk]`): el script de v62 los observa (IntersectionObserver; vuelve a buscar
+  recuadros nuevos con un MutationObserver sobre `#teoria`) y `window.__lgdrCcSync()` decide el botón (v3 ya no lo toca, solo llama a esa
+  función): con evaluación en pantalla va junto a «∑ Formulario» como antes; solo con «Comprueba», va solo a la derecha (`.cc-fab.solo`).
+  «→ Respuesta» también escribe en las casillas `.cnum input` de «Comprueba» (la última tocada o la primera vacía del recuadro visible).
+- **AC** (y ON con la calculadora encendida) = `clearAll()`: borra la pantalla y todos los resultados (historial); Ans y las variables
+  A–F, x, y, z, M se conservan, como en la Casio.
+- **SHIFT AC (OFF)** ya no cierra el panel: apaga la calculadora (`.lc-off`, pantalla apagada «Apagada · presiona ON»), borra historial,
+  expresión y «Deshacer» (no se guarda); con la calculadora apagada solo responde **ON**, que la vuelve a encender en la app que estaba.
+  El ✕ sigue cerrando el panel. `calc.js?v=4`.
+- Probado con Playwright a 390×844 y 1440×900: botón en «Comprueba» de la sección 1, «→ Respuesta 3» escribe 6, AC deja el historial en 0 y
+  Ans = 6, OFF/ON (Ans se conserva), teclas sin efecto mientras está apagada; consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

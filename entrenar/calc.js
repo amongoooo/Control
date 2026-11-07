@@ -590,6 +590,10 @@ const CSS=`
 .lc-tb td.n{color:var(--lcdm);text-align:center;font-size:10.5px;width:1%}
 .lc-tb td.sel{background:var(--lcdi);color:var(--lcd)}
 .lc-tbv{position:sticky;bottom:-6px;background:var(--lcd);border-top:1.5px solid var(--lcdi);padding:4px 2px;margin-top:4px;text-align:right;font-size:17px;white-space:nowrap;overflow-x:auto;scrollbar-width:none}
+.lc.lc-off .lc-lcd{background:#a7ad9f}
+.lc.lc-off .lc-lcd>*{visibility:hidden}
+.lc.lc-off .lc-lcd::after{content:"Apagada · presiona ON";position:absolute;inset:0;display:grid;place-items:center;font:600 12px var(--f-body,system-ui);color:rgba(0,0,0,.28);letter-spacing:.04em}
+.lc.lc-off .lc-bar>.lc-a{display:none}
 .lc-bar{flex:none;display:flex;align-items:center;gap:6px;padding:6px 10px 2px;min-height:34px;flex-wrap:wrap}
 .lc-a{border:1px solid #4a515d;background:var(--b1);color:#e5e7eb;font:600 12px var(--f-body,system-ui);padding:4px 10px;border-radius:999px;cursor:pointer;min-height:28px}
 .lc-a:hover{border-color:#9aa3b2}
@@ -790,7 +794,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   /* ---------- teclado en pantalla */
   root.addEventListener('pointerdown',e=>{ if(e.target.closest('button,[data-k]')) e.preventDefault(); try{ root.focus({preventScroll:true}); }catch(err){} });
   $('[data-kp]').addEventListener('click',e=>{ const b=e.target.closest('[data-a]'); if(!b) return;
-    let a=b.dataset.a; if(a==='@shift'){ setMod(!shift,false); return; }
+    let a=b.dataset.a; if(off){ key(a); return; } if(a==='@shift'){ setMod(!shift,false); return; }
     if(shift&&b.dataset.s) a=b.dataset.s;
     setMod(false,false); if(a[0]==='!'){ say(NOTHAVE[a]||'No disponible',true); return; } key(a); });
   function setMod(s,a){ shift=s; alpha=a; root.classList.toggle('s-sh',s); root.classList.toggle('s-al',a); renderSt(); }
@@ -798,7 +802,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   /* ---------- teclado físico */
   const PK={Enter:'@exe',Backspace:'@del',Delete:'@del',ArrowLeft:'@left',ArrowRight:'@right',ArrowUp:'@up',ArrowDown:'@down',Home:'@home0',End:'@end0',
     '+':'+','-':'−','*':'×','/':'÷','^':'#pow','(':'(',')':')',',':',',';':',','!':'!','.':'.','s':'sin(','c':'cos(','t':'tan(','l':'ln(','r':'#sqrt','p':'π','e':'e','i':'i','j':'i','x':'x','y':'y','z':'z','a':'Ans','M':'M','A':'A','B':'B','C':'C','D':'D','E':'E','F':'F','f':'f(','g':'g(','=':'='};
-  root.addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return;
+  root.addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey||off) return;
     if(e.key==='Escape'){ if(ov.length||/^(solve|eqn|eqedit|eqsol|tbrng|tbl|fdef)$/.test(view)||(view==='calc'&&hsel>=0)){ e.preventDefault(); e.stopPropagation(); key('@back'); } return; }
     let a=/^[0-9]$/.test(e.key)?e.key:PK[e.key]; if(!a) return;
     if(a==='='&&!(view==='solve'&&sFld===0)) a='@exe';
@@ -836,15 +840,19 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     return false; }
 
   /* ---------- despacho de teclas */
+  /* AC / ON: borran la pantalla y los resultados (historial); las variables y Ans se quedan, como en la calculadora */
+  function clearAll(){ snap(); main.clear(); fresh=false; last=null; hsel=-1; errMsg=''; if(S.hist.length){ S.hist=[]; histDirty=true; save(); } }
+  let off=false;
   function key(a){
+    if(off){ if(a==='@on'){ off=false; root.classList.remove('lc-off'); goApp(S.app); render(); say('Encendida'); } return; }
+    if(a==='@off'){ ovAll(); setMod(false,false); clearAll(); undo.length=0; off=true; root.classList.add('lc-off'); render(); clearTimeout(msgT); msgEl.textContent=''; return; }
     if(a==='@home'){ openHome(); return render(); }
     if(a==='@set'){ openSettings(); return render(); }
     if(a==='@cat'){ openCatalog(); return render(); }
     if(a==='@var'){ openVar(false); return render(); }
     if(a==='@fun'){ openFun(); return render(); }
     if(a==='@tools'){ openTools(); return render(); }
-    if(a==='@off'){ if(opts.onClose) opts.onClose(); else say('Aquí no se puede apagar'); return; }
-    if(a==='@on'){ ovAll(); if(view==='calc'){ snap(); main.clear(); fresh=false; last=null; hsel=-1; } else goApp(S.app); return render(); }
+    if(a==='@on'){ ovAll(); if(view==='calc') clearAll(); else goApp(S.app); return render(); }
     if(a==='@pgup'||a==='@pgdn'){ const d=a==='@pgup'?-1:1, o=ov[ov.length-1];
       if(o&&!o.home){ o.sel=Math.max(0,Math.min(o.items.length-1,o.sel+5*d)); return render(); }
       if(view==='tbl'&&tRows){ tSel=[Math.max(0,Math.min(tRows.length-1,tSel[0]+8*d)),tSel[1]]; return render(); }
@@ -862,7 +870,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
     if((a==='@ok'||a==='@exe')&&hsel>=0){ const h=S.hist[hsel]; if(h){ snap(); main.set(h.n?cloneRow(h.n):fromText(h.e)); fresh=false; hsel=-1; } return; }
     if(a==='@exe'||a==='@approx'){ equals(a==='@approx'); return; }
     if(a==='@ok'){ return; }
-    if(a==='@ac'){ snap(); main.clear(); fresh=false; last=null; hsel=-1; return; }
+    if(a==='@ac'){ clearAll(); return; }
     if(a==='@back'){ if(hsel>=0){ hsel=-1; return; } if(fresh){ fresh=false; main.end(); } return; }
     edKey(main,a); };
   function histMove(d){ const H=histShown(); if(!H.length) return; let k=hsel<0?(d<0?H.length:-1):H.indexOf(hsel);
@@ -875,7 +883,7 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
       last=z; lastF=approx?{dec:true}:null; S.ans=z2a(z); S.hist.push({e:s,n:E.json(),r:z2a(z),a:S.app}); if(S.hist.length>40) S.hist.splice(0,S.hist.length-40); save();
       fresh=true; histDirty=true; }
     catch(e){ if(!e.calc) throw e; last=null; fresh=false; errMsg=errText(e); if(e.pos!=null) E.at(e.pos); } }
-  let errMsg='', histDirty=true;
+  var errMsg='', histDirty=true;
   function memAdd(sg){ const z=pick(); if(!z){ say('Primero calcula algo',true); return; } const m=a2z(S.mem.M); S.mem.M=z2a(sg>0?add(m,z):sub(m,z)); save(); say('M = '+txt(a2z(S.mem.M))); }
 
   /* ---------- SOLVE (TOOLS de Calcular) */
