@@ -196,3 +196,24 @@ html.en-ex #entrenar{padding-bottom:70px}
 .en-fig .fg-s{fill:var(--warn);stroke:var(--surface);stroke-width:1.5}
 .en-fig .fg-s.c{opacity:.55}
 .en-fig .fg-sl{font:600 13px var(--f-body);fill:var(--warn)}
+/* ---- etapa 5 · temas 13–15: botones P2…P7, respuesta al escalón y modelo de Simulink ---- */
+.en-casos button{min-height:34px;padding:0 11px}
+.en-fig .fg-c{stroke:var(--accent);stroke-width:2.2;fill:none;stroke-linejoin:round}
+.en-fig .fg-b{fill:var(--ok);opacity:.14}
+.en-fig .fg-f{stroke:var(--muted);stroke-width:1.1;stroke-dasharray:4 3;fill:none}
+.en-fig .fg-m{fill:var(--warn);stroke:var(--surface);stroke-width:1.5}
+.en-fig .fg-t{font:600 11.5px var(--f-body);fill:var(--ink)}
+.en-fig.sl{max-width:680px;display:block}
+.en-fig .sl-sc{overflow-x:auto;-webkit-overflow-scrolling:touch;contain:inline-size;width:100%}
+.en-fig .sl-sc svg{min-width:520px;max-height:none}
+.en-fig .sl-b{fill:var(--surface);stroke:var(--ink);stroke-width:1.4}
+.en-fig .sl-t{font:600 12.5px var(--f-body);fill:var(--ink)}
+.en-fig .sl-s{font:10.5px var(--f-body);fill:var(--muted)}
+.en-fig .sl-w{stroke:var(--ink);stroke-width:1.3;fill:none}
+.en-fig .sl-a{fill:var(--ink)}
+/* opciones largas (etapa 5): una debajo de otra, a todo lo ancho */
+.en-cf.en-lg{grid-template-columns:1fr;width:100%}
+.en-cf.en-lg .en-fi{display:flex;align-items:flex-start;gap:8px;width:100%}
+.en-seg.v{display:flex;flex-direction:column;flex:1;min-width:0;max-width:460px}
+.en-seg.v button{text-align:left;white-space:normal;line-height:1.3;padding:8px 12px;min-height:40px}
+.en-seg.v button+button{border-top:1px solid var(--line)}

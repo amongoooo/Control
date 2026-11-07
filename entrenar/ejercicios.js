@@ -1,9 +1,10 @@
 /* =====================================================================================================
-   entrenar/ejercicios.js · Temas y ejercicios del apartado «Entrenar» · etapas 1–4
+   entrenar/ejercicios.js · Temas y ejercicios del apartado «Entrenar» · etapas 1–5
    ---------------------------------------------------------------------------------------------------
    TEMAS = los 16 temas del plan (los que aún no tienen ejercicios dicen en qué etapa llegan).
    EJ    = ejercicios. Etapa 4: temas 1–12 con el piloto de la P1 (caso de la tarea: G = K/[(s+2)(s+4)(s+6)], %OS = 10,
            s₀ = −2.0285 ± j2.7677, K = 45.53) y variantes aleatorias (3 polos enteros, a veces uno en el origen o un cero).
+   Etapa 5: temas 13–15 (compensadores con el caso de P2–P7, verificación y Simulink; ver más abajo).
    Formato de un ejercicio (lo lee entrenar/motor.js):
      {id, tema, t, d, gen(r, tarea) → P, enun(P,h) → html,
       inc:[{k, q(P,h) → html, tools?: (P) → [{app:'eqn', n} | {app:'solve'} | {app:'cplx'}], f:[{k, l, u, tol, abs, ang}] | (P) → [...], sol(P, A) → {campo: valor}, how(P, A, S, h) → html}]}
@@ -608,6 +609,584 @@ const transitoria = {
   ]
 };
 
+/* =====================================================================================================
+   Etapa 5 · temas 13–15: compensadores con el caso de cada práctica (P2 PI · P3 atraso · P4 PD · P5 adelanto · P6 PID ·
+   P7 adelanto‑atraso) y variantes; verificación del diseño (ecuación final, polos, modos y simulación contra las metas)
+   y Simulink (parámetros de los bloques). Los números se calculan aquí mismo (nada escrito a mano):
+     · el par sin compensar es el primer cruce de la condición de ángulo con la recta de ζ (design);
+     · con PI / atraso / PI del PID / atraso del adelanto‑atraso se re‑busca el cruce más cercano al punto anterior (nearDesign);
+     · la respuesta al escalón es la suma exacta de modos (residuos de C(s) = T(s)/s), como MATLAB.
+   En los temas 14 y 15 el «caso de la tarea» se elige (P2…P7): motor.build pasa a gen el número de práctica (semilla −N).
+   ===================================================================================================== */
+const osOf = z => 100 * Math.exp(-z * Math.PI / Math.sqrt(Math.max(1e-12, 1 - z * z)));
+const tanD = a => Math.tan(a / DEG);
+const n360 = a => ((a % 360) + 360) % 360;
+const prodN = a => a.reduce((x, v) => x * v, 1);
+const nz = a => a.filter(v => Math.abs(v) > 1e-12);
+const fullOf = (P, g) => ({ p: P.p.concat(g.p), z: P.z.concat(g.z) });
+const typeOf = F => F.p.filter(v => Math.abs(v) < 1e-12).length;
+const closedPoly = (F, K) => padd(polyOf(F.p), pscale(polyOf(F.z), K));
+const cA = (a, b) => ({ re: a.re + b.re, im: a.im + b.im });
+const cM = (a, b) => ({ re: a.re * b.re - a.im * b.im, im: a.re * b.im + a.im * b.re });
+const cD = (a, b) => { const m = b.re * b.re + b.im * b.im; return { re: (a.re * b.re + a.im * b.im) / m, im: (a.im * b.re - a.re * b.im) / m }; };
+const cEv = (c, w) => c.reduce((s, v) => cA(cM(s, w), { re: v, im: 0 }), { re: 0, im: 0 });
+const cAbs = w => Math.hypot(w.re, w.im);
+const near = (a, list, e) => list.some(v => Math.abs(v - a) < (e || 0.05));
+/* cruce de la condición de ángulo sobre la recta de ζ más cercano a σ = sg0 (para re‑buscar tras agregar un dipolo o el PI) */
+function nearDesign(F, z, sg0){
+  const tn = Math.tan(Math.acos(z)), f = sg => wrap(angG(F, { re: -sg, im: sg * tn }) + 180), h = sg0 / 3000;
+  const bis = (lo, hi) => { let flo = f(lo); for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2, fm = f(m); if (Math.sign(fm) === Math.sign(flo)) { lo = m; flo = fm; } else hi = m; } const s = (lo + hi) / 2; return { sg: s, wd: s * tn }; };
+  for (let d = 0; d < sg0 * 0.95; d += h) for (const [a, b] of [[sg0 + d, sg0 + d + h], [sg0 - d - h, sg0 - d]]) {
+    if (a <= 0) continue; const fa = f(a), fb = f(b);
+    if (Math.sign(fa) !== Math.sign(fb) && Math.abs(fa) < 90 && Math.abs(fb) < 90) return bis(a, b);
+  }
+  return null;
+}
+/* tipo del lazo y error: q = orden de la entrada (0 escalón, 1 rampa) → {kk (Kp o Kv), e} */
+function errOf(F, K, q){
+  const n = typeOf(F), kk = n === q ? K * prodN(nz(F.z)) / prodN(nz(F.p)) : n > q ? Infinity : 0;
+  return { kk, e: n > q ? 0 : n < q ? Infinity : q === 0 ? 1 / (1 + kk) : 1 / kk };
+}
+/* respuesta al escalón del lazo cerrado K·N/(D + K·N): suma exacta de modos → {c(t), cf, cmax, tp, ts, os, pl, rs} */
+function simStep(F, K){
+  const N = polyOf(F.z), D = polyOf(F.p), Dt = padd(D, pscale(N, K)), dD = pder(Dt), pl = roots(Dt);
+  const cf = K * peval(N, 0) / peval(Dt, 0);
+  const rs = pl.map(p => cD(cM({ re: K, im: 0 }, cEv(N, p)), cM(p, cEv(dD, p))));
+  const c = t => pl.reduce((a, p, i) => { const e = Math.exp(p.re * t); return a + e * (rs[i].re * Math.cos(p.im * t) - rs[i].im * Math.sin(p.im * t)); }, cf);
+  const slow = Math.min(...pl.map(p => Math.abs(p.re))), H = Math.min(14 / slow, 4000), n = 40000, dt = H / n, band = 0.02 * Math.abs(cf);
+  let im = 0, cm = -Infinity, last = -1;
+  for (let i = 0; i <= n; i++) { const v = c(i * dt); if (v > cm) { cm = v; im = i; } if (Math.abs(v - cf) > band) last = i; }
+  let a = Math.max(0, (im - 1) * dt), b = (im + 1) * dt;
+  for (let k = 0; k < 80; k++) { const m1 = a + (b - a) / 3, m2 = b - (b - a) / 3; if (c(m1) < c(m2)) a = m1; else b = m2; }
+  const tp = (a + b) / 2, cmax = c(tp);
+  let ts = 0; if (last >= 0) { let lo = last * dt, hi = (last + 1) * dt; for (let k = 0; k < 60; k++) { const m = (lo + hi) / 2; if (Math.abs(c(m) - cf) > band) lo = m; else hi = m; } ts = (lo + hi) / 2; }
+  return { c, cf, cmax, tp, ts, os: cmax > cf ? (cmax - cf) / cf * 100 : 0, pl, rs, H };
+}
+/* lo común de un diseño terminado (lo usan los temas 14 y 15) */
+function finDesign(P){
+  P.q = typeOf(P);                                    // tipo de la planta: 0 → error al escalón, 1 → a la rampa
+  P.F = fullOf(P, P.gc);
+  P.ch = closedPoly(P.F, P.K); P.cl = roots(P.ch);
+  P.err = errOf(P.F, P.K, P.q);
+  P.view = viewPts(P.cl);
+  return P;
+}
+function viewPts(ws, xs){
+  const all = ws.map(w => w.re).concat(xs || [], [0]);
+  let x0 = Math.floor(Math.min(...all)) - 1; const x1 = 1; if (x1 - x0 < 6) x0 = x1 - 6;
+  const ym = Math.max(2, Math.ceil(Math.max(0, ...ws.map(w => Math.abs(w.im)))) + 1);
+  return { x0, x1, y0: -ym, y1: ym };
+}
+const stable = P => P.cl.every(w => w.re < -0.02);
+const TN = { pi: 'PI ideal', atraso: 'compensador de atraso', pd: 'PD ideal', adelanto: 'compensador de adelanto', pid: 'PID (PD + PI)', adatr: 'compensador de adelanto‑atraso' };
+/* Gc(s) en TeX */
+const gcTeX = (g, h, pre) => `${pre || 'G_c(s)'} = ${g.p.length ? `\\dfrac{${g.z.map(fac).join('')}}{${g.p.map(fac).join('')}}` : g.z.map(fac).join('')}`;
+const s0TeX = (s, h, nm) => `${nm || 's_0'} = ${h.n(s.re)} \\pm j${h.n(s.im)}`;
+const sinComp = (P, h) => `<p>Sin compensar (temas 7–9), con ${h.tx(`\\zeta = ${h.n(P.z_)}`)} (${h.f(P.os)} % de sobrepaso) el par dominante está en ${h.tx(s0TeX(P.s0, h))} con ${h.tx(`K = ${h.n(P.K0)}`)}.</p>`;
+const sdOf = A => ({ re: -A.sg, im: A.wd });
+const rootsTeX = (ws, h) => ws.filter(w => w.im >= 0).map(w => w.im ? `${h.n(w.re)} \\pm j${h.n(w.im)}` : h.n(w.re)).join(',\\; ');
+
+/* ------------------------------------------------------------------ generadores de cada tipo (caso de la práctica o variante) */
+function genPI(r, tarea){
+  for (let g = 0; g < 300; g++) {
+    const P = tarea ? { caso: 'P2', p: [1, 2, 10], z: [], z_: 0.174, zc: 0.1 }
+      : { p: r.distinct(3, 1, 10).sort((a, b) => a - b), z: [], z_: r.step(0.2, 0.6, 0.01), zc: r.pick([0.05, 0.1, 0.1, 0.2, 0.2, 0.5, 1]) };
+    if (near(P.zc, P.p)) continue;
+    P.tipo = 'pi'; P.os = osOf(P.z_);
+    const d = design(P, P.z_); if (!d || (!tarea && (d.wd < 0.6 || d.wd > 9))) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0);
+    P.kp = P.K0 / prodN(P.p); P.eu = 1 / (1 + P.kp);
+    P.gc = { z: [P.zc], p: [0] };
+    const d2 = nearDesign(fullOf(P, P.gc), P.z_, d.sg); if (!d2 || (!tarea && Math.abs(d2.sg / d.sg - 1) > 0.3)) continue;
+    P.sd = { re: -d2.sg, im: d2.wd }; P.K = magK(fullOf(P, P.gc), P.sd);
+    P.dang = argD(P.s0, P.zc) - argD(P.s0, 0); P.dmag = dist(P.s0, P.zc) / dist(P.s0, 0);
+    finDesign(P); if (!tarea && !stable(P)) continue;
+    P.meta = { k: 'e0', v: 0 }; P.blk = [{ k: 'tf', z: P.zc, p: 0, l: 'PI' }];
+    return P;
+  }
+  return genPI(r, true);
+}
+function genAtr(r, tarea){
+  for (let g = 0; g < 300; g++) {
+    let P;
+    if (tarea) P = { caso: 'P3', p: [0, 7], z: [], os: 15, M: 20, pc: 0.01 };
+    else { const a = r.int(3, 12); P = { p: r() < 0.3 ? [0, a, a + r.int(2, 8)] : [0, a], z: [], os: r.int(5, 20), M: r.pick([5, 10, 15, 20, 25]), pc: r.pick([0.005, 0.01, 0.01, 0.02]) }; }
+    P.tipo = 'atraso'; P.z_ = zetaOf(P.os); P.zc = +(P.M * P.pc).toFixed(6);
+    const d = design(P, P.z_); if (!d || (!tarea && (d.wd < 0.6 || d.wd > 9 || P.zc > 0.15 * d.sg))) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0);
+    P.kv = P.K0 / prodN(nz(P.p)); P.eu = 1 / P.kv;
+    P.gc = { z: [P.zc], p: [P.pc] };
+    P.dang = argD(P.s0, P.zc) - argD(P.s0, P.pc); P.dmag = dist(P.s0, P.zc) / dist(P.s0, P.pc);
+    const d2 = nearDesign(fullOf(P, P.gc), P.z_, d.sg); if (!d2 || (!tarea && Math.abs(d2.sg / d.sg - 1) > 0.3)) continue;
+    P.sd = { re: -d2.sg, im: d2.wd }; P.K = magK(fullOf(P, P.gc), P.sd);
+    finDesign(P); if (!tarea && !stable(P)) continue;
+    P.kvc = P.err.kk; P.ec = P.err.e; P.mj = P.eu / P.ec;
+    P.meta = { k: 'e', v: P.eu / P.M }; P.blk = [{ k: 'tf', z: P.zc, p: P.pc, l: 'Atraso' }];
+    return P;
+  }
+  return genAtr(r, true);
+}
+/* punto de diseño con T_s (o T_p) más chico y el mismo ζ */
+function fastPoint(P, d, F){ const tn = Math.tan(Math.acos(P.z_)); P.ts0 = 4 / d.sg; P.tsd = P.ts0 / F; P.sgd = 4 / P.tsd; P.wdd = P.sgd * tn; P.sdd = { re: -P.sgd, im: P.wdd }; }
+function genPD(r, tarea){
+  for (let g = 0; g < 300; g++) {
+    let P;
+    if (tarea) P = { caso: 'P4', p: [0, 4, 6], z: [], os: 16, Fx: 3 };
+    else { const p = r.distinct(3, 1, 10).sort((a, b) => a - b); if (r() < 0.6) p[0] = 0; P = { p, z: [], os: r.int(5, 20), Fx: r.pick([2, 3]) }; }
+    P.tipo = 'pd'; P.z_ = zetaOf(P.os);
+    const d = design(P, P.z_); if (!d || (!tarea && (d.wd < 0.5 || d.wd > 6))) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0);
+    fastPoint(P, d, P.Fx);
+    P.gA = angG(P, P.sdd); P.tz = n360(-180 - P.gA); if (P.tz <= 4 || P.tz >= 176) continue;
+    P.zc = P.sgd + P.wdd / tanD(P.tz); if (!(P.zc > 0.2) || near(P.zc, P.p, 0.1)) continue;
+    P.gc = { z: [P.zc], p: [] }; P.sd = P.sdd; P.K = magK(fullOf(P, P.gc), P.sd);
+    finDesign(P); if (!tarea && !stable(P)) continue;
+    P.meta = { k: 'ts', v: P.tsd }; P.blk = [{ k: 'pd', P: P.zc, D: 1 }];
+    return P;
+  }
+  return genPD(r, true);
+}
+function genAd(r, tarea){
+  for (let g = 0; g < 300; g++) {
+    let P;
+    if (tarea) P = { caso: 'P5', p: [0, 7], z: [], os: 15, Fx: 3, zl: 10 };
+    else { const a = r.int(2, 10); P = { p: r() < 0.3 ? [0, a, a + r.int(2, 8)] : [0, a], z: [], os: r.int(5, 20), Fx: r.pick([2, 3]) }; }
+    P.tipo = 'adelanto'; P.z_ = zetaOf(P.os);
+    const d = design(P, P.z_); if (!d || (!tarea && (d.wd < 0.5 || d.wd > 6))) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0);
+    fastPoint(P, d, P.Fx);
+    if (!tarea) { P.zl = r.int(Math.max(1, Math.ceil(0.4 * P.sgd)), Math.max(2, Math.ceil(1.2 * P.sgd))); if (near(P.zl, P.p, 0.5)) continue; }
+    P.sA = angG({ p: P.p, z: P.z.concat([P.zl]) }, P.sdd); P.tp = P.sA + 180; if (!(P.tp > 3 && P.tp < 87)) continue;
+    P.pc = P.sgd + P.wdd / tanD(P.tp); if (P.pc <= P.zl + 0.3 || P.pc > 60) continue;
+    P.gc = { z: [P.zl], p: [P.pc] }; P.sd = P.sdd; P.K = magK(fullOf(P, P.gc), P.sd);
+    finDesign(P); if (!tarea && !stable(P)) continue;
+    P.meta = { k: 'ts', v: P.tsd }; P.blk = [{ k: 'tf', z: P.zl, p: P.pc, l: 'Adelanto' }];
+    return P;
+  }
+  return genAd(r, true);
+}
+function genPID(r, tarea){
+  for (let g = 0; g < 300; g++) {
+    let P;
+    if (tarea) P = { caso: 'P6', p: [3, 6, 10], z: [8], os: 20, f: 2 / 3, zpi: 0.5 };
+    else { const p = r.distinct(3, 1, 12).sort((a, b) => a - b); let z; do { z = r.int(1, 12); } while (p.includes(z));
+      P = { p, z: [z], os: r.int(8, 25), f: r.pick([2 / 3, 0.5]), zpi: r.pick([0.1, 0.2, 0.5, 1]) }; if (near(P.zpi, P.p)) continue; }
+    P.tipo = 'pid'; P.z_ = zetaOf(P.os); const tn = Math.tan(Math.acos(P.z_));
+    const d = design(P, P.z_); if (!d || (!tarea && (d.wd < 0.8 || d.wd > 12))) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0);
+    P.kp0 = P.K0 * prodN(P.z) / prodN(P.p); P.eu = 1 / (1 + P.kp0);
+    P.tp0 = Math.PI / d.wd; P.tpd = P.f * P.tp0; P.wdd = Math.PI / P.tpd; P.sgd = P.wdd / tn; P.sdd = { re: -P.sgd, im: P.wdd };
+    P.gA = angG(P, P.sdd); P.tz = n360(-180 - P.gA); if (P.tz <= 3 || P.tz >= 176) continue;
+    P.zpd = P.sgd + P.wdd / tanD(P.tz); if (!(P.zpd > 0.3) || P.zpd > 200 || near(P.zpd, P.p.concat(P.z), 0.1)) continue;
+    P.Kpd = magK({ p: P.p, z: P.z.concat([P.zpd]) }, P.sdd);
+    P.gc = { z: [P.zpd, P.zpi], p: [0] };
+    const d2 = nearDesign(fullOf(P, P.gc), P.z_, P.sgd); if (!d2 || (!tarea && Math.abs(d2.sg / P.sgd - 1) > 0.25)) continue;
+    P.sd = { re: -d2.sg, im: d2.wd }; P.K = magK(fullOf(P, P.gc), P.sd);
+    P.K1 = P.K * (P.zpd + P.zpi); P.K2 = P.K * P.zpd * P.zpi; P.K3 = P.K;
+    finDesign(P); if (!tarea && !stable(P)) continue;
+    P.meta = { k: 'tp', v: P.tpd }; P.blk = [{ k: 'pid', P: P.zpd + P.zpi, I: P.zpd * P.zpi, D: 1 }];
+    return P;
+  }
+  return genPID(r, true);
+}
+function genAA(r, tarea){
+  for (let g = 0; g < 300; g++) {
+    let P;
+    if (tarea) P = { caso: 'P7', p: [0, 7], z: [], os: 20, Fx: 2, zl: 3, M: 10, pa: 0.01 };
+    else { const a = r.int(3, 10); P = { p: r() < 0.25 ? [0, a, a + r.int(2, 8)] : [0, a], z: [], os: r.int(10, 25), Fx: r.pick([2, 3]), M: r.pick([5, 10]), pa: r.pick([0.005, 0.01]) }; }
+    P.tipo = 'adatr'; P.z_ = zetaOf(P.os);
+    const d = design(P, P.z_); if (!d || (!tarea && (d.wd < 0.5 || d.wd > 6))) continue;
+    P.s0 = { re: -d.sg, im: d.wd }; P.K0 = magK(P, P.s0); P.kv0 = P.K0 / prodN(nz(P.p));
+    fastPoint(P, d, P.Fx);
+    if (!tarea) { P.zl = r.int(1, Math.max(1, Math.round(0.8 * P.sgd))); if (near(P.zl, P.p, 0.5)) continue; }
+    P.sA = angG({ p: P.p, z: P.z.concat([P.zl]) }, P.sdd); P.tp = P.sA + 180; if (!(P.tp > 3 && P.tp < 87)) continue;
+    P.pad = P.sgd + P.wdd / tanD(P.tp); if (P.pad <= P.zl + 0.3 || P.pad > 60) continue;
+    P.Kad = magK({ p: P.p.concat([P.pad]), z: P.z.concat([P.zl]) }, P.sdd); P.kva = P.Kad * P.zl / (prodN(nz(P.p)) * P.pad);
+    P.kvr = P.M * P.kv0; P.rt = P.kvr / P.kva; P.za = P.rt * P.pa; if (!tarea && (P.rt < 1.5 || P.za > 0.15 * P.sgd)) continue;
+    P.dang = argD(P.sdd, P.za) - argD(P.sdd, P.pa);
+    P.gc = { z: [P.zl, P.za], p: [P.pad, P.pa] };
+    const d2 = nearDesign(fullOf(P, P.gc), P.z_, P.sgd); if (!d2 || (!tarea && Math.abs(d2.sg / P.sgd - 1) > 0.25)) continue;
+    P.sd = { re: -d2.sg, im: d2.wd }; P.K = magK(fullOf(P, P.gc), P.sd);
+    finDesign(P); if (!tarea && !stable(P)) continue;
+    P.meta = { k: 'ts', v: P.ts0 / P.Fx }; P.blk = [{ k: 'tf', z: P.zl, p: P.pad, l: 'Adelanto' }, { k: 'tf', z: P.za, p: P.pa, l: 'Atraso' }];
+    return P;
+  }
+  return genAA(r, true);
+}
+const GENS = { pi: genPI, atraso: genAtr, pd: genPD, adelanto: genAd, pid: genPID, adatr: genAA };
+const PRAC = { 2: 'pi', 3: 'atraso', 4: 'pd', 5: 'adelanto', 6: 'pid', 7: 'adatr' };
+/* temas 14 y 15: tarea = número de práctica (true → P2); variante = un tipo al azar (ok(P) filtra) */
+function caso(r, tarea, ok){
+  if (tarea) return GENS[PRAC[tarea === true ? 2 : tarea] || 'pi'](r, true);
+  for (let g = 0; g < 60; g++) { const P = GENS[r.pick(Object.keys(GENS))](r, false); if (P && !P.caso && (!ok || ok(P))) return P; }
+  return GENS.pi(r, true);
+}
+/* figura del plano con planta + compensador y un punto */
+const figComp = (P, s, sl) => { const pp = P.p.concat(P.gc ? P.gc.p : []), zz = P.z.concat(P.gc ? P.gc.z : []);
+  return figS(viewFor({ p: pp.filter(v => v < 40), z: zz.filter(v => v < 40) }, s), { p: pp.filter(v => v < 40), z: zz.filter(v => v < 40), s0: s, conj: true, sl, alt: 'Planta y compensador en el plano s' }); };
+/* diseño con T_s menor: inciso común (T_s sin compensar, σ_d y ω_d) */
+const incFast = (k) => ({ k, q: (P, h) => `Punto de diseño: mismo ${h.tx('\\zeta')} y ${h.tx('T_s')} ${P.Fx} veces menor. Calcula ${h.tx('T_s = 4/\\sigma')} sin compensar, ${h.tx('\\sigma_d = 4/T_{s,d}')} y ${h.tx('\\omega_d = \\sigma_d\\tan\\theta')} (con ${h.tx('\\theta = \\cos^{-1}\\zeta')}).`,
+  f: [{ k: 'ts', l: 'T<sub>s</sub> sin compensar', u: 's' }, { k: 'sg', l: 'σ<sub>d</sub>' }, { k: 'wd', l: 'ω<sub>d</sub>' }],
+  sol: P => ({ ts: P.ts0, sg: P.sgd, wd: P.wdd }),
+  how: (P, A, S, h) => h.tx(`\\begin{aligned}T_s &= \\dfrac{4}{${h.n(-P.s0.re)}} = ${h.n(S.ts)}\\ \\text{s} \\\\ T_{s,d} &= \\dfrac{${h.n(S.ts)}}{${P.Fx}} = ${h.n(S.ts / P.Fx)}\\ \\text{s} \\\\ \\sigma_d &= \\dfrac{4}{T_{s,d}} = ${h.n(S.sg)} \\\\ \\omega_d &= ${h.n(S.sg)}\\tan(${h.n(Math.acos(P.z_) * DEG)}^\\circ) = ${h.n(S.wd)}\\end{aligned}`, true) + `<p>Punto de diseño: ${h.tx(s0TeX({ re: -S.sg, im: S.wd }, h, 's_d'))}.</p>` });
+/* ángulos de todos los polos y ceros a s_d, en TeX */
+const angList = (F, s, h) => F.p.map(p => `-\\angle${sfacT(p).replace('s_0', 's_d')}`).concat(F.z.map(z => `+\\angle${sfacT(z).replace('s_0', 's_d')}`)).join(' ').replace(/^\+/, '');
+const angVals = (F, s, h) => F.p.map(p => `-{${h.n(argD(s, p))}}^\\circ`).concat(F.z.map(z => `+{${h.n(argD(s, z))}}^\\circ`)).join(' ').replace(/^\+/, '');
+
+/* ------------------------------------------------------------------ tema 13 · PI ideal (P2) */
+const exPI = {
+  id: 'pi', tema: 13, t: 'Compensador PI ideal (P2)', d: 'Error sin compensar, aporte del dipolo en s₀, tipo nuevo y polos con el PI.',
+  gen: (r, t) => genPI(r, !!t),
+  enun: (P, h) => `<p>Con realimentación unitaria y</p>${h.tx(GTeX(P), true)}${sinComp(P, h)}<p>Para quitar el error al escalón sin cambiar el transitorio se agrega un <b>PI ideal</b> (un polo en el origen y un cero muy cerca):</p>${h.tx(`G_c(s) = \\dfrac{s + ${h.n(P.zc)}}{s}`, true)}${figComp(P, P.s0)}`,
+  inc: [
+    { k: 'a', q: (P, h) => `Sin compensar: constante de posición ${h.tx('K_p = \\lim_{s\\to0} KG(s)')} y error ante un escalón unitario.`,
+      f: [{ k: 'kp', l: 'K<sub>p</sub>' }, { k: 'eu', l: 'e(∞)' }],
+      sol: P => ({ kp: P.kp, eu: P.eu }),
+      how: (P, A, S, h) => h.tx(`K_p = \\dfrac{${h.n(P.K0)}}{${P.p.join('\\cdot')}} = ${h.n(S.kp)},\\qquad e(\\infty) = \\dfrac{1}{1 + K_p} = ${h.n(S.eu)}`, true) },
+    { k: 'b', q: (P, h) => `¿Cuánto aporta el PI en ${h.tx('s_0')}? ${h.tx('\\angle G_c(s_0) = \\angle(s_0 + z_c) - \\angle s_0')} y ${h.tx('|G_c(s_0)| = |s_0 + z_c|/|s_0|')}.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'an', l: '∠G<sub>c</sub>(s₀)', u: '°', ang: true }, { k: 'mg', l: '|G<sub>c</sub>(s₀)|' }],
+      sol: P => ({ an: P.dang, mg: P.dmag }),
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}\\angle G_c &= \\angle(${h.n(P.s0.re + P.zc)} + j${h.n(P.s0.im)}) - \\angle(${h.n(P.s0.re)} + j${h.n(P.s0.im)}) \\\\ &= {${h.n(argD(P.s0, P.zc))}}^\\circ - {${h.n(argD(P.s0, 0))}}^\\circ = {${h.n(S.an)}}^\\circ \\\\ |G_c| &= \\dfrac{${h.n(dist(P.s0, P.zc))}}{${h.n(dist(P.s0, 0))}} = ${h.n(S.mg)}\\end{aligned}`, true)}<p>En la calculadora (Complejos): <code>arg(${n4(P.s0.re + P.zc)}+${n4(P.s0.im)}i)−arg(${n4(P.s0.re)}+${n4(P.s0.im)}i)</code>.</p>` },
+    { k: 'c', q: () => '¿El PI casi no mueve el LGDR cerca de s₀? (regla: |∠G<sub>c</sub>| < 5° y 0.9 < |G<sub>c</sub>| < 1.1)',
+      f: [{ k: 'ok', l: 'Respuesta', ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No' }] }],
+      sol: (P, A) => ({ ok: Math.abs(A.an) < 5 && A.mg > 0.9 && A.mg < 1.1 ? 1 : 0 }),
+      how: (P, A, S, h) => `<p>${S.ok ? `Sí: el dipolo aporta ${h.f(A.an)}° y una magnitud ≈ 1, así que el par casi no se mueve y la K casi no cambia. Por eso se pone el cero <b>muy cerca</b> del origen.` : `No: el cero está demasiado lejos del origen (aporta ${h.f(A.an)}°). El par se mueve y el transitorio cambia; habría que acercar el cero al origen.`}</p>` },
+    { k: 'd', q: () => 'Con el PI: tipo del sistema y error ante el escalón unitario.',
+      f: [{ k: 'N', l: 'Tipo', abs: 0.01 }, { k: 'ec', l: 'e(∞)' }],
+      sol: P => ({ N: typeOf(P.F), ec: P.err.e }),
+      how: () => '<p>El PI agrega un polo en el origen: el tipo sube de 0 a 1, ' + 'K<sub>p</sub> → ∞ y e(∞) = 1/(1 + ∞) = <b>0</b>.</p>' },
+    { k: 'e', q: (P, h) => `Re‑buscando sobre la recta de ζ con el PI se obtiene ${h.tx(`K = ${h.n(P.K)}`)}. Ubica los <b>polos de lazo cerrado</b> (×), raíces de ${h.tx('s\\,D(s) + K(s + z_c) = 0')}.`,
+      tools: P => [{ app: 'eqn', n: P.ch.length - 1 }],
+      f: P => [{ k: 'cl', l: 'Polos de T(s)', plane: true, marks: ['x'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 6, view: P.view }],
+      sol: P => ({ cl: P.cl.map(w => ({ t: 'x', re: w.re, im: w.im })) }),
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}&s${den(P.p)} + ${h.n(P.K)}(s + ${h.n(P.zc)}) \\\\ &= ${polyTeX(P.ch, h)} = 0\\end{aligned}`, true)}<p>Raíces: ${h.tx(rootsTeX(P.cl, h))}. El polo real junto al cero del PI es el modo lento que deja el PI.</p>` }
+  ]
+};
+
+/* ------------------------------------------------------------------ tema 13 · atraso (P3) */
+const exAtr = {
+  id: 'atraso', tema: 13, t: 'Compensador de atraso (P3)', d: 'Error a la rampa, razón z_c/p_c, aporte del dipolo, mejora y polos.',
+  gen: (r, t) => genAtr(r, !!t),
+  enun: (P, h) => `<p>Con realimentación unitaria y</p>${h.tx(GTeX(P), true)}${sinComp(P, h)}<p>Se pide <b>mejorar ${P.M} veces el error ante una rampa</b> con un compensador de atraso con el polo en ${h.tx(`p_c = ${h.n(P.pc)}`)}:</p>${h.tx('G_c(s) = \\dfrac{s + z_c}{s + p_c}', true)}`,
+  inc: [
+    { k: 'a', q: (P, h) => `Sin compensar: ${h.tx('K_v = \\lim_{s\\to0} sKG(s)')} y error ante la rampa unitaria.`,
+      f: [{ k: 'kv', l: 'K<sub>v</sub>' }, { k: 'eu', l: 'e(∞)' }],
+      sol: P => ({ kv: P.kv, eu: P.eu }),
+      how: (P, A, S, h) => h.tx(`K_v = \\dfrac{${h.n(P.K0)}}{${nz(P.p).join('\\cdot')}} = ${h.n(S.kv)},\\qquad e(\\infty) = \\dfrac{1}{K_v} = ${h.n(S.eu)}`, true) },
+    { k: 'b', q: (P, h) => `El atraso multiplica ${h.tx('K_v')} por ${h.tx('z_c/p_c')} (si K casi no cambia). ¿Qué razón hace falta y dónde va el cero?`,
+      f: [{ k: 'rt', l: 'z<sub>c</sub>/p<sub>c</sub>' }, { k: 'zc', l: 'z<sub>c</sub>' }],
+      sol: P => ({ rt: P.M, zc: P.zc }),
+      how: (P, A, S, h) => `${h.tx(`\\dfrac{z_c}{p_c} = ${P.M} \\;\\Rightarrow\\; z_c = ${P.M}\\cdot${h.n(P.pc)} = ${h.n(S.zc)}`, true)}<p>${h.tx(`G_c(s) = \\dfrac{s + ${h.n(S.zc)}}{s + ${h.n(P.pc)}}`)}: los dos quedan muy cerca del origen comparados con ${h.tx(`\\sigma = ${h.n(-P.s0.re)}`)}.</p>` },
+    { k: 'c', q: (P, h) => `Aporte del dipolo en el punto sin compensar ${h.tx('s_0')}: ${h.tx('\\angle G_c(s_0)')} y ${h.tx('|G_c(s_0)|')}.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'an', l: '∠G<sub>c</sub>(s₀)', u: '°', ang: true }, { k: 'mg', l: '|G<sub>c</sub>(s₀)|' }],
+      sol: (P, A) => ({ an: argD(P.s0, A.zc) - argD(P.s0, P.pc), mg: dist(P.s0, A.zc) / dist(P.s0, P.pc) }),
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}\\angle G_c &= {${h.n(argD(P.s0, A.zc))}}^\\circ - {${h.n(argD(P.s0, P.pc))}}^\\circ = {${h.n(S.an)}}^\\circ \\\\ |G_c| &= \\dfrac{${h.n(dist(P.s0, A.zc))}}{${h.n(dist(P.s0, P.pc))}} = ${h.n(S.mg)}\\end{aligned}`, true)}<p>Unos cuantos grados y magnitud ≈ 1: el LGDR casi no se mueve cerca de ${h.tx('s_0')}.</p>` },
+    { k: 'd', q: (P, h) => `Re‑buscando sobre la recta de ζ con el atraso se obtiene ${h.tx(`K = ${h.n(P.K)}`)}. Calcula la ${h.tx('K_v')} nueva, el error y la mejora ${h.tx('e_{\\text{sin}}/e_{\\text{con}}')}.`,
+      f: [{ k: 'kvc', l: 'K<sub>v</sub> nueva' }, { k: 'ec', l: 'e(∞)' }, { k: 'mj', l: 'Mejora', u: '×' }],
+      sol: (P, A) => { const kvc = P.K * A.zc / (prodN(nz(P.p)) * P.pc), ec = 1 / kvc; return { kvc, ec, mj: A.eu / ec }; },
+      how: (P, A, S, h) => h.tx(`\\begin{aligned}K_v &= \\dfrac{${h.n(P.K)}\\cdot${h.n(A.zc)}}{${nz(P.p).join('\\cdot')}\\cdot${h.n(P.pc)}} = ${h.n(S.kvc)} \\\\ e(\\infty) &= \\dfrac{1}{${h.n(S.kvc)}} = ${h.n(S.ec)} \\\\ \\text{mejora} &= \\dfrac{${h.n(A.eu)}}{${h.n(S.ec)}} = ${h.n(S.mj)}\\end{aligned}`, true) + `<p>Casi ${P.M}: un poco menos porque la K re‑buscada es algo menor que la de antes.</p>` },
+    { k: 'e', q: (P, h) => `Ubica los <b>polos de lazo cerrado</b> con ${h.tx(`K = ${h.n(P.K)}`)} (×).`,
+      tools: P => [{ app: 'eqn', n: P.ch.length - 1 }],
+      f: P => [{ k: 'cl', l: 'Polos de T(s)', plane: true, marks: ['x'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 6, view: P.view }],
+      sol: P => ({ cl: P.cl.map(w => ({ t: 'x', re: w.re, im: w.im })) }),
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}&${den(P.p)}(s + ${h.n(P.pc)}) + ${h.n(P.K)}(s + ${h.n(P.zc)}) \\\\ &= ${polyTeX(P.ch, h)} = 0\\end{aligned}`, true)}<p>Raíces: ${h.tx(rootsTeX(P.cl, h))}. El polo real pegado al cero del atraso casi se cancela (su modo es lento pero pequeño).</p>` }
+  ]
+};
+
+/* ------------------------------------------------------------------ tema 13 · PD ideal (P4) */
+const exPD = {
+  id: 'pd', tema: 13, t: 'Compensador PD ideal (P4)', d: 'Punto de diseño más rápido, ángulo que falta, cero del PD, K y ganancias K_P y K_D.',
+  gen: (r, t) => genPD(r, !!t),
+  enun: (P, h) => `<p>Con realimentación unitaria y</p>${h.tx(GTeX(P), true)}${sinComp(P, h)}<p>Se pide el <b>mismo sobrepaso con un tiempo de asentamiento ${P.Fx} veces menor</b> usando un PD ideal ${h.tx('G_c(s) = s + z_c')}.</p>`,
+  inc: [
+    incFast('a'),
+    { k: 'b', q: (P, h) => `Suma de ángulos de la planta en ${h.tx('s_d')}: ${h.tx('\\angle G(s_d)')}, y el ángulo ${h.tx('\\theta_z')} que debe aportar el cero para llegar a −180° (entre 0° y 180°).`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'g', l: '∠G(s<sub>d</sub>)', u: '°', ang: true }, { k: 'tz', l: 'θ<sub>z</sub>', u: '°', ang: true }],
+      sol: (P, A) => { const g = angG(P, sdOf(A)); return { g, tz: n360(-180 - g) }; },
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}\\angle G(s_d) &= ${angList(P, sdOf(A), h)} \\\\ &= ${angVals(P, sdOf(A), h)} = {${h.n(S.g)}}^\\circ \\\\ \\theta_z &= -180^\\circ - ({${h.n(S.g)}}^\\circ) = {${h.n(S.tz)}}^\\circ\\end{aligned}`, true)}` },
+    { k: 'c', q: (P, h) => `Ubicación del cero: ${h.tx('z_c = \\sigma_d + \\dfrac{\\omega_d}{\\tan\\theta_z}')}.`, f: [{ k: 'zc', l: 'z<sub>c</sub>' }],
+      sol: (P, A) => ({ zc: A.sg + A.wd / tanD(A.tz) }),
+      how: (P, A, S, h) => `${h.tx(`z_c = ${h.n(A.sg)} + \\dfrac{${h.n(A.wd)}}{\\tan(${h.n(A.tz)}^\\circ)} = ${h.n(A.sg)} ${A.tz > 90 ? '-' : '+'} ${h.n(Math.abs(A.wd / tanD(A.tz)))} = ${h.n(S.zc)}`, true)}<p>${A.tz > 90 ? 'Con θ<sub>z</sub> > 90° la tangente es negativa: el cero queda a la <b>derecha</b> de σ<sub>d</sub>.' : 'Con θ<sub>z</sub> < 90° el cero queda a la izquierda de σ<sub>d</sub>.'}</p>` },
+    { k: 'd', q: (P, h) => `Ubica en el plano el <b>cero del PD</b> (○) y el <b>punto de diseño</b> ${h.tx('s_d')} (•; su conjugado se pone solo).`,
+      f: P => [{ k: 'pt', l: 'Cero y s<sub>d</sub>', plane: true, marks: ['o', '.'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 4, view: viewPts([P.sdd], [-P.zc, ...P.p.map(v => -v)]) }],
+      sol: (P, A) => ({ pt: [{ t: 'o', re: -A.zc, im: 0 }, { t: '.', re: -A.sg, im: A.wd }, { t: '.', re: -A.sg, im: -A.wd }] }),
+      how: (P, A, S, h) => `<p>Cero en ${h.tx(`s = -${h.n(A.zc)}`)} y ${h.tx(s0TeX({ re: -A.sg, im: A.wd }, h, 's_d'))}. Con el cero, el LGDR se dobla hacia la izquierda y pasa por ${h.tx('s_d')}.</p>` },
+    { k: 'e', q: (P, h) => `Ganancia con la condición de magnitud: ${h.tx('K = \\dfrac{\\prod|s_d + p_i|}{|s_d + z_c|\\prod|s_d + z_i|}')}.`,
+      tools: () => [{ app: 'cplx' }], f: [{ k: 'K', l: 'K' }],
+      sol: (P, A) => ({ K: magK({ p: P.p, z: P.z.concat([A.zc]) }, sdOf(A)) }),
+      how: (P, A, S, h) => { const s = sdOf(A); return h.tx(`K = \\dfrac{${P.p.map(p => h.n(dist(s, p))).join('\\cdot')}}{${h.n(dist(s, A.zc))}} = ${h.n(S.K)}`, true); } },
+    { k: 'f', q: (P, h) => `Forma de ganancias del controlador: ${h.tx('K(s + z_c) = K_D\\,s + K_P')}.`,
+      f: [{ k: 'kp', l: 'K<sub>P</sub>' }, { k: 'kd', l: 'K<sub>D</sub>' }],
+      sol: (P, A) => ({ kp: A.K * A.zc, kd: A.K }),
+      how: (P, A, S, h) => `${h.tx(`K_D = K = ${h.n(S.kd)},\\qquad K_P = K\\,z_c = ${h.n(A.K)}\\cdot${h.n(A.zc)} = ${h.n(S.kp)}`, true)}<p>El PD ideal amplifica el ruido de alta frecuencia (|K·G<sub>c</sub>(jω)| crece con ω).</p>` }
+  ]
+};
+
+/* ------------------------------------------------------------------ tema 13 · adelanto (P5) */
+const exAd = {
+  id: 'adelanto', tema: 13, t: 'Compensador de adelanto (P5)', d: 'Punto de diseño, ángulo que aporta el polo, ubicación del polo y K.',
+  gen: (r, t) => genAd(r, !!t),
+  enun: (P, h) => `<p>Con realimentación unitaria y</p>${h.tx(GTeX(P), true)}${sinComp(P, h)}<p>Se pide el <b>mismo sobrepaso con un tiempo de asentamiento ${P.Fx} veces menor</b> con un compensador de adelanto con el cero en ${h.tx(`-${h.n(P.zl)}`)}:</p>${h.tx(`G_c(s) = \\dfrac{s + ${h.n(P.zl)}}{s + p_c}`, true)}`,
+  inc: [
+    incFast('a'),
+    { k: 'b', q: (P, h) => `Suma de ángulos de la planta <b>y del cero</b> del adelanto en ${h.tx('s_d')}, y el ángulo ${h.tx('\\theta_p')} que debe restar el polo para llegar a −180°.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'g', l: '∑∠ en s<sub>d</sub>', u: '°', ang: true }, { k: 'tp', l: 'θ<sub>p</sub>', u: '°', ang: true }],
+      sol: (P, A) => { const g = angG({ p: P.p, z: P.z.concat([P.zl]) }, sdOf(A)); return { g, tp: n360(g + 180) }; },
+      how: (P, A, S, h) => { const F = { p: P.p, z: P.z.concat([P.zl]) }; return `${h.tx(`\\begin{aligned}\\textstyle\\sum\\angle &= ${angList(F, sdOf(A), h)} \\\\ &= ${angVals(F, sdOf(A), h)} = {${h.n(S.g)}}^\\circ \\\\ \\theta_p &= {${h.n(S.g)}}^\\circ + 180^\\circ = {${h.n(S.tp)}}^\\circ\\end{aligned}`, true)}<p>El polo resta θ<sub>p</sub>: ${h.tx(`${h.n(S.g)} - ${h.n(S.tp)} = -180`)}.</p>`; } },
+    { k: 'c', q: (P, h) => `Ubicación del polo: ${h.tx('p_c = \\sigma_d + \\dfrac{\\omega_d}{\\tan\\theta_p}')}.`, f: [{ k: 'pc', l: 'p<sub>c</sub>' }],
+      sol: (P, A) => ({ pc: A.sg + A.wd / tanD(A.tp) }),
+      how: (P, A, S, h) => h.tx(`p_c = ${h.n(A.sg)} + \\dfrac{${h.n(A.wd)}}{\\tan(${h.n(A.tp)}^\\circ)} = ${h.n(S.pc)}`, true) },
+    { k: 'd', q: () => 'Ubica el <b>polo (×)</b> y el <b>cero (○)</b> del compensador sobre el eje real.',
+      f: P => [{ k: 'pz', l: 'Compensador', plane: true, marks: ['x', 'o'], real: true, snap: 0.5, abs: 0.25, tol: 0.02, max: 4, view: { x0: Math.floor(-P.pc) - 2, x1: 1, y0: -1.5, y1: 1.5 } }],
+      sol: (P, A) => ({ pz: [{ t: 'x', re: -A.pc, im: 0 }, { t: 'o', re: -P.zl, im: 0 }] }),
+      how: (P, A, S, h) => `<p>Polo en ${h.tx(`-${h.n(A.pc)}`)} y cero en ${h.tx(`-${h.n(P.zl)}`)}: el cero queda más cerca del origen que el polo, por eso aporta ángulo positivo neto (adelanto).</p>` },
+    { k: 'e', q: (P, h) => `Ganancia: ${h.tx('K = \\dfrac{\\prod|s_d + p_i|\\cdot|s_d + p_c|}{|s_d + z_c|}')}.`,
+      tools: () => [{ app: 'cplx' }], f: [{ k: 'K', l: 'K' }],
+      sol: (P, A) => ({ K: magK({ p: P.p.concat([A.pc]), z: P.z.concat([P.zl]) }, sdOf(A)) }),
+      how: (P, A, S, h) => { const s = sdOf(A); return `${h.tx(`K = \\dfrac{${P.p.concat([A.pc]).map(p => h.n(dist(s, p))).join('\\cdot')}}{${h.n(dist(s, P.zl))}} = ${h.n(S.K)}`, true)}<p>Falta verificar con la simulación: el tercer polo del lazo cerrado puede cambiar el sobrepaso (tema 14).</p>`; } }
+  ]
+};
+
+/* ------------------------------------------------------------------ tema 13 · PID (P6) */
+const exPID = {
+  id: 'pid', tema: 13, t: 'Compensador PID (P6)', d: 'PD para el T_p, PI para el error y ganancias K_P, K_I, K_D.',
+  gen: (r, t) => genPID(r, !!t),
+  enun: (P, h) => `<p>Con realimentación unitaria y</p>${h.tx(GTeX(P), true)}${sinComp(P, h)}<p>Se pide el mismo sobrepaso, un <b>tiempo pico ${P.f < 0.6 ? 'de la mitad' : 'de 2/3'}</b> del actual y <b>error cero al escalón</b>. Se diseña primero un PD ideal ${h.tx('s + z_{PD}')} y luego un PI ideal ${h.tx(`\\dfrac{s + ${h.n(P.zpi)}}{s}`)}.</p>`,
+  inc: [
+    { k: 'a', q: (P, h) => `Tiempo pico sin compensar ${h.tx('T_p = \\pi/\\omega_d')}, la ${h.tx('\\omega_d')} del punto de diseño (${h.tx(`T_{p,d} = ${P.f < 0.6 ? '\\tfrac12' : '\\tfrac23'}T_p`)}) y su ${h.tx('\\sigma_d = \\omega_d/\\tan\\theta')}.`,
+      f: [{ k: 'tp', l: 'T<sub>p</sub> sin compensar', u: 's' }, { k: 'wd', l: 'ω<sub>d</sub>' }, { k: 'sg', l: 'σ<sub>d</sub>' }],
+      sol: P => ({ tp: P.tp0, wd: P.wdd, sg: P.sgd }),
+      how: (P, A, S, h) => h.tx(`\\begin{aligned}T_p &= \\dfrac{\\pi}{${h.n(P.s0.im)}} = ${h.n(S.tp)}\\ \\text{s} \\\\ T_{p,d} &= ${h.n(P.f)}\\cdot${h.n(S.tp)} = ${h.n(P.tpd)}\\ \\text{s} \\\\ \\omega_d &= \\dfrac{\\pi}{T_{p,d}} = ${h.n(S.wd)} \\\\ \\sigma_d &= \\dfrac{${h.n(S.wd)}}{\\tan(${h.n(Math.acos(P.z_) * DEG)}^\\circ)} = ${h.n(S.sg)}\\end{aligned}`, true) },
+    { k: 'b', q: (P, h) => `${h.tx('\\angle G(s_d)')} (planta con su cero) y el ángulo ${h.tx('\\theta_z')} que debe aportar el cero del PD.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'g', l: '∠G(s<sub>d</sub>)', u: '°', ang: true }, { k: 'tz', l: 'θ<sub>z</sub>', u: '°', ang: true }],
+      sol: (P, A) => { const g = angG(P, sdOf(A)); return { g, tz: n360(-180 - g) }; },
+      how: (P, A, S, h) => h.tx(`\\begin{aligned}\\angle G(s_d) &= ${angList(P, sdOf(A), h)} \\\\ &= ${angVals(P, sdOf(A), h)} = {${h.n(S.g)}}^\\circ \\\\ \\theta_z &= -180^\\circ - ({${h.n(S.g)}}^\\circ) = {${h.n(S.tz)}}^\\circ\\end{aligned}`, true) },
+    { k: 'c', q: (P, h) => `Cero del PD ${h.tx('z_{PD} = \\sigma_d + \\omega_d/\\tan\\theta_z')} y la ganancia del diseño PD ${h.tx('K_{PD}')} (condición de magnitud).`,
+      f: [{ k: 'zpd', l: 'z<sub>PD</sub>' }, { k: 'kpd', l: 'K<sub>PD</sub>' }],
+      sol: (P, A) => { const zpd = A.sg + A.wd / tanD(A.tz); return { zpd, kpd: magK({ p: P.p, z: P.z.concat([zpd]) }, sdOf(A)) }; },
+      how: (P, A, S, h) => { const s = sdOf(A); return h.tx(`\\begin{aligned}z_{PD} &= ${h.n(A.sg)} + \\dfrac{${h.n(A.wd)}}{\\tan(${h.n(A.tz)}^\\circ)} = ${h.n(S.zpd)} \\\\ K_{PD} &= \\dfrac{${P.p.map(p => h.n(dist(s, p))).join('\\cdot')}}{${P.z.concat([S.zpd]).map(z => h.n(dist(s, z))).join('\\cdot')}} = ${h.n(S.kpd)}\\end{aligned}`, true); } },
+    { k: 'd', q: (P, h) => `Se agrega el PI y, re‑buscando sobre la recta de ζ, queda ${h.tx(`K = ${h.n(P.K)}`)}. Escribe el PID como ${h.tx(`K\\dfrac{(s + z_{PD})(s + ${h.n(P.zpi)})}{s} = K_P + \\dfrac{K_I}{s} + K_D s`)}.`,
+      f: [{ k: 'k1', l: 'K<sub>P</sub>' }, { k: 'k2', l: 'K<sub>I</sub>' }, { k: 'k3', l: 'K<sub>D</sub>' }],
+      sol: (P, A) => ({ k1: P.K * (A.zpd + P.zpi), k2: P.K * A.zpd * P.zpi, k3: P.K }),
+      how: (P, A, S, h) => h.tx(`\\begin{aligned}K_P &= K(z_{PD} + z_{PI}) = ${h.n(P.K)}(${h.n(A.zpd)} + ${h.n(P.zpi)}) = ${h.n(S.k1)} \\\\ K_I &= K\\,z_{PD}\\,z_{PI} = ${h.n(S.k2)} \\\\ K_D &= K = ${h.n(S.k3)}\\end{aligned}`, true) },
+    { k: 'e', q: () => 'Con el PID: tipo del sistema y error ante el escalón unitario.',
+      f: [{ k: 'N', l: 'Tipo', abs: 0.01 }, { k: 'ec', l: 'e(∞)' }],
+      sol: P => ({ N: typeOf(P.F), ec: P.err.e }),
+      how: (P, A, S, h) => `<p>Sin compensar ${h.tx(`K_p = ${h.n(P.kp0)}`)} y ${h.tx(`e(\\infty) = ${h.n(P.eu)}`)}. El PI del PID agrega el polo en el origen: tipo 1 y ${h.tx('e(\\infty) = 0')}.</p>` }
+  ]
+};
+
+/* ------------------------------------------------------------------ tema 13 · adelanto‑atraso (P7) */
+const exAA = {
+  id: 'adatr', tema: 13, t: 'Compensador de adelanto‑atraso (P7)', d: 'Adelanto para el T_s, atraso para el error y su efecto en s_d.',
+  gen: (r, t) => genAA(r, !!t),
+  enun: (P, h) => `<p>Con realimentación unitaria y</p>${h.tx(GTeX(P), true)}${sinComp(P, h)}<p>Se pide el mismo sobrepaso, un <b>T<sub>s</sub> ${P.Fx} veces menor</b> y el <b>error a la rampa ${P.M} veces menor</b>. Primero un adelanto con el cero en ${h.tx(`-${h.n(P.zl)}`)} y luego un atraso con el polo en ${h.tx(`-${h.n(P.pa)}`)}:</p>${h.tx(`G_c(s) = \\dfrac{s + ${h.n(P.zl)}}{s + p_{ad}}\\cdot\\dfrac{s + z_{at}}{s + ${h.n(P.pa)}}`, true)}`,
+  inc: [
+    { k: 'a', q: (P, h) => `Punto de diseño: ${h.tx(`\\sigma_d = ${P.Fx}\\sigma`)} (porque ${h.tx('T_s = 4/\\sigma')}) y ${h.tx('\\omega_d = \\sigma_d\\tan\\theta')}.`,
+      f: [{ k: 'sg', l: 'σ<sub>d</sub>' }, { k: 'wd', l: 'ω<sub>d</sub>' }],
+      sol: P => ({ sg: P.sgd, wd: P.wdd }),
+      how: (P, A, S, h) => h.tx(`\\sigma_d = ${P.Fx}\\cdot${h.n(-P.s0.re)} = ${h.n(S.sg)},\\qquad \\omega_d = ${h.n(S.sg)}\\tan(${h.n(Math.acos(P.z_) * DEG)}^\\circ) = ${h.n(S.wd)}`, true) },
+    { k: 'b', q: (P, h) => `Adelanto: ángulo ${h.tx('\\theta_p')} que debe restar su polo (suma de planta + cero, más 180°) y su ubicación ${h.tx('p_{ad}')}.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'tp', l: 'θ<sub>p</sub>', u: '°', ang: true }, { k: 'pad', l: 'p<sub>ad</sub>' }],
+      sol: (P, A) => { const tp = n360(angG({ p: P.p, z: P.z.concat([P.zl]) }, sdOf(A)) + 180); return { tp, pad: A.sg + A.wd / tanD(tp) }; },
+      how: (P, A, S, h) => { const F = { p: P.p, z: P.z.concat([P.zl]) }; return h.tx(`\\begin{aligned}\\textstyle\\sum\\angle &= ${angVals(F, sdOf(A), h)} = {${h.n(angG(F, sdOf(A)))}}^\\circ \\\\ \\theta_p &= {${h.n(S.tp)}}^\\circ \\\\ p_{ad} &= ${h.n(A.sg)} + \\dfrac{${h.n(A.wd)}}{\\tan(${h.n(S.tp)}^\\circ)} = ${h.n(S.pad)}\\end{aligned}`, true); } },
+    { k: 'c', q: (P, h) => `Ganancia con el adelanto ${h.tx('K_{ad}')} (magnitud en ${h.tx('s_d')}) y su ${h.tx('K_v')}.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'kad', l: 'K<sub>ad</sub>' }, { k: 'kva', l: 'K<sub>v</sub>' }],
+      sol: (P, A) => { const kad = magK({ p: P.p.concat([A.pad]), z: P.z.concat([P.zl]) }, sdOf(A)); return { kad, kva: kad * P.zl / (prodN(nz(P.p)) * A.pad) }; },
+      how: (P, A, S, h) => { const s = sdOf(A); return h.tx(`\\begin{aligned}K_{ad} &= \\dfrac{${P.p.concat([A.pad]).map(p => h.n(dist(s, p))).join('\\cdot')}}{${h.n(dist(s, P.zl))}} = ${h.n(S.kad)} \\\\ K_v &= \\dfrac{${h.n(S.kad)}\\cdot${h.n(P.zl)}}{${nz(P.p).join('\\cdot')}\\cdot${h.n(A.pad)}} = ${h.n(S.kva)}\\end{aligned}`, true); } },
+    { k: 'd', q: (P, h) => `Atraso: la ${h.tx('K_v')} requerida (${P.M} veces la sin compensar, ${h.tx(`K_v = ${h.n(P.kv0)}`)}), la razón ${h.tx('z_{at}/p_{at}')} que falta y el cero ${h.tx('z_{at}')}.`,
+      f: [{ k: 'kvr', l: 'K<sub>v</sub> requerida' }, { k: 'rt', l: 'z<sub>at</sub>/p<sub>at</sub>' }, { k: 'za', l: 'z<sub>at</sub>' }],
+      sol: (P, A) => { const kvr = P.M * P.kv0, rt = kvr / A.kva; return { kvr, rt, za: rt * P.pa }; },
+      how: (P, A, S, h) => h.tx(`\\begin{aligned}K_{v,req} &= ${P.M}\\cdot${h.n(P.kv0)} = ${h.n(S.kvr)} \\\\ \\dfrac{z_{at}}{p_{at}} &= \\dfrac{${h.n(S.kvr)}}{${h.n(A.kva)}} = ${h.n(S.rt)} \\\\ z_{at} &= ${h.n(S.rt)}\\cdot${h.n(P.pa)} = ${h.n(S.za)}\\end{aligned}`, true) },
+    { k: 'e', q: (P, h) => `¿Cuánto mueve el atraso el punto de diseño? ${h.tx('\\angle\\dfrac{s_d + z_{at}}{s_d + p_{at}}')}.`,
+      tools: () => [{ app: 'cplx' }], f: [{ k: 'an', l: '∠ del atraso', u: '°', ang: true, abs: 0.15 }],
+      sol: (P, A) => ({ an: argD(sdOf(A), A.za) - argD(sdOf(A), P.pa) }),
+      how: (P, A, S, h) => h.tx(`{${h.n(argD(sdOf(A), A.za))}}^\\circ - {${h.n(argD(sdOf(A), P.pa))}}^\\circ = {${h.n(S.an)}}^\\circ`, true) },
+    { k: 'f', q: () => '¿El atraso casi no cambia el transitorio que logró el adelanto (|∠| < 5°)?',
+      f: [{ k: 'ok', l: 'Respuesta', ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No' }] }],
+      sol: (P, A) => ({ ok: Math.abs(A.an) < 5 ? 1 : 0 }),
+      how: (P, A, S, h) => `<p>${S.ok ? 'Sí' : 'No'}: aporta ${h.f(A.an)}°. Re‑buscando con los dos compensadores queda ${h.tx(`K = ${h.n(P.K)}`)} en ${h.tx(s0TeX(P.sd, h, 's'))}; falta verificar el ${h.tx('T_s')} con la simulación (tema 14).</p>` }
+  ]
+};
+
+/* =====================================================================================================
+   Tema 14 · verificación del diseño
+   ===================================================================================================== */
+const CASOS = [2, 3, 4, 5, 6, 7];
+const designTxt = (P, h) => `<p><b>${P.caso ? 'Práctica ' + P.caso.slice(1) + ' · ' : ''}${TN[P.tipo]}.</b> Con realimentación unitaria:</p>${h.tx(GTeX(P), true)}${h.tx(gcTeX(P.gc, h), true)}${h.tx(`K = ${h.n(P.K)}`, true)}`;
+/* modos: el par dominante (el complejo más cercano a s_d) y el polo real más lento */
+function modes(P){
+  const S = simStep(P.F, P.K), idx = S.pl.map((w, i) => i);
+  const cx = idx.filter(i => S.pl[i].im > 1e-9).sort((a, b) => Math.hypot(S.pl[a].re - P.sd.re, S.pl[a].im - P.sd.im) - Math.hypot(S.pl[b].re - P.sd.re, S.pl[b].im - P.sd.im));
+  const re = idx.filter(i => !S.pl[i].im).sort((a, b) => S.pl[b].re - S.pl[a].re);
+  return { S, dom: cx[0], slow: re[0], nCx: cx.length };
+}
+const verifpol = {
+  id: 'verifpol', tema: 14, t: 'Verificación: ecuación final, polos y modos', d: 'Ecuación del lazo cerrado, polos en el plano, estabilidad, ζ obtenido y peso del modo extra.',
+  casos: CASOS,
+  gen(r, tarea){
+    const P = caso(r, tarea, Q => { const m = modes(Q); return m.nCx === 1 && m.slow != null; });
+    const m = modes(P); P.S = m.S; P.dom = m.S.pl[m.dom]; P.rd = m.S.rs[m.dom]; P.p3 = m.S.pl[m.slow].re; P.r3 = m.S.rs[m.slow].re;
+    return P;
+  },
+  enun: (P, h) => `${designTxt(P, h)}<p>El diseño buscaba el par dominante en ${h.tx(s0TeX(P.sd, h, 's_d'))}. Verifica el modelo completo (guía: «Verificación del sistema completo», pasos 1–3).</p>`,
+  inc: [
+    { k: 'a', q: (P, h) => `Ecuación característica ${h.tx('D(s)D_c(s) + K\\,N(s)N_c(s) = 0')} en forma ${h.tx(`s^{${P.ch.length - 1}} + \\dots`)}: escribe sus coeficientes.`,
+      f: P => Array.from({ length: P.ch.length - 1 }, (_, i) => { const e = P.ch.length - 2 - i; return { k: 'b' + e, l: powLbl('b', e) + (e ? ` (s<sup>${e}</sup>)` : '') }; }),
+      sol: P => { const o = {}; P.ch.slice(1).forEach((v, i) => { o['b' + (P.ch.length - 2 - i)] = v; }); return o; },
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}&${den(P.p)}${P.gc.p.map(fac).join('')} \\\\ &\\quad + ${h.n(P.K)}${P.z.concat(P.gc.z).map(fac).join('') || ''} \\\\ &= ${polyTeX(P.ch, h)}\\end{aligned}`, true)}<p>En MATLAB: <code>T = feedback(K*Gc*G, 1); [n, d] = tfdata(T, 'v')</code> → <code>d</code>.</p>` },
+    { k: 'b', q: () => 'Ubica <b>todos los polos de lazo cerrado</b> (×).',
+      tools: P => [{ app: 'eqn', n: P.ch.length - 1 }],
+      f: P => [{ k: 'cl', l: 'Polos de T(s)', plane: true, marks: ['x'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 6, view: P.view }],
+      sol: (P, A) => { const c = [1].concat(Array.from({ length: P.ch.length - 1 }, (_, i) => A['b' + (P.ch.length - 2 - i)])); return { cl: roots(c).map(w => ({ t: 'x', re: w.re, im: w.im })) }; },
+      how: (P, A, S, h) => `<p>Raíces: ${h.tx(rootsTeX(S.cl.map(w => ({ re: w.re, im: w.im })), h))}. En MATLAB: <code>pole(T)</code>.</p>` },
+    { k: 'c', q: () => '¿El lazo cerrado es estable con esa K?',
+      f: [{ k: 'st', l: 'Respuesta', ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No' }] }],
+      sol: (P, A) => { const c = [1].concat(Array.from({ length: P.ch.length - 1 }, (_, i) => A['b' + (P.ch.length - 2 - i)])); return { st: roots(c).every(w => w.re < 0) ? 1 : 0 }; },
+      how: (P, A, S, h) => `<p>${S.st ? '<b>Sí</b>: todos los polos tienen parte real negativa.' : '<b>No</b>: hay polos con parte real ≥ 0.'} (Con Routh: todos los coeficientes positivos y la primera columna sin cambios de signo.)</p>` },
+    { k: 'd', q: (P, h) => `ζ del par dominante que resultó: ${h.tx('\\zeta = \\sigma/|s|')} (el par complejo más cercano a ${h.tx('s_d')}).`,
+      f: [{ k: 'z', l: 'ζ obtenido' }],
+      sol: P => ({ z: -P.dom.re / cAbs(P.dom) }),
+      how: (P, A, S, h) => `${h.tx(`\\zeta = \\dfrac{${h.n(-P.dom.re)}}{\\sqrt{${h.n(P.dom.re)}^2 + ${h.n(P.dom.im)}^2}} = ${h.n(S.z)}`, true)}<p>El de diseño es ${h.tx(`\\zeta = ${h.n(P.z_)}`)}${Math.abs(S.z / P.z_ - 1) < 0.02 ? ': el par quedó donde se diseñó.' : '.'}</p>` },
+    { k: 'e', q: (P, h) => `MATLAB (<code>residue</code> de C(s) = T(s)/s) da el residuo del par dominante ${h.tx(`r_1 = ${h.n(P.rd.re)} ${P.rd.im < 0 ? '-' : '+'} j${h.n(Math.abs(P.rd.im))}`)} y el del polo real más lento ${h.tx(`r_3 = ${h.n(P.r3)}`)}. Escribe ese polo ${h.tx('p_3')} y la razón ${h.tx('|r_3|/|r_1|')}.`,
+      f: [{ k: 'p3', l: 'p<sub>3</sub>' }, { k: 'rr', l: '|r<sub>3</sub>|/|r<sub>1</sub>|' }],
+      sol: P => ({ p3: P.p3, rr: Math.abs(P.r3) / cAbs(P.rd) }),
+      how: (P, A, S, h) => h.tx(`p_3 = ${h.n(S.p3)},\\qquad \\dfrac{|r_3|}{|r_1|} = \\dfrac{${h.n(Math.abs(P.r3))}}{${h.n(cAbs(P.rd))}} = ${h.n(S.rr)}`, true) },
+    { k: 'f', q: () => '¿Qué dice el modo de p<sub>3</sub>? (regla de la página: si |r<sub>3</sub>| < 12 % de |r<sub>1</sub>| casi se cancela)',
+      f: [{ k: 'md', l: 'Respuesta', ch: [{ v: 1, l: 'Casi se cancela: vale el 2.º orden' }, { v: 0, l: 'Pesa: hay que simular' }] }],
+      sol: (P, A) => ({ md: A.rr < 0.12 ? 1 : 0 }),
+      how: (P, A, S, h) => { const zz = P.z.concat(P.gc.z), zn = zz.length ? zz.reduce((a, z) => Math.abs(-z - P.p3) < Math.abs(-a - P.p3) ? z : a) : null;
+        return `<p>${h.f(A.rr * 100)} % ${A.rr < 0.12 ? '< 12 %: el modo casi no aparece en la respuesta.' : '≥ 12 %: el modo se nota (sobrepaso o asentamiento distintos a los del 2.º orden), así que la simulación manda.'}${zn != null ? ` El cero más cercano está en ${h.tx(`-${h.n(zn)}`)}.` : ''}</p>`; } }
+  ]
+};
+
+/* simulación contra las metas */
+const CH3 = [{ v: 2, l: 'Cumple' }, { v: 1, l: 'Casi (≤ 5 % arriba)' }, { v: 0, l: 'No cumple' }];
+const judge = (got, meta) => meta <= 1e-12 ? (got <= 1e-6 ? 2 : 0) : got <= meta * 1.01 ? 2 : got <= meta * 1.05 ? 1 : 0;
+const metaName = k => ({ e0: 'e(∞) al escalón', e: 'e(∞) a la rampa', ts: 'T<sub>s</sub>', tp: 'T<sub>p</sub>' }[k]);
+function figStep(si, P){
+  const W = 380, H = 200, L = 30, R = 8, T = 10, B = 22, tE = P.tE;
+  const yM = Math.max(si.cmax, si.cf) * 1.15, X = t => (L + (W - L - R) * t / tE).toFixed(1), Y = v => (T + (H - T - B) * (1 - v / yM)).toFixed(1);
+  let d = ''; for (let i = 0; i <= 360; i++) { const t = tE * i / 360; d += (i ? 'L' : 'M') + X(t) + ' ' + Y(si.c(t)); }
+  let st = 0.05; for (const s of [0.05, 0.1, 0.2, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100, 200]) { st = s; if (tE / s <= 6) break; }
+  let tk = ''; for (let t = 0; t <= tE + 1e-9; t += st) tk += `<path class="fg-g" d="M${X(t)} ${T}V${H - B}"/><text x="${X(t)}" y="${H - 7}" text-anchor="middle">${n4(t)}</text>`;
+  for (let v = 0; v <= yM; v += 0.5) tk += `<text x="${L - 4}" y="${(+Y(v) + 4).toFixed(1)}" text-anchor="end">${n4(v)}</text>`;
+  const b1 = Y(si.cf * 1.02), b0 = Y(si.cf * 0.98);
+  let s = `<g class="fg-tk">${tk}</g><rect class="fg-b" x="${L}" y="${b1}" width="${W - L - R}" height="${(b0 - b1).toFixed(1)}"/><path class="fg-ax" d="M${L} ${T}V${H - B}H${W - R}"/><path class="fg-f" d="M${L} ${Y(si.cf)}H${W - R}"/>`;
+  if (si.ts > 0 && si.ts <= tE) s += `<path class="fg-f" d="M${X(si.ts)} ${T}V${H - B}"/><text class="fg-t" x="${(+X(si.ts) + 4).toFixed(1)}" y="${H - B - 6}">T<tspan baseline-shift="sub" font-size="8">s</tspan></text>`;
+  s += `<path class="fg-c" d="${d}"/>`;
+  if (si.os > 0.05) s += `<circle class="fg-m" cx="${X(si.tp)}" cy="${Y(si.cmax)}" r="4"/><text class="fg-t" x="${(+X(si.tp) + 7).toFixed(1)}" y="${(+Y(si.cmax) - 4).toFixed(1)}">pico</text>`;
+  return `<figure class="en-fig"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Respuesta al escalón">${s}</svg><figcaption>Respuesta al escalón unitario (modelo completo). ${si.os > 0.05 ? `Pico: <b>c<sub>max</sub> = ${si.cmax.toFixed(4)}</b> en <b>t = ${si.tp.toFixed(3)} s</b> · ` : ''}valor final <b>${si.cf.toFixed(4)}</b> · entra y se queda en la banda de ±2 % en <b>T<sub>s</sub> = ${si.ts.toFixed(3)} s</b>.</figcaption></figure>`;
+}
+const metaTxt = (P, h) => { const m = P.meta;
+  const two = m.k === 'ts' ? `${h.tx(`T_s \\le T_{s,\\text{sin}}/${P.Fx}`)}, con ${h.tx(`T_{s,\\text{sin}} = ${h.n(P.ts0 || 4 / -P.s0.re)}\\ \\text{s}`)}`
+    : m.k === 'tp' ? `${h.tx(`T_p \\le ${P.f < 0.6 ? '\\tfrac12' : '\\tfrac23'}T_{p,\\text{sin}}`)}, con ${h.tx(`T_{p,\\text{sin}} = ${h.n(P.tp0)}\\ \\text{s}`)}`
+    : m.k === 'e' ? `error a la rampa ${P.M} veces menor que sin compensar (${h.tx(`e_{\\text{sin}} = ${h.n(P.eu)}`)})` : 'error cero al escalón';
+  return `<p><b>Metas:</b> sobrepaso ${h.tx(`\\%OS \\le ${h.n(P.os)}\\,\\%`)} y ${two}.</p>`; };
+const verifsim = {
+  id: 'verifsim', tema: 14, t: 'Verificación con la simulación y ajuste', d: 'Lee la respuesta al escalón, compárala con las metas y decide si hace falta ajustar.',
+  casos: CASOS,
+  gen(r, tarea){
+    let P;
+    for (let g = 0; g < 40; g++) {
+      P = caso(r, tarea); P.si = simStep(P.F, P.K);
+      if (tarea) break;
+      const v2 = P.meta.k === 'ts' ? P.si.ts : P.meta.k === 'tp' ? P.si.tp : P.err.e, rs = [P.si.os / P.os, P.meta.v ? v2 / P.meta.v : 0];
+      if (rs.every(x => Math.abs(x - 1.01) > 0.006 && Math.abs(x - 1.05) > 0.006) && P.si.os > 0.3) break;
+    }
+    const si = P.si; P.tE = Math.min(si.H, Math.max(si.ts * 1.35, si.tp * 3));
+    return P;
+  },
+  enun: (P, h) => `${designTxt(P, h)}${metaTxt(P, h)}${figStep(P.si, P)}<p class="en-mut">Criterio de la página: <b>cumple</b> si queda dentro de la meta (±1 %), <b>casi</b> si se pasa hasta 5 %, y <b>no cumple</b> si se pasa más.</p>`,
+  inc: [
+    { k: 'a', q: (P, h) => `Sobrepaso obtenido: ${h.tx('\\%OS = \\dfrac{c_{max} - c_{final}}{c_{final}}\\cdot100')}.`,
+      f: [{ k: 'os', l: '%OS', u: '%', abs: 0.05 }],
+      sol: P => ({ os: (+P.si.cmax.toFixed(4) - +P.si.cf.toFixed(4)) / +P.si.cf.toFixed(4) * 100 }),
+      how: (P, A, S, h) => `${h.tx(`\\%OS = \\dfrac{${P.si.cmax.toFixed(4)} - ${P.si.cf.toFixed(4)}}{${P.si.cf.toFixed(4)}}\\cdot100 = ${h.n(S.os)}\\,\\%`, true)}<p>En MATLAB: <code>stepinfo(T)</code> → <code>Overshoot</code>.</p>` },
+    { k: 'b', q: (P, h) => `¿Cumple la meta de sobrepaso (${h.tx(`\\le ${h.n(P.os)}\\,\\%`)})?`,
+      f: [{ k: 'c1', l: 'Sobrepaso', ch: CH3 }],
+      sol: (P, A) => ({ c1: judge(A.os, P.os) }),
+      how: (P, A, S, h) => `<p>${h.f(A.os)} % contra ${h.f(P.os)} %: ${['no cumple', 'casi (se pasa ' + h.f((A.os / P.os - 1) * 100) + ' %)', 'cumple'][S.c1]}.</p>` },
+    { k: 'c', q: P => P.meta.k === 'e' ? 'Valor de la meta de error y el error que da el diseño (1/K<sub>v</sub> con el compensador).' : P.meta.k === 'e0' ? 'Error ante el escalón con el compensador (la meta es 0).' : `Valor de la meta de ${metaName(P.meta.k)} (en segundos).`,
+      f: P => P.meta.k === 'e' ? [{ k: 'm2', l: 'e meta', abs: 1e-5 }, { k: 'eo', l: 'e(∞) del diseño', abs: 1e-5 }] : P.meta.k === 'e0' ? [{ k: 'eo', l: 'e(∞)' }] : [{ k: 'm2', l: `${metaName(P.meta.k)} meta`, u: 's' }],
+      sol: P => P.meta.k === 'e' ? { m2: P.meta.v, eo: P.err.e } : P.meta.k === 'e0' ? { eo: P.err.e } : { m2: P.meta.v },
+      how: (P, A, S, h) => P.meta.k === 'e' ? h.tx(`e_{meta} = \\dfrac{${h.n(P.eu)}}{${P.M}} = ${h.n(S.m2)},\\qquad K_v = ${h.n(P.err.kk)} \\Rightarrow e = ${h.n(S.eo)}`, true)
+        : P.meta.k === 'e0' ? `<p>El PI deja el sistema tipo 1: ${h.tx('e(\\infty) = 0')}.</p>`
+        : P.meta.k === 'ts' ? h.tx(`T_{s,meta} = \\dfrac{${h.n(P.ts0)}}{${P.Fx}} = ${h.n(S.m2)}\\ \\text{s}`, true) : h.tx(`T_{p,meta} = ${h.n(P.f)}\\cdot${h.n(P.tp0)} = ${h.n(S.m2)}\\ \\text{s}`, true) },
+    { k: 'd', q: P => `¿Cumple la meta de ${metaName(P.meta.k)}?${P.meta.k === 'ts' || P.meta.k === 'tp' ? ' (lee el valor obtenido en la gráfica)' : ''}`,
+      f: P => [{ k: 'c2', l: metaName(P.meta.k), ch: CH3 }],
+      sol: (P, A) => { const k = P.meta.k, got = k === 'ts' ? P.si.ts : k === 'tp' ? P.si.tp : A.eo; return { c2: judge(got, k === 'e0' ? 0 : A.m2) }; },
+      how: (P, A, S, h) => { const k = P.meta.k, got = k === 'ts' ? P.si.ts : k === 'tp' ? P.si.tp : A.eo, mt = k === 'e0' ? 0 : A.m2;
+        return `<p>Obtenido ${h.f(got)} contra meta ${h.f(mt)}: ${['no cumple', 'casi', 'cumple'][S.c2]}.</p>`; } },
+    { k: 'e', q: () => '¿Qué ajuste hace falta?',
+      f: [{ k: 'aj', l: 'Ajuste', ch: [{ v: 0, l: 'Ninguno: cumple (o casi) todo' }, { v: 1, l: 'Bajar el sobrepaso (más ζ de diseño, o dipolo más cerca del origen)' }, { v: 2, l: 'Hacerlo más rápido (T<sub>s</sub> o T<sub>p</sub> objetivo menor)' }, { v: 3, l: 'Mejorar el error (más razón del atraso)' }] }],
+      sol: (P, A) => ({ aj: A.c1 === 0 ? 1 : A.c2 === 0 ? (P.meta.k === 'ts' || P.meta.k === 'tp' ? 2 : 3) : 0 }),
+      how: (P, A, S, h) => `<p>${['Ninguno: las metas se cumplen (o casi), como en la página.', 'El sobrepaso se pasa de la meta: se rediseña con un ζ mayor (P5 lo hizo con ζ<sub>d</sub> = 0.6273) o, si es por el modo lento de un atraso, acercando el dipolo al origen (P3: 0.02/0.001).', 'El tiempo no llega a la meta: se rediseña pidiendo un T<sub>s</sub> (o T<sub>p</sub>) un poco menor, como el ajuste de P7.', 'El error no llega: se aumenta la razón z<sub>c</sub>/p<sub>c</sub> del atraso.'][S.aj]} Después se vuelve a verificar.</p>` }
+  ]
+};
+
+/* =====================================================================================================
+   Tema 15 · Simulink
+   ===================================================================================================== */
+function figSL(P){
+  const bl = [{ t: 'Step', s: 'o Ramp' }, { t: 'Σ', s: 'Sum', c: 1 }, { t: 'K', s: 'Gain' }]
+    .concat(P.blk.map(b => b.k === 'tf' ? { t: b.l, s: 'Transfer Fcn' } : { t: 'PID(s)', s: 'PID Controller' }), [{ t: 'G(s)', s: 'Transfer Fcn' }, { t: 'Scope', s: '', sc: 1 }]);
+  const bw = 66, gap = 22, W = bl.length * (bw + gap) - gap + 12, H = 112, y = 18, bh = 38;
+  let s = '', xs = [];
+  bl.forEach((b, i) => { const x = 6 + i * (bw + gap); xs.push(x);
+    if (b.c) s += `<circle class="sl-b" cx="${x + bw / 2}" cy="${y + bh / 2}" r="14"/><text class="sl-t" x="${x + bw / 2}" y="${y + bh / 2 + 4}" text-anchor="middle">Σ</text><text class="sl-s" x="${x + bw / 2 - 20}" y="${y + bh / 2 - 6}">+</text><text class="sl-s" x="${x + bw / 2 - 9}" y="${y + bh + 6}">−</text>`;
+    else s += `<rect class="sl-b" x="${x}" y="${y}" width="${bw}" height="${bh}" rx="${b.sc ? 8 : 3}"/><text class="sl-t" x="${x + bw / 2}" y="${y + bh / 2 + 4}" text-anchor="middle">${b.t}</text>`;
+    s += `<text class="sl-s" x="${x + bw / 2}" y="${y + bh + 18}" text-anchor="middle">${b.s}</text>`;
+    if (i) { const x0 = xs[i - 1] + (bl[i - 1].c ? bw / 2 + 14 : bw), x1 = b.c ? x + bw / 2 - 14 : x; s += `<path class="sl-w" d="M${x0} ${y + bh / 2}H${x1 - 4}"/><path class="sl-a" d="M${x1 - 6} ${y + bh / 2 - 4}L${x1} ${y + bh / 2}L${x1 - 6} ${y + bh / 2 + 4}Z"/>`; } });
+  const xg = xs[bl.length - 2] + bw + gap / 2, xc = xs[1] + bw / 2, yb = H - 6;
+  s += `<path class="sl-w" d="M${xg} ${y + bh / 2}V${yb}H${xc}V${y + bh / 2 + 18}"/><path class="sl-a" d="M${xc - 4} ${y + bh / 2 + 20}L${xc} ${y + bh / 2 + 14}L${xc + 4} ${y + bh / 2 + 20}Z"/>`;
+  return `<figure class="en-fig sl"><div class="sl-sc"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Modelo de Simulink">${s}</svg></div><figcaption>Modelo a armar en Simulink (realimentación unitaria).</figcaption></figure>`;
+}
+const vecTxt = c => '[' + c.map(v => n4(v)).join(' ') + ']';
+const simulink = {
+  id: 'simulink', tema: 15, t: 'Simulink: parámetros de los bloques', d: 'Signos del Sum, Gain, vectores de los Transfer Fcn, PID Controller, fuente y error en el Scope.',
+  casos: CASOS,
+  gen: (r, tarea) => caso(r, tarea),
+  enun: (P, h) => `${designTxt(P, h)}${figSL(P)}<p>Llena los parámetros de cada bloque. En los <b>Transfer Fcn</b> los vectores van de la potencia mayor a la menor (p. ej. ${h.tx('s^2 + 3s')} → <code>[1 3 0]</code>). ${P.blk.some(b => b.k !== 'tf') ? 'El <b>PID Controller</b> (forma paralela, sin filtro) va normalizado porque la K ya está en el Gain.' : ''}</p>`,
+  inc: [
+    { k: 'a', q: () => 'Signos del bloque Sum (la referencia entra arriba/izquierda y la realimentación abajo).',
+      f: [{ k: 'sg', l: 'List of signs', ch: [{ v: 0, l: '|+-' }, { v: 1, l: '|++' }, { v: 2, l: '|-+' }] }],
+      sol: () => ({ sg: 0 }), how: () => '<p><code>|+-</code>: la referencia suma y la salida realimentada resta (e = r − c). Con <code>|++</code> la realimentación sería positiva.</p>' },
+    { k: 'b', q: () => 'Valor del bloque Gain.', f: [{ k: 'K', l: 'Gain' }],
+      sol: P => ({ K: P.K }), how: (P, A, S, h) => `<p>${h.tx(`K = ${h.n(P.K)}`)} (en MATLAB, <code>set_param('modelo/Gain', 'Gain', '${n4(P.K)}')</code>).</p>` },
+    { k: 'c', q: () => 'Transfer Fcn de la <b>planta</b> (sin K): coeficientes de Numerator y Denominator.',
+      f: P => { const N = polyOf(P.z), D = polyOf(P.p);
+        return N.map((v, i) => ({ k: 'n' + i, l: `Num · s<sup>${N.length - 1 - i}</sup>` })).concat(D.map((v, i) => ({ k: 'd' + i, l: `Den · s<sup>${D.length - 1 - i}</sup>` }))); },
+      sol: P => { const o = {}; polyOf(P.z).forEach((v, i) => { o['n' + i] = v; }); polyOf(P.p).forEach((v, i) => { o['d' + i] = v; }); return o; },
+      how: (P, A, S, h) => `<p>Numerator <code>${vecTxt(polyOf(P.z))}</code> · Denominator <code>${vecTxt(polyOf(P.p))}</code>, porque ${h.tx(`${den(P.p)} = ${polyTeX(polyOf(P.p), h)}`)}. Otra forma: <code>conv([1 a],[1 b])</code>.</p>` },
+    { k: 'd', q: P => P.blk.length > 1 ? 'Dos Transfer Fcn del compensador: en cada uno, Numerator [1 a] y Denominator [1 b].' : P.blk[0].k === 'tf' ? `Transfer Fcn del compensador (${P.blk[0].l}): Numerator [1 a] y Denominator [1 b].` : `PID Controller (${P.blk[0].k === 'pd' ? 'Controller: PD' : 'PID'}): sus ganancias normalizadas.`,
+      f: P => P.blk[0].k === 'pd' ? [{ k: 'kP', l: 'P' }, { k: 'kD', l: 'D' }] : P.blk[0].k === 'pid' ? [{ k: 'kP', l: 'P' }, { k: 'kI', l: 'I' }, { k: 'kD', l: 'D' }]
+        : P.blk.flatMap((b, i) => [{ k: 'a' + i, l: `${b.l}: a (Num [1 a])`, abs: 1e-4 }, { k: 'b' + i, l: `${b.l}: b (Den [1 b])`, abs: 1e-4 }]),
+      sol: P => { const b = P.blk[0]; if (b.k === 'pd') return { kP: b.P, kD: b.D }; if (b.k === 'pid') return { kP: b.P, kI: b.I, kD: b.D };
+        const o = {}; P.blk.forEach((q, i) => { o['a' + i] = q.z; o['b' + i] = q.p; }); return o; },
+      how: (P, A, S, h) => { const b = P.blk[0];
+        if (b.k === 'pd') return `<p>${h.tx(`s + ${h.n(b.P)} = P + D\\,s`)} → P = ${h.f(b.P)}, D = 1 (UseFilter = off). Un PD ideal en un Transfer Fcn daría error (más ceros que polos). Otra forma: Gain = 1 y P = K·z<sub>c</sub> = ${h.f(P.K * b.P)}, D = K = ${h.f(P.K)}.</p>`;
+        if (b.k === 'pid') return `<p>${h.tx(`\\dfrac{(s + ${h.n(P.zpd)})(s + ${h.n(P.zpi)})}{s} = (z_{PD} + z_{PI}) + \\dfrac{z_{PD}z_{PI}}{s} + s`)} → P = ${h.f(b.P)}, I = ${h.f(b.I)}, D = 1. Otra forma: Gain = 1 y P/I/D = K<sub>P</sub>/K<sub>I</sub>/K<sub>D</sub> = ${h.f(P.K * b.P)}/${h.f(P.K * b.I)}/${h.f(P.K)}.</p>`;
+        return `<p>${P.blk.map(q => `${q.l}: Numerator <code>[1 ${n4(q.z)}]</code>, Denominator <code>[1 ${n4(q.p)}]</code>`).join(' · ')}.</p>`; } },
+    { k: 'e', q: () => '¿Qué fuente usas para verificar el error estacionario que pide el problema?',
+      f: [{ k: 'src', l: 'Fuente', ch: [{ v: 0, l: 'Step (escalón)' }, { v: 1, l: 'Ramp (rampa)' }] }],
+      sol: P => ({ src: P.q ? 1 : 0 }),
+      how: (P, A, S, h) => `<p>La planta es tipo ${P.q}: ${P.q ? 'ante el escalón el error ya es cero; el error finito (K<sub>v</sub>) se mide con la <b>rampa</b> (Ramp, Slope = 1).' : 'el error finito es al <b>escalón</b> (K<sub>p</sub>).'} El transitorio (%OS, T<sub>s</sub>) siempre se mide con el escalón.</p>` },
+    { k: 'f', q: (P, h) => `Con esa fuente, ¿a qué valor tiende ${h.tx('e(t) = r(t) - c(t)')} (sale de otro Sum a un Scope)?`,
+      f: [{ k: 'e', l: 'e(∞)', abs: 1e-4 }],
+      sol: P => ({ e: P.err.e }),
+      how: (P, A, S, h) => `<p>${P.err.e === 0 ? `El lazo es tipo ${typeOf(P.F)}, mayor que el de la entrada: ${h.tx('e(\\infty) = 0')}.` : h.tx(P.q ? `K_v = ${h.n(P.err.kk)},\\quad e(\\infty) = 1/K_v = ${h.n(P.err.e)}` : `K_p = ${h.n(P.err.kk)},\\quad e(\\infty) = \\dfrac{1}{1+K_p} = ${h.n(P.err.e)}`)} Pon un Stop time suficiente para que se estabilice.</p>` }
+  ]
+};
+
 /* orden: por tema (la página los agrupa por tema) */
-export const EJ = [polos, plano, ecuacion, ejereal, asint, ruptura, routh, zeta, angulo, magnitud, lazo, transitoria, error];
+export const EJ = [polos, plano, ecuacion, ejereal, asint, ruptura, routh, zeta, angulo, magnitud, lazo, transitoria, error,
+  exPI, exAtr, exPD, exAd, exPID, exAA, verifpol, verifsim, simulink];
 export const byId = id => EJ.find(e => e.id === id);

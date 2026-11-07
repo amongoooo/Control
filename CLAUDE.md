@@ -958,8 +958,8 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
-- **Etapas 1 (v66), 2 (v67), 3 (v68) y 4 (v70) hechas.** Sigue la etapa 5 (temas 13–15: compensadores, verificación, Simulink;
-  mismo formato de ejercicio que v70).
+- **Etapas 1 (v66), 2 (v67), 3 (v68), 4 (v70) y 5 (v71) hechas.** Sigue la etapa 6 (tema 16 problema completo, modo examen
+  con varios ejercicios, variantes y repaso de errores).
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1194,6 +1194,37 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   390×844 (táctil, oscuro): los 13 en práctica con el caso de la tarea (Comprobar en cada inciso, `lazo` con la calculadora de verdad: botón del
   inciso → coeficientes → «→ las 3 raíces») y en examen con una variante, todos al 100 %; «Ver solución» de los 13 con 3 semillas sin errores
   de KaTeX ni desbordes; consola limpia.
+
+## Hecho (v71 · Entrenar etapa 5): temas 13–15 con el caso de cada práctica P2–P7
+
+- `entrenar/ejercicios.js?v=5` (sección «Etapa 5» antes de `EJ`), `motor.js?v=4`, `ui.js?v=5`, `entrenar.css?v=5` (index.html carga
+  `ui.js?v=5` y `entrenar.css?v=5`). **22 ejercicios** en total (9 nuevos). Todo se calcula en vivo:
+  - Generadores `genPI/genAtr/genPD/genAd/genPID/genAA` (caso de la práctica con `tarea` o variante): par sin compensar = primer cruce de
+    la recta de ζ (`design`); PI, atraso, PI del PID y atraso del adelanto‑atraso re‑buscan el cruce **más cercano** al punto anterior
+    (`nearDesign`); `finDesign` arma `F` (planta + Gc), ecuación `ch`, polos `cl`, error `err` (`errOf`, entrada según el tipo de la planta),
+    `meta` (`e0` PI, `e` atraso, `ts` PD/adelanto/adelanto‑atraso, `tp` PID) y bloques de Simulink `blk`. `simStep(F, K)` = suma exacta de
+    modos (residuos de T(s)/s) → `cmax, tp, ts (2 %), os, pl, rs`.
+  - Tema 13: `pi` (P2: K<sub>p</sub>/e, ∠ y |G<sub>c</sub>(s₀)|, Sí/No «casi no mueve», tipo/e con PI, polos en el plano grado 4), `atraso` (P3: K<sub>v</sub>/e,
+    razón y z<sub>c</sub>, dipolo, K<sub>v</sub> nueva/e/mejora con K re‑buscada, polos), `pd` (P4: T<sub>s</sub>/σ<sub>d</sub>/ω<sub>d</sub>, ∠G(s<sub>d</sub>)/θ<sub>z</sub>, z<sub>c</sub>, cero ○ y
+    s<sub>d</sub> • en el plano, K, K<sub>P</sub>/K<sub>D</sub>), `adelanto` (P5: …, θ<sub>p</sub>, p<sub>c</sub>, polo × y cero ○ en el eje real, K), `pid` (P6: T<sub>p</sub>/ω<sub>d</sub>/σ<sub>d</sub>,
+    θ<sub>z</sub>, z<sub>PD</sub>/K<sub>PD</sub>, K<sub>P</sub>/K<sub>I</sub>/K<sub>D</sub> con la K re‑buscada, tipo/e), `adatr` (P7: σ<sub>d</sub>/ω<sub>d</sub>, θ<sub>p</sub>/p<sub>ad</sub>, K<sub>ad</sub>/K<sub>v</sub>, K<sub>v</sub> requerida/razón/z<sub>at</sub>,
+    ∠ del atraso, Sí/No). Casos = números de la página (P2 158.10, P3 44.64, P4 3.0046/47.47, P5 25.54/476.2, P6 259.3/128.5/4.59,
+    P7 9.609/0.0921/203.7).
+  - Tema 14: `verifpol` (coeficientes de la ecuación final, polos en el plano, ¿estable?, ζ obtenido, p₃ y |r₃|/|r₁| con los residuos dados,
+    regla 12 %) y `verifsim` (gráfica SVG de la respuesta al escalón `figStep` con pico, banda ±2 % y T<sub>s</sub>; %OS, cumple/casi/no cumple
+    (±1 % / hasta 5 %), meta 2, ajuste). Resultados de los casos iguales a la página: P2 y P6 cumplen, P3 y P5 «bajar sobrepaso», P4 casi
+    (sin ajuste), P7 «más rápido». Variantes cerca de los umbrales se descartan.
+  - Tema 15: `simulink` (diagrama `figSL` que se desliza de lado en celular; signos `|+-`, Gain, vectores Num/Den de la planta, Transfer Fcn
+    del compensador o PID Controller normalizado (PD: P = z<sub>c</sub>, D = 1; PID: P = z<sub>PD</sub> + z<sub>PI</sub>, I = z<sub>PD</sub>z<sub>PI</sub>, D = 1, con K en el Gain),
+    fuente Step/Ramp según el tipo de la planta, e(∞) en el Scope).
+  - **Temas 14 y 15 eligen la práctica:** `def.casos = [2…7]` → botones P2…P7 (`data-new="tN"`). `motor.build`: semilla 0 = tarea
+    (por omisión P2), **semilla −N = caso de la práctica N**, > 0 = variante (un tipo al azar). Historial «Tarea PN»; la etiqueta dice
+    «Caso de la tarea (PN)» con `P.caso` (P1 si no hay) y en variantes «· PID», etc.
+  - Opciones largas (`ch` con > 26 caracteres en total) van una debajo de otra (`.en-cf.en-lg`, `.en-seg.v`). **Ojo:** `.lg` ya existe en
+    index.html (por eso `en-lg`), y `figure` es `display:grid` en la página (por eso `.en-fig.sl{display:block}`).
+- Probado: Node (casos P2–P7 y 300 variantes de cada uno con las respuestas correctas → 100 %, sin NaN; arrastre) y Playwright a 390×844
+  (táctil, oscuro) y 1440×900: los 9 ejercicios con el caso de cada práctica (temas 14–15 con P2…P7) y variantes, Comprobar en cada inciso,
+  Terminar (100 %), soluciones sin errores de KaTeX, sin desbordes, botón P4, consola limpia.
 
 ## Hecho (v66): botón «i» con la información de la app
 

@@ -9,14 +9,16 @@
    Casillas de plano s (etapa 2): entrenar/plano.js; lo ubicado se guarda en ST.A[campo] como texto (motor.ptsStr).
    Etapa 3 (calculadora en los ejercicios): «→ Respuesta» también escribe en los planos (complejos y todas las raíces de
    «Ecuación»), botones por inciso que abren Ecuación grado n / Solver / Complejos (inc.tools), y Ans y memorias en las casillas.
+   Etapa 5: ejercicios con def.casos (temas 14 y 15) muestran botones P2…P7 para elegir el caso de la tarea (semilla −N).
    Etapa 4: casillas de opción (fl.ch = [{v, l}], p. ej. Sí / No) como botones; la respuesta guardada es el número v.
    Preferencias (modo, caso/variante e imán) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
-import * as M from './motor.js?v=3';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=4';
+import * as M from './motor.js?v=4';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=5';
 import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
+const TIPO = { pi: 'PI', atraso: 'atraso', pd: 'PD', adelanto: 'adelanto', pid: 'PID', adatr: 'adelanto‑atraso' };
 const K_ = () => window.katex;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const strip = s => String(s).replace(/<[^>]+>/g, '');
@@ -90,7 +92,7 @@ function home(){
         Se acepta ±1 % del valor correcto, y si un error tuyo se arrastra a los incisos siguientes pero el método está bien, esos incisos cuentan completos (<i>con arrastre</i>).</p>
     </div>
   </div>
-  ${cd ? `<div class="card en-cont"><div><b>Continuar:</b> ${esc(cd.t)} <span class="en-mut">· ${cur.seed ? 'variante #' + cur.seed : 'caso de la tarea'} · ${cur.mode === 'x' ? 'examen' : 'práctica'}</span></div>
+  ${cd ? `<div class="card en-cont"><div><b>Continuar:</b> ${esc(cd.t)} <span class="en-mut">· ${cur.seed > 0 ? 'variante #' + cur.seed : 'caso de la tarea' + (cur.seed < 0 ? ' P' + (-cur.seed) : '')} · ${cur.mode === 'x' ? 'examen' : 'práctica'}</span></div>
     <div class="en-row"><button class="btn primary" data-cont>Continuar →</button><button class="btn" data-drop>Descartar</button></div></div>` : ''}
   <h3 class="en-h3">Temas</h3>
   <div class="en-temas">${TEMAS.map(T => { const xs = EJ.filter(e => e.tema === T.n);
@@ -98,7 +100,7 @@ function home(){
       ? xs.map(e => `<button class="en-ej" data-ej="${e.id}"><span class="en-ejt">${esc(e.t)}<small>${esc(e.d)}</small></span>${pctTag(D.ex[e.id])}<i aria-hidden="true">›</i></button>`).join('')
       : `<p class="en-mut en-soon">Sus ejercicios llegan en la etapa ${T.e}.</p>`}</div>`; }).join('')}</div>
   <h3 class="en-h3">Últimos intentos</h3>
-  ${hist.length ? `<div class="card en-hist"><table><thead><tr><th>Ejercicio</th><th>Datos</th><th>Modo</th><th>Calificación</th><th>Fecha</th></tr></thead><tbody>${hist.map(h => `<tr><td>${esc(byId(h.e).t)}</td><td>${h.r ? '#' + h.r : 'Tarea'}</td><td>${h.x ? 'Examen' : 'Práctica'}</td><td><b class="${h.s >= M.PASS ? 'ok' : 'bad'}">${h.s} %</b></td><td>${when(h.t)}</td></tr>`).join('')}</tbody></table></div>`
+  ${hist.length ? `<div class="card en-hist"><table><thead><tr><th>Ejercicio</th><th>Datos</th><th>Modo</th><th>Calificación</th><th>Fecha</th></tr></thead><tbody>${hist.map(h => `<tr><td>${esc(byId(h.e).t)}</td><td>${h.r > 0 ? '#' + h.r : h.r < 0 ? 'Tarea P' + (-h.r) : 'Tarea'}</td><td>${h.x ? 'Examen' : 'Práctica'}</td><td><b class="${h.s >= M.PASS ? 'ok' : 'bad'}">${h.s} %</b></td><td>${when(h.t)}</td></tr>`).join('')}</tbody></table></div>`
     : '<p class="en-mut">Todavía no terminas ningún ejercicio. Empieza por cualquiera de los temas de arriba.</p>'}
   <div class="en-foot"><button class="btn" data-reset>Borrar mi progreso de Entrenar</button></div>`;
   M.setTotal(EJ.length);
@@ -117,7 +119,7 @@ const save = () => M.saveCur(ST && !ST.done ? ST : null);
 
 function fieldHTML(inc, fl){
   if (M.isPlane(fl)) return `<div class="en-f en-pf" data-pk="${fl.k}"><span class="en-fl">${fl.l}</span><div class="en-pl" data-pl="${fl.k}" data-inc="${inc.k}"></div></div>`;
-  if (fl.ch) return `<div class="en-f en-cf" data-ck="${fl.k}"><span class="en-fl">${fl.l}</span><span class="en-fi"><span class="seg en-seg" role="group" aria-label="${esc(inc.k + ') ' + strip(fl.l))}">${fl.ch.map(c => `<button type="button" data-cv="${inc.k}:${fl.k}:${c.v}" aria-pressed="${ST.A[fl.k] === String(c.v)}">${c.l}</button>`).join('')}</span><span class="en-st" aria-hidden="true"></span></span></div>`;
+  if (fl.ch) { const lg = fl.ch.reduce((n, c) => n + strip(c.l).length, 0) > 26; return `<div class="en-f en-cf${lg ? ' en-lg' : ''}" data-ck="${fl.k}"><span class="en-fl">${fl.l}</span><span class="en-fi"><span class="seg en-seg${lg ? ' v' : ''}" role="group" aria-label="${esc(inc.k + ') ' + strip(fl.l))}">${fl.ch.map(c => `<button type="button" data-cv="${inc.k}:${fl.k}:${c.v}" aria-pressed="${ST.A[fl.k] === String(c.v)}">${c.l}</button>`).join('')}</span><span class="en-st" aria-hidden="true"></span></span></div>`; }
   const id = `en-${inc.k}-${fl.k}`, v = ST.A[fl.k] || '';
   return `<label class="en-f" for="${id}"><span class="en-fl">${fl.l}</span><span class="en-fi"><input id="${id}" data-ans data-k="${fl.k}" data-inc="${inc.k}" data-label="${esc(inc.k + ') ' + strip(fl.l))}" value="${esc(v)}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next" aria-label="${esc(strip(fl.l))}">${fl.u ? `<span class="en-u">${fl.u}</span>` : ''}<span class="en-st" aria-hidden="true"></span></span><span class="en-pv" data-pv="${fl.k}"></span></label>`;
 }
@@ -127,10 +129,10 @@ function render(){
   <div class="en-top">
     <button class="btn" data-home>← Temas</button>
     <div class="en-tit"><small>Tema ${def.tema} · ${esc(T ? T.t : '')}</small><b>${esc(def.t)}</b></div>
-    <div class="en-row en-tags"><span class="pill ${ex ? 'bad' : 'ok'}">${ex ? 'Examen' : 'Práctica'}</span><span class="pill">${X.tarea ? 'Caso de la tarea (P1)' : 'Variante #' + X.seed}</span></div>
+    <div class="en-row en-tags"><span class="pill ${ex ? 'bad' : 'ok'}">${ex ? 'Examen' : 'Práctica'}</span><span class="pill">${X.tarea ? 'Caso de la tarea (' + (P.caso || 'P1') + ')' : 'Variante #' + X.seed + (P.tipo && def.casos ? ' · ' + TIPO[P.tipo] : '')}</span></div>
   </div>
   <div class="en-tools en-row">
-    <button class="btn" data-new="v">Otra variante</button>${X.tarea ? '' : '<button class="btn" data-new="t">Caso de la tarea</button>'}
+    <button class="btn" data-new="v">Otra variante</button>${def.casos ? `<span class="seg en-casos" role="group" aria-label="Caso de la tarea">${def.casos.map(n => `<button data-new="t${n}" aria-pressed="${X.tarea && P.caso === 'P' + n}" title="Caso de la tarea de la práctica ${n}">P${n}</button>`).join('')}</span>` : X.tarea ? '' : '<button class="btn" data-new="t">Caso de la tarea</button>'}
     <button class="btn en-cbtn" data-calc><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01" stroke-width="2.4"/></svg>Calculadora</button>
   </div>
   <p class="en-mut en-calch">En las casillas puedes escribir operaciones (<code>12*44-48</code>, <code>sqrt(40)</code>), <code>Ans</code> o una memoria de la calculadora (<code>A</code>–<code>F</code>, <code>M</code>); al salir de la casilla se cambia por su valor. «→ Respuesta» de la calculadora escribe en la última casilla o plano que tocaste.</p>
@@ -257,7 +259,7 @@ function onClick(e){
   if ('cont' in b.dataset) { const c = M.loadCur(); if (c) start(c.e, c.seed, c.mode, c); return; }
   if ('drop' in b.dataset) { M.saveCur(null); home(); return; }
   if ('home' in b.dataset) { home(); SEC.scrollIntoView({ block: 'start' }); return; }
-  if (b.dataset.new) { start(X.def.id, b.dataset.new === 'v' ? M.newSeed() : 0, ST ? ST.mode : P.mode); return; }
+  if (b.dataset.new) { const n = b.dataset.new; start(X.def.id, n === 'v' ? M.newSeed() : /^t\d$/.test(n) ? -(+n.slice(1)) : 0, ST ? ST.mode : P.mode); return; }
   if ('again' in b.dataset) { start(X.def.id, X.seed, ST.mode); return; }
   if ('calc' in b.dataset) { calcOpen(); return; }
   if (b.dataset.tool) { const [k, j] = b.dataset.tool.split(':'); toolGo(k, j); return; }

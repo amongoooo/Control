@@ -1,5 +1,5 @@
 /* =====================================================================================================
-   entrenar/motor.js · Motor de ejercicios del apartado «Entrenar» (Laboratorio LGDR) · etapas 1–2
+   entrenar/motor.js · Motor de ejercicios del apartado «Entrenar» (Laboratorio LGDR) · etapas 1–5
    ---------------------------------------------------------------------------------------------------
    Sin interfaz. Lo usa entrenar/ui.js.
      · Variantes: cada ejercicio se arma con una semilla (0 = el caso de la tarea; otra = variante aleatoria
@@ -155,9 +155,11 @@ const same = (a, b, fl) => isPlane(fl) ? matchPts(a, b, fl).ok : close(a, b, fl)
      {id, tema, t, nivel, gen(r, tarea) → P, enun(P, h) → html, inc:[{k, q(P,h), f:[{k, l, u, tol, abs, ang}], sol(P, A) → {campo: valor}, how(P, A, S, h) → html}]}
    h = utilidades de dibujo (tx = KaTeX, n = número en TeX) que pone la interfaz. */
 export function build(def, seed){
-  const tarea = !seed;
-  const P = def.gen(rng(seed || 1), tarea);
-  return { def, seed: seed || 0, tarea, P };
+  seed = +seed || 0;
+  /* semilla 0 = caso de la tarea; semilla −N = caso de la práctica N (ejercicios con def.casos, etapa 5); > 0 = variante */
+  const tarea = seed <= 0;
+  const P = def.gen(rng(seed > 0 ? seed : 1), tarea ? (seed < 0 ? -seed : true) : false);
+  return { def, seed, tarea, P };
 }
 
 /* calificar: answers = {campo: texto}. Devuelve por inciso {st:'ok'|'arr'|'no'|'vacio'|'err', pts, S (correcta), Sc (con arrastre), T / A (valores anteriores
