@@ -1283,6 +1283,40 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (`span#abVer` sigue igual, así `herramientas/version.sh` funciona), la fecha, qué contiene, «Lo nuevo» (editar a mano en el HTML), tu progreso
   (Sincronizar / Copiar enlace), referencia del libro y bibliotecas. CSS «v66 · botón i» antes del de v62; `<script>` al final del `<body>`.
 
+## Hecho (v74): revisión completa del «∑ Formulario» (`dialog#fxDlg`)
+
+- Revisión: las fórmulas que ya estaban son correctas (Routh de 3.er orden, %OS, Tr de Nise, zc/pc por geometría, PID K1–K3, razón del
+  atraso…). Sólo se aclaró la de la sección 17: θ<sub>c</sub> = −180° − ∠G(s<sub>d</sub>), con el ajuste de ±360° y el ejemplo de P4 (95.61°).
+- **60 filas nuevas** en las 20 secciones (mismo estilo `.fx-r/.fx-m/.fx-n`, `.fr`, `.rt`), comparando con Teoría, P1–P7 y «Entrenar»:
+  valor final / inicial, escalón y rampa de altura A, y(τ), ζ = 1 y respuesta subamortiguada, %OS medido (c<sub>máx</sub> − c<sub>final</sub>),
+  T<sub>s</sub> exacta, residuos de un par complejo, **regla del residuo 12 %** (también en 14), T<sub>s</sub> por un modo lento (ln(|r|/0.02)/|p|),
+  T(s) = KN/(D + KN), E(s), D·D<sub>c</sub> + K·N·N<sub>c</sub>, K = −D(σ)/N(σ), T(0), tan θ, s<sub>d</sub> con T<sub>s</sub>/T<sub>p</sub> y «n veces», **tabla ζ–%OS**
+  (`#fxt-zeta`, con θ y tan θ y las prácticas), ángulo de un vector (atan2), Δ, **ángulos de salida y llegada**, K<sub>b</sub>, ruptura sin derivar,
+  cruce con s = jω, los 9 pasos del trazo, elemento general de Routh, condición necesaria, **casos especiales de Routh** (cero en la 1.ª columna → ε;
+  fila de ceros → polinomio auxiliar y dP/ds), ejemplo P1, regla de 5×, **e(∞) por valor final**, K<sub>v</sub> tipo 1 con productos, aporte del dipolo
+  (|∠| < 5°, 0.9–1.1), **mejora del error con atraso**, diseño del cero del atraso, cola del polo lento, θ<sub>z</sub>/θ<sub>p</sub> del PD y adelanto,
+  **PD con K<sub>P</sub>/K<sub>D</sub>**, ruido del PD, K por magnitud con compensador, K<sub>P</sub>/K<sub>I</sub>/K<sub>D</sub> = K<sub>1</sub>/K<sub>2</sub>/K<sub>3</sub>, z<sub>atr</sub> del
+  adelanto‑atraso, Dif %, qué ajustar, `residue/rlocfind/lsim/zpk` y tabla de bloques de Simulink (`#fxt-sl`, clase `fx-tw` que acomoda el texto).
+- **6 gráficas SVG en línea** (`figure.fx-r.fx-fig` > `svg.fxg`), sólo con variables de color (`--ink/--muted/--accent/--c2/--c3/--ok/--grid`),
+  así siguen el tema claro/oscuro; flechas con `marker` `#fxArM/#fxArA` en `svg.fx-defs` (arriba del diálogo). `#fxf-plano` (sección 6: recta de ζ,
+  σ, ω<sub>d</sub>, ω<sub>n</sub>, θ), `#fxf-escalon` (6: %OS, T<sub>p</sub>, T<sub>s</sub>, banda ±2 %, ζ = 0.5), `#fxf-lazo` (9: K · G<sub>c</sub> · G), `#fxf-os` (10: %OS vs ζ con
+  los puntos de P1–P7), `#fxf-lgdr` (12: LGDR de P1 calculado, asíntotas, ruptura −2.845, cruce ±j6.633, s<sub>0</sub>), `#fxf-cero` (17: geometría del cero).
+- **Generador:** `python3 -I herramientas/formulario-v74.py index.html` (numpy). Se aplicó **una vez** sobre el diálogo original (no corre si ya
+  existe `id="fxQ"`); para rehacerlo, poner el `<dialog id="fxDlg">` de antes de v74 y volver a correrlo. Pone `id="fxsN"` y `data-k`
+  (palabras para el buscador) en cada sección, `data-k` en las filas nuevas, y `p.fx-ph` (nombre de la parte) en cada `.fx-pane`.
+- **Barra fija** `.fx-top` (sticky dentro del diálogo): «∑ Formulario» + buscador `input#fxQ` + cerrar (con `autofocus`, para que en el celular no
+  salga el teclado al abrir) · pestañas + botón `#fxIdxB` «Índice» · `p#fxCnt` (n resultados). En el panel de la evaluación en celular se compacta
+  (sólo «∑»). Script «v74 · formulario» después del de v3: buscador sin acentos, «zeta/sigma/omega/theta…» encuentran ζ/σ/ω/θ, varias palabras =
+  todas; muestra las tres partes a la vez (`dialog.fxd.fx-srch`, `.fx-hide`), resalta con `CSS.highlights` (`::highlight(fx-hit)`); Esc borra la
+  búsqueda, Enter oculta el teclado, `/` enfoca el buscador. Índice `#fxIdx` (`.fx-idxon` oculta las partes): secciones por parte + «Gráficas y
+  tablas»; al tocar cambia de pestaña, baja y resalta (`.fx-flash`). Al abrir el diálogo vuelve arriba (MutationObserver sobre `open`; v3 ponía
+  `scrollTop = 0` con el diálogo cerrado y no servía). `window.__lgdrFxFind.{search, clear, go(id), openIdx, closeIdx}`.
+- Computadora (≥ 1000 px, ventana normal, no el panel de la evaluación): hasta 1000 px de ancho, **dos columnas** (`columns: 2 400px`) e índice
+  en 4 columnas. Se arregló el título de la sección 10 (`h3` era flex y separaba «s d»).
+- Probado con Playwright a 390×844 (táctil) y 1440×900, claro y oscuro: ventana normal, panel abajo en la evaluación, junto a la calculadora
+  (≥ 1200 px los dos abiertos; en celular la calculadora cierra el formulario, como antes), búsqueda, índice, Esc, sin desbordes horizontales;
+  consola limpia en Teoría, Resumen, P1, P4, Simulador, Preguntas, Entrenar y PDF.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
