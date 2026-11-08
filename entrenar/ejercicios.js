@@ -831,8 +831,10 @@ const incFast = (k) => ({ k, q: (P, h) => `Punto de diseño: mismo ${h.tx('\\zet
   sol: P => ({ ts: P.ts0, sg: P.sgd, wd: P.wdd }),
   how: (P, A, S, h) => h.tx(`\\begin{aligned}T_s &= \\dfrac{4}{${h.n(-P.s0.re)}} = ${h.n(S.ts)}\\ \\text{s} \\\\ T_{s,d} &= \\dfrac{${h.n(S.ts)}}{${P.Fx}} = ${h.n(S.ts / P.Fx)}\\ \\text{s} \\\\ \\sigma_d &= \\dfrac{4}{T_{s,d}} = ${h.n(S.sg)} \\\\ \\omega_d &= ${h.n(S.sg)}\\tan(${h.n(Math.acos(P.z_) * DEG)}^\\circ) = ${h.n(S.wd)}\\end{aligned}`, true) + `<p>Punto de diseño: ${h.tx(s0TeX({ re: -S.sg, im: S.wd }, h, 's_d'))}.</p>` });
 /* ángulos de todos los polos y ceros a s_d, en TeX */
-const angList = (F, s, h) => F.p.map(p => `-\\angle${sfacT(p).replace('s_0', 's_d')}`).concat(F.z.map(z => `+\\angle${sfacT(z).replace('s_0', 's_d')}`)).join(' ').replace(/^\+/, '');
-const angVals = (F, s, h) => F.p.map(p => `-{${h.n(argD(s, p))}}^\\circ`).concat(F.z.map(z => `+{${h.n(argD(s, z))}}^\\circ`)).join(' ').replace(/^\+/, '');
+/* con 4 términos o más, la suma sigue en un segundo renglón (dentro de aligned) para que quepa en el celular */
+const angJoin = T => (T.length > 3 ? T.slice(0, 2).join(' ') + ' \\\\ &\\qquad ' + T.slice(2).join(' ') : T.join(' ')).replace(/^\+/, '');
+const angList = (F, s, h) => angJoin(F.p.map(p => `-\\angle${sfacT(p).replace('s_0', 's_d')}`).concat(F.z.map(z => `+\\angle${sfacT(z).replace('s_0', 's_d')}`)));
+const angVals = (F, s, h) => angJoin(F.p.map(p => `-{${h.n(argD(s, p))}}^\\circ`).concat(F.z.map(z => `+{${h.n(argD(s, z))}}^\\circ`)));
 
 /* ------------------------------------------------------------------ tema 13 · PI ideal (P2) */
 const exPI = {
@@ -1308,8 +1310,9 @@ function pide(P, h){
 }
 /* incisos de diseño de cada compensador (del tema 13; sin repetir lo de la referencia) */
 const D16 = {
-  pi: () => pickInc(exPI, ['b', 'c', 'd', 'e']).map(i => adopt(i, 'd_')),
-  atraso: () => pickInc(exAtr, ['b', 'c', 'd', 'e']).map(i => adopt(i, 'd_', { map: { eu: 're' } })),
+  /* PI y atraso: sin su inciso de polos en el plano (lo pide la verificación, que viene después) */
+  pi: () => pickInc(exPI, ['b', 'c', 'd']).map(i => adopt(i, 'd_')),
+  atraso: () => pickInc(exAtr, ['b', 'c', 'd']).map(i => adopt(i, 'd_', { map: { eu: 're' } })),
   pd: () => exPD.inc.map(i => adopt(i, 'd_')),
   adelanto: () => exAd.inc.map(i => adopt(i, 'd_')),
   pid: () => exPID.inc.map(i => adopt(i, 'd_')),
@@ -1354,6 +1357,9 @@ const completo = {
       mid = D16[P.tipo](); mid[0].sec = SEC_D[P.tipo];
       ver = pickInc(verifpol, ['a', 'b', 'c']).map(i => adopt(i, 'v_'));
       ver[0].sec = 'Verificación: ecuación final y polos';
+      /* la K final: en PI y PID sale de la re‑búsqueda (se da aquí); en los demás es la de tu diseño */
+      const q0 = ver[0].q, kq = { pi: 'Re‑buscando sobre la recta de ζ con el PI', pid: 'Con el PID completo (re‑búsqueda)' }[P.tipo];
+      ver[0].q = (P, h) => `${kq ? `${kq} se obtiene ${h.tx(`K = ${h.n(P.K)}`)}. ` : `Con la K final del diseño${P.tipo === 'atraso' || P.tipo === 'adatr' ? ` (${h.tx(`K = ${h.n(P.K)}`)}, la re‑buscada)` : ''}: `}${q0(P, h)}`;
       ver = ver.concat(verifsim.inc.map((i, j) => adopt(i, 's_', j ? null : { q: simQ, sec: 'Verificación con la simulación y ajuste' })));
     }
     const sl = pickInc(simulink, ['e', 'f']).map(i => adopt(i, 'l_'));

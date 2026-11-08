@@ -253,3 +253,50 @@ html.en-ex #entrenar{padding-bottom:70px}
   .en-xres th:nth-child(3),.en-xres td:nth-child(3),.en-xres th:nth-child(4),.en-xres td:nth-child(4){display:none}
   .en-xres th,.en-xres td{padding:7px 8px}
   .en-xres td:nth-child(2){min-width:0}}
+/* ---- v73 · repaso de calidad en el celular: fórmulas y puntuación, casillas alineadas, botones al tamaño del dedo y
+   barra fija abajo para el examen de varios ejercicios ---- */
+.en-nw{white-space:nowrap}
+/* dentro de la fórmula se puede seguir partiendo en los operadores; solo la unión con la puntuación no */
+.en-nw>.katex,.en-nw>.katex>.katex-html{white-space:normal}
+#entrenar details.en-calch{margin:-4px 0 12px}
+#entrenar details.en-calch summary{cursor:pointer;width:max-content;max-width:100%;font-weight:600;color:var(--accent);padding:4px 0;list-style-position:inside}
+#entrenar details.en-calch[open] summary{margin-bottom:4px}
+.en-xnav{display:none}
+@media (max-width:760px){
+  .en-xnav{display:flex;align-items:stretch;gap:6px;position:fixed;z-index:29;left:max(12px,env(safe-area-inset-left,0px));
+    right:calc(max(16px,env(safe-area-inset-right,0px)) + 60px);bottom:calc(18px + env(safe-area-inset-bottom,0px));
+    padding:5px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:0 8px 24px rgba(0,0,0,.2)}
+  .en-xnav.rev{right:max(12px,env(safe-area-inset-right,0px))}
+  .en-xnav .btn{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:14px;padding:4px 12px;border-radius:9px;white-space:nowrap}
+  .en-xnav .btn:disabled{opacity:.4}
+  .en-xnav .en-xn{flex:1;min-width:0;color:var(--muted)}
+  .en-xnav .en-xn b{color:var(--ink);font-size:15px}
+  .en-xnav .en-rot{display:inline-flex;rotate:180deg}
+  #entrenar:has(.en-xnav){padding-bottom:96px}
+}
+@media (pointer:coarse){
+  .en-ib .btn.sm,.en-tl .btn.sm,.en-rpi .btn.sm,.en-xres .btn.sm,.en-xlast .btn.sm{min-height:40px;font-size:14px;padding:6px 14px}
+  .en-top .btn,.en-tools .btn{min-height:40px}
+  .en-xbar button{min-width:44px;min-height:44px}
+  .pl-tools button,.pl-bar .btn.sm{min-height:40px}
+  .en-casos button{min-height:40px;min-width:40px}
+}
+@media (max-width:560px){
+  #entrenar .en-inc.card,#entrenar .en-enun.card{padding:14px 12px}
+  .en-incs{gap:10px}
+  /* etiquetas en una columna y casillas alineadas en otra */
+  .en-fs{display:grid;grid-template-columns:fit-content(46%) minmax(0,1fr);gap:10px}
+  .en-fs>.en-f{grid-column:1/-1}
+  .en-fs>.en-f:not(.en-pf):not(.en-lg){grid-template-columns:subgrid}
+  .en-fl{line-height:1.3}
+  .en-q{gap:8px}
+  .en-sol{font-size:14px}
+  .en-xbar{gap:5px}
+}
+@media print{.en-xnav{display:none!important}}
+@media (max-width:420px){.en-sol .katex-display>.katex,.en-enun .katex-display>.katex{font-size:.95em}}
+@media (max-width:560px){.en-top .en-tit{flex-basis:100%;order:-1}.en-tit b{font-size:17px}}
+/* opciones del examen: sin partir «Temas 1–12»; «Empezar examen» grande y a todo lo ancho en el celular */
+.en-xcfg .seg{flex-wrap:wrap;justify-content:center}
+.en-xcfg .seg button{white-space:nowrap}
+@media (max-width:560px){.en-xcfg .seg button{padding-inline:9px}.en-xcfg [data-pref="xc"]{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:320px}.en-xcfg [data-pref="xc"] button{min-height:40px}.en-xcfg [data-xstart],.en-cont .btn.primary{flex:1 1 100%;min-height:44px;font-size:15px}}

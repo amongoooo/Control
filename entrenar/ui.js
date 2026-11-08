@@ -17,7 +17,7 @@
    Preferencias (modo, caso/variante, imán y opciones del examen) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
 import * as M from './motor.js?v=5';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=6';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=7';
 import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
@@ -25,9 +25,67 @@ const TIPO = { p: 'ganancia', pi: 'PI', atraso: 'atraso', pd: 'PD', adelanto: 'a
 const K_ = () => window.katex;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const strip = s => String(s).replace(/<[^>]+>/g, '');
+/* v73 · una fórmula en línea y la puntuación que la sigue («…T(s)», «%)?») no se separan al cambiar de renglón */
+function glue(el){
+  el.querySelectorAll('.katex:not(.katex-display .katex)').forEach(k => {
+    const t = k.nextSibling; if (!t || t.nodeType !== 3) return;
+    const m = /^[.,;:)?!]+/.exec(t.data); if (!m || (k.parentNode && k.parentNode.classList && k.parentNode.classList.contains('en-nw'))) return;
+    const w = d.createElement('span'); w.className = 'en-nw';
+    k.parentNode.insertBefore(w, k); w.appendChild(k); w.appendChild(d.createTextNode(m[0])); t.data = t.data.slice(m[0].length);
+  });
+}
 
 /* utilidades de dibujo para los ejercicios */
+/* v73 · en pantallas angostas, dos ecuaciones lado a lado («A,\qquad B») van una debajo de otra (sin deslizar de lado) */
+const NARROW = window.matchMedia('(max-width: 600px)');
+function stack(t){
+  const out = []; let dep = 0, env = 0, last = 0;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (c === '\\') { if (t.startsWith('\\begin{', i)) env++; else if (t.startsWith('\\end{', i)) env--;
+      else if (!dep && !env && t.startsWith('\\qquad', i) && !/[a-zA-Z]/.test(t[i + 6] || '')) { out.push(t.slice(last, i).replace(/(\s|~|\\[,;:! ])*[,;]?(\s|~|\\[,;:! ])*$/, '')); last = i + 6; }
+      i++; continue; }
+    if (c === '{') dep++; else if (c === '}') dep--;
+  }
+  if (!out.length) return t;
+  out.push(t.slice(last));
+  return `\\begin{gathered}${out.map(x => x.trim()).filter(Boolean).join(' \\\\[2pt] ')}\\end{gathered}`;
+}
+/* respaldo: «A = B = C» que no cabe → un «=» por renglón (aligned). null si no hay qué partir */
+function breakEq(t){
+  const parts = [], ops = []; let dep = 0, last = 0;
+  if (/\\begin\{/.test(t)) return null;
+  for (let i = 0; i < t.length; i++) {
+    const c = t[i];
+    if (c === '\\') { const m = /^\\(Rightarrow|approx)(?![a-zA-Z])/.exec(t.slice(i));
+      if (m && !dep) { parts.push(t.slice(last, i)); ops.push(m[0]); last = i + m[0].length; i = last - 1; continue; }
+      i++; continue; }
+    if (c === '{') dep++; else if (c === '}') dep--;
+    else if (c === '=' && !dep) { parts.push(t.slice(last, i)); ops.push('='); last = i + 1; }
+  }
+  if (!ops.length) return null;
+  parts.push(t.slice(last));
+  /* con «⇒» se parte solo ahí (lo de cada lado se lee junto); los tramos cortos siguen en el mismo renglón */
+  const cl = x => x.trim().replace(/^(\\[,;:! ]|~|\s)+|(\\[,;:! ]|~|\s)+$/g, '');
+  const imp = ops.includes('\\Rightarrow'), rows = [cl(parts[0]) + ' &' + ops[0] + ' ' + cl(parts[1])];
+  ops.slice(1).forEach((o, j) => { const seg = cl(parts[j + 2]);
+    if ((imp && o !== "\\Rightarrow") || (seg.length < 12 && rows.length > 1)) rows[rows.length - 1] += ` ${o} ${seg}`; else rows.push(`&${o} ${seg}`); });
+  if (imp && ops[0] !== '\\Rightarrow') { const i = ops.indexOf('\\Rightarrow'); rows.length = 0;
+    const L = parts.slice(0, i + 1).map((x, j) => (j ? ops[j - 1] + ' ' : '') + cl(x)).join(' '), R = parts.slice(i + 1).map((x, j) => (j ? ops[i + j] + ' ' : '') + cl(x)).join(' ');
+    return `\\begin{gathered}${L} \\\\ \\Rightarrow\\; ${R}\\end{gathered}`; }
+  return rows.length > 1 ? `\\begin{aligned}${rows.join(' \\\\ ')}\\end{aligned}` : null;
+}
+/* fórmulas en bloque que no caben a lo ancho (ya visibles): se vuelven a dibujar partidas */
+function fit(el){
+  const k = K_(); if (!k) return;
+  el.querySelectorAll('.katex-display').forEach(dv => {
+    if (dv.dataset.fit || !dv.clientWidth || dv.scrollWidth <= dv.clientWidth + 1) return;
+    const a = dv.querySelector('annotation'), b = a && breakEq(a.textContent); dv.dataset.fit = '1'; if (!b) return;
+    try { dv.outerHTML = k.renderToString(b, { displayMode: true, throwOnError: false, strict: 'ignore' }).replace('class="katex-display"', 'class="katex-display" data-fit="1"'); } catch (e) {}
+  });
+}
 const tx = (t, disp) => { const k = K_(); if (!k) return `<code>${esc(t)}</code>`;
+  if (disp && NARROW.matches) t = stack(t);
   try { return k.renderToString(t, { displayMode: !!disp, throwOnError: false, strict: 'ignore' }); } catch (e) { return `<code>${esc(t)}</code>`; } };
 const nT = v => { if (v && typeof v === 'object') v = v.re; if (!Number.isFinite(v)) return v > 0 ? '\\infty' : '—';
   if (Math.abs(v) < 1e-10) return '0'; const a = Math.abs(v);
@@ -38,6 +96,8 @@ const H = { tx, n: nT, f: v => M.fmt(v) };
 let SEC = null, BOX = null, view = 'home', X = null, ST = null, built = false, PL = {}, XM = null;
 const dropPlanes = () => { Object.values(PL).forEach(p => p.destroy()); PL = {}; };
 const PDEF = { mode: 'p', src: 't', mag: 1, xn: '6', xc: 'all', xd: 'v' };
+/* «etiqueta = valor» sin repetir el «=» cuando la etiqueta ya lo trae («Tramo 1: de σ =») */
+const eqL = l => strip(l) === 'Respuesta' ? '' : /=\s*$/.test(strip(l)) ? l : l + ' =';
 const pref = () => { try { return Object.assign({}, PDEF, JSON.parse(localStorage.getItem(PREF) || '{}')); } catch (e) { return Object.assign({}, PDEF); } };
 const setPref = o => { try { localStorage.setItem(PREF, JSON.stringify(Object.assign(pref(), o))); } catch (e) {} };
 
@@ -121,8 +181,10 @@ function start(id, seed, mode, restore){
   ST = restore || { e: id, seed: X.seed, mode, A: {}, ck: {}, seen: {}, done: 0 };
   ST.mode = ST.mode || mode; save();
   view = 'ex'; render(); calcOn(true);
-  SEC.scrollIntoView({ block: 'start' }); window.scrollBy(0, -8);
+  toTop();
 }
+/* «Cómo escribir las respuestas»: en computadora empieza abierto y en el celular cerrado; luego se recuerda (preferencia hw) */
+const calchOpen = () => { const h = pref().hw; return h === 1 || (h == null && !NARROW.matches); };
 const save = () => {
   if (ST && ST.xm) { if (!ST.done && XM && !XM.done) { XM.A[XM.i] = ST.A; M.saveExam(XM); } return; }
   M.saveCur(ST && !ST.done ? ST : null);
@@ -149,7 +211,7 @@ function render(){
     ${xm ? '' : `<button class="btn" data-new="v">Otra variante</button>${def.casos ? `<span class="seg en-casos" role="group" aria-label="Caso de la tarea">${def.casos.map(n => `<button data-new="t${n}" aria-pressed="${X.tarea && P.caso === 'P' + n}" title="Caso de la tarea de la práctica ${n}">P${n}</button>`).join('')}</span>` : X.tarea ? '' : '<button class="btn" data-new="t">Caso de la tarea</button>'}`}
     <button class="btn en-cbtn" data-calc><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01" stroke-width="2.4"/></svg>Calculadora</button>
   </div>
-  <p class="en-mut en-calch">En las casillas puedes escribir operaciones (<code>12*44-48</code>, <code>sqrt(40)</code>), <code>Ans</code> o una memoria de la calculadora (<code>A</code>–<code>F</code>, <code>M</code>); al salir de la casilla se cambia por su valor. «→ Respuesta» de la calculadora escribe en la última casilla o plano que tocaste.</p>
+  ${ST.done ? '' : `<details class="en-mut en-calch"${calchOpen() ? ' open' : ''}><summary>Cómo escribir las respuestas</summary>En las casillas puedes escribir operaciones (<code>12*44-48</code>, <code>sqrt(40)</code>), <code>Ans</code> o una memoria de la calculadora (<code>A</code>–<code>F</code>, <code>M</code>); al salir de la casilla se cambia por su valor. «→ Respuesta» de la calculadora escribe en la última casilla o plano que tocaste.</details>`}
   <div class="card en-enun">${def.enun(P, H)}</div>
   <ol class="en-incs">${def.inc.map(inc => `${inc.sec ? `<li class="en-sech" aria-hidden="true">${esc(inc.sec)}</li>` : ''}<li class="card en-inc" data-i="${inc.k}">
       <div class="en-q"><span class="en-ik">${inc.k})</span><div>${fails[inc.k] ? `<span class="pill bad en-fx">Fallaste aquí ${fails[inc.k]} ${fails[inc.k] === 1 ? 'vez' : 'veces'}</span> ` : ''}${inc.q(P, H)}</div></div>
@@ -163,6 +225,8 @@ function render(){
     <div class="en-res" data-res hidden></div>
     <div class="en-row" data-endb>${xm ? xendHTML() : `<button class="btn primary" data-fin>${ex ? 'Entregar examen' : 'Terminar y guardar'}</button>`}</div>
   </div>`;
+  if (xm) BOX.insertAdjacentHTML('beforeend', xnavHTML());
+  glue(BOX); fit(BOX);
   mountPlanes();
   if (!ex) def.inc.forEach(inc => { if (ST.ck[inc.k]) check(inc.k, true); if (ST.seen[inc.k]) showSol(inc.k); });
   preview();
@@ -232,9 +296,10 @@ function paintInc(li, r){
 function showSol(k){
   const g = M.grade(X, ST.A), r = g.inc[k], inc = X.def.inc.find(i => i.k === k), box = BOX.querySelector(`[data-sl="${k}"]`); if (!box) return;
   const fs = M.fields(inc, X.P), val = (fl, v) => M.isPlane(fl) ? fmtList(v, fl.marks) : fl.ch ? chLbl(fl, v) : M.fmt(v, 5);
-  box.innerHTML = `<div class="en-sh">Solución</div>${inc.how(X.P, r.T, r.S, H)}<p class="en-ans">Respuesta: ${fs.map(fl => M.isPlane(fl) ? `${fl.l}: <b>${val(fl, r.S[fl.k])}</b>` : `${fl.l} = <b>${val(fl, r.S[fl.k])}</b>${fl.u ? ' ' + fl.u : ''}`).join(' · ')}</p>${fs.some(M.isPlane) ? '<p class="en-mut">En el plano, la respuesta correcta se ve en verde con su círculo de tolerancia.</p>' : ''}${r.st === 'arr' ? `<p class="en-mut">Con tus valores anteriores daba: ${fs.map(fl => `${fl.l} = ${val(fl, r.Sc[fl.k])}`).join(' · ')}.</p>` : ''}`;
+  box.innerHTML = `<div class="en-sh">Solución</div>${inc.how(X.P, r.T, r.S, H)}<p class="en-ans">Respuesta: ${fs.map(fl => M.isPlane(fl) ? `${fl.l}: <b>${val(fl, r.S[fl.k])}</b>` : `${eqL(fl.l)} <b>${val(fl, r.S[fl.k])}</b>${fl.u ? ' ' + fl.u : ''}`).join(' · ')}</p>${fs.some(M.isPlane) ? '<p class="en-mut">En el plano, la respuesta correcta se ve en verde con su círculo de tolerancia.</p>' : ''}${r.st === 'arr' ? `<p class="en-mut">Con tus valores anteriores daba: ${fs.map(fl => `${eqL(fl.l)} ${val(fl, r.Sc[fl.k])}`).join(' · ')}.</p>` : ''}`;
+  glue(box);
   fs.forEach(fl => { if (M.isPlane(fl) && PL[fl.k]) PL[fl.k].solution(r.S[fl.k], b => M.ptTol(b, fl)); });
-  box.hidden = false;
+  box.hidden = false; fit(box);
   const b = BOX.querySelector(`[data-sol="${k}"]`); if (b) { b.textContent = 'Solución abierta'; b.disabled = true; }
 }
 /* texto de una opción (v puede venir como número o complejo del motor) */
@@ -275,6 +340,11 @@ function paintDone(g, ex){
    XM = {v:1, items:[{e, seed}], A:[respuestas de cada ejercicio], i (el abierto), el (ms de trabajo), done, res:[{pct, pts, max}], tot, tf, c:{n, xc, xd}}
    Se guarda en localStorage['lgdr-entrena-examen'] (solo este dispositivo). Al entregar, cada ejercicio se registra como un intento
    en modo examen (cuenta para «dominado» y para el repaso de errores) y el examen en el historial (motor.recordExam). */
+/* sube al inicio del ejercicio (debajo de la barra fija), no al encabezado de la pestaña */
+function toTop(){
+  const ab = d.getElementById('appbar'), h = ab ? Math.max(0, ab.getBoundingClientRect().bottom) : 0, r = BOX.getBoundingClientRect();
+  if (r.top < h || r.top > innerHeight * 0.4) window.scrollTo(0, Math.max(0, scrollY + r.top - h - 10));
+}
 const clock = ms => { const t = Math.floor((ms || 0) / 1000), h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = t % 60;
   return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
 /* ¿el ejercicio i del examen tiene alguna respuesta? */
@@ -334,7 +404,7 @@ function examGo(i){
   X = M.build(def, it.seed);
   ST = { e: it.e, seed: X.seed, mode: 'x', A: XM.A[XM.i] || {}, ck: {}, seen: {}, done: XM.done ? 1 : 0, xm: 1 };
   view = 'ex'; render(); calcOn(!XM.done);
-  SEC.scrollIntoView({ block: 'start' }); window.scrollBy(0, -8);
+  toTop();
 }
 const xbarHTML = () => `<nav class="en-xbar" aria-label="Ejercicios del examen">${XM.items.map((it, i) => { const d = byId(it.e), r = XM.res && XM.res[i];
   return `<button data-xgo="${i}" class="${i === XM.i ? 'cur' : ''}${r ? (r.pct >= M.PASS ? ' ok' : ' bad') : answered(i) ? ' ans' : ''}" aria-current="${i === XM.i ? 'step' : 'false'}" title="${esc((i + 1) + '. ' + (d ? d.t : ''))}${r ? ' · ' + r.pct + ' %' : ''}"><b>${i + 1}</b>${r ? `<small>${r.pct} %</small>` : ''}</button>`; }).join('')}</nav>`;
@@ -342,6 +412,16 @@ function xendHTML(){
   const i = XM.i, last = i === XM.items.length - 1;
   if (XM.done) return `${i ? `<button class="btn" data-xgo="${i - 1}">← Anterior</button>` : ''}${last ? '' : `<button class="btn primary" data-xgo="${i + 1}">Siguiente →</button>`}<button class="btn" data-xres>Resultados del examen</button>`;
   return `${i ? `<button class="btn" data-xgo="${i - 1}">← Anterior</button>` : ''}${last ? '' : `<button class="btn primary" data-xgo="${i + 1}">Siguiente ejercicio →</button>`}<button class="btn${last ? ' primary' : ''}" data-xfin>Entregar examen</button>`;
+}
+/* v73 · barra fija abajo para el examen en el celular (a la mano del pulgar; deja el lugar del botón de la calculadora) */
+function xnavHTML(){
+  const i = XM.i, N = XM.items.length, last = i === N - 1, ar = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+  return `<nav class="en-xnav${XM.done ? ' rev' : ''}" aria-label="Moverse por el examen">
+    <button class="btn" data-xgo="${i - 1}"${i ? '' : ' disabled'} aria-label="Ejercicio anterior">${ar}</button>
+    <button class="btn en-xn" data-xtop aria-label="Ir a la lista de ejercicios"><b>${i + 1}</b> de ${N}</button>
+    ${last ? (XM.done ? '<button class="btn primary" data-xres>Resultados</button>' : '<button class="btn primary" data-xfin data-short>Entregar</button>')
+      : `<button class="btn primary" data-xgo="${i + 1}">Siguiente <span class="en-rot">${ar}</span></button>`}
+  </nav>`;
 }
 function finishExam(){
   if (!XM || XM.done) return;
@@ -372,7 +452,7 @@ function examResults(){
   <div class="card en-hist en-xres"><table><thead><tr><th>#</th><th>Ejercicio</th><th>Datos</th><th>Incisos</th><th>Calificación</th><th></th></tr></thead><tbody>${XM.items.map((it, i) => { const d = byId(it.e), r = XM.res[i];
     return `<tr><td>${i + 1}</td><td><b>${esc(d ? d.t : it.e)}</b><br><small class="en-mut">Tema ${d ? d.tema : '—'}</small></td><td>${it.seed > 0 ? '#' + it.seed : it.seed < 0 ? 'Tarea P' + (-it.seed) : 'Tarea'}</td><td>${r.pts}/${r.max}${r.arr ? ` <small class="en-mut">(${r.arr} con arrastre)</small>` : ''}</td><td><b class="${r.pct >= M.PASS ? 'ok' : 'bad'}">${r.pct} %</b>${answered(i) ? '' : ' <small class="en-mut">sin respuestas</small>'}</td><td><button class="btn sm" data-xgo="${i}">Revisar</button></td></tr>`; }).join('')}</tbody></table></div>
   <div class="en-row en-xact"><button class="btn primary" data-xagain>Nuevo examen igual</button>${XM.res.some(r => r.pct < 100) ? '<button class="btn" data-xrp>Repasar mis errores</button>' : ''}<button class="btn" data-home>← Temas</button></div>`;
-  SEC.scrollIntoView({ block: 'start' }); window.scrollBy(0, -8);
+  toTop();
 }
 /* cronómetro del examen: solo cuenta con el examen a la vista */
 let tick = 0;
@@ -407,7 +487,8 @@ function onClick(e){
   if (b.dataset.xgo != null) { examGo(+b.dataset.xgo); return; }
   if ('xfin' in b.dataset) { if (ST && !ST.done) { freezeAll(); XM.A[XM.i] = ST.A; }
     const miss = XM.items.filter((it, i) => !answered(i)).length;
-    twoTap(b, miss ? `${miss} ${miss === 1 ? 'ejercicio sin' : 'ejercicios sin'} respuestas · toca otra vez para entregar` : '¿Entregar? Toca otra vez', finishExam); return; }
+    twoTap(b, 'short' in b.dataset ? (miss ? `${miss} sin resp. · otra vez` : 'Toca otra vez') : miss ? `${miss} ${miss === 1 ? 'ejercicio sin' : 'ejercicios sin'} respuestas · toca otra vez para entregar` : '¿Entregar? Toca otra vez', finishExam); return; }
+  if ('xtop' in b.dataset) { const x = BOX.querySelector('.en-xbar'); if (x) { x.scrollIntoView({ block: 'center', behavior: 'smooth' }); const c = x.querySelector('.cur'); if (c) c.focus({ preventScroll: true }); } return; }
   if ('xres' in b.dataset) { XM = XM || M.loadExam(); examResults(); return; }
   if ('xagain' in b.dataset) { const c = (XM && XM.c) || {}; startExam(examItems(Object.assign(pref(), { xn: String(c.n || 6), xc: c.xc || 'all', xd: c.xd || 'v' }))); return; }
   if ('xrp' in b.dataset) { home(); const r = d.getElementById('enRepaso'); if (r) r.scrollIntoView({ block: 'start' }); return; }
@@ -451,6 +532,7 @@ export async function init(section){
     BOX.addEventListener('click', onClick);
     BOX.addEventListener('input', onInput);
     BOX.addEventListener('keydown', onKey);
+    BOX.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('.en-calch')) setPref({ hw: e.target.open ? 1 : 0 }); }, true);
     BOX.addEventListener('change', e => { if (e.target.matches && e.target.matches('input[data-ans]')) freezeIn(e.target); });
     addEventListener('hashchange', () => { if (location.hash !== '#entrenar') calcOn(false); else if (view === 'ex' && ST && !ST.done) calcOn(true); });
     await needCalc();

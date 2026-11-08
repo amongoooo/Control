@@ -1255,6 +1255,28 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   1440×900 y 390×844 (táctil, oscuro): tema 16 en práctica (P4, P1, variante) al 100 %, examen de 4 (respuestas buenas, una mala y una vacía →
   100/100/80/0), cronómetro, continuar tras salir, revisión, repaso con etiquetas, simulacro de 6 → Ruta al 100 %; sin desbordes ni errores de consola.
 
+## Hecho (v73): repaso de calidad de «Entrenar» en el celular (390 px)
+
+- Versiones: `ui.js?v=7` (importa `ejercicios.js?v=7`), `entrenar.css?v=7`; index.html carga `ui.js?v=7` y `entrenar.css?v=7`.
+- **Fórmulas de las soluciones sin deslizar de lado** (antes 22 se salían a 390 px): en pantallas ≤ 600 px `tx()` parte las ecuaciones en
+  bloque «A,\qquad B» en renglones (`stack`, `gathered`); `angList/angVals` (ejercicios.js) pasan a un 2.º renglón con 4 términos o más; y
+  `fit(el)` vuelve a dibujar partida por sus «=» / «⇒» (`breakEq`, `aligned`) cualquier fórmula en bloque visible que aún no quepa (se marca
+  `data-fit`). En ≤ 420 px las fórmulas en bloque de enunciado/solución van a .95em. Probado: 23 ejercicios × 3 datos y P1–P7 del tema 16
+  sin desbordes a 390 y 1440 px.
+- **Puntuación pegada a la fórmula** (`glue`): «…T(s)» + «.» o «%» + «)?» ya no se separan de renglón (`span.en-nw`; dentro de la fórmula se
+  sigue partiendo en los operadores: `.en-nw>.katex{white-space:normal}`).
+- **Tema 16:** PI y atraso ya no piden los polos de lazo cerrado dos veces (se quitó el inciso de polos del diseño; queda el de la verificación,
+  que ahora dice la K: «Re‑buscando… se obtiene K = …» en PI/PID, «Con la K final del diseño (K = …, la re‑buscada)» en atraso/adelanto‑atraso).
+  Prueba en Node: casos P1–P7 + 200 variantes con las respuestas correctas → 100 %.
+- **Examen con una mano:** `nav.en-xnav` fija abajo en ≤ 760 px (‹ · «n de N» (lleva a la lista de números) · Siguiente › / Entregar con dos
+  toques y texto corto `data-short`), deja el lugar del botón de la calculadora (`right: 16 + 60 px`); en revisión (`.rev`) llega al borde y el
+  último botón es «Resultados». Al cambiar de ejercicio sube al título (`toTop`, debajo de `#appbar`), no al encabezado de la pestaña.
+- **Tamaños táctiles** (`pointer:coarse`): Comprobar / Ver solución / herramientas / Repasar / Revisar 40 px, números del examen 44 px, botones
+  del plano y P1…P7 40 px. ≤ 560 px: tarjetas de incisos con menos relleno, etiquetas y casillas alineadas en dos columnas (`subgrid`), título
+  del ejercicio en su propio renglón, opciones del examen sin partir («Temas 1–12»; Contenido en 2 × 2) y «Empezar examen» a todo lo ancho.
+- «Cómo escribir las respuestas» ahora es un `details` (abierto en computadora, cerrado en el celular; se recuerda en `hw` de `lgdr-entrena-pref`).
+- Respuestas: sin «= =» cuando la etiqueta ya trae «=» y sin «Respuesta: Respuesta =» (`eqL`).
+
 ## Hecho (v66): botón «i» con la información de la app
 
 - La versión ya no va suelta en la barra: `button#abInfo.abicon` (ícono «i», antes de Sincronizar) abre `dialog#infoDlg.sync.ifd` con la versión
