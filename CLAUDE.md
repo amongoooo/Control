@@ -1317,6 +1317,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (≥ 1200 px los dos abiertos; en celular la calculadora cierra el formulario, como antes), búsqueda, índice, Esc, sin desbordes horizontales;
   consola limpia en Teoría, Resumen, P1, P4, Simulador, Preguntas, Entrenar y PDF.
 
+## Hecho (v75): «Plan para el examen» con horario de estudio por día
+
+- Pedido: poder cambiar las horas de estudio de mañana (domingo) y del lunes del examen. En el script de v69 (`window.__lgdrExam`),
+  `lgdr-examen-v1` ganó `d = {'AAAA-MM-DD': [[ini, fin], …]}` (minutos desde las 0:00, fin 1440 = medianoche; `[]` = no estudia ese día).
+  Los días sin `d` usan el horario general `s`–`e`. `blocks(o, D)` limpia (ordena y junta bloques encimados); `vis(o, D)` recorta el día
+  del examen a la meta (una hora antes). `studyMs(a, b, o)` ahora recibe el objeto guardado (antes `s, e`) y suma los bloques de cada día.
+- «Ajustar horario» → tarjetas por día (Hoy / Mañana / día del examen con la hora de la meta), cada una con sus bloques
+  (`input[type=time]` de 15 min, ✕ para quitar), «+ Bloque» (busca un hueco con 30 min de descanso antes y después; avisa si ya no cabe),
+  «No estudio este día» y «Usar el horario general». Abajo, examen, horario general y reiniciar el plan. Fin antes del inicio → aviso
+  `.ex-msg` y no se guarda. Al escribir una hora se redibuja hasta salir de las casillas de hora (Chrome avisa `change` a medio teclear).
+- Sin editar: «Tus horas: hoy … · mañana … · lunes …», meta de hoy hasta el fin del último bloque de hoy (o «hoy ya no tienes horas de
+  estudio») y el plan por día con el fin del último bloque de cada día. CSS «v69» + `.ex-days/.ex-day/.ex-blk/.ex-x/.ex-dbtn/.ex-gen/.ex-sub`.
+- Probado con Playwright (reloj simulado sábado 7 nov 22:00, America/Mexico_City) a 390 px (táctil, claro) y 1440 px (oscuro): domingo
+  8:00–14:00 + 16:00–23:00 y lunes 7:00–12:00 → 19 h, plan domingo 74 % → 100 % el lunes 12:00; no estudio, quitar, general, sin horas; consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

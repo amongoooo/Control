@@ -1701,6 +1701,23 @@ details.wfcode pre{max-height:360px;overflow:auto}
 .ex-form label{display:inline-flex;gap:6px;align-items:center}
 .ex-form input,.ex-form select{font:13px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 7px}
 .ex-note{flex-basis:100%;margin:0;color:var(--muted);font-size:12px}
+.ex-sub{flex-basis:100%;margin:2px 0 0;font:600 12px var(--f-body);text-transform:uppercase;letter-spacing:.04em;color:var(--accent)}
+.ex-days{flex-basis:100%;display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));align-items:start}
+.ex-day{border:1px solid var(--line);border-radius:12px;padding:9px 10px;display:grid;gap:7px;align-content:start;background:var(--bg)}
+.ex-dh{display:flex;flex-wrap:wrap;gap:2px 8px;align-items:baseline}
+.ex-dh b{font-size:14px}
+.ex-dh small{color:var(--muted);font-size:12px}
+.ex-dh .ex-dt{flex-basis:100%}
+.ex-blk{display:flex;gap:6px;align-items:center}
+.ex-form .ex-blk label{flex:1 1 0;min-width:0;gap:5px}
+.ex-form .ex-blk input[type=time]{flex:1;min-width:0;width:100%}
+.ex-form .ex-blk input[type=time]{font:14px var(--f-mono);padding:5px 4px;min-height:36px}
+.ex-x{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--bad);border-radius:999px;width:34px;height:34px;cursor:pointer;font-size:13px}
+.ex-dbtn{display:flex;gap:6px;flex-wrap:wrap}
+.ex-dbtn .ex-ed{padding:6px 11px}
+.ex-gen{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.ex-msg{flex-basis:100%;margin:0;color:var(--bad);font-size:13px;font-weight:600}
+@media (pointer:coarse){.ex-form .ex-blk input[type=time]{font-size:16px;min-height:40px;padding:4px 6px;text-align:center}.ex-form .ex-blk input[type=time]::-webkit-calendar-picker-indicator{display:none}.ex-dbtn .ex-ed{min-height:38px}.ex-x{width:40px;height:40px}}
 @media print{.ex-plan{display:none}}
 @media (max-width:560px){
   .rt-hero{gap:14px}.rt-hr{width:76px;height:76px}.rt-hr svg{width:76px;height:76px}.rt-hv{font-size:21px}
@@ -2042,7 +2059,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 7/11/2026, 23:03 (hora del centro de México)">v1.7.11.2303</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 8/11/2026, 01:03 (hora del centro de México)">v1.8.11.0103</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
@@ -15565,10 +15582,13 @@ window.__PASOS=PASOS;
 <script>
 /* ==== v69 · Plan para el examen (tarjeta en «Resumen», solo presentación) ====
    Barra con tu avance real (el % global de la Ruta del curso, window.__lgdrRuta.data().tot) y una marca con lo que «deberías llevar»
-   ahora para llegar al 100 % una hora antes del examen. Lo esperado sube solo en horas de estudio (de s a e horas, por omisión
-   9:00–23:00): esperado = base + (100 − base) · (horas de estudio desde el inicio del plan) / (horas de estudio hasta la meta).
+   ahora para llegar al 100 % una hora antes del examen. Lo esperado sube solo en tus horas de estudio:
+   esperado = base + (100 − base) · (horas de estudio desde el inicio del plan) / (horas de estudio hasta la meta).
    El plan empieza la primera vez que se ve la tarjeta (base = tu % de ese momento). Se puede cambiar la fecha del examen, el
-   horario y reiniciar el plan. localStorage['lgdr-examen-v1'] = {at:'AAAA-MM-DDTHH:MM', s, e, t0, b0} (solo este dispositivo). */
+   horario y reiniciar el plan.
+   v75: horario por día. Cada día puede tener sus propios bloques de estudio (minutos desde las 0:00; fin 1440 = medianoche) o
+   ninguno; los días sin horario propio usan el general (de s a e horas, por omisión 9:00–23:00).
+   localStorage['lgdr-examen-v1'] = {at:'AAAA-MM-DDTHH:MM', s, e, t0, b0, d:{'AAAA-MM-DD':[[ini,fin],…]}} (solo este dispositivo). */
 (()=>{
   const d=document, KEY='lgdr-examen-v1', page=d.getElementById('resumen');
   if(!page) return;
@@ -15578,10 +15598,23 @@ window.__PASOS=PASOS;
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const BUF=60*60e3;                       /* meta: 100 % una hora antes del examen (esa hora es para repasar fórmulas y descansar) */
   const toDate=s=>{ const m=/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d)/.exec(s||''); return m?new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5]):null; };
-  /* horas de estudio entre a y b (ms) contando solo de s a e horas de cada día */
-  function studyMs(a,b,s,e){ if(b<=a) return 0; let t=0; const day=new Date(a); day.setHours(0,0,0,0);
-    for(let x=day.getTime();x<b;){ const D=new Date(x), w0=new Date(D).setHours(s,0,0,0), w1=e>=24?new Date(D).setHours(24,0,0,0):new Date(D).setHours(e,0,0,0);
-      t+=Math.max(0,Math.min(b,w1)-Math.max(a,w0)); D.setDate(D.getDate()+1); x=D.getTime(); }
+  const dk=D=>`${D.getFullYear()}-${String(D.getMonth()+1).padStart(2,'0')}-${String(D.getDate()).padStart(2,'0')}`;
+  const day0=t=>{ const D=new Date(t); D.setHours(0,0,0,0); return D; };
+  const at=(D,min)=>{ const X=new Date(D); X.setHours(0,0,0,0); X.setMinutes(min); return X.getTime(); };
+  /* bloques limpios: dentro del día, ordenados y sin encimarse */
+  function clean(v){ const r=[]; (Array.isArray(v)?v:[]).filter(b=>Array.isArray(b)&&isFinite(b[0])&&isFinite(b[1]))
+      .map(b=>[Math.max(0,Math.min(1440,+b[0])),Math.max(0,Math.min(1440,+b[1]))]).filter(b=>b[1]>b[0]).sort((a,b)=>a[0]-b[0])
+      .forEach(b=>{ const l=r[r.length-1]; if(l&&b[0]<=l[1]) l[1]=Math.max(l[1],b[1]); else r.push([b[0],b[1]]); });
+    return r; }
+  const own=(o,D)=>!!(o.d&&Array.isArray(o.d[dk(D)]));
+  const blocks=(o,D)=>own(o,D)?clean(o.d[dk(D)]):[[o.s*60,Math.min(24,o.e)*60]];
+  /* lo que se ve y se edita: el día del examen, solo hasta la meta (una hora antes) */
+  const vis=(o,D)=>{ const ex=toDate(o.at); if(!ex||dk(D)!==dk(ex)) return blocks(o,D);
+    const g=Math.round((ex.getTime()-BUF-day0(ex).getTime())/6e4); return blocks(o,D).map(([a,c])=>[a,Math.min(c,g)]).filter(([a,c])=>c>a); };
+  /* horas de estudio entre a y b (ms) contando solo los bloques de cada día */
+  function studyMs(a,b,o){ if(b<=a) return 0; o=o||load(); let t=0;
+    for(let D=day0(a);D.getTime()<b;D.setDate(D.getDate()+1))
+      blocks(o,D).forEach(([m0,m1])=>{ t+=Math.max(0,Math.min(b,at(D,m1))-Math.max(a,at(D,m0))); });
     return t; }
   const fmtH=ms=>{ const h=ms/36e5; return h>=10?Math.round(h)+' h':h>=1?(Math.round(h*2)/2).toString().replace('.',',')+' h':Math.max(1,Math.round(ms/6e4))+' min'; };
   const fmtLeft=ms=>{ if(ms<=0) return 'ya es la hora'; const m=Math.floor(ms/6e4), dd=Math.floor(m/1440), hh=Math.floor(m%1440/60), mm=m%60;
@@ -15589,39 +15622,64 @@ window.__PASOS=PASOS;
   const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   const fmtWhen=D=>`${DIAS[D.getDay()]} ${D.getDate()} de ${D.toLocaleDateString('es-MX',{month:'long'})}, ${D.toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})}`;
   const hm=h=>(h>=24?'24':String(h).padStart(2,'0'))+':00';
+  const mm=m=>m>=1440?'24:00':String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');   /* texto */
+  const tv=m=>m>=1440?'00:00':mm(m);                                                                         /* valor de <input type=time> */
+  const pt=s=>{ const x=/^(\d\d):(\d\d)/.exec(s||''); return x?+x[1]*60+ +x[2]:null; };
+  const bTxt=b=>b.length?b.map(([a,c])=>`${mm(a)}–${mm(c)}`).join(', '):'sin estudio';
+  const dayName=(D,now)=>{ const k=Math.round((day0(D)-day0(now))/864e5);
+    return (k===0?'Hoy · ':k===1?'Mañana · ':'')+DIAS[D.getDay()]+' '+D.getDate(); };
   function cur(){ const R=window.__lgdrRuta; if(!R||!R.data) return null; try{ const D=R.data(); return {p:Math.max(0,Math.min(100,100*D.tot)),N:R.next()}; }catch(e){ return null; } }
 
-  let card=null, edit=false, tick=0;
-  function place(){ if(!card){ card=d.createElement('div'); card.id='exPlan'; card.className='card ex-plan'; card.addEventListener('click',onClick); card.addEventListener('change',onChange); }
+  let card=null, edit=false, tick=0, msg='', pending=false;
+  /* al escribir una hora, Chrome avisa «change» a medio teclear: se redibuja hasta salir de las casillas de hora */
+  function flush(){ if(!pending) return; const f=d.activeElement; if(card&&card.contains(f)&&f.matches('input[type=time]')) return; pending=false; redraw(); }
+  function place(){ if(!card){ card=d.createElement('div'); card.id='exPlan'; card.className='card ex-plan'; card.addEventListener('click',onClick); card.addEventListener('change',onChange); card.addEventListener('focusout',()=>setTimeout(flush,0)); }
     const mini=d.getElementById('rtMini');
     if(mini&&mini.parentNode===page){ if(mini.nextElementSibling!==card) mini.after(card); }
     else if(card.parentNode!==page) page.insertBefore(card,page.firstElementChild); }
+  /* días del plan: de hoy al día del examen (la meta es una hora antes) */
+  function planDays(now,goal){ const r=[]; for(let D=day0(now);D.getTime()<goal&&r.length<14;D.setDate(D.getDate()+1)) r.push(new Date(D)); return r; }
   function render(){
     const C=cur(); if(!C) return; place();
     const o=load(), now=Date.now(), ex=toDate(o.at);
     if(!ex){ card.innerHTML='<p>Fecha del examen no válida.</p>'; return; }
     const goal=ex.getTime()-BUF;
     if(o.t0==null||o.b0==null||o.t0>goal){ o.t0=now; o.b0=Math.round(C.p); save(o); }
-    const p=C.p, tot=studyMs(o.t0,goal,o.s,o.e), done=studyMs(o.t0,Math.min(now,goal),o.s,o.e), left=studyMs(Math.max(now,o.t0),goal,o.s,o.e);
+    const SM=(a,b)=>studyMs(a,b,o);
+    const p=C.p, tot=SM(o.t0,goal), done=SM(o.t0,Math.min(now,goal)), left=SM(Math.max(now,o.t0),goal);
     const exp=now>=goal?100:o.b0+(100-o.b0)*(tot?done/tot:1);
-    const endToday=new Date(now); endToday.setHours(Math.min(o.e,24),0,0,0);
-    const tEnd=Math.min(Math.max(endToday.getTime(),now),goal), expEnd=tEnd>=goal?100:o.b0+(100-o.b0)*(tot?studyMs(o.t0,tEnd,o.s,o.e)/tot:1);
+    const tb=blocks(o,new Date(now)), lastEnd=tb.length?at(new Date(now),tb[tb.length-1][1]):0, studyLeftToday=lastEnd>now&&lastEnd>o.t0;
+    const tEnd=Math.min(Math.max(lastEnd,now),goal), expEnd=tEnd>=goal?100:o.b0+(100-o.b0)*(tot?SM(o.t0,tEnd)/tot:1);
     const diff=Math.round(p-exp), rate=left>0?(100-p)/(left/36e5):Infinity;
     const passed=now>=ex.getTime();
+    const days=planDays(now,goal);
     /* tramos del plan: cuánto deberías llevar al final de cada día de estudio hasta la meta */
-    const marks=[]; { const D=new Date(Math.max(now,o.t0)); D.setHours(0,0,0,0);
-      for(let k=0;k<6&&D.getTime()<goal;k++){ const w1=new Date(D); w1.setHours(Math.min(o.e,24),0,0,0); const t=Math.min(w1.getTime(),goal);
-        if(t>now){ const v=t>=goal?100:o.b0+(100-o.b0)*studyMs(o.t0,t,o.s,o.e)/tot; marks.push({D:new Date(D),t,v,last:t>=goal}); }
-        D.setDate(D.getDate()+1); } }
+    const marks=[]; days.forEach(D=>{ const b=blocks(o,D); if(!b.length) return; const t=Math.min(at(D,b[b.length-1][1]),goal);
+      if(t>now) marks.push({D,t,v:t>=goal||!tot?100:o.b0+(100-o.b0)*SM(o.t0,t)/tot,last:t>=goal}); });
+    if(!passed&&(!marks.length||!marks[marks.length-1].last)) marks.push({D:day0(goal),t:goal,v:100,last:true});
     const st=passed?{c:'done',t:'El examen ya pasó. ¡Suerte con el resultado! Cambia la fecha si tienes otro.'}
       :p>=99.5?{c:'ok',t:'¡Completaste todo! Usa el tiempo que queda para repasar fórmulas, Entrenar y descansar.'}
+      :!tot?{c:'bad',t:'Tu horario no tiene horas de estudio antes del examen: agrégalas en «Ajustar horario».'}
       :diff>=3?{c:'ok',t:`Vas adelantado ${diff} puntos. Sigue así.`}
       :diff>-3?{c:'ok',t:'Vas al día con el plan.'}
       :{c:"bad",t:`Vas atrasado ${-diff} puntos respecto al plan: avanza con «Lo que sigue» para alcanzarlo.`};
     const N=C.N;
+    const hours=days.map(D=>{ const b=vis(o,D);
+      return `${dayName(D,now).replace(/^(Hoy|Mañana) · /,(x,y)=>y.toLowerCase()+' ')} <b>${esc(bTxt(b))}</b>`; }).join(' · ');
+    const dayRows=days.map(D=>{ const k=dk(D), b=vis(o,D), mine=own(o,D), isEx=dk(D)===dk(ex);
+      const h=studyMs(Math.max(at(D,0),now),Math.min(at(D,1440),goal),o);
+      return `<div class="ex-day" data-day="${k}">
+        <div class="ex-dh"><b>${esc(dayName(D,now))}</b>${isEx?`<small>examen ${esc(new Date(ex).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'}))} · meta a las ${esc(new Date(goal).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'}))}</small>`:''}
+          <small class="ex-dt">${b.length?`≈ ${fmtH(h)} por delante`:'sin estudio'}${mine?'':' · horario general'}</small></div>
+        ${b.map(([a,c],i)=>`<div class="ex-blk"><label>De <input type="time" step="900" data-ex="b0" data-i="${i}" value="${tv(a)}"></label><label>a <input type="time" step="900" data-ex="b1" data-i="${i}" value="${tv(c)}"></label>
+          <button type="button" class="ex-x" data-ex="del" data-i="${i}" aria-label="Quitar el bloque de ${mm(a)} a ${mm(c)}" title="Quitar este bloque">✕</button></div>`).join('')}
+        <div class="ex-dbtn"><button type="button" class="ex-ed" data-ex="add">+ Bloque</button>
+          ${b.length?'<button type="button" class="ex-ed" data-ex="none">No estudio este día</button>':''}
+          ${mine?'<button type="button" class="ex-ed" data-ex="gen">Usar el horario general</button>':''}</div>
+      </div>`; }).join('');
     card.innerHTML=`
       <div class="ex-hd"><div class="ex-ttl"><b>Plan para el examen</b><small>${esc(fmtWhen(ex))} · ${now>=ex.getTime()?'ya pasó':'faltan '+fmtLeft(ex.getTime()-now)}</small></div>
-        <button type="button" class="ex-ed" data-ex="edit" aria-expanded="${edit}">${edit?'Listo':'Ajustar'}</button></div>
+        <button type="button" class="ex-ed" data-ex="edit" aria-expanded="${edit}">${edit?'Listo':'Ajustar horario'}</button></div>
       <div class="ex-bar" role="img" aria-label="Llevas ${Math.round(p)} %; según el plan deberías llevar ${Math.round(exp)} %">
         <div class="ex-fill ${st.c}" style="width:${p.toFixed(1)}%"></div>
         ${passed?'':`<div class="ex-mk" style="left:${Math.min(100,exp).toFixed(1)}%"><span style="transform:translateX(${exp<6?'-15%':exp>94?'-85%':'-50%'})">${Math.round(exp)} %</span></div>`}
@@ -15630,26 +15688,61 @@ window.__PASOS=PASOS;
       <div class="ex-nums"><span><b>${Math.round(p)} %</b> llevas</span>${passed?'':`<span class="ex-dot">▼ <b>${Math.round(exp)} %</b> deberías llevar ahora</span>`}</div>
       <p class="ex-st ${st.c}">${esc(st.t)}</p>
       ${passed||p>=99.5?'':`<ul class="ex-l">
-        <li>Meta de hoy (hasta las ${hm(Math.min(o.e,24))}): <b>${Math.round(Math.max(expEnd,p))} %</b>${expEnd>p?` · te faltan ${Math.round(expEnd-p)} puntos`:' ✓'}</li>
-        <li>Te quedan ~<b>${fmtH(left)}</b> de estudio (de ${hm(o.s)} a ${hm(o.e)}) hasta la meta: ${Number.isFinite(rate)?`unos <b>${(Math.round(rate*10)/10).toString().replace('.',',')} %</b> por hora`:'ya no queda tiempo de estudio en el plan'}.</li>
+        <li>${studyLeftToday?`Meta de hoy (hasta las ${mm(tb[tb.length-1][1])}): <b>${Math.round(Math.max(expEnd,p))} %</b>${expEnd>p?` · te faltan ${Math.round(expEnd-p)} puntos`:' ✓'}`:'Hoy ya no tienes horas de estudio en tu horario: descansa.'}</li>
+        <li>Te quedan ~<b>${fmtH(left)}</b> de estudio hasta la meta: ${Number.isFinite(rate)?`unos <b>${(Math.round(rate*10)/10).toString().replace('.',',')} %</b> por hora`:'ya no queda tiempo de estudio en el plan'}.</li>
+        <li>Tus horas: ${hours}.</li>
         ${marks.length>1?`<li>Plan: ${marks.map(m=>m.last?`<b>100 %</b> a las ${new Date(m.t).toLocaleTimeString('es-MX',{hour:'numeric',minute:'2-digit'})} del ${DIAS[m.D.getDay()]} (una hora antes, solo repaso)`:`${DIAS[m.D.getDay()]} <b>${Math.round(m.v)} %</b>`).join(' → ')}.</li>`:''}
       </ul>`}
       ${N&&!passed?`<a class="ex-nx" href="#ruta"><span>Lo que sigue</span><b>${esc(N.t)}</b><i aria-hidden="true">→</i></a>`:''}
       ${edit?`<div class="ex-form">
+        <p class="ex-sub">Horas de estudio por día</p>
+        <div class="ex-days">${dayRows||'<p class="ex-note">No quedan días antes del examen.</p>'}</div>
+        ${msg?`<p class="ex-msg" role="alert">${esc(msg)}</p>`:''}
+        <p class="ex-sub">General y examen</p>
+        <div class="ex-gen">
         <label>Examen <input type="datetime-local" data-ex="at" value="${esc(o.at)}"></label>
-        <label>Estudio de <select data-ex="s">${Array.from({length:24},(_,h)=>`<option value="${h}"${h===o.s?' selected':''}>${hm(h)}</option>`).join('')}</select></label>
+        <label>Horario general de <select data-ex="s">${Array.from({length:24},(_,h)=>`<option value="${h}"${h===o.s?' selected':''}>${hm(h)}</option>`).join('')}</select></label>
         <label>a <select data-ex="e">${Array.from({length:24},(_,h)=>h+1).map(h=>`<option value="${h}"${h===o.e?' selected':''}>${hm(h)}</option>`).join('')}</select></label>
         <button type="button" class="ex-ed" data-ex="reset">Reiniciar el plan desde ahora (${Math.round(p)} %)</button>
-        <p class="ex-note">El avance es el % de la Ruta del curso (teoría, evaluaciones, prácticas, reportes, preguntas…). Lo que «deberías llevar» solo sube en tus horas de estudio y llega al 100 % una hora antes del examen. Se guarda solo en este dispositivo.</p>
+        </div>
+        <p class="ex-note">Cada día puede tener varios bloques (por ejemplo 8:00–14:00 y 16:00–23:00, con tiempo para comer y descansar); fin «00:00» = medianoche. Los días que no cambies usan el horario general. Lo que «deberías llevar» solo sube en tus horas de estudio y llega al 100 % una hora antes del examen. El avance es el % de la Ruta del curso. Se guarda solo en este dispositivo.</p>
       </div>`:''}`;
   }
+  /* guarda los bloques de un día y vuelve a dibujar sin perder el lugar ni el foco */
+  function setDay(k,b){ const o=load(); o.d=Object.assign({},o.d||{}); if(b==null) delete o.d[k]; else o.d[k]=b; save(o); }
+  function redraw(focusSel){ const y=card.getBoundingClientRect().top; render();
+    const dy=card.getBoundingClientRect().top-y; if(Math.abs(dy)>1) scrollBy(0,dy);
+    if(focusSel){ const f=card.querySelector(focusSel); if(f) f.focus({preventScroll:true}); } }
   function onClick(e){ const b=e.target.closest('[data-ex]'); if(!b||b.tagName!=='BUTTON') return;
-    if(b.dataset.ex==='edit'){ edit=!edit; render(); return; }
-    if(b.dataset.ex==='reset'){ const o=load(), C=cur(); o.t0=Date.now(); o.b0=C?Math.round(C.p):0; save(o); render(); } }
-  function onChange(e){ const t=e.target, k=t.dataset&&t.dataset.ex; if(!k) return; const o=load();
-    if(k==='at'){ if(!toDate(t.value)) return; o.at=t.value; if(o.t0>toDate(o.at).getTime()-BUF) delete o.t0; }
-    else { o[k]=+t.value; if(o.e<=o.s){ if(k==='s') o.e=Math.min(24,o.s+1); else o.s=Math.max(0,o.e-1); } }
-    save(o); render(); }
+    const a=b.dataset.ex, row=b.closest('[data-day]'), k=row&&row.dataset.day; msg=''; pending=false;
+    if(a==='edit'){ edit=!edit; render(); return; }
+    if(a==='reset'){ const o=load(), C=cur(); o.t0=Date.now(); o.b0=C?Math.round(C.p):0; save(o); redraw(); return; }
+    if(!k) return;
+    const o=load(), D=new Date(k+'T00:00'), cb=vis(o,D);
+    if(a==='add'){ /* un hueco de al menos 1 h libre (30 min de descanso antes y después): después del último bloque o antes del primero */
+      const f=cb[0], l=cb[cb.length-1]; let nb=null;
+      if(!l) nb=[Math.max(o.s*60,9*60),Math.max(o.s*60,9*60)+120];
+      else if(l[1]+90<=1440) nb=[l[1]+30,Math.min(1440,l[1]+150)];
+      else if(f[0]>=90) nb=[Math.max(0,f[0]-150),f[0]-30];
+      else { for(let i=0;i+1<cb.length;i++) if(cb[i+1][0]-cb[i][1]>=120){ nb=[cb[i][1]+30,cb[i+1][0]-30]; break; } }
+      if(!nb){ msg='Ya no cabe otro bloque ese día: acorta uno de los que tienes para dejar un descanso.'; redraw(); return; }
+      const n=clean(cb.concat([nb])); setDay(k,n); const j=Math.max(0,n.findIndex(x=>x[0]===nb[0]));
+      redraw(`[data-day="${k}"] input[data-ex="b0"][data-i="${j}"]`); return; }
+    if(a==='del'){ const n=cb.filter((x,i)=>i!==+b.dataset.i); setDay(k,n); redraw(`[data-day="${k}"] [data-ex="add"]`); return; }
+    if(a==='none'){ setDay(k,[]); redraw(`[data-day="${k}"] [data-ex="add"]`); return; }
+    if(a==='gen'){ setDay(k,null); redraw(`[data-day="${k}"] [data-ex="add"]`); return; } }
+  function onChange(e){ const t=e.target, kx=t.dataset&&t.dataset.ex; if(!kx) return; msg='';
+    if(kx==='b0'||kx==='b1'){ const row=t.closest('[data-day]'); if(!row) return; const k=row.dataset.day, i=+t.dataset.i;
+      const o=load(), cb=vis(o,new Date(k+'T00:00')).map(x=>x.slice()); if(!cb[i]) return;
+      let v=pt(t.value); if(v==null) return; if(kx==='b1'&&v===0) v=1440;
+      cb[i][kx==='b0'?0:1]=v;
+      if(cb[i][1]<=cb[i][0]) msg='La hora de fin debe ser después de la de inicio (00:00 = medianoche).';
+      else setDay(k,cb);                         /* en el orden de la pantalla; se ordena y se junta al leer */
+      pending=true; if(d.activeElement!==t) flush(); return; }
+    const o=load();
+    if(kx==='at'){ if(!toDate(t.value)) return; o.at=t.value; if(o.t0>toDate(o.at).getTime()-BUF) delete o.t0; }
+    else { o[kx]=+t.value; if(o.e<=o.s){ if(kx==='s') o.e=Math.min(24,o.s+1); else o.s=Math.max(0,o.e-1); } }
+    save(o); redraw(); }
   const onRes=()=>{ const h=location.hash||''; return h===''||h==='#'||h==='#resumen'; };
   function go(){ if(!onRes()) return; (window.requestIdleCallback||(f=>setTimeout(f,300)))(()=>{ try{ render(); }catch(err){} }); }
   addEventListener('hashchange',go);
@@ -15657,7 +15750,7 @@ window.__PASOS=PASOS;
   d.addEventListener('visibilitychange',()=>{ if(!d.hidden) go(); });
   clearInterval(tick); tick=setInterval(()=>{ if(!d.hidden&&onRes()&&card&&!card.contains(d.activeElement)) try{ render(); }catch(err){} },60e3);
   if(d.readyState==='complete') setTimeout(go,600); else addEventListener('load',()=>setTimeout(go,600));
-  window.__lgdrExam={render,load,studyMs};
+  window.__lgdrExam={render,load,studyMs,blocks:(D,o)=>blocks(o||load(),D)};
 })();
 </script>
 </body></html>
