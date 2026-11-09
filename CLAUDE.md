@@ -1332,6 +1332,36 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright (reloj simulado sábado 7 nov 22:00, America/Mexico_City) a 390 px (táctil, claro) y 1440 px (oscuro): domingo
   8:00–14:00 + 16:00–23:00 y lunes 7:00–12:00 → 19 h, plan domingo 74 % → 100 % el lunes 12:00; no estudio, quitar, general, sin horas; consola limpia.
 
+## Hecho (v76): formulario que contesta todas las preguntas de las evaluaciones + botón ∑ en la barra
+
+- Pedido: que con el «∑ Formulario» se puedan contestar **todas** las preguntas de las evaluaciones (las 61 de `CHK` de las secciones 1–20
+  y todas sus variantes de `VAR`), con fórmulas despejadas, las variables y qué es cada una, y las explicaciones; y un botón para abrirlo
+  en cualquier momento. Se hizo **encima de v74** (no se quitó nada: barra fija, buscador, índice, gráficas y filas de v74 siguen igual).
+- **Generador:** `python3 -I herramientas/formulario-v76.py index.html`. En cada `section#fxsN` agrega, antes de `</section>`, lo que hay
+  entre `<!--v76:N-->` y `<!--/v76:N-->` (se puede volver a correr: primero borra eso). Contenido en `ADD` del script (mini‑lenguaje
+  `\f{}{}`, `\r{}`, `\t{}`, `_{}`/`^{}`, dos espacios = punto donde la fórmula puede partirse). Todo son filas `div.fx-r.fx-v76` hijas de la
+  sección, con `data-k`, así el buscador de v74 las filtra. Tipos: fórmula nueva (`.fx-m` hecha de tramos `.fx-it` que no se parten +
+  `.fx-dp` con sus despejes), tabla `table.fx-t.fx-tx` (texto que se acomoda), «Despejes» `.fx-dpr`, «Ideas clave» `.fx-kr > ul.fx-k`
+  (para las preguntas de concepto) y «Variables» `.fx-vr > dl.fx-v`. CSS «v76» al final del bloque de CSS de v74.
+- Lo que se agregó porque faltaba para alguna pregunta: tabla σ/ω → tipo de señal y «si mueves el punto…» (1); linealidad de Laplace,
+  G(0) = d/c desde aÿ + bẏ + cy = d·u y por qué los polos son los modos (2); (s + a) → raíz en −a, distancia √((σ₀ − p)² + ω₀²), |G| en un
+  cero = 0 y en un polo → ∞ (3); y(mτ) = 1 − e^(−m) con tabla τ/2…5τ y la regla de «n veces más rápida» (4); tabla de ζ con nombres (5);
+  «si dos pares comparten…» σ → Ts, ω_d → Tp, ζ → %OS, distancia → ω_n (6); residuos de c/[(s + p₁)(s + p₂)] (7); c = −1/z y cero
+  izquierdo/derecho (8); s² + as + K (9); especificación → recta/círculo, menos %OS → más cerca del eje real (10); K = (a/2)² + b² (11);
+  n.º de asíntotas = n − m y sus ángulos, ejemplos del eje real (12); K_crít = (p + q)pq para s(s + p)(s + q) (13); regla de 5× con ejemplos
+  (14); despejes de K_p/K_v/K_a (15); PI sube el tipo, el atraso no (16); signo de θ_c, p_c > z_c en el adelanto (17); K₁/K₂/K₃ (18);
+  estabilidad por polos, cancelación inestable, ajustar y re‑verificar (19); tabla de comandos (pole(T) vs pole(G), stepinfo, dcgain…) (20).
+  Si cambian las preguntas de `CHK`/`VAR`, revisar que el formulario siga cubriéndolas.
+- **Botón `#abFx` (∑)** en la barra de la app, antes de «i»: abre/cierra el formulario en cualquier página (`window.__lgdrFxOpen()`, en el
+  script de v3). Parte: la de la evaluación a la vista; si no, la de la sección de Teoría abierta (o la más visible) y baja hasta ella con
+  `__lgdrFxFind.go('fxsN')` de v74; si no, la última pestaña usada. El `#fxFab` de las evaluaciones y el «∑ Formulario» de la evaluación en
+  pantalla completa siguen igual.
+- Barra en celular (para que quepa el botón): ≤ 430 px sin el texto del título (ya salía cortado), sin la palabra «Teoría» del anillo, íconos
+  de 32 px; ≤ 400 px «Ruta» sin anillo; ≤ 360 px sin logo. Medido de 340 a 430 px: todo cabe.
+- Probado con Playwright a 390 px (táctil) y 1440 px (oscuro, dos columnas): abrir desde Resumen, desde Teoría (baja a la sección 13 con
+  Routh abierta), evaluación en pantalla completa con el formulario abajo, buscador de v74 («sin amortiguamiento», «variables»), Esc,
+  sin desbordes horizontales en las filas nuevas, consola sin errores.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
