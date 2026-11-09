@@ -1453,3 +1453,14 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   **Si cambia el contenido de la Guía, volver a generar `guia.pdf`.**
 - **Tema oscuro:** `--accent` `#7ea3ff` → `#ffb020` y `--accent-soft` → `#3b2a0c` (amarillo/naranja). `--c1` de las gráficas sigue azul
   porque varios textos dicen «(azul)».
+
+## Hecho (v82): Guía · 6 ejercicios más con plantas nuevas (E13–E18)
+
+- En `EJ` (script v57 de la Guía): E13 PI ideal K/[(s+3)(s+5)(s+8)] 15 % (PI 0.1: K 140.45 → 140.34, modo lento −0.0548, Ts ≈ 57 s),
+  E14 atraso K/[s(s+3)(s+9)] 15 % Kv×10 (0.1/0.01: K 46.36, ×9.82, 20.36 % simulado; variante 0.02/0.002 → 15.74 %),
+  E15 PD K/[(s+1)(s+5)(s+10)] 15 % Ts÷2 (z_c = 7.073, K = 62.80, 16.89 %), E16 adelanto K/[s(s+2)(s+8)] 20 % Ts = 2 s con cero en −2
+  (cancela; p_c = 8.810, K = 246.5, 18.66 %), E17 PID K/[(s+0.5)(s+4)(s+10)] 15 % Tp·2/3 e = 0 (z_PD = 8.612, PI cero −0.5 sobre el polo;
+  K = 20.01, K1/K2/K3 = 182.3/86.16/20.01, 15.50 %, Tp 0.851) y E18 adelanto‑atraso K/[s(s+5)(s+10)] 15 % Ts÷2 Kv×10 cero en −4
+  (p_c = 13.72, atraso 0.0618/0.01, K = 690.0, Kv 24.86, 10.65 %). Números con numpy (LGDR por condición de ángulo + residuos exactos).
+- Cada entrada nueva lleva `fig` (opciones de `plane()`; `exo` = polos/ceros propios: `plane()` ahora acepta `o.exo` además de `o.ex`) y la
+  respuesta en E dibuja la figura fija del plano s + leyenda. `guia.pdf` regenerado: 51 págs.
