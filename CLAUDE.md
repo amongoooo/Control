@@ -1382,6 +1382,27 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   formulario modal → panel al abrir la calculadora, evaluación con los dos (1100 px: evaluación · calculadora · formulario), búsqueda con clic
   en celular y computadora; consola limpia.
 
+## Hecho (v78): «Desarrollo y ejemplo» en las fórmulas del formulario que no lo tenían
+
+- Pedido: «faltan fórmulas como la de la ganancia en el punto de ruptura; sí está pero no desarrollada con un ejemplo con variables;
+  revisa si falta alguna otra». Encima de v74/v76 (no se quitó nada). En la fila de cada fórmula va `details.fx-ej` («Desarrollo …» /
+  «Ejemplo · Pn», cerrado) > `div.fx-ejb` con el desarrollo con variables y el caso de las prácticas (números revisados con Python):
+  9 ec. característica con (s+a)(s+b)(s+c) (P1, P6 con cero), K = −D(σ)/N(σ) (P1: σ = −3 → 3, −7 → 15, −1 → K < 0), T(0) (P1);
+  10 s_d de P4 (T_s ÷ 3) y P6 (T_p × 2/3); 11 ángulos y distancias de los 3 polos a s₀ de P1 (∠ = −180°, K = 45.53);
+  12 ruptura N·D′ − N′·D con variables (3σ² + 2(a+b+c)σ + (ab+ac+bc) = 0, P1 −2.845 y descarte de −5.155, P6 2σ³+43σ²+304σ+684),
+  **K_b** = ∏|σb + p|/∏|σb + z| (P1 0.845·1.155·3.155 = 3.079 y lectura; P6 3.558), forma de Nise (P1, P6), ángulos de salida (−45°) y
+  llegada (−108.43°) con variables, cruce s = jω (P1: 480, 6.633); 13 Routh de 4.º orden (P2 con PI → 379.95), caso ε
+  (s⁴+s³+2s²+2s+3 → 2 polos inestables) y fila de ceros (P1 con K = 480); 15 e(∞) por valor final para escalón y rampa (P1, P3);
+  16 K_v con atraso (P3) y dipolo (P2: −1.42°, 0.996); 17 θ_c (P4), z_c (P4) y p_c (P5), K con compensador (P4 47.47, P5 476.2);
+  18 PID con variables (P6). Filas nuevas `.fx-r.fx-add` (con `data-k`): **suma y producto de los polos** (tercer polo de P1 por suma,
+  producto y división) en 9, y ruptura en MATLAB (`polyder(num,den)`) en 20.
+- **Generador:** `node herramientas/formulario-ejemplos.js` (contenido en `E`; KaTeX de index.html prerenderizado; se puede volver a
+  correr: borra antes `details.fx-ej` y `<!--fx-add-->…<!--/fx-add-->`). Filas por n.º de hijo de `section#fxsN` (h3 = 0); en las
+  fórmulas centradas `\qquad` a profundidad 0 = salto de línea. Si v74/v76 cambian el orden de las filas, revisar los índices.
+- CSS «v78» al final del bloque de CSS de v76; `<script>` «v78» al final del `<body>`: al buscar en `#fxQ` se abren los desarrollos que
+  contienen lo buscado y se cierran al borrar.
+- Probado a 390 px (táctil, claro) y 1280 px (oscuro, dos columnas): ninguna fórmula se desborda, sin errores de KaTeX; búsqueda «ruptura».
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
