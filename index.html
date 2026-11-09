@@ -2043,51 +2043,53 @@ dialog.fxd.fx-srch .fx-s>.fx-r:not(.fx-fig):hover{background:var(--accent-soft);
 .fx-fromh button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (min-width:1000px){html.fxps.fxside:not(.exm):not(.ccside) body{padding-right:min(44%,460px)}}
 @media print{.fxl .fxgo{display:none!important}}
-/* ---------- v57 · pestaña Guía de diseño ---------- */
+/* ---------- v57 · pestaña Guía de diseño (versión fija: acordeón + PDF) ---------- */
 #guia{display:grid;gap:16px}
-#guia[hidden]{display:none}
-#guia .card{display:grid;gap:12px}
-.gd-pick{gap:16px!important}
-.gd-q h3{display:flex;align-items:center;gap:8px;margin:0 0 8px}
-.gd-k{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--surface);font:700 13px var(--f-mono);flex:none}
-.gd-opts{display:flex;flex-wrap:wrap;gap:8px}
-.gd-o{display:grid;gap:1px;text-align:left;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:8px 12px;cursor:pointer;font:inherit;min-height:44px;min-width:0}
-.gd-o b{font-size:14px;font-weight:600;line-height:1.25}
-.gd-o small{font-size:11.5px;color:var(--muted);line-height:1.3}
-.gd-o:hover{border-color:var(--accent)}
-.gd-o[aria-checked="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
-.gd-o:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.gd-o .gd-m{font:600 10.5px var(--f-mono);color:var(--accent);letter-spacing:.02em}
-.gd-fit{display:grid;gap:8px}
-.gd-fit .note{margin:0}
-.gd-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px}
-.gd-head h3{margin:0}
-.gd-head .tip{margin:0}
-.gd-ex0{display:grid;gap:6px;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;background:var(--bg);font-size:14px}
-.gd-ex0 .gd-acts{display:flex;flex-wrap:wrap;gap:8px}
-.gd-ex0 .gd-acts a,.gd-ex0 .gd-acts button{text-decoration:none}
-ol.gd-l{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.gd-st{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--surface)}
+.gd-intro{display:grid;gap:12px}
+.gd-how{margin:0;padding:0;list-style:none;display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.gd-how li{font-size:14px;display:flex;gap:8px;align-items:baseline}
+.gd-how li>b{flex:none;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:var(--surface);font:700 12px var(--f-mono)}
+.gd-acts button.sy-b{cursor:pointer}
+.gd-body{display:grid;gap:16px}
+.gd-grp{display:grid;gap:10px}
+.gd-gh{display:flex;align-items:center;gap:10px}
+.gd-gh h3{margin:0}
+.gd-k{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent);color:var(--surface);font:700 14px var(--f-mono);flex:none}
+.gd-gi{margin:0;font-size:14px;color:var(--muted)}
+.gd-accs{display:grid;gap:8px}
+details.gd-acc{border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+details.gd-acc>summary{list-style:none;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;min-height:48px}
+details.gd-acc>summary::-webkit-details-marker{display:none}
+details.gd-acc>summary:hover{background:var(--accent-soft);border-radius:10px}
+details.gd-acc>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:10px}
+details.gd-acc[open]{border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+details.gd-acc[open]>summary{border-bottom:1px solid var(--line);border-radius:10px 10px 0 0}
+.gd-tag{min-width:34px;height:28px;padding:0 6px;border-radius:7px;border:1.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font:700 12.5px var(--f-mono)}
+.gd-sm{display:grid;gap:1px;min-width:0}
+.gd-sm b{font-size:15px;font-weight:600;line-height:1.3}
+.gd-sm small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.gd-cv{width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);rotate:45deg;margin:0 6px 4px;transition:rotate .2s}
+details.gd-acc[open]>summary .gd-cv{rotate:225deg;margin-bottom:-4px}
+.gd-ab{padding:12px 14px 14px;display:grid;gap:10px;min-width:0}
+.gd-when{margin:0;font-size:14.5px}
+.gd-h4{margin:6px 0 0;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+ol.gd-l{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.gd-st{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface)}
 .gd-st>.gd-n{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font:700 13px var(--f-mono)}
 .gd-st h4{margin:3px 0 4px;font-size:15px;font-weight:600}
 .gd-st p{margin:0 0 6px;font-size:14.5px}
-.gd-st .gd-f{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;max-width:100%}
-.gd-st .gd-f .katex-display{margin:.3em 0}
-.gd-st .gd-e{margin:6px 0 0;font-size:13.5px;border-left:3px solid var(--c3);background:color-mix(in srgb,var(--c3) 9%,transparent);padding:6px 10px;border-radius:0 8px 8px 0}
-.gd-st .gd-e b{color:var(--c3)}
-.gd-st .gd-w{margin:6px 0 0;font-size:13.5px;border-left:3px solid var(--warn);background:var(--warn-soft);padding:6px 10px;border-radius:0 8px 8px 0}
-.gd-st.ph{background:var(--bg)}
-.gd-st.ph>.gd-n{border-style:dashed}
-.gd-sep{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 2px 0}
-/* plano s */
-.gd-pl{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
-@media (min-width:900px){.gd-pl{grid-template-columns:minmax(0,1.35fr) minmax(280px,1fr);align-items:start}}
-.gd-svw{border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
-svg.gd-svg{display:block;width:100%;height:auto;font-family:var(--f-mono);touch-action:manipulation}
+.gd-f,.gd-eg{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;max-width:100%}
+.gd-f .katex-display,.gd-eg .katex-display{margin:.3em 0}
+.gd-e{margin:6px 0 0!important;font-size:13.5px!important;border-left:3px solid var(--c3);background:color-mix(in srgb,var(--c3) 9%,transparent);padding:6px 10px;border-radius:0 8px 8px 0}
+.gd-e b{color:var(--c3)}
+.gd-sep{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:4px 2px 0}
+.gd-fig{margin:0;display:grid;gap:4px;max-width:640px;justify-self:center;width:100%}
+svg.gd-svg{display:block;width:100%;height:auto;font-family:var(--f-mono);border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.gd-fig figcaption{font-size:12.5px;color:var(--muted);text-align:center}
 .gd-svg .gr{stroke:var(--grid);stroke-width:1}
 .gd-svg .ax{stroke:var(--muted);stroke-width:1.2}
 .gd-svg .tk{fill:var(--muted);font-size:11px}
-.gd-svg .zn{fill:var(--ok);fill-opacity:.16}
+.gd-svg .zn{fill:var(--ok);fill-opacity:.18}
 .gd-svg .cn{fill:var(--c1);fill-opacity:.06}
 .gd-svg .bd{fill:var(--bad);fill-opacity:.07}
 .gd-svg .lz{stroke:var(--c1);stroke-width:2;fill:none}
@@ -2095,53 +2097,41 @@ svg.gd-svg{display:block;width:100%;height:auto;font-family:var(--f-mono);touch-
 .gd-svg .lw{stroke:var(--c3);stroke-width:2;fill:none;stroke-dasharray:3 4}
 .gd-svg .ln{stroke:#a855f7;stroke-width:2;fill:none;stroke-dasharray:10 4 2 4}
 .gd-svg .tz{fill:var(--c1)} .gd-svg .ts{fill:var(--c2)} .gd-svg .tw{fill:var(--c3)} .gd-svg .tn{fill:#a855f7}
-.gd-svg .lb{font-size:12px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
-.gd-svg .pt{fill:var(--ink);stroke:var(--surface);stroke-width:1.5}
-.gd-svg .pt.dp{fill:var(--ok);stroke:var(--surface)}
+.gd-svg .lb{font-size:12.5px;font-weight:600;paint-order:stroke;stroke:var(--surface);stroke-width:3.5px;stroke-linejoin:round}
+.gd-svg .pt.dp{fill:var(--ok);stroke:var(--surface);stroke-width:1.5}
 .gd-svg .pt.s0{fill:none;stroke:var(--muted);stroke-width:2}
 .gd-svg .px{stroke:var(--ink);stroke-width:2.2}
 .gd-svg .pz{fill:var(--surface);stroke:var(--ink);stroke-width:2}
 .gd-svg .cx{stroke:var(--c2);stroke-width:2.2}
 .gd-svg .cz{fill:var(--surface);stroke:var(--c2);stroke-width:2}
 .gd-svg .off{fill:var(--muted);font-size:11px}
-.gd-ctl{display:grid;gap:10px}
-.gd-row{display:grid;gap:4px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface)}
-.gd-row.off{opacity:.55}
-.gd-rh{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13.5px}
-.gd-rh label{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer}
-.gd-rh input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
-.gd-sw{display:inline-block;width:22px;height:0;border-top:3px solid var(--sw);vertical-align:middle}
-.gd-sw.d{border-top-style:dashed}
-.gd-row .kctl{flex:none;gap:8px}
-.gd-row .kctl input[type=number]{width:84px}
-.gd-row .kctl .u{font:500 12.5px var(--f-mono);color:var(--muted);min-width:22px}
-.gd-rv{font:500 12.5px var(--f-mono);color:var(--muted)}
-.gd-rv b{color:var(--ink);font-weight:600}
-.gd-tm{margin-top:2px}
-.gd-tm button{padding:3px 9px;font-size:12px}
-.gd-read{display:grid;gap:4px;font-size:13.5px;border-left:3px solid var(--ok);background:var(--ok-soft);padding:8px 12px;border-radius:0 8px 8px 0}
-.gd-read .katex{font-size:1.02em}
-.gd-exb{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.gd-exb .tip{margin-right:4px}
-.gd-exb button{min-width:40px}
-.gd-exb button[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
-.gd-leg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--muted)}
-.gd-leg span{display:inline-flex;align-items:center;gap:5px}
-/* tabla del examen */
+.gd-leg{display:flex;flex-wrap:wrap;justify-content:center;gap:2px 14px;margin:0;font-size:12px;color:var(--muted)}
 .gd-tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px}
-table.gd-t{font-size:13.5px;min-width:640px}
-table.gd-t th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:1.5px solid var(--line);background:var(--bg)}
-table.gd-t td{padding:8px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
+table.gd-t{font-size:13.5px}
+table.gd-t th{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:left;padding:7px 10px;border-bottom:1.5px solid var(--line);background:var(--bg)}
+table.gd-t td{padding:7px 10px;border-bottom:1px solid var(--grid);vertical-align:top}
 table.gd-t tr:last-child td{border-bottom:0}
 table.gd-t td:first-child{font-weight:600}
+#gC table.gd-t{min-width:640px}
 table.gd-t .gd-use{display:inline-block;font-weight:700;color:var(--accent);white-space:nowrap}
 table.gd-t a{white-space:nowrap}
 .gd-keys{display:grid;gap:6px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin:0;padding:0;list-style:none}
 .gd-keys li{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px;background:var(--surface)}
 .gd-keys li i{font-style:normal;color:var(--muted)}
 .gd-keys li b{color:var(--accent)}
-@media (max-width:520px){.gd-st{grid-template-columns:minmax(0,1fr);padding:10px 12px}.gd-st>.gd-n{width:26px;height:26px}.gd-o{flex:1 1 calc(50% - 8px)}}
-@media print{.gd-pick,.gd-ctl,.gd-ex0 .gd-acts{display:none!important}}
+.gd-eg{margin:0}
+ol.gd-q{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px}
+ol.gd-q>li>b{color:var(--accent);margin-right:2px}
+.gd-blank{display:none}
+.gd-hint{margin:0}
+@media (max-width:520px){.gd-st{grid-template-columns:minmax(0,1fr);padding:10px 11px}.gd-st>.gd-n{width:26px;height:26px}.gd-ab{padding:10px}}
+@media print{
+  .gd-acts,.gd-hint,.gd-cv{display:none!important}
+  .gd-st,.gd-fig,table.gd-t tr,ol.gd-q>li{break-inside:avoid}
+  details.gd-acc>summary,.gd-sep,.gd-h4{break-after:avoid}
+  .gd-grp{break-before:page}
+  .gd-blank{display:block;height:58px;background:repeating-linear-gradient(transparent 0 18px,#c9ced6 18px 19px);margin:4px 0 8px}
+}
 </style>
 
 <header class="appbar" id="appbar">
@@ -2233,7 +2223,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 9/11/2026, 09:46 (hora del centro de México)">v1.9.11.0946</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 9/11/2026, 09:53 (hora del centro de México)">v1.9.11.0953</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
@@ -3150,17 +3140,22 @@ M1001 80h400000v40h-400000z"/></svg></span></span></span><span class="vlist-s">�
 </section>
 <!-- ===================== GUÍA (v57) ===================== -->
 <section class="page" id="guia" data-page hidden>
-  <div class="phead"><h2>Guía de diseño</h2><span class="src">Qué hacer según el problema y lo que te pidan · ejemplos con P1–P7</span></div>
-  <div class="card gd-pick">
-    <div class="gd-q"><h3><span class="gd-k">1</span>¿Qué tipo de problema es?</h3>
-      <div class="gd-opts" data-gd="prob" role="radiogroup" aria-label="Tipo de problema"></div></div>
-    <div class="gd-q"><h3><span class="gd-k">2</span>¿Qué te piden?</h3>
-      <div class="gd-opts" data-gd="crit" role="radiogroup" aria-label="Criterio de diseño"></div></div>
-    <div class="gd-fit" data-gd-fit></div>
+  <div class="phead"><h2>Guía de diseño</h2><span class="src">Para estudiar con la hoja · LGDR y compensadores · ejemplos con P1–P7</span></div>
+  <div class="card gd-intro">
+    <ol class="gd-how">
+      <li><b>A</b><span>Traduce lo que piden (%OS, Ts, Tp, ωn, error) a una región del plano s.</span></li>
+      <li><b>C</b><span>Decide el compensador con la tabla del examen.</span></li>
+      <li><b>B</b><span>Sigue los pasos a mano de ese tipo de problema.</span></li>
+      <li><b>D</b><span>Practica con los ejercicios en papel y revisa en <b>E</b>.</span></li>
+    </ol>
+    <div class="pdfacts gd-acts">
+      <a class="sy-b pri" href="guia.pdf" data-pdfv="guia.pdf" data-title="Guía de diseño" data-sub="LGDR · compensadores" data-dl="Guia-diseno-LGDR.pdf">Ver PDF</a>
+      <a class="sy-b" href="guia.pdf" download="Guia-diseno-LGDR.pdf">Descargar PDF</a>
+      <button type="button" class="sy-b" data-gd-all="1">Desplegar todo</button>
+      <button type="button" class="sy-b" data-gd-all="0">Plegar todo</button>
+    </div>
   </div>
-  <div class="card gd-steps" data-gd-steps></div>
-  <div class="card gd-plane" data-gd-plane></div>
-  <div class="card gd-exam" data-gd-exam></div>
+  <div class="gd-body" data-gd-body></div>
 </section>
 
 <!-- ===================== SIMULADOR ===================== -->
@@ -16245,10 +16240,9 @@ window.__lgdrFxPasos={FXT,targets:fxTargets,rowOf:fxRowOf,open:fxOpenAt};
 })();
 </script>
 <script>
-/* v57 · pestaña «Guía de diseño»: qué hacer según el tipo de problema y el criterio que pidan.
-   Selectores (problema × criterio) → pasos a mano con fórmulas (KaTeX) y ejemplos de P1–P7;
-   plano s en SVG con cono de ζ, recta de σ, franja de ωd y círculo de ωn (deslizadores);
-   tabla «qué compensador uso». Solo presentación: no toca el resto de la página. */
+/* v57/v80 · pestaña «Guía de diseño» (versión fija, sin interacción): acordeón para estudiar con la hoja y PDF (guia.pdf).
+   A traducir lo que piden al plano s (figuras SVG fijas) · B pasos por tipo de problema · C qué compensador uso ·
+   D ejercicios para resolver en papel · E respuestas. Solo presentación: no toca el resto de la página. */
 (()=>{
 const d=document, sec=d.getElementById('guia'); if(!sec) return;
 const R=String.raw;
@@ -16258,7 +16252,6 @@ const n=(v,dg=3)=>{ if(!Number.isFinite(v)) return '—'; let s=v.toFixed(dg); i
 const DEG=180/Math.PI;
 const zOS=os=>{ const l=Math.log(os/100); return -l/Math.sqrt(Math.PI*Math.PI+l*l); };
 const osZ=z=>z>=1?0:100*Math.exp(-z*Math.PI/Math.sqrt(1-z*z));
-const LS=(k,v)=>{ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } };
 
 /* ---------- datos de las prácticas (números de la página) ---------- */
 const EX={
@@ -16279,30 +16272,12 @@ const EX={
 };
 const th=k=>Math.acos(EX[k].z)*DEG;
 
-const PROB=[
-  {id:'k',n:'Ganancia K',s:'mover K sobre el LGDR',ex:'p1'},
-  {id:'pi',n:'PI ideal',s:'(s+z)/s · error cero',ex:'p2'},
-  {id:'lag',n:'Atraso',s:'(s+z)/(s+p), p < z · sube Kv',ex:'p3'},
-  {id:'pd',n:'PD ideal',s:'s + z · más rápido',ex:'p4'},
-  {id:'lead',n:'Adelanto',s:'(s+z)/(s+p), p > z · más rápido',ex:'p5'},
-  {id:'pid',n:'PID',s:'PD + PI',ex:'p6'},
-  {id:'ll',n:'Adelanto‑atraso',s:'adelanto + atraso',ex:'p7'}
-];
-const CRIT=[
-  {id:'os',n:'%OS o ζ',s:'sobrepaso · amortiguamiento'},
-  {id:'ts',n:'Ts o σ',s:'asentamiento · decaimiento a la mitad'},
-  {id:'tp',n:'Tp o ωd',s:'tiempo pico · frec. amortiguada'},
-  {id:'wn',n:'ωn',s:'frecuencia natural · Tr'},
-  {id:'ess',n:'Error / Kp, Kv',s:'error en estado estacionario'},
-  {id:'both',n:'Transitorio + error',s:'las dos cosas a la vez'}
-];
-const PN=Object.fromEntries(PROB.map(p=>[p.id,p])), CN=Object.fromEntries(CRIT.map(c=>[c.id,c]));
 
 /* ---------- pasos: traducir el criterio ---------- */
 const T={
   os:{t:'Traduce el %OS a ζ y a la recta de ζ',
     f:[R`\zeta=\frac{-\ln(\%OS/100)}{\sqrt{\pi^2+\ln^2(\%OS/100)}}`,R`\theta=\cos^{-1}\zeta\qquad\%OS=100\,e^{-\zeta\pi/\sqrt{1-\zeta^2}}`],
-    p:'θ se mide desde el eje real negativo. Todos los polos con ese ζ están sobre la <b>recta radial</b> (el borde del cono en la gráfica de abajo): sobre ella el %OS es el pedido; dentro del cono, menor. Si te dan ζ directo, sáltate la primera fórmula.',
+    p:'θ se mide desde el eje real negativo. Todos los polos con ese ζ están sobre la <b>recta radial</b> (el borde del cono en las figuras): sobre ella el %OS es el pedido; dentro del cono, menor. Si te dan ζ directo, sáltate la primera fórmula.',
     e:`<b>P1:</b> %OS = 10 % → ζ = ${n(EX.p1.z,4)}, θ = ${n(th('p1'),2)}°. <b>P2:</b> dan ζ = 0.174 directo → θ = ${n(th('p2'),2)}° (≈ ${n(EX.p2.os,1)} %).`},
   ts:{t:'Traduce Ts a σ: recta vertical',
     f:[R`T_s=\frac{4}{\zeta\omega_n}=\frac{4}{\sigma}\;\Rightarrow\;\sigma=\frac{4}{T_s}\quad(2\,\%)`,R`\sigma=\frac{3}{T_s}\;(5\,\%)\qquad t_{1/2}=\frac{\ln 2}{\sigma}\;\Rightarrow\;\sigma=\frac{0.693}{t_{1/2}}`],
@@ -16401,7 +16376,7 @@ const S={
     const E={ts:'<b>P4:</b> σ<sub>d</sub> = 3.6133, ω<sub>d</sub> = 3.6133 · tan 59.74° = 6.1943 → s<sub>d</sub> = −3.6133 ± j6.1943. <b>P5:</b> −10.5 ± j17.39. <b>P7:</b> −7 ± j13.66.',
       tp:'<b>P6:</b> ω<sub>d</sub> = 15.86, σ<sub>d</sub> = 15.86/tan 62.88° = 8.123 → s<sub>d</sub> = −8.123 ± j15.86.',
       wn:'Con ζ = 0.5039 (P4) y ω<sub>n</sub> = 7.171 saldría el mismo s<sub>d</sub> = −3.6133 ± j6.1943 de P4.'};
-    return {t:'Punto de diseño s_d',f:F[c],p:'Es el cruce de la recta de ζ con la recta (o el círculo) del otro criterio: el punto verde de la gráfica de abajo.',e:E[c]}; },
+    return {t:'Punto de diseño s_d',f:F[c],p:'Es el cruce de la recta de ζ con la recta (o el círculo) del otro criterio: el punto verde de las figuras.',e:E[c]}; },
   ang:x=>({t:'Ángulo que falta en s_d',
     f:[R`\angle G(s_d)=\sum\angle(s_d+z_i)-\sum\angle(s_d+p_i)`,R`\theta_c=-180^\circ-\angle G(s_d)\quad(\text{lo que aporta el compensador; }+\text{ = adelanto})`],
     p:'Mide los ángulos desde cada polo y cero de G (incluye el cero del compensador si te lo dan). θ<sub>c</sub> es lo que falta para llegar a 180°.',
@@ -16484,184 +16459,124 @@ function build(p,c){
   sep('Verificación'); add(S.verD('p7')); return L;
 }
 
-/* ¿encaja el compensador con lo que piden? */
-const go=(id,txt)=>`<button type="button" class="btn" data-gd-go="${id}">${txt}</button>`;
-function fit(p,c){
-  const tr=c==='os'||c==='ts'||c==='tp'||c==='wn';
-  if(p==='k'){ if(c==='both') return ['warn','Con sólo K no puedes fijar transitorio y error a la vez (un solo grado de libertad).',go('lag','Ver atraso')+go('ll','Ver adelanto‑atraso')+go('pid','Ver PID')];
-    if(c==='ess') return ['ok','K se despeja directo de la constante de error; luego revisa que sea estable y qué transitorio queda.'];
-    return ['ok','Con K basta si el LGDR sin compensar pasa por la curva del criterio. Si no la cruza (piden algo más rápido de lo que da el LGDR), usa PD o adelanto.',go('pd','Ver PD')+go('lead','Ver adelanto')]; }
-  if(p==='pi'||p==='lag'){ if(tr) return ['warn',`${p==='pi'?'El PI':'El atraso'} no mejora el transitorio: el transitorio se fija con K (como en P1) y el compensador sólo corrige el error, casi sin mover los polos. Abajo se muestra así.`,go('k','Ver ganancia K')+go(p==='pi'?'pid':'ll',p==='pi'?'Ver PID':'Ver adelanto‑atraso')];
-    if(c==='ess') return ['ok',p==='pi'?'Error cero (sube el tipo) sin cambiar el transitorio.':'Error n veces menor (multiplica K<sub>v</sub> por z/p) sin cambiar el transitorio.'];
-    return ['ok','Sirve si el transitorio pedido lo da la K sin compensar. Si además hay que hacerlo más rápido, usa PID o adelanto‑atraso.',go(p==='pi'?'pid':'ll',p==='pi'?'Ver PID':'Ver adelanto‑atraso')]; }
-  if(p==='pd'||p==='lead'){ if(c==='ess') return ['bad','PD y adelanto son para el transitorio, no para el error.',go('pi','Ver PI')+go('lag','Ver atraso')];
-    if(c==='both') return ['warn','Resuelve el transitorio; para el error en el mismo problema usa PID o adelanto‑atraso.',go('pid','Ver PID')+go('ll','Ver adelanto‑atraso')];
-    if(c==='os') return ['warn','Con sólo %OS no hace falta compensador (usa K). PD/adelanto sirven cuando además piden un Ts o Tp menor del que da el LGDR.',go('k','Ver ganancia K')];
-    return ['ok',p==='pd'?'PD ideal: agrega un cero (ángulo positivo) y jala el LGDR a la izquierda. Ojo: deriva el ruido.':'Adelanto: como el PD pero con un polo lejano (no deriva el ruido puro).']; }
-  if(c==='both') return ['ok',p==='pid'?'PD para el transitorio y PI para error cero.':'Adelanto para el transitorio y atraso para el error n veces menor.'];
-  if(c==='ess') return ['warn',`Si sólo piden error, basta ${p==='pid'?'el PI':'el atraso'} (P${p==='pid'?2:3}).`,go(p==='pid'?'pi':'lag',p==='pid'?'Ver PI':'Ver atraso')];
-  return ['warn',`Si sólo piden transitorio, basta ${p==='pid'?'el PD':'el adelanto'}; la parte ${p==='pid'?'PI':'de atraso'} es para el error.`,go(p==='pid'?'pd':'lead',p==='pid'?'Ver PD':'Ver adelanto')];
+
+
+/* ---------- figura fija del plano s ---------- */
+function plane(id,o){
+  const W=560,H=380,x0=W-60,y0=H/2, on=Object.assign({z:0,s:0,w:0,n:0},o.on), ex=EX[o.ex];
+  const z=o.z, thr=Math.acos(z), s=o.sig, wd=o.wd, wn=o.wn, pts=[];
+  if(on.z&&on.s) pts.push([-s,s*Math.tan(thr)]); if(on.z&&on.w) pts.push([-wd/Math.tan(thr),wd]); if(on.z&&on.n) pts.push([-z*wn,wn*Math.sin(thr)]);
+  let XN=1,YN=1; if(on.s) XN=Math.max(XN,s); if(on.w) YN=Math.max(YN,wd); if(on.n){ XN=Math.max(XN,wn); YN=Math.max(YN,wn); }
+  pts.forEach(p=>{ XN=Math.max(XN,-p[0]); YN=Math.max(YN,p[1]); });
+  if(ex){ [ex.sd,ex.s2].forEach(q=>{ if(q){ XN=Math.max(XN,-q[0]); YN=Math.max(YN,q[1]); } }); const cap=Math.max(XN,YN)*2.2; [...ex.P,...ex.Z,...ex.CP,...ex.CZ].forEach(a=>{ a=Math.abs(a); if(a<=cap) XN=Math.max(XN,a); }); }
+  const u=Math.min((x0-24)/(XN*1.12),(y0-20)/(YN*1.2)), X=re=>x0+re*u, Y=im=>y0-im*u, L=Math.hypot(W,H)/u*1.6;
+  const nice=r=>{ const p=Math.pow(10,Math.floor(Math.log10(r))), f=r/p; return (f<1.5?1:f<3?2:f<7?5:10)*p; }, ft=v=>Math.abs(v)<1e-9?'0':(+v.toPrecision(4)).toString();
+  const arc=[]; for(let i=0;i<=16;i++){ const a=Math.PI-thr+2*thr*i/16; arc.push(`${X(L*Math.cos(a)).toFixed(1)},${Y(L*Math.sin(a)).toFixed(1)}`); }
+  const cone=`M${X(0)},${Y(0)} L${arc.join(' L')} Z`;
+  let h=`<defs><clipPath id="${id}V"><rect width="${W}" height="${H}"/></clipPath><clipPath id="${id}Z"><path d="${cone}"/></clipPath><clipPath id="${id}S"><rect width="${Math.max(0,X(on.s?-s:0)).toFixed(1)}" height="${H}"/></clipPath><mask id="${id}M"><rect width="${W}" height="${H}" fill="#fff"/>${on.w?`<rect y="${Y(wd).toFixed(1)}" width="${W}" height="${(2*wd*u).toFixed(1)}" fill="#000"/>`:''}${on.n?`<circle cx="${X(0)}" cy="${Y(0)}" r="${(wn*u).toFixed(1)}" fill="#000"/>`:''}</mask></defs>`;
+  const xl=-x0/u, xr=(W-x0)/u, yt=y0/u, stp=nice(Math.max(xr-xl,2*yt)/8); let gr='',tk='';
+  for(let a=Math.ceil(xl/stp)*stp;a<=xr;a+=stp){ const x=X(a).toFixed(1); gr+=`<line class="gr" x1="${x}" y1="0" x2="${x}" y2="${H}"/>`; if(Math.abs(a)>stp/2) tk+=`<text class="tk" x="${x}" y="${y0+15}" text-anchor="middle">${ft(a)}</text>`; }
+  for(let b=Math.ceil(-yt/stp)*stp;b<=yt;b+=stp){ const y=Y(b).toFixed(1); gr+=`<line class="gr" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`; if(Math.abs(b)>stp/2) tk+=`<text class="tk" x="${x0-5}" y="${(+y+4).toFixed(1)}" text-anchor="end">${ft(b)}j</text>`; }
+  h+=gr;
+  if(on.z) h+=`<path class="cn" d="${cone}"/>`;
+  if(on.w) h+=`<rect class="bd" y="${Y(wd).toFixed(1)}" width="${X(0)}" height="${(2*wd*u).toFixed(1)}"/>`;
+  if(on.z||on.s||on.w||on.n){ let r=`<rect class="zn" width="${X(0)}" height="${H}"${on.w||on.n?` mask="url(#${id}M)"`:''}/>`; if(on.s) r=`<g clip-path="url(#${id}S)">${r}</g>`; if(on.z) r=`<g clip-path="url(#${id}Z)">${r}</g>`; h+=r; }
+  h+=`<line class="ax" x1="0" y1="${y0}" x2="${W}" y2="${y0}"/><line class="ax" x1="${x0}" y1="0" x2="${x0}" y2="${H}"/>${tk}<text class="tk" x="${W-6}" y="${y0-6}" text-anchor="end">Re</text><text class="tk" x="${x0+6}" y="14">Im</text>`;
+  const lab=[];
+  if(on.z){ const ex_=-L*Math.cos(thr), ey=L*Math.sin(thr); h+=`<path class="lz" d="M${X(ex_)},${Y(ey)} L${X(0)},${Y(0)} L${X(ex_)},${Y(-ey)}"/>`;
+    const tm=Math.min((x0-10)/(u*Math.cos(thr)||1e-9),(y0-10)/(u*Math.sin(thr)||1e-9)), rl=tm*0.6;
+    lab.push(`<text class="lb tz" x="${(X(-rl*Math.cos(thr))-12).toFixed(1)}" y="${(Y(-rl*Math.sin(thr))+4).toFixed(1)}" text-anchor="end">ζ = ${n(z,4)} · θ = ${n(thr*DEG,2)}°</text>`); }
+  if(on.s){ const x=X(-s).toFixed(1); h+=`<line class="ls" x1="${x}" y1="0" x2="${x}" y2="${H}"/>`; lab.push(`<text class="lb ts" x="${(+x-6).toFixed(1)}" y="${y0-8}" text-anchor="end">σ = ${n(s,4)}</text>`); }
+  if(on.w){ [1,-1].forEach(g=>h+=`<line class="lw" x1="0" y1="${Y(g*wd).toFixed(1)}" x2="${W}" y2="${Y(g*wd).toFixed(1)}"/>`); lab.push(`<text class="lb tw" x="8" y="${(Y(wd)-7).toFixed(1)}">ωd = ${n(wd,4)}</text>`); }
+  if(on.n){ h+=`<circle class="ln" cx="${X(0)}" cy="${Y(0)}" r="${(wn*u).toFixed(1)}"/>`; const a=Math.PI*0.62; lab.push(`<text class="lb tn" x="${X(wn*Math.cos(a)).toFixed(1)}" y="${(Y(wn*Math.sin(a))-8).toFixed(1)}" text-anchor="end">ωn = ${n(wn,4)}</text>`); }
+  let pz='';
+  if(ex){ const mk=(re,c,zr)=>{ if(X(re)<6){ pz+=`<text class="off" x="6" y="${y0-8}">← ${zr?'cero':'polo'} en ${n(re,2)}</text>`; return; } const x=X(re);
+      pz+=zr?`<circle class="${c}" cx="${x.toFixed(1)}" cy="${y0}" r="5"/>`:`<path class="${c}" d="M${x-5},${y0-5}l10,10M${x+5},${y0-5}l-10,10"/>`; };
+    ex.P.forEach(r=>mk(r,'px')); ex.Z.forEach(r=>mk(r,'pz',1)); ex.CP.forEach(r=>mk(r,'cx')); ex.CZ.forEach(r=>mk(r,'cz',1));
+    if(ex.s2){ [1,-1].forEach(g=>pz+=`<circle class="pt s0" cx="${X(ex.s2[0]).toFixed(1)}" cy="${Y(g*ex.s2[1]).toFixed(1)}" r="5"/>`); lab.push(`<text class="lb" style="fill:var(--muted)" x="${(X(ex.s2[0])+8).toFixed(1)}" y="${(Y(ex.s2[1])+17).toFixed(1)}">${ex.s2l}</text>`); }
+    if(!pts.length&&ex.sd) pts.push(ex.sd); }
+  pts.forEach((p,i)=>{ [1,-1].forEach(g=>pz+=`<circle class="pt dp" cx="${X(p[0]).toFixed(1)}" cy="${Y(g*p[1]).toFixed(1)}" r="6"/>`);
+    if(i===0){ const txt=`= ${n(p[0],4)} ± j${n(p[1],4)}`, rt=X(p[0])+9+(txt.length+3)*7.3>W-4;
+      lab.push(`<text class="lb" style="fill:var(--ok)" x="${(X(p[0])+(rt?-9:9)).toFixed(1)}" y="${(Y(p[1])-9).toFixed(1)}"${rt?' text-anchor="end"':''}>${o.pl||'s'}<tspan baseline-shift="sub" font-size="80%">${o.pls||'d'}</tspan><tspan> ${txt}</tspan></text>`); } });
+  return `<figure class="gd-fig"><svg class="gd-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${o.cap.replace(/<[^>]+>/g,'')}"><g clip-path="url(#${id}V)">${h}${pz}${lab.join('')}</g></svg><figcaption>${M(o.cap)}</figcaption></figure>`;
 }
+const LEG='<p class="gd-leg"><span>× polo de G</span><span>○ cero de G</span><span style="color:var(--c2)">×/○ compensador</span><span style="color:var(--ok)">● punto de diseño</span><span>○ gris: otro punto de la práctica</span><span style="color:var(--ok)">▒ zona que cumple</span></p>';
 
-/* ---------- UI de selección y pasos ---------- */
-let st={p:'k',c:'os'};
-try{ const s=JSON.parse(LS('lgdr-guia')||'{}'); if(PN[s.p]) st.p=s.p; if(CN[s.c]) st.c=s.c; }catch(e){}
-const elP=sec.querySelector('[data-gd="prob"]'), elC=sec.querySelector('[data-gd="crit"]'), elF=sec.querySelector('[data-gd-fit]'), elS=sec.querySelector('[data-gd-steps]');
-const opt=(o,k,m)=>`<button type="button" class="gd-o" role="radio" data-${k}="${o.id}" aria-checked="false">${m?`<span class="gd-m">${m}</span>`:''}<b>${o.n}</b><small>${o.s}</small></button>`;
-elP.innerHTML=PROB.map(o=>opt(o,'gp',o.ex.toUpperCase())).join('');
-elC.innerHTML=CRIT.map(o=>opt(o,'gc')).join('');
-function render(){
-  elP.querySelectorAll('[data-gp]').forEach(b=>b.setAttribute('aria-checked',b.dataset.gp===st.p));
-  elC.querySelectorAll('[data-gc]').forEach(b=>b.setAttribute('aria-checked',b.dataset.gc===st.c));
-  const [lv,msg,acts]=fit(st.p,st.c);
-  elF.innerHTML=`<p class="note${lv==='ok'?' ok':''}"${lv==='bad'?' style="border-color:var(--bad);background:var(--bad-soft)"':''}>${lv==='ok'?'✓ ':lv==='bad'?'✗ ':'⚠ '}${msg}</p>${acts?`<div class="chips">${acts}</div>`:''}`;
-  const P=PN[st.p], E=EX[P.ex], L=build(st.p,st.c);
-  let i=0;
-  elS.innerHTML=`<div class="gd-head"><h3>Pasos a mano · ${P.n} con ${CN[st.c].n}</h3><span class="tip">${L.filter(x=>!x.sep).length} pasos · ejemplo: ${P.ex.toUpperCase()}</span></div>
-    <div class="gd-ex0"><div><b>${E.t}.</b> ${M('$'+E.g+'$')} · Piden: ${E.pide}</div>
-      <div class="gd-acts"><a class="btn" href="#${P.ex}">Ir a ${P.ex.toUpperCase()} →</a><button type="button" class="btn" data-gd-toplane>Ver en el plano s ↓</button></div></div>
-    <ol class="gd-l">${L.map(s=>s.sep?`<li class="gd-sep" aria-hidden="true">${s.sep}</li>`
-      :`<li class="gd-st"><span class="gd-n">${++i}</span><div><h4>${M(s.t.replace(/s_d/g,'$s_d$'))}</h4>${s.p?`<p>${M(s.p)}</p>`:''}${s.f?`<div class="gd-f">${s.f.map(f=>tex(f,1)).join('')}</div>`:''}${s.e?`<p class="gd-e">${M(s.e)}</p>`:''}</div></li>`).join('')}</ol>`;
-}
-function setP(p){ st.p=p; LS('lgdr-guia',JSON.stringify(st)); render(); PL.load(PN[p].ex,st.c); }
-function setC(c){ st.c=c; LS('lgdr-guia',JSON.stringify(st)); render(); PL.layers(c); }
-const radioKeys=(box,attr,fn)=>box.addEventListener('keydown',e=>{ const bs=[...box.querySelectorAll(`[${attr}]`)], i=bs.indexOf(d.activeElement); if(i<0) return;
-  const k={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[e.key]; if(!k) return; e.preventDefault(); const b=bs[(i+k+bs.length)%bs.length]; b.focus(); b.click(); });
-elP.addEventListener('click',e=>{ const b=e.target.closest('[data-gp]'); if(b) setP(b.dataset.gp); });
-elC.addEventListener('click',e=>{ const b=e.target.closest('[data-gc]'); if(b) setC(b.dataset.gc); });
-radioKeys(elP,'data-gp'); radioKeys(elC,'data-gc');
-sec.addEventListener('click',e=>{ const g=e.target.closest('[data-gd-go]'); if(g){ setP(g.dataset.gdGo); elS.scrollIntoView({block:'start',behavior:'smooth'}); return; }
-  if(e.target.closest('[data-gd-toplane]')) sec.querySelector('.gd-plane').scrollIntoView({block:'start',behavior:'smooth'}); });
+/* ---------- utilidades de armado ---------- */
+const stepsHTML=L=>{ let i=0; return `<ol class="gd-l">${L.map(s=>s.sep?`<li class="gd-sep">${s.sep}</li>`
+  :`<li class="gd-st"><span class="gd-n">${++i}</span><div><h4>${M(s.t.replace(/s_d/g,'$s_d$'))}</h4>${s.p?`<p>${M(s.p)}</p>`:''}${s.f?`<div class="gd-f">${s.f.map(f=>tex(f,1)).join('')}</div>`:''}${s.e?`<p class="gd-e">${M(s.e)}</p>`:''}</div></li>`).join('')}</ol>`; };
+const acc=(id,tag,title,sub,body)=>`<details class="gd-acc" id="${id}"><summary><span class="gd-tag">${tag}</span><span class="gd-sm"><b>${M(title)}</b>${sub?`<small>${M(sub)}</small>`:''}</span><span class="gd-cv" aria-hidden="true"></span></summary><div class="gd-ab">${body}</div></details>`;
+const grp=(id,L,title,intro,items)=>`<div class="card gd-grp" id="${id}"><div class="gd-gh"><span class="gd-k">${L}</span><h3>${title}</h3></div>${intro?`<p class="gd-gi">${M(intro)}</p>`:''}<div class="gd-accs">${items}</div></div>`;
+const tbl=(head,rows)=>`<div class="gd-tw"><table class="gd-t"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${M(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 
-/* ---------- plano s ---------- */
-const PL=(()=>{
-  const box=sec.querySelector('.gd-plane');
-  const LOG=(mn,mx)=>({to:v=>Math.round(1000*Math.log(v/mn)/Math.log(mx/mn)),from:r=>mn*Math.pow(mx/mn,r/1000)});
-  const SL={os:{mn:0.5,mx:80,log:LOG(0.5,80),u:'%'},t:{mn:0.05,mx:30,log:LOG(0.05,30),u:'s'},tp:{mn:0.05,mx:30,log:LOG(0.05,30),u:'s'},wn:{mn:0.1,mx:60,log:LOG(0.1,60),u:'rad/s'}};
-  const v={os:10,t:4/2.0285,tp:Math.PI/2.7677,wn:Math.hypot(2.0285,2.7677),mode:'ts2',on:{z:1,s:0,w:0,n:0},ex:'p1'};
-  const row=(k,on,lab,sw,dash,u)=>`<div class="gd-row" data-row="${k}"><div class="gd-rh"><label><input type="checkbox" data-on="${on}"><span class="gd-sw${dash?' d':''}" style="--sw:${sw}"></span>${lab}</label><span class="gd-rv" data-rv="${k}"></span></div>
-    <div class="kctl"><input type="range" min="0" max="1000" step="1" data-sl="${k}" aria-label="${lab}"><input type="number" step="any" data-nb="${k}" aria-label="${lab} (valor)"><span class="u">${u}</span></div>${k==='t'?`<div class="seg gd-tm" role="group" aria-label="Qué tiempo"><button type="button" data-tm="ts2">Ts 2 %</button><button type="button" data-tm="ts5">Ts 5 %</button><button type="button" data-tm="half">t½ (mitad)</button></div>`:''}</div>`;
-  box.innerHTML=`<div class="gd-head"><h3>El criterio en el plano s</h3><span class="tip">Mueve los deslizadores o escribe el valor · la zona verde cumple todo lo marcado</span></div>
-    <div class="gd-exb"><span class="tip">Cargar práctica:</span>${Object.keys(EX).map(k=>`<button type="button" class="btn" data-ex="${k}" aria-pressed="false">${k.toUpperCase()}</button>`).join('')}<button type="button" class="btn" data-ex="" aria-pressed="false">Ninguna</button></div>
-    <div class="gd-pl"><div><div class="gd-svw"><svg class="gd-svg" viewBox="0 0 640 480" role="img" aria-label="Plano s con las regiones del criterio de diseño"></svg></div>
-      <div class="gd-leg"><span><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2"/></svg>polo de G</span><span><svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="2"/></svg>cero de G</span><span style="color:var(--c2)"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 2l8 8M10 2l-8 8" stroke="currentColor" stroke-width="2"/></svg>/○ compensador</span><span style="color:var(--ok)">● punto de diseño</span><span>○ otro punto de la práctica</span></div></div>
-      <div class="gd-ctl">${row('os','z','%OS → ζ (cono)','var(--c1)',0,'%')}${row('t','s','Ts → σ (recta vertical)','var(--c2)',1,'s')}${row('tp','w','Tp → ωd (franja)','var(--c3)',1,'s')}${row('wn','n','ωn (círculo)','#a855f7',1,'rad/s')}
-        <div class="gd-read" data-read></div><p class="tip" data-excap style="margin:0"></p></div></div>`;
-  const svg=box.querySelector('svg'); let W=640, H=480, x0=W-80, y0=H/2, u=40;
-  const dims=()=>{ const cw=svg.getBoundingClientRect().width||640, sm=cw<560, w=sm?380:640, hh=sm?420:480; if(w!==W||hh!==H){ W=w; H=hh; x0=W-(sm?46:80); y0=H/2; svg.setAttribute('viewBox',`0 0 ${W} ${H}`); return true; } return false; };
-  const sl=k=>box.querySelector(`[data-sl="${k}"]`), nb=k=>box.querySelector(`[data-nb="${k}"]`);
-  const sigma=()=>v.mode==='ts5'?3/v.t:v.mode==='half'?Math.LN2/v.t:4/v.t;
-  const geo=()=>{ const z=zOS(v.os), thr=Math.acos(z), s=sigma(), wd=Math.PI/v.tp, wn=v.wn; const pts=[];
-    if(v.on.z&&v.on.s) pts.push({k:'s',re:-s,im:s*Math.tan(thr)});
-    if(v.on.z&&v.on.w) pts.push({k:'w',re:-wd/Math.tan(thr),im:wd});
-    if(v.on.z&&v.on.n) pts.push({k:'n',re:-z*wn,im:wn*Math.sin(thr)});
-    return {z,thr,s,wd,wn,pts}; };
-  /* escala: se ajusta al cargar, al soltar el deslizador o si algo se sale de la vista */
-  const need=g=>{ let X=1,Y=1; const ex=EX[v.ex];
-    if(v.on.s){ X=Math.max(X,g.s); } if(v.on.w){ Y=Math.max(Y,g.wd); } if(v.on.n){ X=Math.max(X,g.wn); Y=Math.max(Y,g.wn); }
-    g.pts.forEach(p=>{ X=Math.max(X,-p.re); Y=Math.max(Y,p.im); });
-    if(ex){ [ex.sd,ex.s2].forEach(q=>{ if(q){ X=Math.max(X,-q[0]); Y=Math.max(Y,q[1]); } });
-      const all=[...ex.P,...ex.Z,...ex.CP,...ex.CZ].map(Math.abs), cap=Math.max(X,Y)*2.2; all.forEach(a=>{ if(a<=cap) X=Math.max(X,a); }); }
-    if(v.on.z&&!v.on.s&&!v.on.w&&!v.on.n&&!ex){ X=Math.max(X,5); Y=Math.max(Y,5*Math.tan(g.thr)); }
-    return Math.min((x0-28)/(X*1.12),(y0-22)/(Y*1.18)); };
-  const fits=(g,uu)=>{ const nu=need(g); return nu>=uu*0.98&&nu<uu*3.2; };
-  const X=re=>x0+re*u, Y=im=>y0-im*u;
-  const nice=r=>{ const p=Math.pow(10,Math.floor(Math.log10(r))), f=r/p; return (f<1.5?1:f<3?2:f<7?5:10)*p; };
-  const fmtT=v=>Math.abs(v)<1e-9?'0':(+v.toPrecision(4)).toString();
-  function draw(rescale){
-    const g=geo(); if(dims()||rescale||!fits(g,u)) u=need(g);
-    const xl=-x0/u, xr=(W-x0)/u, yt=y0/u, L=Math.hypot(W,H)/u*1.6;
-    let h=`<defs><clipPath id="gdcV"><rect x="0" y="0" width="${W}" height="${H}"/></clipPath>`;
-    /* regiones: cono, semiplano de σ; máscara quita franja de ωd y disco de ωn */
-    const arc=[]; for(let i=0;i<=16;i++){ const a=Math.PI-g.thr+2*g.thr*i/16; arc.push(`${X(L*Math.cos(a)).toFixed(1)},${Y(L*Math.sin(a)).toFixed(1)}`); }
-    const cone=`M${X(0)},${Y(0)} L${arc.join(' L')} Z`;
-    h+=`<clipPath id="gdcZ"><path d="${cone}"/></clipPath>`;
-    h+=`<clipPath id="gdcS"><rect x="0" y="0" width="${Math.max(0,X(v.on.s?-g.s:0)).toFixed(1)}" height="${H}"/></clipPath>`;
-    h+=`<mask id="gdcM"><rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>${v.on.w?`<rect x="0" y="${Y(g.wd).toFixed(1)}" width="${W}" height="${(2*g.wd*u).toFixed(1)}" fill="#000"/>`:''}${v.on.n?`<circle cx="${X(0)}" cy="${Y(0)}" r="${(g.wn*u).toFixed(1)}" fill="#000"/>`:''}</mask></defs>`;
-    /* rejilla */
-    const stp=nice(Math.max(xr-xl,2*yt)/9); let gr='', tk='';
-    for(let a=Math.ceil(xl/stp)*stp;a<=xr;a+=stp){ const x=X(a).toFixed(1); gr+=`<line class="gr" x1="${x}" y1="0" x2="${x}" y2="${H}"/>`; if(Math.abs(a)>stp/2) tk+=`<text class="tk" x="${x}" y="${y0+14}" text-anchor="middle">${fmtT(a)}</text>`; }
-    for(let b=Math.ceil(-yt/stp)*stp;b<=yt;b+=stp){ const y=Y(b).toFixed(1); gr+=`<line class="gr" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`; if(Math.abs(b)>stp/2) tk+=`<text class="tk" x="${x0-5}" y="${(+y+4).toFixed(1)}" text-anchor="end">${fmtT(b)}j</text>`; }
-    h+=gr;
-    /* zona que cumple todo */
-    const any=v.on.z||v.on.s||v.on.w||v.on.n;
-    if(v.on.z) h+=`<path class="cn" d="${cone}"/>`;
-    if(v.on.w) h+=`<rect class="bd" x="0" y="${Y(g.wd).toFixed(1)}" width="${X(0)}" height="${(2*g.wd*u).toFixed(1)}"/>`;
-    if(any){ let inner=`<rect class="zn" x="0" y="0" width="${X(0)}" height="${H}"${v.on.w||v.on.n?' mask="url(#gdcM)"':''}/>`;
-      if(v.on.s) inner=`<g clip-path="url(#gdcS)">${inner}</g>`; if(v.on.z) inner=`<g clip-path="url(#gdcZ)">${inner}</g>`; h+=inner; }
-    h+=`<line class="ax" x1="0" y1="${y0}" x2="${W}" y2="${y0}"/><line class="ax" x1="${x0}" y1="0" x2="${x0}" y2="${H}"/>`+tk+`<text class="tk" x="${W-6}" y="${y0-6}" text-anchor="end">Re</text><text class="tk" x="${x0+6}" y="13">Im</text>`;
-    /* líneas */
-    const lab=[];
-    if(v.on.z){ const ex=-L*Math.cos(g.thr), ey=L*Math.sin(g.thr);
-      h+=`<path class="lz" d="M${X(ex)},${Y(ey)} L${X(0)},${Y(0)} L${X(ex)},${Y(-ey)}"/>`;
-      /* etiqueta sobre el rayo superior, dentro de la vista */
-      const tmax=Math.min((x0-10)/(u*Math.cos(g.thr)||1e-9),(y0-10)/(u*Math.sin(g.thr)||1e-9)), r=tmax*0.72;
-      const rl=tmax*0.6; lab.push(`<text class="lb tz" x="${(X(-rl*Math.cos(g.thr))-12).toFixed(1)}" y="${(Y(-rl*Math.sin(g.thr))+4).toFixed(1)}" text-anchor="end">ζ = ${n(g.z,3)} · θ = ${n(g.thr*DEG,1)}°</text>`); }
-    if(v.on.s){ const x=X(-g.s).toFixed(1); h+=`<line class="ls" x1="${x}" y1="0" x2="${x}" y2="${H}"/>`;
-      lab.push(`<text class="lb ts" x="${(+x-6).toFixed(1)}" y="${y0-8}" text-anchor="end">σ = ${n(g.s,3)}</text>`); }
-    if(v.on.w){ [1,-1].forEach(sg=>{ const y=Y(sg*g.wd).toFixed(1); h+=`<line class="lw" x1="0" y1="${y}" x2="${W}" y2="${y}"/>`; });
-      lab.push(`<text class="lb tw" x="10" y="${(Y(g.wd)-7).toFixed(1)}">ωd = ${n(g.wd,3)}</text>`); }
-    if(v.on.n){ h+=`<circle class="ln" cx="${X(0)}" cy="${Y(0)}" r="${(g.wn*u).toFixed(1)}"/>`; const a=Math.PI*0.62;
-      lab.push(`<text class="lb tn" x="${X(g.wn*Math.cos(a)).toFixed(1)}" y="${(Y(g.wn*Math.sin(a))-8).toFixed(1)}" text-anchor="end">ωn = ${n(g.wn,3)}</text>`); }
-    /* polos y ceros de la práctica */
-    const ex=EX[v.ex]; let pz='';
-    if(ex){ const mark=(re,cls,zr)=>{ if(X(re)<6){ pz+=`<text class="off" x="6" y="${y0-8}">← ${zr?'cero':'polo'} en ${n(re,2)}</text>`; return; }
-        const x=X(re), y=y0; pz+=zr?`<circle class="${cls}" cx="${x.toFixed(1)}" cy="${y}" r="5"/>`:`<path class="${cls}" d="M${x-5},${y-5}l10,10M${x+5},${y-5}l-10,10"/>`; };
-      ex.P.forEach(r=>mark(r,'px')); ex.Z.forEach(r=>mark(r,'pz',1)); ex.CP.forEach(r=>mark(r,'cx')); ex.CZ.forEach(r=>mark(r,'cz',1));
-      if(ex.s2){ [1,-1].forEach(sg=>pz+=`<circle class="pt s0" cx="${X(ex.s2[0]).toFixed(1)}" cy="${Y(sg*ex.s2[1]).toFixed(1)}" r="5"/>`);
-        pz+=`<text class="lb" x="${(X(ex.s2[0])+8).toFixed(1)}" y="${(Y(ex.s2[1])+16).toFixed(1)}" fill="currentColor" style="fill:var(--muted)">${ex.s2l}</text>`; } }
-    /* puntos de diseño */
-    g.pts.forEach((p,i)=>{ [1,-1].forEach(sg=>pz+=`<circle class="pt dp" cx="${X(p.re).toFixed(1)}" cy="${Y(sg*p.im).toFixed(1)}" r="6"/>`);
-      if(i===0){ const txt=`= ${n(p.re,3)} ± j${n(p.im,3)}`, wpx=(txt.length+3)*7.3, rt=X(p.re)+9+wpx>W-4;
-        lab.push(`<text class="lb" style="fill:var(--ok)" x="${(X(p.re)+(rt?-9:9)).toFixed(1)}" y="${(Y(p.im)-9).toFixed(1)}"${rt?' text-anchor="end"':''}>s<tspan baseline-shift="sub" font-size="80%">d</tspan><tspan> ${txt}</tspan></text>`); } });
-    svg.innerHTML=`<g clip-path="url(#gdcV)">${h}${pz}${lab.join('')}</g>`;
-    readout(g);
-  }
-  function readout(g){
-    const r=box.querySelector('[data-read]'), lines=[];
-    const tn=v.mode==='ts5'?R`T_s(5\%)`:v.mode==='half'?R`t_{1/2}`:R`T_s`;
-    lines.push(R`\zeta=${n(g.z,4)}\quad\theta=${n(g.thr*DEG,2)}^\circ\quad(\%OS=${n(v.os,2)}\,\%)`);
-    if(v.on.s) lines.push(R`\sigma=${v.mode==='ts5'?'3':v.mode==='half'?R`\ln2`:'4'}/${n(v.t,3)}=${n(g.s,4)}`);
-    if(v.on.w) lines.push(R`\omega_d=\pi/${n(v.tp,3)}=${n(g.wd,4)}`);
-    if(v.on.n) lines.push(R`\omega_n=${n(g.wn,4)}`);
-    g.pts.forEach(p=>{ const wn=Math.hypot(p.re,p.im), lb={s:R`\text{cono}\cap\sigma`,w:R`\text{cono}\cap\omega_d`,n:R`\text{cono}\cap\omega_n`}[p.k];
-      lines.push(R`${lb}:\ s_d=${n(p.re,4)}\pm j${n(p.im,4)}`);
-      lines.push(R`\quad\omega_n=${n(wn,3)},\ T_s=${n(4/-p.re,3)}\text{ s},\ T_p=${n(Math.PI/p.im,3)}\text{ s},\ t_{1/2}=${n(Math.LN2/-p.re,3)}\text{ s}`); });
-    if(!g.pts.length) lines.push(R`\text{Marca el cono y otro criterio para obtener }s_d`);
-    r.innerHTML=lines.map(l=>`<div>${tex(l)}</div>`).join('');
-    box.querySelectorAll('[data-rv]').forEach(e=>{ const k=e.dataset.rv;
-      e.innerHTML=k==='os'?`ζ = <b>${n(g.z,4)}</b>`:k==='t'?`σ = <b>${n(g.s,4)}</b>`:k==='tp'?`ωd = <b>${n(g.wd,4)}</b>`:`Tr ≈ <b>${n((1.768*g.z**3-0.417*g.z**2+1.039*g.z+1)/g.wn,3)}</b> s`; });
-    box.querySelectorAll('[data-row]').forEach(e=>{ const on={os:'z',t:'s',tp:'w',wn:'n'}[e.dataset.row]; e.classList.toggle('off',!v.on[on]); e.querySelector('[data-on]').checked=!!v.on[on]; });
-    box.querySelectorAll('[data-tm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tm===v.mode));
-    const lbl=box.querySelector('[data-row="t"] .gd-rh label'); if(lbl) lbl.lastChild.textContent=(v.mode==='half'?'t½':v.mode==='ts5'?'Ts (5 %)':'Ts (2 %)')+' → σ (recta vertical)';
-  }
-  const KEY={os:'os',t:'t',tp:'tp',wn:'wn'};
-  const sync=()=>Object.keys(KEY).forEach(k=>{ const s=SL[k], val=v[KEY[k]], r=sl(k), b=nb(k); r.value=s.log.to(Math.min(s.mx,Math.max(s.mn,val))); if(d.activeElement!==b) b.value=+val.toPrecision(4); });
-  box.addEventListener('input',e=>{ const t=e.target;
-    if(t.dataset.sl){ const k=t.dataset.sl; v[KEY[k]]=+SL[k].log.from(+t.value).toPrecision(4); nb(k).value=v[KEY[k]]; markEx(null); draw(false); }
-    else if(t.dataset.nb){ const k=t.dataset.nb, x=+t.value; if(x>0&&(k!=='os'||x<100)){ v[KEY[k]]=x; sl(k).value=SL[k].log.to(Math.min(SL[k].mx,Math.max(SL[k].mn,x))); markEx(null); draw(false); } } });
-  box.addEventListener('change',e=>{ const t=e.target;
-    if(t.dataset.on){ v.on[t.dataset.on]=t.checked?1:0; draw(true); return; }
-    if(t.dataset.sl||t.dataset.nb) draw(true); });
-  box.addEventListener('click',e=>{ const b=e.target.closest('[data-tm]'); if(b){ const s=sigma(); v.mode=b.dataset.tm; v.t=v.mode==='ts5'?3/s:v.mode==='half'?Math.LN2/s:4/s; sync(); draw(false); return; }
-    const x=e.target.closest('[data-ex]'); if(x){ load(x.dataset.ex,null); } });
-  const ON={os:{z:1},ts:{z:1,s:1},tp:{z:1,w:1},wn:{z:1,n:1},ess:{z:1},both:{z:1,s:1}};
-  const EXON={p1:'os',p2:'os',p3:'os',p4:'ts',p5:'ts',p6:'tp',p7:'ts'};
-  function markEx(k){ if(k!==undefined) v.exSel=k; box.querySelectorAll('[data-ex]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ex===(v.ex||''))); }
-  function layers(c){ v.on=Object.assign({z:0,s:0,w:0,n:0},ON[c]||ON.os); draw(true); }
-  function load(k,c){ v.ex=k||''; const ex=EX[k];
-    if(ex){ v.os=+ex.os.toFixed(2); const [a,b]=ex.sd; v.mode=v.mode||'ts2'; const s=-a;
-      v.t=+(v.mode==='ts5'?3/s:v.mode==='half'?Math.LN2/s:4/s).toFixed(4); v.tp=+(Math.PI/b).toFixed(4); v.wn=+Math.hypot(a,b).toFixed(4);
-      v.on=Object.assign({z:0,s:0,w:0,n:0},ON[c||EXON[k]]); }
-    const cap=box.querySelector('[data-excap]'); cap.innerHTML=ex?`<b>${ex.t}:</b> ${ex.pide} Punto de diseño: ${n(ex.sd[0],4)} ± j${n(ex.sd[1],4)}.`:'';
-    sync(); markEx(); draw(true); }
-  if(window.ResizeObserver) new ResizeObserver(()=>{ if(!sec.hidden&&dims()) draw(true); }).observe(svg);
-  return {load,layers,draw:()=>draw(true),init(){ load(PN[st.p].ex,st.c); }};
-})();
+/* ---------- A · traducir lo que piden ---------- */
+const z1=EX.p1.z, z4=EX.p4.z, z6=EX.p6.z;
+const A=[
+  ['ga-os','%OS','%OS o ζ → recta de ζ (cono)','sobrepaso, amortiguamiento',T.os,plane('gfA1',{z:z1,on:{z:1},ex:'p1',cap:'P1: recta de ζ = 0.5912 (10 %) y el punto s₀ del LGDR sobre ella. Dentro del cono el %OS es menor que el pedido.',pl:'s',pls:'0'})],
+  ['ga-ts','Ts','Ts o σ → recta vertical','asentamiento (2 % o 5 %), decaimiento a la mitad',T.ts,plane('gfA2',{z:z4,sig:3.6133,on:{z:1,s:1},cap:'P4: Ts = 1.107 s → σ = 3.6133. A la izquierda de la recta, Ts menor. Con la recta de ζ (16 %) se cruzan en $s_d$.'})],
+  ['ga-tp','Tp','Tp o ωd → franja horizontal','tiempo pico, frecuencia amortiguada',T.tp,plane('gfA3',{z:z6,wd:15.86,on:{z:1,w:1},cap:'P6: Tp = 0.1981 s → ωd = 15.86. Fuera de la franja (rojiza), Tp menor. Con la recta de ζ (20 %) se cruzan en $s_d$.'})],
+  ['ga-wn','ωn','ωn → círculo','frecuencia natural, tiempo de subida',T.wn,plane('gfA4',{z:z4,wn:7.171,on:{z:1,n:1},cap:'ωn = 7.171 con ζ = 0.5039: el círculo y la recta se cruzan en el mismo $s_d$ de P4.'})],
+  ['ga-ess','e','Error en estado estacionario','tipo del sistema, Kp, Kv, Ka',T.ess,''],
+  ['ga-all','∩','Todo junto: la región que cumple todo','cono ∩ recta ∩ franja ∩ círculo',{t:'Junta las regiones',p:'Cada requisito es una región del plano s; los polos dominantes deben caer en la <b>intersección</b> (zona verde). Si te piden «%OS máximo y Ts máximo», cualquier punto verde sirve; para diseñar se usa la esquina: el cruce de la recta de ζ con la recta de σ.',
+    f:[R`\%OS\le\%OS_{\max}\Rightarrow\zeta\ge\zeta_{\min}\qquad T_s\le T_{s,\max}\Rightarrow\sigma\ge\frac{4}{T_{s,\max}}`,R`T_p\le T_{p,\max}\Rightarrow\omega_d\ge\frac{\pi}{T_{p,\max}}\qquad \omega_n\ge\omega_{n,\min}`]},
+   plane('gfA5',{z:zOS(10),sig:2,wd:2.5,wn:3,on:{z:1,s:1,w:1,n:1},cap:'Ejemplo genérico: %OS ≤ 10 %, Ts ≤ 2 s, Tp ≤ 1.257 s y ωn ≥ 3: sólo la zona verde cumple las cuatro.'})]
+].map(([id,tag,t,sub,st,fig])=>acc(id,tag,t,sub,stepsHTML([st])+fig)).join('');
 
-/* ---------- tabla «qué compensador uso» ---------- */
-sec.querySelector('[data-gd-exam]').innerHTML=`<div class="gd-head"><h3>¿Qué compensador uso según lo que pidan? (para el examen)</h3><span class="tip">Lee el enunciado, subraya lo que piden y busca la fila</span></div>
-  <div class="gd-tw"><table class="gd-t"><thead><tr><th>Te piden…</th><th>Usa</th><th>Por qué</th><th>Ejemplo</th></tr></thead><tbody>
+/* ---------- B · pasos por tipo de problema ---------- */
+const ALT={
+  k:[['%OS o ζ','Busca s₀ sobre la recta de ζ (ángulo) y saca K (magnitud).'],['Ts o σ','Busca s₀ sobre la recta vertical $s=-\\sigma+j\\omega$; el %OS es el que resulte.'],['Tp o ωd','Busca s₀ sobre la recta horizontal $s=-x+j\\omega_d$.'],['ωn','Busca s₀ sobre el círculo de radio ωn.'],['Error','K sale directo de la constante (K<sub>p</sub>, K<sub>v</sub>); revisa Routh y qué transitorio queda.'],['Transitorio + error','Con K sólo fijas una cosa: si el error no alcanza, usa atraso/PI (o adelanto‑atraso/PID).']],
+  pi:[['Sólo transitorio','El PI no lo mejora: fija el transitorio con K; el PI sólo es para el error.'],['Sólo error','Conserva el transitorio sin compensar (mismo ζ) y agrega el PI.'],['Transitorio + error','Como abajo: K para el transitorio, PI con z<sub>c</sub> pequeño, re‑busca s₀.'],['Además más rápido','Ya no basta: usa PID (P6).']],
+  lag:[['Sólo transitorio','El atraso no lo mejora: fíjalo con K.'],['Error n veces menor','z<sub>c</sub>/p<sub>c</sub> ≈ n (con algo de margen).'],['Error cero','No basta el atraso: usa PI.'],['Además más rápido','Usa adelanto‑atraso (P7).']],
+  pd:[['%OS + Ts','$\\sigma_d=4/T_s$, $\\omega_d=\\sigma_d\\tan\\theta$.'],['%OS + Tp','$\\omega_d=\\pi/T_p$, $\\sigma_d=\\omega_d/\\tan\\theta$.'],['%OS + ωn','$\\sigma_d=\\zeta\\omega_n$, $\\omega_d=\\omega_n\\sqrt{1-\\zeta^2}$.'],['Sólo %OS','No hace falta PD: basta K.'],['Error','El PD no es para el error: PI/atraso, o PID.']],
+  lead:[['%OS + Ts / Tp / ωn','Igual que el PD para hallar s<sub>d</sub>.'],['Te dan el cero','Sólo calculas el polo con el ángulo que falta.'],['Te dan el polo','Calcula el cero: $\\theta_z=\\theta_c+\\theta_p$, $z_c=\\sigma_d+\\omega_d/\\tan\\theta_z$.'],['No te dan nada','Pon el cero bajo s<sub>d</sub> ($z_c=\\sigma_d$) o cancelando un polo de la planta.'],['Error','No es para el error: adelanto‑atraso.']],
+  pid:[['%OS + Tp + error 0','Como P6 (abajo).'],['%OS + Ts + error 0','Igual, pero s<sub>d</sub> con $\\sigma_d=4/T_s$.'],['Sólo transitorio','Basta el PD.'],['Sólo error','Basta el PI.']],
+  ll:[['%OS + Ts + Kv × n','Como P7 (abajo).'],['%OS + Tp + Kv × n','Igual, pero s<sub>d</sub> con $\\omega_d=\\pi/T_p$.'],['Error cero en vez de × n','Cambia el atraso por un PI → PID.'],['Sólo transitorio','Basta el adelanto.']]
+};
+const TYPES=[
+  ['k','Ganancia K','P1','Sólo se ajusta K: los polos se mueven sobre el LGDR. Sirve si el LGDR pasa por el punto que piden.','os',{ex:'p1',z:EX.p1.z,on:{z:1},pl:'s',pls:'0',cap:'P1: LGDR sin compensar; s₀ = −2.0285 ± j2.7677 sobre la recta de ζ.'}],
+  ['pi','PI ideal','P2','Error cero (sube el tipo) sin cambiar el transitorio. $G_c=(s+z_c)/s$.','both',{ex:'p2',z:0.174,on:{z:1},pl:'s',pls:'0',cap:'P2: polo del PI en 0 y cero en −0.1 (dipolo pegado al origen); s₀ casi no se mueve.'}],
+  ['lag','Atraso de fase','P3','Error n veces menor (K<sub>v</sub> × z/p) sin cambiar el transitorio. $G_c=(s+z_c)/(s+p_c)$, $p_c<z_c$.','both',{ex:'p3',z:EX.p3.z,on:{z:1},pl:'s',pls:'0',cap:'P3: atraso 0.2/0.01 junto al origen; s₀ = −3.5 ± j5.7959 y, con atraso, −3.4019 ± j5.6335.'}],
+  ['pd','PD ideal','P4','Transitorio más rápido: un cero aporta ángulo positivo y jala el LGDR a la izquierda. $G_c=s+z_c$.','ts',{ex:'p4',z:EX.p4.z,sig:3.6133,on:{z:1,s:1},cap:'P4: $s_d$ = −3.6133 ± j6.1943 (Ts ÷ 3) y el cero del PD en −3.0046.'}],
+  ['lead','Adelanto de fase','P5','Como el PD, pero con un polo lejano (no deriva el ruido puro). $G_c=(s+z_c)/(s+p_c)$, $p_c>z_c$.','ts',{ex:'p5',z:EX.p5.z,sig:10.5,on:{z:1,s:1},cap:'P5: $s_d$ = −10.5 ± j17.39, cero en −10 y polo en −25.54.'}],
+  ['pid','PID','P6','Más rápido y error cero: primero PD (transitorio), luego PI (error).','tp',{ex:'p6',z:EX.p6.z,wd:15.86,on:{z:1,w:1},cap:'P6: $s_d$ = −8.123 ± j15.86 (Tp a 2/3); ceros −55.96 (PD) y −0.5 (PI), polo en 0.'}],
+  ['ll','Adelanto‑atraso','P7','Más rápido y error n veces menor: primero adelanto, luego atraso.','ts',{ex:'p7',z:EX.p7.z,sig:7,on:{z:1,s:1},cap:'P7: $s_d$ = −7 ± j13.66 (Ts ÷ 2); adelanto (−3, −9.609) y atraso (−0.0921, −0.01).'}]
+];
+const B=TYPES.map(([p,name,P,when,c,fo])=>acc('gb-'+p,P,name,when.split('. ')[0].replace(/<[^>]+>/g,'')+'.',
+  `<p class="gd-when"><b>Cuándo se usa:</b> ${M(when)}</p>${plane('gfB'+p,fo)}${LEG}<h4 class="gd-h4">Pasos (con los números de ${P})</h4>${stepsHTML(build(p,c))}<h4 class="gd-h4">Si te piden otra cosa</h4>${tbl(['Te piden','Qué cambia'],ALT[p])}`)).join('');
+
+/* ---------- D · ejercicios y E · respuestas ---------- */
+const EJ=[
+  {id:'e1',t:'Ganancia (P1)',g:R`G(s)=\frac{K}{(s+2)(s+4)(s+6)}`,q:['Traza el LGDR: eje real, asíntotas, ruptura y cruce con jω.','Halla K para 10 % de sobrepaso.','Calcula Ts, Tp y el error al escalón con esa K.','¿Es válida la aproximación de 2.º orden?'],
+   a:['Eje real (−∞, −6] ∪ [−4, −2]; σ<sub>a</sub> = −4, ±60° y 180°; ruptura −2.845 (K = 3.08); 0 < K < 480, cruce ±j6.633.','ζ = 0.5912 (θ = 53.76°); s₀ = −2.0285 ± j2.7677; <b>K = 45.53</b>.','Ts = 1.972 s, Tp = 1.135 s; K<sub>p</sub> = 0.9485 → e = 0.513.','p₃ = −7.943 = 3.92σ (< 5σ): simulado 8.83 %; con K = 49.38 da 10.00 %.']},
+  {id:'e2',t:'PI ideal (P2)',g:R`G(s)=\frac{K}{(s+1)(s+2)(s+10)},\ \zeta=0.174`,q:['Halla s₀ y K sin compensar.','Calcula el error al escalón.','Agrega un PI con cero en −0.1: ángulo del dipolo en s₀.','Re‑busca s₀ y K y di el error.'],
+   a:['s₀ = −0.6936 ± j3.9255; <b>K = 164.53</b>.','K<sub>p</sub> = 8.227 → e = 0.1084.','−1.42° (|G<sub>c</sub>| = 0.9959).','s₀ = −0.6778 ± j3.8359; <b>K = 158.10</b>; polos −11.55 y −0.0902; e = 0.']},
+  {id:'e3',t:'Atraso (P3)',g:R`G(s)=\frac{K}{s(s+7)},\ 15\,\%`,q:['Halla s₀, K, K<sub>v</sub> y el error a rampa.','Agrega el atraso (s + 0.2)/(s + 0.01): nueva K y error.','¿Cuántas veces mejoró el error?'],
+   a:['ζ = 0.5169; s₀ = −3.5 ± j5.7959; <b>K = 45.84</b>; K<sub>v</sub> = 6.549; e = 0.1527.','s₀ = −3.4019 ± j5.6335; <b>K = 44.64</b>; e = 0.00784; polo lento −0.2062.','×19.48 (z/p = 20, menos lo que bajó K).']},
+  {id:'e4',t:'PD ideal (P4)',g:R`G(s)=\frac{K}{s(s+4)(s+6)},\ 16\,\%,\ T_s\div3`,q:['Sin compensar: s₀, K y Ts.','Halla s<sub>d</sub>.','Ángulo que falta y cero del PD.','K del diseño y verificación.'],
+   a:['ζ = 0.5039; s₀ = −1.2044 ± j2.0648; K = 43.38; Ts = 3.321 s.','σ<sub>d</sub> = 3.6133 → s<sub>d</sub> = −3.6133 ± j6.1943.','∠G = −275.61° → θ<sub>z</sub> = 95.61°; <b>z<sub>c</sub> = 3.0046</b>.','<b>K = 47.47</b>; p₃ = −2.773 (casi cancelado); 11.98 %, Ts = 1.152 s.']},
+  {id:'e5',t:'Adelanto (P5)',g:R`G(s)=\frac{K}{s(s+7)},\ 15\,\%,\ T_s\div3,\ \text{cero en }-10`,q:['Halla s<sub>d</sub>.','Ángulo con el cero y polo del adelanto.','K y verificación.'],
+   a:['s<sub>d</sub> = −10.5 ± j17.39.','−130.86° → θ<sub>p</sub> = 49.14°; <b>p<sub>c</sub> = 25.54</b>.','<b>K = 476.2</b>; p₃ = −11.54 sin cancelar → 21.07 % ✗; ajuste ζ<sub>d</sub> = 0.6273: p<sub>c</sub> = 27.00, K = 364.1 → 15.00 %.']},
+  {id:'e6',t:'PID (P6)',g:R`G(s)=\frac{K(s+8)}{(s+3)(s+6)(s+10)},\ 20\,\%,\ T_p\cdot\tfrac23,\ e=0`,q:['Sin compensar: s₀, K y Tp.','s<sub>d</sub>, ángulo y cero del PD.','PI con cero en −0.5: re‑busca s₀ y K.','K₁, K₂ y K₃.'],
+   a:['s₀ = −5.4156 ± j10.57; K = 121.6; Tp = 0.2972 s.','s<sub>d</sub> = −8.123 ± j15.86; θ<sub>z</sub> = 18.34°; <b>z<sub>c</sub> = 55.96</b>; K<sub>PD</sub> = 5.326.','s₀ = −7.5127 ± j14.66; <b>K = 4.5915</b>.','K₁ = 259.3, K₂ = 128.5, K₃ = 4.59.']},
+  {id:'e7',t:'Adelanto‑atraso (P7)',g:R`G(s)=\frac{K}{s(s+7)},\ 20\,\%,\ T_s\div2,\ K_v\times10,\ \text{cero del adelanto en }-3`,q:['Sin compensar: s₀, K y K<sub>v</sub>.','s<sub>d</sub>, polo del adelanto y K.','Factor y atraso con p<sub>c</sub> = 0.01.','Re‑busca s₀, K y K<sub>v</sub>.'],
+   a:['s₀ = −3.5 ± j6.832; K = 58.93; K<sub>v</sub> = 8.418.','s<sub>d</sub> = −7 ± j13.66; θ<sub>p</sub> = 79.19°; <b>p<sub>c</sub> = 9.609</b>; K = 205.0 (K<sub>v</sub> = 9.14).','factor = 84.18/9.14 = 9.21 → <b>z<sub>c</sub> = 0.0921</b>, p<sub>c</sub> = 0.01.','−6.966 ± j13.60; K = 203.7; K<sub>v</sub> = 83.65 (e = 0.01195).']},
+  {id:'e8',t:'Variante · ganancia con 20 %',g:R`G(s)=\frac{K}{(s+2)(s+4)(s+6)},\ 20\,\%`,q:['ζ, θ y s₀.','K y el tercer polo.','Ts, Tp y error al escalón.'],
+   a:['ζ = 0.4559, θ = 62.87°; s₀ = −1.7321 ± j3.3809.','<b>K = 75.18</b>; p₃ = −8.536 (4.93σ, casi 5σ).','Ts = 2.309 s, Tp = 0.929 s; K<sub>p</sub> = 1.566 → e = 0.390.']},
+  {id:'e9',t:'Variante · ganancia por Ts',g:R`G(s)=\frac{K}{s(s+4)(s+6)},\ T_s=4\text{ s}`,q:['¿Sobre qué recta buscas s₀?','Halla s₀ y K.','¿Qué %OS resulta? ¿y el error a rampa?'],
+   a:['Recta vertical σ = 4/4 = 1.','s₀ = −1 ± j2.6458 (= ±j√7); <b>K = 64</b>; p₃ = −8.','ζ = 0.3536 → 30.5 %; K<sub>v</sub> = 64/24 = 2.667 → e = 0.375.']},
+  {id:'e10',t:'Variante · PD',g:R`G(s)=\frac{K}{s(s+7)},\ 10\,\%,\ T_s=0.5\text{ s}`,q:['Halla s<sub>d</sub>.','Ángulo que falta y cero del PD.','K. ¿Hay polos extra? ¿Qué pasa con el %OS?'],
+   a:['ζ = 0.5912, σ<sub>d</sub> = 8 → s<sub>d</sub> = −8 ± j10.915.','∠G = −221.47° → θ<sub>z</sub> = 41.47°; <b>z<sub>c</sub> = 20.35</b>.','<b>K = 9.0</b>; lazo cerrado de 2.º orden (sin polos extra), pero el cero en −20.35 sube el %OS: simulado 13.77 %, Ts = 0.383 s.']},
+  {id:'e11',t:'Variante · atraso',g:R`G(s)=\frac{K}{(s+1)(s+2)(s+10)},\ 20\,\%,\ K_p\times10`,q:['Sin compensar: s₀, K, K<sub>p</sub> y e.','Atraso (s + 0.1)/(s + 0.01): dipolo en s₀.','Re‑busca s₀ y K; nuevo error.'],
+   a:['s₀ = −1.1869 ± j2.3168; <b>K = 52.00</b>; K<sub>p</sub> = 2.600; e = 0.2778.','−1.80°.','s₀ = −1.1615 ± j2.2672; <b>K = 50.92</b>; K<sub>p</sub> = 25.46 → e = 0.0378; polo lento −0.0769.']},
+  {id:'e12',t:'Variante · adelanto',g:R`G(s)=\frac{K}{s(s+4)(s+6)},\ 20\,\%,\ T_s=2\text{ s},\ \text{cero en }-5`,q:['Halla s<sub>d</sub>.','Ángulo con el cero y polo del adelanto.','K y polos extra.'],
+   a:['ζ = 0.4559, σ<sub>d</sub> = 2 → s<sub>d</sub> = −2 ± j3.904.','−171.84° → θ<sub>p</sub> = 8.16°; <b>p<sub>c</sub> = 29.24</b>.','<b>K = 601.1</b>; polos −30.04 y −5.20 (casi cancelado con el cero −5); K<sub>v</sub> = 4.28.']}
+];
+const L_='abcdefgh';
+const D=EJ.map((e,i)=>acc('gd-'+e.id,'E'+(i+1),e.t,'',`<p class="gd-eg">${tex(e.g,1)}</p><ol class="gd-q">${e.q.map((q,j)=>`<li><b>${L_[j]})</b> ${M(q)}<span class="gd-blank" aria-hidden="true"></span></li>`).join('')}</ol><p class="tip gd-hint">Respuestas en la sección E (<a href="#guia" data-gd-ans="${e.id}">ver respuesta de este ejercicio</a>).</p>`)).join('');
+const E=EJ.map((e,i)=>acc('ge-'+e.id,'E'+(i+1),'Respuestas · '+e.t,'',`<ol class="gd-q gd-ans">${e.a.map((a,j)=>`<li><b>${L_[j]})</b> ${M(a)}</li>`).join('')}</ol>`)).join('');
+
+/* ---------- C · qué compensador uso ---------- */
+const EXAM=`<div class="gd-tw"><table class="gd-t"><thead><tr><th>Te piden…</th><th>Usa</th><th>Por qué</th><th>Ejemplo</th></tr></thead><tbody>
   <tr><td>Sólo %OS o ζ (y el LGDR pasa por esa recta)</td><td><span class="gd-use">Ganancia K</span></td><td>Un solo grado de libertad: K mueve los polos sobre el LGDR hasta la recta de ζ.</td><td><a href="#p1">P1</a>: 10 %, K = 45.53</td></tr>
   <tr><td>Ts, Tp u ωn y el LGDR <b>sí</b> pasa por ese punto</td><td><span class="gd-use">Ganancia K</span></td><td>Busca s₀ sobre la recta vertical, horizontal o el círculo.</td><td>—</td></tr>
   <tr><td>%OS + Ts o Tp <b>más rápido</b> que lo que da el LGDR</td><td><span class="gd-use">PD ideal</span> o <span class="gd-use">adelanto</span></td><td>Agregan ángulo positivo y jalan el LGDR a la izquierda. El adelanto no deriva el ruido puro (polo lejano).</td><td><a href="#p4">P4</a> (PD, Ts ÷3) · <a href="#p5">P5</a> (adelanto, Ts ÷3)</td></tr>
@@ -16686,12 +16601,22 @@ sec.querySelector('[data-gd-exam]').innerHTML=`<div class="gd-head"><h3>¿Qué c
     <li><i>«justifique la aproximación de 2.º orden»</i> → <b>|p₃| ≥ 5σ</b> o cancelación</li>
   </ul>`;
 
-/* ---------- arranque: se arma al abrir la pestaña ---------- */
-let built=false;
-const init=()=>{ if(built){ PL.draw(); return; } built=true; render(); PL.init(); };
-const PI=window.__pageInit=window.__pageInit||{}; const prev=PI.guia; PI.guia=()=>{ if(prev) prev(); init(); };
-if(!sec.hidden) init();
-window.__lgdrGuia={st:()=>st,build,setP,setC,PL};
+/* ---------- armado de la página ---------- */
+sec.querySelector('[data-gd-body]').innerHTML=
+  grp('gA','A','Traduce lo que piden al plano s','Cada requisito del enunciado es una recta, una franja o un círculo en el plano s. Abre el que te pidan.',A)+
+  grp('gB','B','Pasos a mano según el tipo de problema','Cada tipo trae cuándo se usa, una figura con su práctica, los pasos con fórmulas y qué cambia si piden otra cosa.',B)+
+  `<div class="card gd-grp" id="gC"><div class="gd-gh"><span class="gd-k">C</span><h3>¿Qué compensador uso según lo que pidan? (para el examen)</h3></div>${EXAM}</div>`+
+  grp('gD','D','Ejercicios para resolver con la hoja','Resuélvelos a mano (calculadora y transportador) y luego compara con la sección E. En el PDF cada inciso deja espacio para escribir.',D)+
+  grp('gE','E','Respuestas de los ejercicios','',E);
+
+/* desplegar / plegar todo, ir a la respuesta, imprimir con todo abierto */
+const all=on=>sec.querySelectorAll('details.gd-acc').forEach(x=>x.open=on);
+sec.addEventListener('click',e=>{ const b=e.target.closest('[data-gd-all]'); if(b){ all(b.dataset.gdAll==='1'); return; }
+  const a=e.target.closest('[data-gd-ans]'); if(a){ e.preventDefault(); const t=d.getElementById('ge-'+a.dataset.gdAns); if(t){ t.open=true; t.scrollIntoView({block:'start',behavior:'smooth'}); } } });
+let prevOpen=null;
+addEventListener('beforeprint',()=>{ if(sec.hidden) return; prevOpen=[...sec.querySelectorAll('details.gd-acc')].map(x=>x.open); all(true); });
+addEventListener('afterprint',()=>{ if(!prevOpen) return; sec.querySelectorAll('details.gd-acc').forEach((x,i)=>x.open=prevOpen[i]); prevOpen=null; });
+window.__lgdrGuia={all,EJ,build};
 })();
 </script>
 </body></html>

@@ -1435,17 +1435,21 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Datos del Proyecto — https://claude.ai/artifact/GPSBNtYhwKfaETNpjxnUd2
 - Taller de Electrónica: Ohm, diodos y transistores — https://claude.ai/artifact/9TBwLS6CNCjF3Cn4ZYkW9R
 
-## Hecho (v80): pestaña «Guía» de diseño + tema oscuro ámbar
+## Hecho (v80–v81): pestaña «Guía» de diseño (fija, acordeón + PDF) + tema oscuro ámbar
 
-- Pestaña `<a href="#guia">Guía</a>` en `nav#tabs` (después de Teoría) → `section#guia.page[data-page][hidden]` (justo después de
-  `section#teoria`). Barra lateral (v19): `GROUP.guia='Aprender'` e ícono `IC.guia` (brújula). CSS «v57 · pestaña Guía» (nombre interno v57) antes del
-  `</style>` principal; `<script>` propio al final del `<body>` (se arma la primera vez que se abre, envolviendo `__pageInit.guia`).
-- Selectores (radios `.gd-o`): problema (`k, pi, lag, pd, lead, pid, ll` → ejemplo P1…P7) × criterio (`os, ts, tp, wn, ess, both`).
-  `build(p,c)` arma los pasos a mano (bloques `T.*` = traducir el criterio, `S.*` = método) con fórmulas KaTeX y ejemplo de la práctica;
-  `fit(p,c)` muestra si encaja (✓/⚠/✗) con botones a otro compensador. Elección guardada en `localStorage['lgdr-guia']` (no se sincroniza).
-- Plano s en SVG: cono de ζ (%OS), recta vertical de σ (Ts 2 % / 5 % / t½), franja de ωd (Tp) y círculo de ωn, con casillas,
-  deslizadores logarítmicos y casilla numérica; zona verde = cumple todo lo marcado (clipPath anidados + máscara); puntos de diseño
-  (cruces del cono con σ/ωd/ωn) y polos/ceros de la práctica cargada (P1–P7). En celular (< 560 px) usa viewBox 380×420.
-- Tabla «¿Qué compensador uso según lo que pidan?» + palabras clave del enunciado. Depuración: `window.__lgdrGuia`.
+- Pestaña `<a href="#guia">Guía</a>` en `nav#tabs` (después de Teoría) → `section#guia.page[data-page][hidden]` (después de `section#teoria`).
+  Barra lateral (v19): `GROUP.guia='Aprender'` e ícono `IC.guia` (brújula). CSS «v57 · pestaña Guía» antes del `</style>` principal;
+  `<script>` propio al final del `<body>` (nombre interno v57).
+- **v81: el usuario pidió que fuera SIN interacción** (para leer, imprimir y hacer ejercicios con la hoja). Se quitaron selectores y
+  deslizadores. Ahora es un acordeón (`details.gd-acc`, botones «Desplegar/Plegar todo» `[data-gd-all]`) en 5 grupos `.gd-grp`:
+  A `#gA` traducir lo pedido al plano s (%OS/ζ, Ts/σ con 5 % y t½, Tp/ωd, ωn/Tr, error, todo junto) con figuras SVG fijas `plane(id,o)`
+  (cono de ζ, recta de σ, franja de ωd, círculo de ωn, zona verde = cumple); B `#gB` pasos a mano por tipo (K, PI, atraso, PD, adelanto,
+  PID, adelanto‑atraso: cuándo se usa, figura de su práctica, pasos `build(p,c)` con números de P1–P7 y tabla «Si te piden otra cosa» `ALT`);
+  C `#gC` tabla del examen + palabras clave; D `#gD` 12 ejercicios (P1–P7 + 5 variantes calculadas con numpy: P1 con 20 %, ganancia por
+  Ts = 4 s (K = 64), PD 10 %/Ts 0.5 s (z_c = 20.35, K = 9, sim 13.77 %), atraso Kp ×10, adelanto con cero en −5); E `#gE` respuestas.
+  En impresión, cada inciso deja renglones (`.gd-blank`); `beforeprint` abre todo.
+- **`guia.pdf`** (A4, 41 págs., portada con índice enlazado, «↑ Índice» en cada tema): `node herramientas/pdf-guia.js` (todo en
+  `display:block` en el PDF por la fragmentación de grid). Botones «Ver PDF» (visor v44, `data-pdfv`) y «Descargar PDF» en la pestaña.
+  **Si cambia el contenido de la Guía, volver a generar `guia.pdf`.**
 - **Tema oscuro:** `--accent` `#7ea3ff` → `#ffb020` y `--accent-soft` → `#3b2a0c` (amarillo/naranja). `--c1` de las gráficas sigue azul
   porque varios textos dicen «(azul)».
