@@ -60,18 +60,41 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
       details.gd-acc>summary{break-after:avoid}
       .gd-sep,.gd-h4{break-after:avoid}
       .gd-cv{display:none!important}
-      .gd-blank{display:block!important;height:58px;background:repeating-linear-gradient(transparent 0 18px,#c9ced6 18px 19px);margin:4px 0 8px}
+      /* v83 · compacto (se escribe en la libreta, no en la hoja) */
+      #guia{font-size:12px}
+      .gd-st{padding:6px 9px!important;gap:8px!important;grid-template-columns:24px minmax(0,1fr)!important}
+      .gd-st>.gd-n{width:22px!important;height:22px!important;font-size:11px!important}
+      .gd-st h4{font-size:13px!important;margin:1px 0 2px!important}
+      .gd-st p,.gd-when,ol.gd-q,.gd-gi{font-size:12px!important}
+      .gd-e{font-size:11.5px!important;padding:4px 8px!important}
+      .gd-f .katex-display{margin:.15em 0!important}.gd-f .katex{font-size:1em!important}
+      details.gd-acc>summary{min-height:0!important;padding:6px 10px!important}
+      .gd-ab{padding:8px 10px 10px!important;gap:6px!important}
+      .gd-ab>*,.gd-grp>*{margin-bottom:6px!important}
+      .gd-ss{padding:5px 8px!important;margin-bottom:5px}
+      .gd-sh{font-size:12.5px!important}.gd-sf{font-size:12.5px!important;gap:2px!important;line-height:1.35!important}
+      .gd-r{font-size:12px!important;padding:2px 7px!important}
+      .gd-ruta{font-size:11.5px!important}
+      table.gd-t{font-size:11.5px!important}table.gd-t td,table.gd-t th{padding:3px 7px!important}
+      .gd-leg{font-size:10px!important}.gd-fig figcaption{font-size:10.5px!important}
+      .gd-nb{font-size:12px!important}
+      .gd-ruta ol{columns:auto!important;display:inline;padding:0!important;margin:0 0 0 4px!important;counter-reset:r}
+      .gd-ruta li{display:inline;counter-increment:r}.gd-ruta li::before{content:counter(r) " ";font-weight:700;color:#1d4ed8}
+      .gd-ruta li:not(:last-child)::after{content:"  →  ";color:#5a6575}
+      .gd-sf{font-size:12px!important}.gd-ss .gd-sh{font-size:12px!important}
       .gd-f,.gd-eg,.gd-tw{overflow:visible!important}
       #gC table.gd-t{min-width:0!important}
-      .gd-fig{max-width:430px;margin:0 auto 10px!important}
+      .gd-fig{max-width:360px;margin:0 auto 4px!important}
       /* la fragmentación de grid de Chromium encima contenido entre páginas: en el PDF todo va en bloque */
-      #guia .card,.gd-grp,.gd-accs,.gd-ab,ol.gd-l,ol.gd-q,.gd-intro,.gd-fig{display:block!important}
+      #guia .card,.gd-grp,.gd-accs,.gd-ab,ol.gd-l,ol.gd-q,ol.gd-sol,.gd-intro,.gd-fig{display:block!important}
+      ol.gd-sol,ol.gd-l{columns:2;column-gap:10px} ol.gd-l>li{break-inside:avoid} ol.gd-sol>li{break-inside:avoid;display:block!important}
+      .gd-tt{width:auto!important}
       .gd-accs>details{margin-bottom:8px}
       .gd-ab>*,.gd-grp>*{margin-bottom:10px}
-      ol.gd-l>li,ol.gd-q>li{margin-bottom:8px}
+      ol.gd-l>li{margin-bottom:5px} ol.gd-q>li{margin-bottom:3px}
       #guia>.phead{display:none!important}
     `;
-    document.head.appendChild(st);
+    document.body.appendChild(st); // al final: la hoja principal de la página va en el <body> y ganaría en los empates
   });
   await page.waitForTimeout(400);
   await page.pdf({

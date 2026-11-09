@@ -1464,3 +1464,22 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   (p_c = 13.72, atraso 0.0618/0.01, K = 690.0, Kv 24.86, 10.65 %). Números con numpy (LGDR por condición de ángulo + residuos exactos).
 - Cada entrada nueva lleva `fig` (opciones de `plane()`; `exo` = polos/ceros propios: `plane()` ahora acepta `o.exo` además de `o.ex`) y la
   respuesta en E dibuja la figura fija del plano s + leyenda. `guia.pdf` regenerado: 51 págs.
+
+## Hecho (v83): Guía en «modo libreta» (resolver a mano paso a paso) + PDF compacto
+
+- Pedido: que la Guía sirva para ir haciendo un ejercicio en la libreta paso a paso; compactar gráficas y textos del PDF.
+- **Desarrollos generados:** `python3 -I herramientas/guia/pasos.py index.html` (numpy; usa `herramientas/guia/lgdr.py`) reescribe
+  `/*GSOL*/const GSOL={…};/*/GSOL*/` en el script de la Guía: por ejercicio `{ruta:[títulos], st:[{t, inc, f:[TeX], tb:{h,r}, r}]}`
+  (208 pasos en E1–E18). Pasos: ζ/θ/tan θ con la sustitución; búsqueda de s₀ por ángulo con **tabla de tanteo** (dos pruebas que encierran −180°
+  y el punto final) y el ángulo de cada polo/cero (`θ_{s+a} = tan⁻¹…` o `180° − tan⁻¹…`); K por magnitud con cada distancia; polos de lazo
+  cerrado (D + KN, p₃ por suma de raíces, |p₃|/σ); Ts/Tp; tipo, constante y error; s_d; ángulo que falta; cero/polo por geometría; dipolo;
+  re‑búsqueda con el compensador; factor del atraso; K₁/K₂/K₃; simulación (residuos exactos) y ajustes (P1 K = 49.38, P5 ζ_d). Cada ejercicio
+  define qué inciso es cada grupo de pasos (`m=dict(ref, err0, dip, reb, mej, sim, sd, comp, K)`). Si cambian los ejercicios de `EJ`, volver a
+  correrlo.
+- Página: E muestra los resultados por inciso, la figura y «Desarrollo para comparar con tu libreta» (`ol.gd-sol > li.gd-ss`: número, título,
+  inciso, fórmulas, tabla `.gd-tt` con la fila final en verde, resultado `.gd-r` en recuadro). D: sin renglones en blanco; cada ejercicio trae
+  «En tu libreta, en este orden» (`.gd-ruta`, títulos de los pasos sin números). Intro: recuadro `.gd-nb` «Cómo escribirlo en la libreta».
+  **Fórmulas de los pasos (B y E) en modo en línea con `\displaystyle`** (`.gd-sf`): KaTeX las parte en el `=` y caben a 390 px sin deslizar.
+- PDF (`herramientas/pdf-guia.js`): la hoja de estilos del PDF ahora va al final del `<body>` (antes quedaba antes de la principal y perdía en
+  los empates: por eso las figuras no se achicaban); letra 12 px, figuras de 360 px, pasos de B y E en dos columnas, ruta en un renglón corrido
+  y sin renglones en blanco. `guia.pdf`: 60 págs. (A 4, B 16, C 1, D 8, E ≈ 29).
