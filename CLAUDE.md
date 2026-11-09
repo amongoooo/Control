@@ -1434,3 +1434,18 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
 - Datos del Proyecto — https://claude.ai/artifact/GPSBNtYhwKfaETNpjxnUd2
 - Taller de Electrónica: Ohm, diodos y transistores — https://claude.ai/artifact/9TBwLS6CNCjF3Cn4ZYkW9R
+
+## Hecho (v80): pestaña «Guía» de diseño + tema oscuro ámbar
+
+- Pestaña `<a href="#guia">Guía</a>` en `nav#tabs` (después de Teoría) → `section#guia.page[data-page][hidden]` (justo después de
+  `section#teoria`). Barra lateral (v19): `GROUP.guia='Aprender'` e ícono `IC.guia` (brújula). CSS «v57 · pestaña Guía» (nombre interno v57) antes del
+  `</style>` principal; `<script>` propio al final del `<body>` (se arma la primera vez que se abre, envolviendo `__pageInit.guia`).
+- Selectores (radios `.gd-o`): problema (`k, pi, lag, pd, lead, pid, ll` → ejemplo P1…P7) × criterio (`os, ts, tp, wn, ess, both`).
+  `build(p,c)` arma los pasos a mano (bloques `T.*` = traducir el criterio, `S.*` = método) con fórmulas KaTeX y ejemplo de la práctica;
+  `fit(p,c)` muestra si encaja (✓/⚠/✗) con botones a otro compensador. Elección guardada en `localStorage['lgdr-guia']` (no se sincroniza).
+- Plano s en SVG: cono de ζ (%OS), recta vertical de σ (Ts 2 % / 5 % / t½), franja de ωd (Tp) y círculo de ωn, con casillas,
+  deslizadores logarítmicos y casilla numérica; zona verde = cumple todo lo marcado (clipPath anidados + máscara); puntos de diseño
+  (cruces del cono con σ/ωd/ωn) y polos/ceros de la práctica cargada (P1–P7). En celular (< 560 px) usa viewBox 380×420.
+- Tabla «¿Qué compensador uso según lo que pidan?» + palabras clave del enunciado. Depuración: `window.__lgdrGuia`.
+- **Tema oscuro:** `--accent` `#7ea3ff` → `#ffb020` y `--accent-soft` → `#3b2a0c` (amarillo/naranja). `--c1` de las gráficas sigue azul
+  porque varios textos dicen «(azul)».
