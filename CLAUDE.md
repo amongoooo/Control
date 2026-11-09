@@ -958,7 +958,7 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   magnitud, polos en lazo cerrado, transitorio, error, compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso), verificación, Simulink,
   problema completo. Etapas: 1 motor/pestaña/guardado (`lgdr-entrena-v1`, sincronizado) · 2 plano · 3 calculadora · 4 temas 1–12 (piloto P1) ·
   5 temas 13–15 · 6 examen, variantes, repaso de errores.
-- **Etapas 1 (v66), 2 (v67), 3 (v68), 4 (v70), 5 (v71) y 6 (v72) hechas: el plan de «Entrenar» está terminado.**
+- **Etapas 1 (v66), 2 (v67), 3 (v68), 4 (v70), 5 (v71) y 6 (v72) hechas: el plan de «Entrenar» está terminado.** Extra (v84): tema 17, los 9 pasos del LGDR.
 
 ## Hecho (v62): calculadora en las evaluaciones de Teoría + índice de Teoría plegable con lo que se lee
 
@@ -1428,6 +1428,33 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Probado con Playwright en P1–P7 (todos los pasos, todos los botones: 338) a 390 px (táctil) y 1440 px, claro y oscuro: abre, fila correcta
   y visible bajo la barra del formulario, desarrollo abierto, el panel no tapa la fórmula, cierra con ✕ / «Volver al paso» / Esc (panel),
   regresa al mismo paso y posición, sin desbordes, consola limpia.
+
+## Hecho (v84): Entrenar · modo completo «Los 9 pasos del LGDR» (tema 17)
+
+- Pedido: «para el modo entrenar, pon un modo completo para repasar los 9 pasos del LGDR». Ejercicio `lgdr9` (tema 17 «Trazo del LGDR:
+  los 9 pasos», `casos: [1…7]`, `p9` = nombres cortos) al final de `entrenar/ejercicios.js` (bloque «Tema 17»). Planta sin compensar de cada
+  práctica en `CASO9` (P2 con ζ = 0.174 dado). Polos/ceros como raíces: `pr/zr` reales y `pc/zc` complejos (solo Im > 0); `mk9` calcula todo
+  (D, N, R = N·D′ − N′·D, tramos, σa, raíces reales de R y cuáles están en el LGDR, `cross9` = Routh de 3.er orden con K en los coeficientes
+  (a₂a₁ − a₀ = AK² + BK + C), `design9` = primer cruce de la recta de ζ, K₀, polos de lazo cerrado y vista).
+- Variantes (`gen9`): 3 polos reales (a veces uno en 0 y un cero), 2 polos + un cero a la izquierda (círculo con **llegada**), un polo real +
+  **par de polos complejos** (ángulo de salida) o 3 polos + **par de ceros complejos** (ángulo de llegada). Se descartan las que no se leen bien
+  (dos cruces con jω, ruptura pegada a un polo, s₀ raro…).
+- Incisos (`incOf` → `inc9`), cada uno con `step` y la sección «Paso n · …» con su **Regla** plegada (`details.en-rule`; oculta en modo examen hasta
+  entregar con `.en-xmode`): 1 polos/ceros en el plano + n, m, ramas · 2 simetría (dos opciones) · 3 tramos del eje real · 4 inicio/término y
+  cuántas ramas van a ceros/∞ (arrastre de n, m) · 5 σa y θk (con n − m = 1 solo θ₀) · 6 coeficientes de N·D′ − N′·D, raíces reales («Ecuación»),
+  cuáles están en el LGDR, K_b y ruptura/llegada de cada una (máximo/mínimo de −D/N) · 7 ¿cruza jω? + K crít y ω (Routh con K en la explicación) ·
+  8 ¿hace falta? + ángulos desde cada polo/cero al complejo y θ de salida/llegada (figura con vectores) · 9 ∠G(s₀) y K en s₀ (calibración) y polos
+  de lazo cerrado en el plano; su solución dibuja el **LGDR completo** (`fig9` + `locus9`: K logarítmica con refinamiento donde las raíces saltan;
+  asíntotas, ruptura/llegada, cruce, s₀ y polos con K₀).
+- Casos comprobados: P1 K_b 3.079, 0 < K < 480 (±j6.633), K₀ 45.53; P2 2.127, 396 (±j5.657), 164.53; P3/P5 12.25, sin cruce, 45.84; P4 16.90, 240
+  (±j4.899), 43.38; P6 3.5585, sin cruce, 121.6; P7 12.25, 58.93.
+- Interfaz (`ui.js?v=8`, importa `ejercicios.js?v=8`; `entrenar.css?v=8`; index.html carga los dos con `?v=8`): tarjeta `.en-p9c` en el inicio
+  (lista de los 9 pasos, botones P1…P7 `data-p9go="tN"` y «Variante aleatoria» `data-p9go="v"`); dentro del ejercicio, barra `nav.en-p9` fija arriba
+  (bajo la barra de la app; con `ab-hide` sube) con los pasos 1–9: verde = todos sus incisos bien, rojo = alguno mal, ámbar = a medias (en examen:
+  con respuestas); tocar baja a `li.en-sech[data-p9h]`. Examen de varios ejercicios: «Temas 1–12» incluye el 17 y «Temas 13–16» ya no; 15 min.
+- Probado: Node (casos P1–P7 + 600 variantes con las respuestas correctas → 100 %, arrastre, 56 puntos de llegada) y Playwright a 390 (táctil) y
+  1440 px (oscuro): 15 casos/variantes al 100 % sin errores de KaTeX ni desbordes, barra 1–9, reglas ocultas en examen; consola limpia; los otros
+  23 ejercicios siguen al 100 %.
 
 ## Otros artefactos del usuario (galería de claude.ai)
 

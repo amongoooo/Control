@@ -32,7 +32,8 @@ export const TEMAS = [
   { n: 13, t: 'Compensadores (PI, atraso, PD, adelanto, PID, adelanto‑atraso)', e: 5 },
   { n: 14, t: 'Verificación del diseño', e: 5 },
   { n: 15, t: 'Simulink', e: 5 },
-  { n: 16, t: 'Problema completo', e: 6 }
+  { n: 16, t: 'Problema completo', e: 6 },
+  { n: 17, t: 'Trazo del LGDR: los 9 pasos', e: 7 }
 ];
 
 /* ------------------------------------------------------------------ utilidades */
@@ -1368,7 +1369,314 @@ const completo = {
   }
 };
 
+/* =====================================================================================================
+   Tema 17 · Trazo del LGDR: los 9 pasos (Nise 8.5–8.6) de principio a fin (v84).
+   Caso de la tarea = la planta sin compensar de P1…P7 (semilla −N); variantes: 3 polos reales (a veces uno en 0 y un cero),
+   un polo real + un par de polos complejos (ángulo de salida) o 3 polos reales + un par de ceros complejos (ángulo de llegada).
+   Polos y ceros se guardan como raíces: pr/zr reales, pc/zc complejos (solo el de Im > 0). Los incisos se arman con incOf(P)
+   (los pasos 6–8 cambian con la planta) y cada uno lleva step = n.º de paso (la interfaz dibuja la barra 1–9).
+   ===================================================================================================== */
+const P9N = ['Número de ramas', 'Simetría', 'Tramos del eje real', 'Inicio y término', 'Asíntotas', 'Ruptura y llegada', 'Cruce con el eje jω', 'Ángulos de salida y llegada', 'Graficación y calibración'];
+const P9S = ['Ramas', 'Simetría', 'Eje real', 'Inicio y fin', 'Asíntotas', 'Ruptura', 'Cruce jω', 'Salida', 'Calibrar'];
+/* planta sin compensar de cada práctica (la de la Resolución paso a paso y del reporte) */
+const CASO9 = {
+  1: { pr: [-2, -4, -6], os: 10 }, 2: { pr: [-1, -2, -10], zg: 0.174 }, 3: { pr: [0, -7], os: 15 }, 4: { pr: [0, -4, -6], os: 16 },
+  5: { pr: [0, -7], os: 15 }, 6: { pr: [-3, -6, -10], zr: [-8], os: 20 }, 7: { pr: [0, -7], os: 20 }
+};
+const cSub = (a, b) => ({ re: a.re - b.re, im: a.im - b.im });
+const argC = w => Math.atan2(w.im, w.re) * DEG;
+const w180 = a => { const x = ((a % 360) + 360) % 360; return x > 180 + 1e-9 ? x - 360 : x; };       // → (−180, 180]
+const cpx = (re, im) => ({ re, im });
+/* Π(s − r): reales r y pares complejos w, w* */
+const polyR = (rs, cs) => cs.reduce((c, w) => pmul(c, [1, -2 * w.re, w.re * w.re + w.im * w.im]), rs.reduce((c, r) => pmul(c, [1, -r]), [1]));
+const all9 = (rs, cs) => rs.map(v => cpx(v, 0)).concat(...cs.map(w => [cpx(w.re, w.im), cpx(w.re, -w.im)]));
+/* factores en TeX: (s + 2), s, (s^2 + 2s + 10) */
+const fac9 = (rs, cs, h) => rs.map(r => fac(-r)).join('') + cs.map(w => `(${polyTeX([1, -2 * w.re, w.re * w.re + w.im * w.im], h)})`).join('');
+const G9TeX = (P, h) => `G(s) = \\dfrac{K${fac9(P.zr, P.zc, h)}}{${fac9(P.pr, P.pc, h)}}`;
+const zTx = w => w.im ? `${n4(w.re)} ${w.im < 0 ? '-' : '+'} j${n4(Math.abs(w.im))}` : n4(w.re);
+const zTt = w => zTx(w).replace(/-/g, '−');
+const ang9 = (P, s) => P.ZZ.reduce((a, z) => a + argC(cSub(s, z)), 0) - P.PP.reduce((a, p) => a + argC(cSub(s, p)), 0);
+const mag9 = (P, s) => P.PP.reduce((a, p) => a * cAbs(cSub(s, p)), 1) / P.ZZ.reduce((a, z) => a * cAbs(cSub(s, z)), 1);
+const on9 = (x, P) => P.pr.concat(P.zr).filter(v => v > x + 1e-9).length % 2 === 1;
+const K9 = (P, x) => -peval(P.D, x) / peval(P.N, x);
+/* primer punto de la recta de ζ (desde el origen) que cumple la condición de ángulo */
+function design9(P, z){
+  const tn = Math.tan(Math.acos(z)), f = sg => w180(ang9(P, { re: -sg, im: sg * tn }) + 180);
+  let a = 0.005, fa = f(a);
+  for (let sg = 0.01; sg <= 40; sg += 0.01) {
+    const fb = f(sg);
+    if (Math.sign(fb) !== Math.sign(fa) && Math.abs(fa) < 90 && Math.abs(fb) < 90) {
+      let lo = a, hi = sg, flo = fa;
+      for (let i = 0; i < 60; i++) { const m = (lo + hi) / 2, fm = f(m); if (Math.sign(fm) === Math.sign(flo)) { lo = m; flo = fm; } else hi = m; }
+      const s = (lo + hi) / 2; return { sg: s, wd: s * tn };
+    }
+    a = sg; fa = fb;
+  }
+  return null;
+}
+/* cruce con jω por Routh: s³ + a₂s² + a₁s + a₀ con aᵢ = dᵢ + nᵢK → a₂a₁ − a₀ = AK² + BK + C = 0 (grado 2: a₁ = 0) */
+function cross9(P){
+  const d = P.D, N = Array(d.length - P.N.length).fill(0).concat(P.N), deg = d.length - 1;
+  if (deg === 3) {
+    const [, d2, d1, d0] = d, [, n2, n1, n0] = N, A = n2 * n1, B = d2 * n1 + d1 * n2 - n0, C = d2 * d1 - d0;
+    let ks = Math.abs(A) < 1e-12 ? (Math.abs(B) < 1e-12 ? [] : [-C / B]) : (() => { const q = B * B - 4 * A * C; return q < 0 ? [] : [(-B - Math.sqrt(q)) / (2 * A), (-B + Math.sqrt(q)) / (2 * A)]; })();
+    ks = ks.filter(K => K > 1e-9 && d2 + n2 * K > 0 && (d0 + n0 * K) / (d2 + n2 * K) > 1e-9).sort((x, y) => x - y);
+    return { deg, A, B, C, N, n: ks.length, K: ks.length ? ks[0] : null, w: ks.length ? Math.sqrt((d0 + n0 * ks[0]) / (d2 + n2 * ks[0])) : null };
+  }
+  if (deg === 2) { const [, d1, d0] = d, [, n1, n0] = N, K = Math.abs(n1) > 1e-12 ? -d1 / n1 : -1, ok = K > 1e-9 && d0 + n0 * K > 0;
+    return { deg, N, n: ok ? 1 : 0, K: ok ? K : null, w: ok ? Math.sqrt(d0 + n0 * K) : null }; }
+  return { deg, N, n: 0, K: null, w: null };
+}
+/* todo lo del trazo a partir de la planta */
+function mk9(L){
+  const P = { pr: L.pr || [], pc: L.pc || [], zr: L.zr || [], zc: L.zc || [] };
+  if (L.caso) P.caso = L.caso;
+  P.PP = all9(P.pr, P.pc); P.ZZ = all9(P.zr, P.zc); P.n = P.PP.length; P.m = P.ZZ.length;
+  P.D = polyR(P.pr, P.pc); P.N = polyR(P.zr, P.zc);
+  P.R = padd(pmul(P.N, pder(P.D)), pscale(pmul(pder(P.N), P.D), -1));
+  P.crit = P.pr.concat(P.zr).sort((a, b) => b - a);
+  P.S = []; for (let i = 0; i < P.crit.length; i += 2) P.S.push([P.crit[i], i + 1 < P.crit.length ? P.crit[i + 1] : -Infinity]);
+  P.sa = (sum(P.PP.map(w => w.re)) - sum(P.ZZ.map(w => w.re))) / (P.n - P.m);
+  P.rr = realRoots(P.R).filter((x, i, a) => !i || Math.abs(x - a[i - 1]) > 1e-6);
+  P.rb = P.rr.filter(x => on9(x, P));
+  if (P.rb.length) { const x = P.rb[0], e = 1e-3; P.kb = Math.abs(K9(P, x)); P.ty = K9(P, x) >= Math.max(K9(P, x - e), K9(P, x + e)) ? 1 : 2; }
+  P.cr = cross9(P);
+  P.os = L.zg ? osOf(L.zg) : L.os; P.z_ = L.zg || zetaOf(L.os); P.zg = !!L.zg;
+  const d = design9(P, P.z_);
+  if (d) { P.s0 = { re: +(-d.sg).toFixed(4), im: +d.wd.toFixed(4) }; P.K0 = mag9(P, P.s0); P.cl = roots(padd(P.D, pscale(P.N, P.K0))); }
+  /* complejo de salida (polo) o de llegada (cero) */
+  if (P.pc.length) P.dp = { t: 'p', q: P.pc[0] };
+  else if (P.zc.length) P.dp = { t: 'z', q: P.zc[0] };
+  /* vista para los planos y la gráfica */
+  const xs = [0].concat(P.PP.map(w => w.re), P.ZZ.map(w => w.re), P.rb, P.s0 ? [P.s0.re] : [], (P.cl || []).map(w => w.re), P.n - P.m > 1 ? [P.sa] : []);
+  const ys = [1].concat(P.PP.map(w => Math.abs(w.im)), P.ZZ.map(w => Math.abs(w.im)), P.s0 ? [P.s0.im] : [], (P.cl || []).map(w => Math.abs(w.im)), P.cr.w ? [P.cr.w] : []);
+  let x0 = Math.floor(Math.min(...xs)) - 1; const x1 = Math.max(1, Math.ceil(Math.max(...xs)) + 1); if (x1 - x0 < 7) x0 = x1 - 7;
+  const ym = Math.max(2, Math.ceil(Math.max(...ys)) + 1);
+  P.view = { x0, x1, y0: -ym, y1: ym };
+  return P;
+}
+/* variante: se descartan las que no se leen bien (ruptura pegada a un polo, dos cruces con jω, punto de diseño raro…) */
+function gen9(r){
+  for (let g = 0; g < 400; g++) {
+    const u = r(), L = { os: r.int(5, 25) };
+    if (u < 0.3) {
+      L.pr = r.distinct(3, 1, 9).sort((a, b) => a - b).map(v => -v); if (r() < 0.35) L.pr[0] = 0;
+      if (r() < 0.4) { let z; do { z = r.int(1, 12); } while (L.pr.includes(-z)); L.zr = [-z]; }
+    } else if (u < 0.55) {
+      const p = r.distinct(2, 0, 5).sort((a, b) => a - b); L.pr = p.map(v => -v); L.zr = [-r.int(p[1] + 1, p[1] + 6)];
+    } else if (u < 0.82) {
+      L.pr = [-r.int(0, 6)]; L.pc = [cpx(-r.int(1, 5), r.int(1, 4))];
+      if (r() < 0.3) { let z; do { z = r.int(1, 10); } while (L.pr.includes(-z)); L.zr = [-z]; }
+    } else {
+      L.pr = r.distinct(3, 0, 8).sort((a, b) => a - b).map(v => -v); L.zc = [cpx(-r.int(1, 6), r.int(1, 4))];
+    }
+    if (L.pr.join() === '-2,-4,-6' && !L.zr) continue;
+    const P = mk9(L);
+    if (!P.rr.length || P.rr.length > 4 || P.cr.n > 1 || !P.s0 || P.s0.im < 0.5 || P.s0.im > 12) continue;
+    if (P.rr.some(x => P.PP.concat(P.ZZ).some(w => Math.hypot(x - w.re, w.im) < 0.2))) continue;
+    if (P.rr.some((x, i) => i && Math.abs(x - P.rr[i - 1]) < 0.15)) continue;
+    if (P.cr.K && (P.cr.K > 5000 || P.cr.w > 15)) continue;
+    if (P.dp && Math.abs(w180(depOf(P, P.dp.q, P.dp.t))) < 3) continue;
+    return P;
+  }
+  return mk9(Object.assign({ caso: 'P1' }, CASO9[1]));
+}
+/* ángulo de salida (polo complejo q) o de llegada (cero complejo q): 180° + Σ∠ceros − Σ∠otros polos (o al revés) */
+const others9 = (P, q, t) => ({ ps: P.PP.filter(w => t !== 'p' || Math.hypot(w.re - q.re, w.im - q.im) > 1e-9), zs: P.ZZ.filter(w => t !== 'z' || Math.hypot(w.re - q.re, w.im - q.im) > 1e-9) });
+function depOf(P, q, t){ const o = others9(P, q, t), sp = sum(o.ps.map(w => argC(cSub(q, w)))), sz = sum(o.zs.map(w => argC(cSub(q, w))));
+  return t === 'p' ? 180 + sz - sp : 180 + sp - sz; }
+/* ramas del LGDR (K de 0 a ∞, cada raíz se une con la más cercana del paso anterior) */
+function locus9(P){
+  const Ks = Math.max(1, P.K0 || 1, P.cr.K || 0, P.kb || 0), v = P.view, X = 4 * (v.x1 - v.x0), Y = 4 * (v.y1 - v.y0), thr = (v.x1 - v.x0) / 150;
+  let prev = P.PP.map(w => cpx(w.re, w.im)); const br = prev.map(w => [w]), out = prev.map(() => false);
+  const at = K => { const rt = roots(padd(P.D, pscale(P.N, K))), used = [];
+    while (rt.length < prev.length) rt.push(cpx(-1e6, 0));
+    return prev.map(w => { let b = 0, bd = Infinity; rt.forEach((u, j) => { if (used[j]) return; const dd = Math.hypot(u.re - w.re, u.im - w.im); if (dd < bd) { bd = dd; b = j; } }); used[b] = 1; return rt[b]; }); };
+  const push = nx => { nx.forEach((w, j) => { if (out[j]) return; br[j].push(w); if (w.re < v.x0 - X || w.re > v.x1 + X || Math.abs(w.im) > Y) out[j] = true; }); prev = nx; };
+  /* entre dos K, si alguna raíz (dentro de la vista) salta más de thr, se parte el intervalo (cerca de la ruptura se mueven rápido) */
+  const step = (Ka, Kb, d) => { const nx = at(Kb);
+    const jump = Math.max(...nx.map((w, j) => out[j] || Math.abs(w.re) > X || Math.abs(w.im) > Y ? 0 : Math.hypot(w.re - prev[j].re, w.im - prev[j].im)));
+    if (jump > thr && d < 9) { step(Ka, Math.sqrt(Ka * Kb), d + 1); step(Math.sqrt(Ka * Kb), Kb, d + 1); } else push(nx); };
+  let K0 = Ks * 1e-5; push(at(K0));
+  for (let i = 1; i <= 360; i++) { const K = Ks * Math.pow(10, -5 + 10 * i / 360); step(K0, K, 0); K0 = K; }
+  return br;
+}
+/* figura del plano s con lo que se pida: o = {loc, asy, rb, cr, s0, cl, to (vectores hacia ese punto), cap, alt} */
+function fig9(P, o){
+  const v = P.view, W = 380, k = W / (v.x1 - v.x0), H = Math.round((v.y1 - v.y0) * k);
+  const X = x => ((x - v.x0) * k).toFixed(1), Y = y => ((v.y1 - y) * k).toFixed(1);
+  let st = 1; for (const s of [0.5, 1, 2, 5, 10]) { st = s; if (s * k >= 26) break; }
+  let g = '', t = '';
+  for (let x = Math.ceil(v.x0 / st) * st; x <= v.x1 + 1e-9; x += st) { g += `M${X(x)} 0V${H}`; if (Math.abs(x) > 1e-9 && Math.abs(x / st) % (k * st < 34 ? 2 : 1) < 1e-9) t += `<text x="${X(x)}" y="${Math.min(H - 3, +Y(0) + 13)}" text-anchor="middle">${n4(x).replace('-', '−')}</text>`; }
+  for (let y = Math.ceil(v.y0 / st) * st; y <= v.y1 + 1e-9; y += st) { g += `M0 ${Y(y)}H${W}`; if (Math.abs(y) > 1e-9 && Math.abs(y / st) % (k * st < 34 ? 2 : 1) < 1e-9) t += `<text x="${(+X(0) + 4).toFixed(1)}" y="${(+Y(y) + 4).toFixed(1)}">${n4(y).replace('-', '−')}</text>`; }
+  let s = `<path class="fg-g" d="${g}"/><path class="fg-ax" d="M0 ${Y(0)}H${W}M${X(0)} 0V${H}"/><g class="fg-tk">${t}</g>`;
+  if (o.asy && P.n - P.m > 1) { const L = 3 * (v.x1 - v.x0 + v.y1 - v.y0);
+    s += `<path class="fg-f" d="${Array.from({ length: P.n - P.m }, (_, j) => { const a = (2 * j + 1) * Math.PI / (P.n - P.m), x0 = P.n - P.m > 1 ? P.sa : 0; return `M${X(x0)} ${Y(0)}L${X(x0 + L * Math.cos(a))} ${Y(L * Math.sin(a))}`; }).join('')}"/>`; }
+  if (o.loc) s += `<path class="fg-c" d="${locus9(P).map(b => b.map((w, i) => `${i ? 'L' : 'M'}${X(w.re)} ${Y(w.im)}`).join('')).join('')}"/>`;
+  if (o.to) P.PP.concat(P.ZZ).forEach(w => { if (Math.hypot(w.re - o.to.re, w.im - o.to.im) > 1e-9) s += `<path class="fg-v" d="M${X(w.re)} ${Y(w.im)}L${X(o.to.re)} ${Y(o.to.im)}"/>`; });
+  P.PP.forEach(w => { const x = +X(w.re), y = +Y(w.im), r = 5; s += `<path class="fg-p" d="M${x - r} ${y - r}L${x + r} ${y + r}M${x - r} ${y + r}L${x + r} ${y - r}"/>`; });
+  P.ZZ.forEach(w => { s += `<circle class="fg-z" cx="${X(w.re)}" cy="${Y(w.im)}" r="5.5"/>`; });
+  (o.rb || []).forEach(x => { s += `<circle class="fg-m" cx="${X(x)}" cy="${Y(0)}" r="4"/>`; });
+  if (o.cr && P.cr.w) [1, -1].forEach(q => { s += `<circle class="fg-m" cx="${X(0)}" cy="${Y(q * P.cr.w)}" r="4"/>`; });
+  (o.cl || []).forEach(w => { const x = +X(w.re), y = +Y(w.im); s += `<rect class="fg-q" x="${x - 4}" y="${y - 4}" width="8" height="8" rx="1.5"/>`; });
+  if (o.s0) s += `<circle class="fg-s" cx="${X(o.s0.re)}" cy="${Y(o.s0.im)}" r="4.5"/><text class="fg-sl" x="${(+X(o.s0.re) + 8).toFixed(1)}" y="${(+Y(o.s0.im) - 6).toFixed(1)}">${o.sl || 's₀'}</text>`;
+  return `<figure class="en-fig lc"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${o.alt || 'Plano s'}">${s}</svg>${o.cap ? `<figcaption>${o.cap}</figcaption>` : ''}</figure>`;
+}
+/* regla del paso (se pliega; en modo examen no se ve hasta entregar) */
+const RULE9 = [
+  'Hay tantas ramas como polos de lazo cerrado: <b>n</b>, el número de polos finitos de G(s) (si n ≥ m).',
+  'Los polos complejos de lazo cerrado vienen en <b>pares conjugados</b> (los coeficientes de D + KN son reales): el LGDR es <b>simétrico respecto al eje real</b>.',
+  'Con K &gt; 0, un punto del eje real está en el LGDR si a su <b>derecha</b> hay un número <b>impar</b> de polos y ceros <b>reales</b> finitos. Los complejos no cuentan: el par conjugado suma 0°.',
+  'El LGDR <b>empieza</b> (K = 0) en los <b>polos</b> finitos de G(s) y <b>termina</b> (K → ∞) en los <b>ceros</b> finitos y en los ceros en el infinito (n − m ramas se van a ∞).',
+  'Las n − m ramas que van a ∞ siguen asíntotas: σ<sub>a</sub> = (Σ polos − Σ ceros)/(n − m) (partes reales) y θ<sub>k</sub> = (2k + 1)·180°/(n − m).',
+  'Sobre el eje real K(σ) = −D(σ)/N(σ). En la <b>ruptura</b> K es máxima (las ramas salen del eje); en la <b>llegada</b> es mínima (entran). Los dos cumplen dK/dσ = 0 ⇔ N·D′ − N′·D = 0, pero solo valen las raíces que caen en un tramo del LGDR.',
+  'Con Routh: la K que hace cero la fila s¹ es la K crítica, y el polinomio auxiliar de la fila s² da ±jω. (Otra forma: s = jω en D + KN = 0, parte real = 0 y parte imaginaria = 0.) Si ninguna K &gt; 0 anula la fila, no cruza: estable ∀K.',
+  'Solo para polos o ceros <b>complejos</b>. Salida de un polo: θ = 180° + Σ∠ceros − Σ∠otros polos. Llegada a un cero: θ = 180° + Σ∠polos − Σ∠otros ceros (cada ángulo, desde ese polo o cero hasta el complejo).',
+  'Se dibuja con todo lo anterior y se <b>calibra</b>: un punto está en el LGDR si ∠G(s) = −180° (condición de ángulo) y su ganancia es K = Π|s − p<sub>i</sub>| / Π|s − z<sub>i</sub>| (condición de magnitud).'
+];
+const rule9 = n => `<details class="en-rule"><summary>Regla · Paso ${n}</summary><p>${RULE9[n - 1]}</p></details>`;
+const sec9 = n => `Paso ${n} · ${P9N[n - 1]}`;
+const lst = (a, h) => a.map(v => h.tx(h.n(v))).join(', ');
+
+/* ---- incisos ---- */
+function inc9(P){
+  const I = [], add = (step, o) => { if (!I.some(i => i.step === step)) { o.sec = sec9(step); const q = o.q; o.q = (P, h) => rule9(step) + q(P, h); } o.step = step; I.push(o); };
+  /* 1 · ramas */
+  add(1, { q: (P, h) => `Ubica los <b>polos (×)</b> y los <b>ceros (○)</b> finitos de ${h.tx('G(s)')} en el plano s.${P.pc.length || P.zc.length ? ' Los complejos van en par conjugado: basta con ubicar el de arriba.' : ''}`,
+    f: [{ k: 'pz1', l: 'Polos y ceros de G(s)', plane: true, marks: ['x', 'o'], sym: true, snap: 0.5, abs: 0.2, tol: 0.02, max: 8 }],
+    sol: P => ({ pz1: P.PP.map(w => ({ t: 'x', re: w.re, im: w.im })).concat(P.ZZ.map(w => ({ t: 'o', re: w.re, im: w.im }))) }),
+    how: (P, A, S, h) => `<p><b>Polos:</b> ${h.tx(`${fac9(P.pr, P.pc, h)} = 0`)} → ${h.tx(P.PP.filter(w => w.im >= 0).map(w => `s = ${zTx(w).replace('+ j', '\\pm j')}`).join(',\\; '))}.</p><p><b>Ceros:</b> ${P.m ? `${h.tx(`${fac9(P.zr, P.zc, h)} = 0`)} → ${h.tx(P.ZZ.filter(w => w.im >= 0).map(w => `s = ${zTx(w).replace('+ j', '\\pm j')}`).join(',\\; '))}` : 'el numerador es solo K: no hay ceros finitos'}.</p>` });
+  add(1, { q: () => 'Cuenta los polos finitos n, los ceros finitos m y el número de <b>ramas</b> del LGDR.',
+    f: [{ k: 'n1', l: 'n (polos)', abs: 0.01 }, { k: 'm1', l: 'm (ceros)', abs: 0.01 }, { k: 'r1', l: 'Ramas', abs: 0.01 }],
+    sol: (P, A) => ({ n1: P.n, m1: P.m, r1: Math.max(A.n1 != null ? A.n1 : P.n, A.m1 != null ? A.m1 : P.m) }),
+    how: (P, A, S, h) => `<p>n = ${P.n}, m = ${P.m}. Cada polo de lazo cerrado recorre una rama al variar K de 0 a ∞, y D + KN tiene grado ${h.tx('\\max(n, m)')}:</p>${h.tx(`\\text{ramas} = \\max(${h.n(A.n1)},\\, ${h.n(A.m1)}) = ${h.n(S.r1)}`, true)}` });
+  /* 2 · simetría */
+  const sp = P.s0 ? `${n4(P.s0.re).replace('-', '−')} + j${n4(P.s0.im)}` : '−1 + j2', sm = sp.replace('+ j', '− j');
+  add(2, { q: () => 'Contesta las dos preguntas de la simetría.',
+    f: [{ k: 'sy2', l: 'El LGDR es simétrico respecto al', ch: [{ v: 1, l: 'Eje real' }, { v: 2, l: 'Eje imaginario' }, { v: 3, l: 'Origen' }] },
+      { k: 'cj2', l: `Si s = ${sp} es polo de lazo cerrado con K = K₁, con esa misma K también lo es`, ch: [{ v: 1, l: `s = ${sm}` }, { v: 2, l: `s = ${sp.replace(/^−/, '')}` }, { v: 3, l: 'Ningún otro' }] }],
+    sol: () => ({ sy2: 1, cj2: 1 }),
+    how: (P, A, S, h) => `<p>La ecuación característica ${h.tx('D(s) + K\\,N(s) = 0')} tiene coeficientes <b>reales</b>, así que sus raíces complejas vienen siempre en pares conjugados: si ${h.tx('a + jb')} es raíz, también ${h.tx('a - jb')}. Por eso cada rama de arriba tiene su reflejo abajo: el LGDR es simétrico respecto al <b>eje real</b> y basta dibujar la mitad de arriba.</p>` });
+  /* 3 · eje real */
+  add(3, { q: P => `Escribe los tramos del eje real que pertenecen al LGDR, de derecha a izquierda (cada extremo es un polo o un cero real).${P.S.some(s => s[1] === -Infinity) ? ' El último se va a −∞: escribe solo dónde empieza.' : ''}${P.pc.length || P.zc.length ? ' Los polos o ceros complejos no cuentan.' : ''}`,
+    f: P => P.S.flatMap((s, j) => s[1] === -Infinity ? [{ k: 'inf3', l: 'Tramo a −∞ empieza en σ =', abs: 0.02 }] : [{ k: 'd3_' + j, l: `Tramo ${j + 1}: de σ =`, abs: 0.02 }, { k: 'i3_' + j, l: 'a σ =', abs: 0.02 }]),
+    sol: P => { const o = {}; P.S.forEach((s, j) => { if (s[1] === -Infinity) o.inf3 = s[0]; else { o['d3_' + j] = s[0]; o['i3_' + j] = s[1]; } }); return o; },
+    how: (P, A, S, h) => `<p>Polos y ceros <b>reales</b> de derecha a izquierda: ${lst(P.crit, h)}${P.pc.length || P.zc.length ? ' (los complejos se ignoran)' : ''}. Se toman de dos en dos: del 1.º al 2.º, del 3.º al 4.º…; si sobra uno, de ahí a −∞. Así cada punto de un tramo tiene un número impar de ellos a su derecha.</p><p>${P.S.map(s => h.tx(s[1] === -Infinity ? `(-\\infty,\\; ${h.n(s[0])}]` : `[${h.n(s[1])},\\; ${h.n(s[0])}]`)).join(' y ')}</p>` });
+  /* 4 · inicio y término */
+  add(4, { q: (P, h) => `¿Dónde empieza y dónde termina cada rama? (${h.tx('K = 0')} y ${h.tx('K \\to \\infty')})`,
+    f: [{ k: 'st4', l: 'Con K = 0 las ramas empiezan en', ch: [{ v: 1, l: 'Los polos de G(s)' }, { v: 2, l: 'Los ceros de G(s)' }, { v: 3, l: 'El origen' }] },
+      { k: 'en4', l: 'Con K → ∞ terminan en', ch: [{ v: 1, l: 'Los ceros finitos y en el infinito' }, { v: 2, l: 'Los polos de G(s)' }, { v: 3, l: 'El eje jω' }] }],
+    sol: () => ({ st4: 1, en4: 1 }),
+    how: (P, A, S, h) => `<p>De ${h.tx('D(s) + K\\,N(s) = 0')}: con ${h.tx('K = 0')} queda ${h.tx('D(s) = 0')} (los <b>polos</b>); dividiendo entre K y con ${h.tx('K \\to \\infty')} queda ${h.tx('N(s) = 0')} (los <b>ceros</b> finitos). Las ramas que sobran (n − m) no encuentran cero finito y se van al <b>infinito</b>.</p>` });
+  add(4, { q: () => 'Con los n y m del paso 1: ¿cuántas ramas terminan en un cero finito y cuántas se van al infinito?',
+    f: [{ k: 'mz4', l: 'Terminan en ceros finitos', abs: 0.01 }, { k: 'mi4', l: 'Se van al infinito', abs: 0.01 }],
+    sol: (P, A) => ({ mz4: A.m1, mi4: A.n1 - A.m1 }),
+    how: (P, A, S, h) => h.tx(`m = ${h.n(S.mz4)},\\qquad n - m = ${h.n(A.n1)} - ${h.n(A.m1)} = ${h.n(S.mi4)}`, true) });
+  /* 5 · asíntotas */
+  const q5 = P.n - P.m;
+  add(5, { q: (P, h) => q5 > 1 ? `Centroide de las asíntotas ${h.tx('\\sigma_a')} (con las <b>partes reales</b> de los polos y ceros${P.pc.length || P.zc.length ? ': un par complejo aporta 2·Re' : ''}).` : `Solo hay ${h.tx('n - m = 1')} asíntota. ¿Con qué ángulo sale?`,
+    f: () => q5 > 1 ? [{ k: 'sa5', l: 'σ<sub>a</sub>', abs: 0.005 }] : [{ k: 'th5_0', l: 'θ<sub>0</sub>', u: '°', ang: true }],
+    sol: (P, A) => q5 > 1 ? { sa5: (sum(P.PP.map(w => w.re)) - sum(P.ZZ.map(w => w.re))) / A.mi4 } : { th5_0: 180 / A.mi4 },
+    how: (P, A, S, h) => { const sp = sum(P.PP.map(w => w.re)), sz = sum(P.ZZ.map(w => w.re));
+      return q5 > 1 ? h.tx(`\\sigma_a = \\dfrac{\\sum \\mathrm{Re}\\,p - \\sum \\mathrm{Re}\\,z}{n - m} = \\dfrac{(${P.PP.map(w => h.n(w.re)).join(')+(')})${P.m ? ` - (${P.ZZ.map(w => h.n(w.re)).join(')+(')})` : ''}}{${h.n(A.mi4)}} = ${h.n(S.sa5)}`, true)
+        : `${h.tx(`\\theta_0 = \\dfrac{180^\\circ}{${h.n(A.mi4)}} = {${h.n(S.th5_0)}}^\\circ`, true)}<p>Una sola asíntota: la rama se va por el eje real negativo hacia −∞ (el centroide no hace falta).</p>`; } });
+  if (q5 > 1) add(5, { q: () => `Ángulos de las asíntotas θ<sub>k</sub> para k = 0 … ${q5 - 1} (en grados, entre 0° y 360°).`,
+    f: () => Array.from({ length: q5 }, (_, k) => ({ k: 'th5_' + k, l: `θ<sub>${k}</sub>`, u: '°', ang: true })),
+    sol: (P, A) => { const o = {}; for (let k = 0; k < q5; k++) o['th5_' + k] = (2 * k + 1) * 180 / A.mi4; return o; },
+    how: (P, A, S, h) => `${h.tx(`\\theta_k = \\dfrac{(2k+1)\\,180^\\circ}{${h.n(A.mi4)}}`, true)}<p>${Object.keys(S).map((c, k) => `k = ${k}: ${h.f(S[c])}°`).join(' · ')}</p>` });
+  /* 6 · ruptura y llegada */
+  const Rd = P.R.length - 1;
+  add(6, { q: (P, h) => `Con ${h.tx(`N(s) = ${polyTeX(P.N, h)}`)} y ${h.tx(`D(s) = ${polyTeX(P.D, h)}`)}, calcula ${h.tx("N D' - N' D")} (coeficientes de la mayor potencia a la menor).`,
+    f: () => P.R.map((_, i) => ({ k: 'rc6_' + i, l: `s${SUP[Rd - i]}`, abs: 0.01 })),
+    sol: P => { const o = {}; P.R.forEach((v, i) => { o['rc6_' + i] = v; }); return o; },
+    how: (P, A, S, h) => h.tx(P.m ? `\\begin{aligned}N D' - N' D &= (${polyTeX(P.N, h)})(${polyTeX(pder(P.D), h)}) \\\\ &\\quad - (${polyTeX(pder(P.N), h)})(${polyTeX(P.D, h)}) \\\\ &= ${polyTeX(P.R, h)}\\end{aligned}` : `N = 1,\\; N' = 0 \\;\\Rightarrow\\; N D' - N' D = D'(s) = ${polyTeX(P.R, h)}`, true) });
+  add(6, { q: () => `Raíces <b>reales</b> de ese polinomio, de derecha a izquierda (las complejas no sirven).`,
+    tools: () => Rd >= 2 ? [{ app: 'eqn', n: Rd }] : [],
+    f: () => P.rr.map((_, i) => ({ k: 'rr6_' + i, l: `σ<sub>${i + 1}</sub>`, abs: 0.01 })),
+    sol: (P, A) => { const c = P.R.map((v, i) => A['rc6_' + i]), o = {}; let rr = realRoots(c); if (rr.length !== P.rr.length) rr = P.rr; rr.forEach((x, i) => { o['rr6_' + i] = x; }); return o; },
+    how: (P, A, S, h) => `${Rd >= 2 ? `<p>Ecuación › Polinómica, grado ${Rd}, coeficientes ${P.R.map(v => h.f(v)).join(', ')}.</p>` : `${h.tx(`${polyTeX(P.R, h)} = 0 \\Rightarrow \\sigma = ${h.n(P.rr[0])}`, true)}`}<p>Reales: ${lst(Object.values(S), h)}${roots(P.R).some(w => w.im) ? ' (las complejas se descartan)' : ''}.</p>` });
+  add(6, { q: () => '¿Cuáles caen en un tramo del LGDR (paso 3)? Solo esas son ruptura o llegada.',
+    f: () => P.rr.map((_, i) => ({ k: 'on6_' + i, l: `σ<sub>${i + 1}</sub> en el LGDR`, ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No' }] })),
+    sol: (P, A) => { const o = {}; P.rr.forEach((x, i) => { o['on6_' + i] = on9(A['rr6_' + i], P) ? 1 : 0; }); return o; },
+    how: (P, A, S, h) => `<p>${P.rr.map((x, i) => `${h.tx(`\\sigma_${i + 1} = ${h.n(A['rr6_' + i])}`)}: ${P.crit.filter(v => v > A['rr6_' + i] + 1e-9).length} polos/ceros reales a su derecha → ${S['on6_' + i] ? '<b>impar, sí está</b>' : 'par, no está (se descarta)'}`).join('<br>')}</p>` });
+  if (P.rb.length) add(6, { q: (P, h) => `Para ${P.rb.length > 1 ? 'cada punto que sí está en el LGDR (de derecha a izquierda)' : 'el punto que sí está en el LGDR'}: ganancia ${h.tx('K_b = |D(\\sigma_b)/N(\\sigma_b)|')} y si es de ruptura o de llegada.`,
+    f: () => P.rb.flatMap((x, i) => { const j = P.rb.length > 1 ? String(i + 1) : ''; return [{ k: 'kb6_' + i, l: `K<sub>b${j}</sub>` }, { k: 'ty6_' + i, l: `${j ? 'El punto ' + j : 'Ese punto'} es de`, ch: [{ v: 1, l: 'Ruptura (las ramas salen del eje real)' }, { v: 2, l: 'Llegada (las ramas entran al eje real)' }] }]; }),
+    sol: (P, A) => { let xs = P.rr.map((x, i) => +A['on6_' + i] === 1 ? A['rr6_' + i] : null).filter(x => x != null); if (xs.length !== P.rb.length) xs = P.rb;
+      const o = { _x: xs }, e = 1e-3; xs.forEach((x, i) => { const Kx = K9(P, x); o['kb6_' + i] = Math.abs(Kx); o['ty6_' + i] = Kx >= Math.max(K9(P, x - e), K9(P, x + e)) ? 1 : 2; }); return o; },
+    how: (P, A, S, h) => S._x.map((x, i) => `${h.tx(`K_{b${S._x.length > 1 ? i + 1 : ''}} = \\left|\\dfrac{D(${h.n(x)})}{N(${h.n(x)})}\\right| = \\left|\\dfrac{${h.n(peval(P.D, x))}}{${h.n(peval(P.N, x))}}\\right| = ${h.n(S['kb6_' + i])}`, true)}<p>Sobre ese tramo, ${h.tx('K(\\sigma) = -D(\\sigma)/N(\\sigma)')} tiene un <b>${S['ty6_' + i] === 1 ? 'máximo' : 'mínimo'}</b> en ${h.f(x)}: ${S['ty6_' + i] === 1 ? `las dos ramas que vienen de los polos del tramo chocan ahí y <b>salen</b> del eje real (para ${h.tx(`K > ${h.n(S['kb6_' + i])}`)} son complejas)` : 'dos ramas complejas <b>llegan</b> al eje real ahí y luego siguen por el tramo hacia el cero o hacia −∞'}.</p>`).join('') });
+  /* 7 · cruce con jω */
+  add(7, { q: (P, h) => `Ecuación característica: ${h.tx(`${polyTeX(P.D, h)} + K${P.m ? `(${polyTeX(P.N, h)})` : ''} = 0`)}. Con Routh, ¿el LGDR cruza el eje ${h.tx('j\\omega')} para alguna ${h.tx('K > 0')}?`,
+    f: [{ k: 'cr7', l: '¿Cruza el eje jω?', ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No: estable ∀K > 0' }] }],
+    sol: P => ({ cr7: P.cr.K ? 1 : 0 }),
+    how: (P, A, S, h) => routh9(P, h) });
+  if (P.cr.K) add(7, { q: (P, h) => `K crítica (la que anula la fila s¹) y la frecuencia ω del cruce (polinomio auxiliar de la fila s²).`,
+    f: [{ k: 'kc7', l: 'K<sub>crít</sub>' }, { k: 'w7', l: 'ω', u: 'rad/s' }],
+    sol: P => ({ kc7: P.cr.K, w7: P.cr.w }),
+    how: (P, A, S, h) => `${h.tx(`K_{crít} = ${h.n(S.kc7)},\\qquad s = \\pm j\\,${h.n(S.w7)}`, true)}<p>Estable para ${h.tx(`0 < K < ${h.n(S.kc7)}`)}; en ${h.tx(`K = ${h.n(S.kc7)}`)} dos polos están sobre el eje ${h.tx('j\\omega')} (oscilación sostenida a ${h.f(S.w7)} rad/s).</p>` });
+  /* 8 · salida y llegada */
+  add(8, { q: () => '¿Hace falta calcular un ángulo de salida o de llegada? (solo si G(s) tiene polos o ceros complejos)',
+    f: [{ k: 'cx8', l: 'Respuesta', ch: [{ v: 1, l: 'Sí' }, { v: 0, l: 'No' }] }],
+    sol: P => ({ cx8: P.dp ? 1 : 0 }),
+    how: (P, A, S, h) => `<p>${P.dp ? `Sí: G(s) tiene ${P.dp.t === 'p' ? 'un par de <b>polos</b> complejos' : 'un par de <b>ceros</b> complejos'} en ${h.tx(zTx(P.dp.q).replace('+ j', '\\pm j'))}; hay que saber con qué ángulo ${P.dp.t === 'p' ? 'sale de ellos' : 'llega a ellos'} la rama.` : 'No: todos los polos y ceros son <b>reales</b>, así que las ramas salen y llegan sobre el eje real (o se separan en los puntos de ruptura). Este paso no aplica.'}</p>` });
+  if (P.dp) {
+    const q = P.dp.q, t = P.dp.t, o = others9(P, q, t), qT = zTt(q), lab = w => zTt(w) + (Math.abs(w.re - q.re) < 1e-9 && Math.abs(w.im + q.im) < 1e-9 ? ' (conjugado)' : '');
+    add(8, { q: (P, h) => `${t === 'p' ? 'Ángulo de <b>salida</b> del polo' : 'Ángulo de <b>llegada</b> al cero'} ${h.tx(zTx(q))}. Primero el ángulo de cada vector que va de los otros polos (θ) y ceros (φ) hasta ${h.tx(zTx(q))}, contra el eje real positivo.${fig9(P, { to: q, alt: 'Vectores hasta el polo o cero complejo' })}`,
+      tools: () => [{ app: 'cplx' }],
+      f: () => o.ps.map((w, i) => ({ k: 'tp8_' + i, l: `θ desde ${lab(w)}`, u: '°', ang: true })).concat(o.zs.map((w, i) => ({ k: 'tz8_' + i, l: `φ desde ${lab(w)}`, u: '°', ang: true }))),
+      sol: () => { const r = {}; o.ps.forEach((w, i) => { r['tp8_' + i] = argC(cSub(q, w)); }); o.zs.forEach((w, i) => { r['tz8_' + i] = argC(cSub(q, w)); }); return r; },
+      how: (P, A, S, h) => `${h.tx(`\\begin{aligned}${o.ps.map((w, i) => `\\theta_{${i + 1}} &= \\angle\\big((${zTx(q)}) - (${zTx(w)})\\big) = \\angle(${zTx(cSub(q, w))}) = {${h.n(S['tp8_' + i])}}^\\circ`).concat(o.zs.map((w, i) => `\\varphi_{${i + 1}} &= \\angle(${zTx(cSub(q, w))}) = {${h.n(S['tz8_' + i])}}^\\circ`)).join(' \\\\ ')}\\end{aligned}`, true)}<p>El conjugado siempre da 90° (está justo abajo). En la calculadora (Complejos): <code>arg(…)</code> en grados.</p>` });
+    add(8, { q: (P, h) => t === 'p' ? `Ángulo de salida: ${h.tx('\\theta_{sal} = 180^\\circ + \\sum\\varphi - \\sum\\theta')} (entre −180° y 180°).` : `Ángulo de llegada: ${h.tx('\\theta_{lleg} = 180^\\circ + \\sum\\theta - \\sum\\varphi')} (entre −180° y 180°).`,
+      f: [{ k: 'th8', l: t === 'p' ? 'θ<sub>sal</sub>' : 'θ<sub>lleg</sub>', u: '°', ang: true }],
+      sol: (P, A) => { const sp = sum(o.ps.map((w, i) => +A['tp8_' + i])), sz = sum(o.zs.map((w, i) => +A['tz8_' + i])); return { th8: w180(t === 'p' ? 180 + sz - sp : 180 + sp - sz) }; },
+      how: (P, A, S, h) => { const par = v => v < 0 ? `(${h.n(v)})` : h.n(v), tp = o.ps.map((w, i) => par(+A['tp8_' + i])), tz = o.zs.map((w, i) => par(+A['tz8_' + i]));
+        const T = ['180^\\circ'].concat(t === 'p' ? tz.map(v => '+ ' + v).concat(tp.map(v => '- ' + v)) : tp.map(v => '+ ' + v).concat(tz.map(v => '- ' + v)));
+        const e = T.slice(0, 4).join(' ') + (T.length > 4 ? ' \\\\ &\\quad ' + T.slice(4).join(' ') : '');
+        return `${h.tx(`\\begin{aligned}\\theta_{${t === 'p' ? 'sal' : 'lleg'}} &= ${e} \\\\ &= {${h.n(S.th8)}}^\\circ\\end{aligned}`, true)}<p>Por la simetría, ${t === 'p' ? 'del polo conjugado sale' : 'al cero conjugado llega'} con ${h.f(-S.th8)}°.</p>`; } });
+  }
+  /* 9 · graficación y calibración */
+  if (P.s0) {
+    add(9, { q: (P, h) => `Calibración: ${P.zg ? `el problema da ${h.tx(`\\zeta = ${h.n(P.z_)}`)}` : `para ${h.f(P.os)} % de sobrepaso (${h.tx(`\\zeta = ${h.n(P.z_)}`)})`}, el LGDR cruza la recta de ζ en ${h.tx(`s_0 = ${zTx(P.s0)}`)}. Comprueba la condición de ángulo y calcula la K de ese punto con la de magnitud.`,
+      tools: () => [{ app: 'cplx' }],
+      f: [{ k: 'g9', l: '∠G(s₀)', u: '°', ang: true, abs: 0.6 }, { k: 'K9', l: 'K en s₀' }],
+      sol: P => ({ g9: ang9(P, P.s0), K9: mag9(P, P.s0) }),
+      how: (P, A, S, h) => { const s = P.s0;
+        const par = v => v < 0 ? `(${h.n(v)})` : h.n(v), T = P.ZZ.map(z => (P.ZZ.indexOf(z) ? '+ ' : '') + par(argC(cSub(s, z)))).concat(P.PP.map(p => '- ' + par(argC(cSub(s, p)))));
+        const e = T.slice(0, 4).join(' ') + (T.length > 4 ? ' \\\\ &\\quad ' + T.slice(4).join(' ') : '');
+        return `${h.tx(`\\begin{aligned}\\angle G(s_0) &= \\textstyle\\sum\\angle(s_0 - z_i) - \\sum\\angle(s_0 - p_i) \\\\ &= ${e} \\\\ &= {${h.n(S.g9)}}^\\circ \\;\\checkmark\\end{aligned}`, true)}${h.tx(`K = \\dfrac{${P.PP.map(p => h.n(cAbs(cSub(s, p)))).join('\\cdot')}}{${P.m ? P.ZZ.map(z => h.n(cAbs(cSub(s, z)))).join('\\cdot') : '1'}} = ${h.n(S.K9)}`, true)}<p>Numerador: distancias de ${h.tx('s_0')} a cada polo; denominador: a cada cero${P.m ? '' : ' (no hay: 1)'}.</p>`; } });
+    add(9, { q: (P, h) => `Con la K que calculaste, ubica <b>todos</b> los polos de lazo cerrado (×) en el plano: raíces de ${h.tx('D(s) + K\\,N(s) = 0')}. Al terminar verás el LGDR completo dibujado con todos los pasos.`,
+      tools: () => [{ app: 'eqn', n: Math.max(2, Math.min(4, P.n)) }],
+      f: [{ k: 'cl9', l: 'Polos de lazo cerrado', plane: true, marks: ['x'], sym: true, snap: 0.25, abs: 0.15, tol: 0.02, max: 6 }],
+      sol: (P, A) => ({ cl9: roots(padd(P.D, pscale(P.N, A.K9))).map(w => ({ t: 'x', re: w.re, im: w.im })) }),
+      how: (P, A, S, h) => { const ch = padd(P.D, pscale(P.N, A.K9)), cl = roots(ch);
+        return `${h.tx(`\\begin{aligned}&D(s) + ${h.n(A.K9)}\\,N(s) \\\\ &= ${polyTeX(ch, h)} = 0\\end{aligned}`, true)}<p>Raíces: ${h.tx(cl.filter(w => w.im >= 0).map(w => `s = ${zTx(w).replace('+ j', '\\pm j')}`).join(',\\; '))}.</p>${fig9(P, { loc: true, asy: true, rb: P.rb, cr: true, s0: P.s0, cl: P.cl, cap: `LGDR completo: ramas (línea gruesa), asíntotas (punteadas)${P.rb.length ? ', ruptura/llegada' : ''}${P.cr.K ? ', cruce con jω' : ''} (puntos), s₀ y los polos de lazo cerrado con K = ${h.f(P.K0)} (cuadros).`, alt: 'Lugar geométrico de las raíces completo' })}`; } });
+  }
+  return I.map((i, j) => Object.assign(i, { k: String.fromCharCode(97 + j) }));
+}
+/* explicación del paso 7: arreglo de Routh con K */
+function routh9(P, h){
+  const c = P.cr, d = P.D, N = c.N, cK = (dv, nv) => !nv ? h.n(dv) : !dv ? (nv === 1 ? 'K' : `${h.n(nv)}K`) : `${h.n(dv)} + ${nv === 1 ? '' : h.n(nv)}K`;
+  if (c.deg === 3) {
+    const a2 = cK(d[1], N[1]), a1 = cK(d[2], N[2]), a0 = cK(d[3], N[3]);
+    const eq = c.A ? `${h.n(c.A)}K^2 ${c.B < 0 ? '-' : '+'} ${h.n(Math.abs(c.B))}K ${c.C < 0 ? '-' : '+'} ${h.n(Math.abs(c.C))} = 0` : `${h.n(c.B)}K ${c.C < 0 ? '-' : '+'} ${h.n(Math.abs(c.C))} = 0`;
+    return `${h.tx(`\\begin{array}{c|cc} s^3 & 1 & ${a1} \\\\ s^2 & ${a2} & ${a0} \\\\ s^1 & \\dfrac{(${a2})(${a1}) - (${a0})}{${a2}} & \\\\ s^0 & ${a0} & \\end{array}`, true)}<p>La fila s¹ se anula cuando ${h.tx('a_2 a_1 - a_0 = 0')}:</p>${h.tx(eq, true)}<p>${c.K ? `La menor raíz positiva es ${h.tx(`K_{crít} = ${h.n(c.K)}`)}: ahí la primera columna cambia de signo y el LGDR <b>cruza</b> el eje ${h.tx('j\\omega')}. Fila s²: ${h.tx(`(${a2})s^2 + (${a0}) = 0 \\Rightarrow s = \\pm j${h.n(c.w)}`)}.` : `No tiene raíz positiva (con ${h.tx('K > 0')} la primera columna es siempre positiva): el LGDR <b>no cruza</b> el eje ${h.tx('j\\omega')} y el sistema es estable para toda ${h.tx('K > 0')}.`}</p>`;
+  }
+  if (c.deg === 2) return `<p>${h.tx(`s^2 + ${cK(d[1], N[1])}\\,s + ${cK(d[2], N[2])} = 0`)}: en un polinomio de 2.º orden basta con que los coeficientes sean positivos. ${c.K ? `El de s se anula en ${h.tx(`K = ${h.n(c.K)}`)}: ahí cruza en ${h.tx(`\\pm j${h.n(c.w)}`)}.` : `Con ${h.tx('K > 0')} todos son positivos: <b>no cruza</b>, estable ∀K &gt; 0 (las ramas suben paralelas al eje ${h.tx('j\\omega')}).`}</p>`;
+  return '';
+}
+
+const lgdr9 = {
+  id: 'lgdr9', tema: 17, t: 'Trazo del LGDR: los 9 pasos (P1–P7)', d: 'Ramas, simetría, eje real, inicio y fin, asíntotas, ruptura, cruce con jω, salida/llegada y calibración, de principio a fin.',
+  casos: [1, 2, 3, 4, 5, 6, 7], p9: P9S,
+  gen(r, tarea){
+    const n = tarea === true ? 1 : tarea;
+    return n ? mk9(Object.assign({ caso: 'P' + n }, CASO9[n])) : gen9(r);
+  },
+  enun: (P, h) => `<p><b>${P.caso ? `Práctica ${P.caso.slice(1)}` : 'Variante'} · trazo completo del LGDR.</b> Sistema con realimentación unitaria y ${h.tx('K > 0')}:</p>${h.tx(G9TeX(P, h), true)}<p>Recorre los <b>9 pasos</b> del trazo (Nise, secciones 8.5–8.6) en orden. Cada paso trae su <i>Regla</i> plegada (ábrela si la necesitas) y usa tus resultados anteriores (con arrastre). Al final verás el LGDR completo dibujado.</p>`,
+  inc: [],
+  incOf: P => inc9(P)
+};
+
 /* orden: por tema (la página los agrupa por tema) */
 export const EJ = [polos, plano, ecuacion, ejereal, asint, ruptura, routh, zeta, angulo, magnitud, lazo, transitoria, error,
-  exPI, exAtr, exPD, exAd, exPID, exAA, verifpol, verifsim, simulink, completo];
+  exPI, exAtr, exPD, exAd, exPID, exAA, verifpol, verifsim, simulink, completo, lgdr9];
 export const byId = id => EJ.find(e => e.id === id);

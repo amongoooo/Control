@@ -300,3 +300,35 @@ html.en-ex #entrenar{padding-bottom:70px}
 .en-xcfg .seg{flex-wrap:wrap;justify-content:center}
 .en-xcfg .seg button{white-space:nowrap}
 @media (max-width:560px){.en-xcfg .seg button{padding-inline:9px}.en-xcfg [data-pref="xc"]{display:grid;grid-template-columns:1fr 1fr;width:100%;max-width:320px}.en-xcfg [data-pref="xc"] button{min-height:40px}.en-xcfg [data-xstart],.en-cont .btn.primary{flex:1 1 100%;min-height:44px;font-size:15px}}
+
+/* ---- v84 · modo «Los 9 pasos del LGDR» (tema 17) ---- */
+.en-p9c{display:grid;gap:10px;margin-top:14px;border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+.en-p9h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.en-p9c h3{margin:0;font-size:16px}
+.en-p9c p{margin:0;font-size:13px;line-height:1.5}
+.en-p9l{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.en-p9l li{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 9px 3px 3px;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+.en-p9l li span{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 11px var(--f-mono)}
+.en-p9{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--apph,0px) + var(--navh,46px) + 4px);z-index:5;display:flex;gap:5px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  margin:10px 0 4px;padding:6px;background:var(--bg);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 14px -12px rgba(0,0,0,.4)}
+.en-p9::-webkit-scrollbar{display:none}
+html.ab-hide .en-p9{top:env(safe-area-inset-top,0px)}
+.en-p9 button{flex:1 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 9px 0 4px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--ink);font:500 12.5px var(--f-body);cursor:pointer;white-space:nowrap}
+.en-p9 button b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font:700 12px var(--f-mono)}
+.en-p9 button:disabled{opacity:.45;cursor:default}
+.en-p9 button[data-st=ok]{border-color:var(--ok)}
+.en-p9 button[data-st=ok] b{background:var(--ok);color:#fff}
+.en-p9 button[data-st=no]{border-color:var(--bad)}
+.en-p9 button[data-st=no] b{background:var(--bad);color:#fff}
+.en-p9 button[data-st=part] b{background:var(--warn);color:#fff}
+@media (pointer:coarse){.en-p9 button{min-height:40px}.en-p9 button b{width:30px;height:30px}}
+@media (max-width:760px){.en-p9{gap:3px;padding:5px}.en-p9 button span{display:none}.en-p9 button{flex:1 0 auto;justify-content:center;padding:0 2px}.en-p9 button b{width:28px;height:28px}}
+.en-sech[data-p9h]{scroll-margin-top:120px}
+.en-rule{margin:0 0 8px;border:1px dashed color-mix(in srgb,var(--accent) 50%,var(--line));border-radius:8px;background:color-mix(in srgb,var(--accent-soft) 45%,transparent);font-size:13px;line-height:1.5}
+.en-rule summary{cursor:pointer;padding:6px 10px;font-weight:600;color:var(--accent)}
+.en-rule p{margin:0;padding:0 10px 8px}
+.en-xmode .en-rule{display:none}
+.en-fig.lc{max-width:460px}
+.en-fig.lc svg{max-height:520px}
+.en-fig .fg-q{fill:var(--accent);stroke:var(--surface);stroke-width:1.2}
+@media print{.en-p9{position:static}}

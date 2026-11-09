@@ -17,7 +17,7 @@
    Preferencias (modo, caso/variante, imán y opciones del examen) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
 import * as M from './motor.js?v=5';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=7';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=8';
 import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
@@ -161,6 +161,7 @@ function home(){
     <div class="en-row"><button class="btn primary" data-cont>Continuar →</button><button class="btn" data-drop>Descartar</button></div></div>` : ''}
   ${XM && !XM.done ? `<div class="card en-cont"><div><b>Examen en curso:</b> ejercicio ${XM.i + 1} de ${XM.items.length} <span class="en-mut">· ${XM.items.filter((it, i) => answered(i)).length} con respuestas · ⏱ ${clock(XM.el)}</span></div>
     <div class="en-row"><button class="btn primary" data-xcont>Continuar examen →</button><button class="btn" data-xdrop>Abandonar</button></div></div>` : ''}
+  ${p9Card(D)}
   <div class="en-two">${examCard(P, D)}${repasoCard()}</div>
   <h3 class="en-h3">Temas</h3>
   <div class="en-temas">${TEMAS.map(T => { const xs = EJ.filter(e => e.tema === T.n);
@@ -213,7 +214,8 @@ function render(){
   </div>
   ${ST.done ? '' : `<details class="en-mut en-calch"${calchOpen() ? ' open' : ''}><summary>Cómo escribir las respuestas</summary>En las casillas puedes escribir operaciones (<code>12*44-48</code>, <code>sqrt(40)</code>), <code>Ans</code> o una memoria de la calculadora (<code>A</code>–<code>F</code>, <code>M</code>); al salir de la casilla se cambia por su valor. «→ Respuesta» de la calculadora escribe en la última casilla o plano que tocaste.</details>`}
   <div class="card en-enun">${def.enun(P, H)}</div>
-  <ol class="en-incs">${def.inc.map(inc => `${inc.sec ? `<li class="en-sech" aria-hidden="true">${esc(inc.sec)}</li>` : ''}<li class="card en-inc" data-i="${inc.k}">
+  ${p9HTML()}
+  <ol class="en-incs">${def.inc.map(inc => `${inc.sec ? `<li class="en-sech" aria-hidden="true"${inc.step ? ` data-p9h="${inc.step}"` : ''}>${esc(inc.sec)}</li>` : ''}<li class="card en-inc" data-i="${inc.k}">
       <div class="en-q"><span class="en-ik">${inc.k})</span><div>${fails[inc.k] ? `<span class="pill bad en-fx">Fallaste aquí ${fails[inc.k]} ${fails[inc.k] === 1 ? 'vez' : 'veces'}</span> ` : ''}${inc.q(P, H)}</div></div>
       <div class="en-fs">${M.fields(inc, P).map(fl => fieldHTML(inc, fl)).join('')}</div>
       ${toolsOf(inc, P).length ? `<div class="en-row en-tl"><span class="en-mut">Calculadora:</span>${toolsOf(inc, P).map((t, j) => `<button class="btn sm en-tb" data-tool="${inc.k}:${j}">${TOOL_ICO}${toolLbl(t)}</button>`).join('')}</div>` : ''}
@@ -226,12 +228,14 @@ function render(){
     <div class="en-row" data-endb>${xm ? xendHTML() : `<button class="btn primary" data-fin>${ex ? 'Entregar examen' : 'Terminar y guardar'}</button>`}</div>
   </div>`;
   if (xm) BOX.insertAdjacentHTML('beforeend', xnavHTML());
+  BOX.classList.toggle('en-xmode', ex && !ST.done);
   glue(BOX); fit(BOX);
   mountPlanes();
   if (!ex) def.inc.forEach(inc => { if (ST.ck[inc.k]) check(inc.k, true); if (ST.seen[inc.k]) showSol(inc.k); });
   preview();
   if (xm && ST.done) { const g = gradeX(true); paintDone(g, true);
     const res = BOX.querySelector('[data-res]'); res.innerHTML = scoreHTML(g, true); res.hidden = false; }
+  p9Paint(ST.done ? M.grade(X, ST.A) : null);
 }
 /* planos s de las casillas con plane:true */
 function mountPlanes(){
@@ -251,6 +255,7 @@ function onPlane(ik, k, reps){
   if (!ST || ST.done) return;
   if (reps.length) ST.A[k] = M.ptsStr(reps); else delete ST.A[k];
   save(); clearInc(BOX.querySelector(`.en-inc[data-i="${ik}"]`));
+  if (ST.mode === 'x') p9Paint();
 }
 /* al cambiar una respuesta se borra la calificación que tenía el inciso */
 function clearInc(li){
@@ -284,7 +289,7 @@ function check(k, quiet){
   paintInc(li, r);
   const fb = li.querySelector('[data-fb]'), errs = Object.values(r.f).filter(f => f.err).map(f => f.err);
   fb.className = 'en-fb ' + r.st; fb.textContent = r.st === 'err' ? errs[0] : MSG[r.st] + (r.st === 'no' ? planeDet(r) : '');
-  if (!quiet) { ST.ck[k] = r.st; save(); }
+  if (!quiet) { ST.ck[k] = r.st; save(); p9Paint(); }
   return r;
 }
 function paintInc(li, r){
@@ -318,7 +323,8 @@ function finish(){
   const ex = ST.mode === 'x', g = gradeX(ex);
   M.record(X, g, ST.mode, ex ? null : ST.seen);
   ST.done = 1; save();
-  paintDone(g, ex);
+  BOX.classList.remove('en-xmode');
+  paintDone(g, ex); p9Paint(g);
   const ok = g.pct >= M.PASS, res = BOX.querySelector('[data-res]');
   res.innerHTML = `${scoreHTML(g, ex)}
     <p>${ok ? '¡Bien! Ejercicio dominado. Prueba una variante para asegurarte.' : `Te faltó para el ${M.PASS} %. Lee las soluciones y vuelve a intentarlo con otra variante.`}</p>`;
@@ -352,7 +358,7 @@ const answered = i => { const A = XM && XM.A[i]; return !!A && Object.values(A).
 /* fallos pendientes de cada inciso de un ejercicio → {inciso: n} */
 const pendOf = id => { const it = M.pending(EJ).find(x => x.id === id); return it ? Object.fromEntries(it.ks) : {}; };
 const XC = { all: 'Todo', b: 'Temas 1–12', c: 'Temas 13–16', err: 'Mis errores' };
-const minsOf = def => def.tema === 16 ? 25 : def.tema >= 13 ? 8 : 5;
+const minsOf = def => def.tema === 16 ? 25 : def.tema === 17 ? 15 : def.tema >= 13 ? 8 : 5;
 function examCard(P, D){
   const last = Array.isArray(D.xh) && D.xh[0], n = +P.xn, ex = XM && XM.done ? XM : null;
   const seg = (k, opts) => `<div class="seg" data-pref="${k}" role="group">${opts.map(([v, l]) => `<button data-v="${v}" aria-pressed="${String(P[k]) === v}">${l}</button>`).join('')}</div>`;
@@ -380,12 +386,39 @@ function repasoCard(){
     : '<p class="en-mut">No tienes errores pendientes. Cuando falles un inciso (o abras su solución) el ejercicio aparece aquí para repasarlo con otra variante.</p>'}
   </div>`;
 }
+/* v84 · modo «Los 9 pasos del LGDR»: tarjeta del inicio que abre el ejercicio lgdr9 con el caso de cada práctica o una variante */
+function p9Card(D){
+  const def = byId('lgdr9'); if (!def) return '';
+  const e = D.ex[def.id];
+  return `<div class="card en-p9c">
+    <div class="en-p9h"><h3>Modo completo · los 9 pasos del LGDR</h3>${pctTag(e)}</div>
+    <p class="en-mut">Traza el lugar geométrico de las raíces de principio a fin, paso por paso, como en Nise 8.5–8.6. Cada paso trae su regla plegada, se califica al momento (o al entregar en modo examen) y al final ves el LGDR completo dibujado. Las variantes traen también polos o ceros complejos (ángulos de salida y llegada) y puntos de llegada.</p>
+    <ol class="en-p9l">${def.p9.map((t, i) => `<li><span>${i + 1}</span>${esc(t)}</li>`).join('')}</ol>
+    <div class="en-row"><span class="en-mut">Planta de:</span><span class="seg en-casos" role="group" aria-label="Caso de la tarea">${def.casos.map(n => `<button data-p9go="t${n}" title="Planta sin compensar de la práctica ${n}">P${n}</button>`).join('')}</span><button class="btn primary" data-p9go="v">Variante aleatoria</button></div>
+  </div>`;
+}
+/* barra de los 9 pasos dentro del ejercicio: estado de cada paso según sus incisos (ok / mal / a medias) */
+function p9HTML(){
+  const def = X.def; if (!def.p9) return '';
+  return `<nav class="en-p9" aria-label="Pasos del trazo">${def.p9.map((t, i) => { const has = def.inc.some(c => c.step === i + 1);
+    return `<button type="button" data-p9="${i + 1}"${has ? '' : ' disabled'} title="Paso ${i + 1} · ${esc(t)}"><b>${i + 1}</b><span>${esc(t)}</span></button>`; }).join('')}</nav>`;
+}
+function p9Paint(g){
+  if (!X || !X.def.p9) return;
+  const ex = ST.mode === 'x' && !ST.done;
+  BOX.querySelectorAll('.en-p9 [data-p9]').forEach(b => {
+    const ks = X.def.inc.filter(c => c.step === +b.dataset.p9).map(c => c.k);
+    const sts = ks.map(k => g ? (g.inc[k] || {}).st : ST.ck[k]), ok = s => s === 'ok' || s === 'arr';
+    b.dataset.st = ex ? (X.def.inc.some(c => c.step === +b.dataset.p9 && M.fields(c, X.P).some(fl => String(ST.A[fl.k] == null ? '' : ST.A[fl.k]).trim())) ? 'part' : '')
+      : sts.length && sts.every(ok) ? 'ok' : sts.some(s => s === 'no' || s === 'err') ? 'no' : sts.some(ok) ? 'part' : '';
+  });
+}
 /* arma la lista del examen según las preferencias */
 function examItems(P){
   const n = +P.xn || 6, shuf = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   let ids;
   if (P.xc === 'err') { const L = M.pending(EJ).map(x => x.id); ids = L.slice(0, n).concat(shuf(EJ.map(d => d.id).filter(id => !L.includes(id)))).slice(0, n); }
-  else ids = shuf(EJ.filter(d => P.xc === 'b' ? d.tema <= 12 : P.xc === 'c' ? d.tema >= 13 : true).map(d => d.id)).slice(0, n);
+  else ids = shuf(EJ.filter(d => P.xc === 'b' ? d.tema <= 12 || d.tema === 17 : P.xc === 'c' ? d.tema >= 13 && d.tema <= 16 : true).map(d => d.id)).slice(0, n);
   ids.sort((a, b) => EJ.findIndex(d => d.id === a) - EJ.findIndex(d => d.id === b));
   return ids.map(id => { const d = byId(id); return { e: id, seed: P.xd === 'v' ? M.newSeed() : d.casos ? -d.casos[Math.floor(Math.random() * d.casos.length)] : 0 }; });
 }
@@ -477,8 +510,11 @@ function onClick(e){
   if (b.closest('[data-pref]')) { const k = b.closest('[data-pref]').dataset.pref; setPref({ [k]: b.dataset.v }); home(); return; }
   if (b.dataset.cv) { if (!ST || ST.done) return; const [ik, k, v] = b.dataset.cv.split(':');
     ST.A[k] = v; save(); b.parentNode.querySelectorAll('[data-cv]').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
-    clearInc(b.closest('.en-inc')); return; }
+    clearInc(b.closest('.en-inc')); if (ST.mode === 'x') p9Paint(); return; }
   if (b.dataset.ej) { start(b.dataset.ej, P.src === 'v' ? M.newSeed() : 0, P.mode); return; }
+  if (b.dataset.p9go) { const n = b.dataset.p9go; start('lgdr9', n === 'v' ? M.newSeed() : -(+n.slice(1)), P.mode); return; }
+  if (b.dataset.p9 && X) { const hd = BOX.querySelector(`[data-p9h="${b.dataset.p9}"]`); if (hd) { const ab = d.getElementById('appbar'), top = ab ? Math.max(0, ab.getBoundingClientRect().bottom) : 0, bar = BOX.querySelector('.en-p9');
+      window.scrollTo({ top: scrollY + hd.getBoundingClientRect().top - top - (bar ? bar.offsetHeight : 0) - 12, behavior: 'smooth' }); } return; }
   /* etapa 6 · examen y repaso */
   if ('xstart' in b.dataset) { startExam(); return; }
   if ('xcont' in b.dataset) { XM = M.loadExam(); if (XM && !XM.done) examGo(XM.i); else home(); return; }
@@ -512,6 +548,7 @@ function onInput(e){
   const i = e.target; if (!i.matches || !i.matches('input[data-ans]') || !ST || ST.done) return;
   ST.A[i.dataset.k] = i.value; save();
   clearInc(i.closest('.en-inc'));
+  if (ST.mode === 'x') p9Paint();
   preview();
 }
 function onKey(e){
