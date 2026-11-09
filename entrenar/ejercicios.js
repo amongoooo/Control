@@ -1742,7 +1742,7 @@ const F9 = [
     '\\omega_n = \\sqrt{\\sigma^2 + \\omega_d^2} \\qquad \\sigma = \\zeta\\,\\omega_n \\qquad \\omega_d = \\omega_n\\sqrt{1 - \\zeta^2}',
     '\\zeta = \\dfrac{\\sigma}{\\omega_n} \\qquad \\omega_n = \\dfrac{\\sigma}{\\zeta}',
     's_0 = -\\sigma + j\\omega_d',
-    '\\angle G(s_0) = \\textstyle\\sum \\angle(s_0 - z_i) - \\sum \\angle(s_0 - p_i) = -180^\\circ \\;(\\pm 360^\\circ k)',
+    '\\angle G(s_0) = \\textstyle\\sum \\angle(s_0 - z_i) - \\sum \\angle(s_0 - p_i) = -180^\\circ \\quad (\\pm 360^\\circ k)',
     '\\angle(s_0 + a) = \\tan^{-1}\\dfrac{\\omega_d}{a - \\sigma} \\quad (+180^\\circ \\text{ si } a < \\sigma)',
     '|s_0 + a| = \\sqrt{(a - \\sigma)^2 + \\omega_d^2}',
     'K = \\dfrac{\\prod |s_0 - p_i|}{\\prod |s_0 - z_i|} = \\dfrac{1}{|G_1(s_0)|}, \\quad G = K\\,G_1',

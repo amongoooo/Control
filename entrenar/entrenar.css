@@ -344,3 +344,7 @@ html.ab-hide .en-p9{top:env(safe-area-inset-top,0px)}
 .en-f9d{border-top:1px solid var(--line);padding-top:8px}
 .en-f9d>summary{cursor:pointer;font-weight:600;color:var(--accent)}
 .en-p9 .en-p9f b{background:var(--ink);color:var(--surface)}
+.en-f9b{display:grid;gap:6px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));border-radius:10px;background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+.en-f9b b{font-size:15px}
+.en-f9b .en-mut{font-size:12.5px}
+.en-f9b a.btn{text-decoration:none}

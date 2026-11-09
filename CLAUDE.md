@@ -1466,6 +1466,11 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
 - Se ve en dos lugares: `div.card.en-f9` al final del ejercicio (botón **∑ Fórmulas** `[data-p9="f"]` en la barra 1–9) y `details.en-f9d`
   plegable en la tarjeta del inicio. `ui.js?v=9` (importa `ejercicios.js?v=9`), `entrenar.css?v=9`; index.html con `?v=9`.
 
+- **v86 · PDF de puras fórmulas:** `formulas-9-pasos.pdf` (2 hojas carta, 2 columnas, solo fórmulas despejadas) generado con
+  `node herramientas/pdf-formulas9.js` (levanta un servidor local, toma `.en-f9d .en-f9g` ya dibujado con KaTeX). Recuadro `F9PDF` («∑ Formulario
+  de los 9 pasos» con «Ver PDF» en el visor `data-pdfv` y «Descargar PDF») en la tarjeta del inicio de Entrenar y en el formulario del final del
+  ejercicio. **Si cambia `F9`, volver a correr el script y subir el PDF.** `ui.js?v=11` (importa `ejercicios.js?v=10`), `entrenar.css?v=11`.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

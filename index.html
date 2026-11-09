@@ -2240,7 +2240,7 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 9/11/2026, 12:46 (hora del centro de México)">v1.9.11.1246</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 9/11/2026, 12:54 (hora del centro de México)">v1.9.11.1254</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
@@ -16041,8 +16041,8 @@ window.__lgdrFxPasos={FXT,targets:fxTargets,rowOf:fxRowOf,open:fxOpenAt};
 (()=>{
   const PI=window.__pageInit=window.__pageInit||{}, prev=PI.entrenar; let mod=null, loading=null;
   function load(){ if(loading) return loading;
-    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=9'; l.onload=l.onerror=res; document.head.appendChild(l); });
-    loading=Promise.all([css,import('./entrenar/ui.js?v=9')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
+    const css=new Promise(res=>{ const l=document.createElement('link'); l.rel='stylesheet'; l.href='entrenar/entrenar.css?v=11'; l.onload=l.onerror=res; document.head.appendChild(l); });
+    loading=Promise.all([css,import('./entrenar/ui.js?v=11')]).then(r=>mod=r[1]).catch(e=>{ loading=null; throw e; });
     return loading; }
   PI.entrenar=()=>{ if(prev) prev(); const sec=document.getElementById('entrenar'); if(!sec) return;
     load().then(m=>m.init(sec)).catch(()=>{ const b=sec.querySelector('[data-en]'); if(b) b.innerHTML='<p class="note">No se pudieron cargar los ejercicios. Revisa tu conexión y vuelve a abrir la pestaña.</p>'; }); };

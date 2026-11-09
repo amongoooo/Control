@@ -17,7 +17,7 @@
    Preferencias (modo, caso/variante, imán y opciones del examen) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
 import * as M from './motor.js?v=5';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=9';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=10';
 import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
@@ -223,7 +223,7 @@ function render(){
       <div class="en-fb" data-fb="${inc.k}" role="status" aria-live="polite"></div>
       <div class="en-sol" data-sl="${inc.k}" hidden></div>
     </li>`).join('')}</ol>
-  ${def.formulas ? `<div class="card en-f9"><h3 data-p9h="f">∑ Formulario · los 9 pasos (despejados)</h3>${def.formulas(H)}</div>` : ''}
+  ${def.formulas ? `<div class="card en-f9"><h3 data-p9h="f">∑ Formulario · los 9 pasos (despejados)</h3>${F9PDF}${def.formulas(H)}</div>` : ''}
   <div class="en-end">
     <div class="en-res" data-res hidden></div>
     <div class="en-row" data-endb>${xm ? xendHTML() : `<button class="btn primary" data-fin>${ex ? 'Entregar examen' : 'Terminar y guardar'}</button>`}</div>
@@ -396,9 +396,12 @@ function p9Card(D){
     <p class="en-mut">Traza el lugar geométrico de las raíces de principio a fin, paso por paso, como en Nise 8.5–8.6. Cada paso trae su regla plegada, se califica al momento (o al entregar en modo examen) y al final ves el LGDR completo dibujado. Las variantes traen también polos o ceros complejos (ángulos de salida y llegada) y puntos de llegada.</p>
     <ol class="en-p9l">${def.p9.map((t, i) => `<li><span>${i + 1}</span>${esc(t)}</li>`).join('')}</ol>
     <div class="en-row"><span class="en-mut">Planta de:</span><span class="seg en-casos" role="group" aria-label="Caso de la tarea">${def.casos.map(n => `<button data-p9go="t${n}" title="Planta sin compensar de la práctica ${n}">P${n}</button>`).join('')}</span><button class="btn primary" data-p9go="v">Variante aleatoria</button></div>
-    ${def.formulas ? `<details class="en-f9d"><summary>∑ Formulario de los 9 pasos (despejados)</summary>${def.formulas(H)}</details>` : ''}
+    ${def.formulas ? `${F9PDF}<details class="en-f9d"><summary>∑ Ver aquí todas las fórmulas</summary>${def.formulas(H)}</details>` : ''}
   </div>`;
 }
+/* PDF de una o dos hojas con puras fórmulas (herramientas/pdf-formulas9.js), en el visor de la página */
+const F9PDF = `<div class="en-f9b"><b>∑ Formulario de los 9 pasos</b><span class="en-mut">Solo fórmulas, todas despejadas · 2 hojas carta para copiar a mano</span>
+  <span class="en-row"><a class="btn primary sm" href="formulas-9-pasos.pdf" data-pdfv="formulas-9-pasos.pdf" data-title="Formulario · 9 pasos del LGDR" data-sub="Solo fórmulas, despejadas" data-dl="Formulario-9-pasos-LGDR.pdf">Ver PDF</a><a class="btn sm" href="formulas-9-pasos.pdf" download="Formulario-9-pasos-LGDR.pdf">Descargar PDF</a></span></div>`;
 /* barra de los 9 pasos dentro del ejercicio: estado de cada paso según sus incisos (ok / mal / a medias) */
 function p9HTML(){
   const def = X.def; if (!def.p9) return '';
