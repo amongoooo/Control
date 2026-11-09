@@ -1456,6 +1456,16 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   1440 px (oscuro): 15 casos/variantes al 100 % sin errores de KaTeX ni desbordes, barra 1–9, reglas ocultas en examen; consola limpia; los otros
   23 ejercicios siguen al 100 %.
 
+## Hecho (v85): formulario de los 9 pasos (despejados)
+
+- Pedido: «escribe solo fórmulas, todas las que vaya a ocupar para los 9 pasos del LGDR… ponlo en la app, todos despejados». `F9` + `form9(h)`
+  en `entrenar/ejercicios.js` (antes de `const lgdr9`; `lgdr9.formulas = form9`): 74 fórmulas en 10 grupos (planta y ecuación característica,
+  pasos 1–9) con sus despejes (σa ↔ Σp, Σz, n − m; θk ↔ n − m, k; σb de D′ cúbica/cuadrática; K_crít con N = 1 y N = s + z; ω de la fila s²;
+  θsal/θlleg y sus despejes; ζ ↔ %OS, θ, tan θ, ωd ↔ σ, ωn, Ts, Tp; K por magnitud y sus despejes). `brk9` pone en dos renglones las que
+  tienen ⇒, ⇔, \qquad o «: \quad» (así no se deslizan a 390 px).
+- Se ve en dos lugares: `div.card.en-f9` al final del ejercicio (botón **∑ Fórmulas** `[data-p9="f"]` en la barra 1–9) y `details.en-f9d`
+  plegable en la tarjeta del inicio. `ui.js?v=9` (importa `ejercicios.js?v=9`), `entrenar.css?v=9`; index.html con `?v=9`.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

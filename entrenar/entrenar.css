@@ -332,3 +332,15 @@ html.ab-hide .en-p9{top:env(safe-area-inset-top,0px)}
 .en-fig.lc svg{max-height:520px}
 .en-fig .fg-q{fill:var(--accent);stroke:var(--surface);stroke-width:1.2}
 @media print{.en-p9{position:static}}
+/* v85 · formulario de los 9 pasos (despejados) */
+.en-f9{margin-top:14px}
+.en-f9 h3{margin:0 0 6px;font-size:16px;scroll-margin-top:120px}
+.en-f9g{display:grid;grid-template-columns:minmax(0,1fr);gap:4px 18px}
+@media (min-width:900px){.en-f9g{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.en-f9s{min-width:0;break-inside:avoid}
+.en-f9s h4{margin:12px 0 2px;font:700 12.5px/1.3 var(--f-body);letter-spacing:.04em;text-transform:uppercase;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:4px}
+.en-f9r{min-width:0;overflow-x:auto;padding:1px 0}
+.en-f9r .katex-display{margin:4px 0}
+.en-f9d{border-top:1px solid var(--line);padding-top:8px}
+.en-f9d>summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.en-p9 .en-p9f b{background:var(--ink);color:var(--surface)}

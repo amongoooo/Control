@@ -17,7 +17,7 @@
    Preferencias (modo, caso/variante, imán y opciones del examen) en localStorage['lgdr-entrena-pref'] (solo este dispositivo).
    ===================================================================================================== */
 import * as M from './motor.js?v=5';
-import { TEMAS, EJ, byId } from './ejercicios.js?v=8';
+import { TEMAS, EJ, byId } from './ejercicios.js?v=9';
 import { mountPlane, fmtList } from './plano.js?v=2';
 
 const d = document, root = d.documentElement, PREF = 'lgdr-entrena-pref';
@@ -223,6 +223,7 @@ function render(){
       <div class="en-fb" data-fb="${inc.k}" role="status" aria-live="polite"></div>
       <div class="en-sol" data-sl="${inc.k}" hidden></div>
     </li>`).join('')}</ol>
+  ${def.formulas ? `<div class="card en-f9"><h3 data-p9h="f">∑ Formulario · los 9 pasos (despejados)</h3>${def.formulas(H)}</div>` : ''}
   <div class="en-end">
     <div class="en-res" data-res hidden></div>
     <div class="en-row" data-endb>${xm ? xendHTML() : `<button class="btn primary" data-fin>${ex ? 'Entregar examen' : 'Terminar y guardar'}</button>`}</div>
@@ -395,18 +396,19 @@ function p9Card(D){
     <p class="en-mut">Traza el lugar geométrico de las raíces de principio a fin, paso por paso, como en Nise 8.5–8.6. Cada paso trae su regla plegada, se califica al momento (o al entregar en modo examen) y al final ves el LGDR completo dibujado. Las variantes traen también polos o ceros complejos (ángulos de salida y llegada) y puntos de llegada.</p>
     <ol class="en-p9l">${def.p9.map((t, i) => `<li><span>${i + 1}</span>${esc(t)}</li>`).join('')}</ol>
     <div class="en-row"><span class="en-mut">Planta de:</span><span class="seg en-casos" role="group" aria-label="Caso de la tarea">${def.casos.map(n => `<button data-p9go="t${n}" title="Planta sin compensar de la práctica ${n}">P${n}</button>`).join('')}</span><button class="btn primary" data-p9go="v">Variante aleatoria</button></div>
+    ${def.formulas ? `<details class="en-f9d"><summary>∑ Formulario de los 9 pasos (despejados)</summary>${def.formulas(H)}</details>` : ''}
   </div>`;
 }
 /* barra de los 9 pasos dentro del ejercicio: estado de cada paso según sus incisos (ok / mal / a medias) */
 function p9HTML(){
   const def = X.def; if (!def.p9) return '';
   return `<nav class="en-p9" aria-label="Pasos del trazo">${def.p9.map((t, i) => { const has = def.inc.some(c => c.step === i + 1);
-    return `<button type="button" data-p9="${i + 1}"${has ? '' : ' disabled'} title="Paso ${i + 1} · ${esc(t)}"><b>${i + 1}</b><span>${esc(t)}</span></button>`; }).join('')}</nav>`;
+    return `<button type="button" data-p9="${i + 1}"${has ? '' : ' disabled'} title="Paso ${i + 1} · ${esc(t)}"><b>${i + 1}</b><span>${esc(t)}</span></button>`; }).join('')}${def.formulas ? '<button type="button" data-p9="f" class="en-p9f" title="Formulario de los 9 pasos (despejados)"><b>∑</b><span>Fórmulas</span></button>' : ''}</nav>`;
 }
 function p9Paint(g){
   if (!X || !X.def.p9) return;
   const ex = ST.mode === 'x' && !ST.done;
-  BOX.querySelectorAll('.en-p9 [data-p9]').forEach(b => {
+  BOX.querySelectorAll('.en-p9 [data-p9]:not([data-p9="f"])').forEach(b => {
     const ks = X.def.inc.filter(c => c.step === +b.dataset.p9).map(c => c.k);
     const sts = ks.map(k => g ? (g.inc[k] || {}).st : ST.ck[k]), ok = s => s === 'ok' || s === 'arr';
     b.dataset.st = ex ? (X.def.inc.some(c => c.step === +b.dataset.p9 && M.fields(c, X.P).some(fl => String(ST.A[fl.k] == null ? '' : ST.A[fl.k]).trim())) ? 'part' : '')
@@ -569,7 +571,8 @@ export async function init(section){
     BOX.addEventListener('click', onClick);
     BOX.addEventListener('input', onInput);
     BOX.addEventListener('keydown', onKey);
-    BOX.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('.en-calch')) setPref({ hw: e.target.open ? 1 : 0 }); }, true);
+    BOX.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('.en-calch')) setPref({ hw: e.target.open ? 1 : 0 });
+      if (e.target.matches && e.target.matches('.en-f9d') && e.target.open) fit(e.target); }, true);
     BOX.addEventListener('change', e => { if (e.target.matches && e.target.matches('input[data-ans]')) freezeIn(e.target); });
     addEventListener('hashchange', () => { if (location.hash !== '#entrenar') calcOn(false); else if (view === 'ex' && ST && !ST.done) calcOn(true); });
     await needCalc();

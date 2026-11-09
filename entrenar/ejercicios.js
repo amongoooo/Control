@@ -1664,9 +1664,102 @@ function routh9(P, h){
   return '';
 }
 
+/* formulario de los 9 pasos con todos los despejes (se dibuja al final del ejercicio y en la tarjeta del inicio) */
+const F9 = [
+  ['Planta y ecuación característica', [
+    'G(s) = \\dfrac{K\\,N(s)}{D(s)}',
+    'D(s) + K\\,N(s) = 0',
+    'K = -\\dfrac{D(s)}{N(s)}',
+    'N(s) = -\\dfrac{D(s)}{K}',
+    'T(s) = \\dfrac{K\\,N(s)}{D(s) + K\\,N(s)}',
+    '\\textstyle\\sum p_{lc} = -a_{n-1} \\;\\Rightarrow\\; p_3 = -a_2 - 2\\,\\mathrm{Re}(s_0)',
+    '\\textstyle\\prod (-p_{lc}) = a_0']],
+  ['Paso 1 · Número de ramas', [
+    '\\text{ramas} = n \\quad (n \\ge m)',
+    'n = \\text{ramas}',
+    'm = n - (\\text{ramas a } \\infty)']],
+  ['Paso 2 · Simetría', [
+    's = a + jb \\in \\text{LGDR} \\;\\Rightarrow\\; s^{*} = a - jb \\in \\text{LGDR}']],
+  ['Paso 3 · Tramos del eje real', [
+    '\\sigma \\in \\text{LGDR} \\iff N_{der}(\\sigma) = \\text{impar}',
+    'N_{der}(\\sigma) = \\#\\{\\,p_i,\\ z_i \\text{ reales} > \\sigma\\,\\}',
+    '\\textstyle\\sum \\angle(\\text{par conjugado}) = 0^\\circ']],
+  ['Paso 4 · Inicio y término', [
+    'K = 0 \\;\\Rightarrow\\; D(s) = 0 \\quad (\\text{polos})',
+    'K \\to \\infty \\;\\Rightarrow\\; N(s) = 0 \\quad (\\text{ceros})',
+    '\\text{ramas a } \\infty = n - m',
+    'm = n - (\\text{ramas a } \\infty)',
+    'n = m + (\\text{ramas a } \\infty)']],
+  ['Paso 5 · Asíntotas', [
+    '\\sigma_a = \\dfrac{\\sum \\mathrm{Re}\\,p_i - \\sum \\mathrm{Re}\\,z_i}{n - m}',
+    '\\textstyle\\sum \\mathrm{Re}\\,p_i = \\sigma_a(n - m) + \\sum \\mathrm{Re}\\,z_i',
+    '\\textstyle\\sum \\mathrm{Re}\\,z_i = \\sum \\mathrm{Re}\\,p_i - \\sigma_a(n - m)',
+    'n - m = \\dfrac{\\sum \\mathrm{Re}\\,p_i - \\sum \\mathrm{Re}\\,z_i}{\\sigma_a}',
+    '\\theta_k = \\dfrac{(2k + 1)\\,180^\\circ}{n - m}, \\quad k = 0, 1, \\dots, n - m - 1',
+    'n - m = \\dfrac{(2k + 1)\\,180^\\circ}{\\theta_k}',
+    'k = \\dfrac{1}{2}\\left(\\dfrac{\\theta_k\\,(n - m)}{180^\\circ} - 1\\right)',
+    'n - m = 1: \\theta = 180^\\circ \\qquad n - m = 2: \\pm 90^\\circ \\qquad n - m = 3: \\pm 60^\\circ,\\ 180^\\circ']],
+  ['Paso 6 · Ruptura y llegada', [
+    'K(\\sigma) = -\\dfrac{D(\\sigma)}{N(\\sigma)}',
+    '\\dfrac{dK}{d\\sigma} = -\\dfrac{N D\' - N\' D}{N^2} = 0 \\;\\Rightarrow\\; N D\' - N\' D = 0',
+    'N = 1: \\quad D\'(\\sigma) = 0',
+    'D = s^3 + a_2 s^2 + a_1 s + a_0 \\;\\Rightarrow\\; D\' = 3s^2 + 2a_2 s + a_1',
+    '\\sigma_b = \\dfrac{-a_2 \\pm \\sqrt{a_2^2 - 3a_1}}{3}',
+    'D = s^2 + a_1 s + a_0 \\;\\Rightarrow\\; \\sigma_b = -\\dfrac{a_1}{2}',
+    'N = s + z: \\quad (s + z)D\'(s) - D(s) = 0',
+    'K_b = \\left|\\dfrac{D(\\sigma_b)}{N(\\sigma_b)}\\right| = \\dfrac{\\prod |\\sigma_b - p_i|}{\\prod |\\sigma_b - z_i|}',
+    '|D(\\sigma_b)| = K_b\\,|N(\\sigma_b)|',
+    '\\dfrac{d^2K}{d\\sigma^2} < 0 \\;(\\text{máximo}) \\Rightarrow \\text{ruptura} \\qquad \\dfrac{d^2K}{d\\sigma^2} > 0 \\;(\\text{mínimo}) \\Rightarrow \\text{llegada}']],
+  ['Paso 7 · Cruce con jω (Routh)', [
+    's^3 + a_2 s^2 + a_1 s + a_0 = 0, \\qquad a_i = d_i + n_i K',
+    '\\begin{array}{c|cc} s^3 & 1 & a_1 \\\\ s^2 & a_2 & a_0 \\\\ s^1 & b_1 & \\\\ s^0 & a_0 & \\end{array}',
+    'b_1 = \\dfrac{a_2 a_1 - a_0}{a_2}',
+    'b_1 = 0 \\;\\Rightarrow\\; a_2 a_1 = a_0',
+    'N = 1: \\quad K_{crít} = d_2 d_1 - d_0',
+    'N = s + z: \\quad K_{crít} = \\dfrac{d_0 - d_2 d_1}{d_2 - z}',
+    'a_2 s^2 + a_0 = 0 \\;\\Rightarrow\\; \\omega = \\sqrt{\\dfrac{a_0}{a_2}}',
+    'a_0 = a_2\\,\\omega^2 \\qquad a_2 = \\dfrac{a_0}{\\omega^2}',
+    '\\omega = \\sqrt{a_1} \\quad (\\text{con } K = K_{crít}) \\qquad a_1 = \\omega^2',
+    's = j\\omega: \\quad \\mathrm{Re}: a_0 - a_2\\,\\omega^2 = 0 \\qquad \\mathrm{Im}: a_1\\,\\omega - \\omega^3 = 0',
+    '0 < K < K_{crít} \\;(\\text{estable})',
+    's^2 + a_1 s + a_0: \\quad a_1 > 0,\\ a_0 > 0 \\;\\Rightarrow\\; \\text{estable } \\forall K']],
+  ['Paso 8 · Ángulos de salida y llegada', [
+    '\\theta_{sal} = 180^\\circ + \\textstyle\\sum \\angle z_i - \\sum \\angle p_{\\text{otros}}',
+    '\\textstyle\\sum \\angle p_{\\text{otros}} = 180^\\circ + \\sum \\angle z_i - \\theta_{sal}',
+    '\\textstyle\\sum \\angle z_i = \\theta_{sal} - 180^\\circ + \\sum \\angle p_{\\text{otros}}',
+    '\\theta_{lleg} = 180^\\circ + \\textstyle\\sum \\angle p_i - \\sum \\angle z_{\\text{otros}}',
+    '\\textstyle\\sum \\angle z_{\\text{otros}} = 180^\\circ + \\sum \\angle p_i - \\theta_{lleg}',
+    '\\textstyle\\sum \\angle p_i = \\theta_{lleg} - 180^\\circ + \\sum \\angle z_{\\text{otros}}',
+    '\\angle(q - p) = \\tan^{-1}\\dfrac{\\mathrm{Im}\\,q - \\mathrm{Im}\\,p}{\\mathrm{Re}\\,q - \\mathrm{Re}\\,p} \\quad (+180^\\circ \\text{ si el denominador} < 0)',
+    '\\angle(q - q^{*}) = 90^\\circ',
+    '\\theta_{sal}(q^{*}) = -\\theta_{sal}(q)']],
+  ['Paso 9 · Graficación y calibración', [
+    '\\zeta = \\dfrac{-\\ln(\\%OS/100)}{\\sqrt{\\pi^2 + \\ln^2(\\%OS/100)}}',
+    '\\%OS = 100\\,e^{-\\zeta\\pi/\\sqrt{1 - \\zeta^2}}',
+    '\\theta = \\cos^{-1}\\zeta \\qquad \\zeta = \\cos\\theta',
+    '\\tan\\theta = \\dfrac{\\omega_d}{\\sigma} = \\dfrac{\\sqrt{1 - \\zeta^2}}{\\zeta}',
+    '\\omega_d = \\sigma\\tan\\theta \\qquad \\sigma = \\dfrac{\\omega_d}{\\tan\\theta}',
+    '\\omega_n = \\sqrt{\\sigma^2 + \\omega_d^2} \\qquad \\sigma = \\zeta\\,\\omega_n \\qquad \\omega_d = \\omega_n\\sqrt{1 - \\zeta^2}',
+    '\\zeta = \\dfrac{\\sigma}{\\omega_n} \\qquad \\omega_n = \\dfrac{\\sigma}{\\zeta}',
+    's_0 = -\\sigma + j\\omega_d',
+    '\\angle G(s_0) = \\textstyle\\sum \\angle(s_0 - z_i) - \\sum \\angle(s_0 - p_i) = -180^\\circ \\;(\\pm 360^\\circ k)',
+    '\\angle(s_0 + a) = \\tan^{-1}\\dfrac{\\omega_d}{a - \\sigma} \\quad (+180^\\circ \\text{ si } a < \\sigma)',
+    '|s_0 + a| = \\sqrt{(a - \\sigma)^2 + \\omega_d^2}',
+    'K = \\dfrac{\\prod |s_0 - p_i|}{\\prod |s_0 - z_i|} = \\dfrac{1}{|G_1(s_0)|}, \\quad G = K\\,G_1',
+    '\\textstyle\\prod |s_0 - p_i| = K \\prod |s_0 - z_i| \\qquad \\prod |s_0 - z_i| = \\dfrac{\\prod |s_0 - p_i|}{K}',
+    'T_s = \\dfrac{4}{\\sigma} \\qquad \\sigma = \\dfrac{4}{T_s}',
+    'T_p = \\dfrac{\\pi}{\\omega_d} \\qquad \\omega_d = \\dfrac{\\pi}{T_p}',
+    'D(s) + K\\,N(s) = 0 \\;\\Rightarrow\\; \\text{polos de lazo cerrado}']]
+];
+/* las que tienen dos partes van en dos renglones (en el celular no se deslizan de lado) */
+const brk9 = f => { if (/\\begin\{array\}/.test(f)) return f;
+  const g = f.replace(/ \\qquad /g, ' \\\\ ').replace(/ \\;\\Rightarrow\\; /g, ' \\\\ \\Rightarrow\\; ').replace(/ \\iff /g, ' \\\\ \\iff ').replace(/ \\quad \(/g, ' \\\\ (').replace(/: \\quad /g, ': \\\\ ');
+  return g === f ? f : `\\begin{gathered}${g}\\end{gathered}`; };
+const form9 = h => `<div class="en-f9g">${F9.map(([t, fs]) => `<section class="en-f9s"><h4>${t}</h4>${fs.map(f => `<div class="en-f9r">${h.tx(brk9(f), true)}</div>`).join('')}</section>`).join('')}</div>`;
+
 const lgdr9 = {
   id: 'lgdr9', tema: 17, t: 'Trazo del LGDR: los 9 pasos (P1–P7)', d: 'Ramas, simetría, eje real, inicio y fin, asíntotas, ruptura, cruce con jω, salida/llegada y calibración, de principio a fin.',
-  casos: [1, 2, 3, 4, 5, 6, 7], p9: P9S,
+  casos: [1, 2, 3, 4, 5, 6, 7], p9: P9S, formulas: form9,
   gen(r, tarea){
     const n = tarea === true ? 1 : tarea;
     return n ? mk9(Object.assign({ caso: 'P' + n }, CASO9[n])) : gen9(r);
