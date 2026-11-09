@@ -1403,6 +1403,32 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   contienen lo buscado y se cierran al borrar.
 - Probado a 390 px (táctil, claro) y 1280 px (oscuro, dos columnas): ninguna fórmula se desborda, sin errores de KaTeX; búsqueda «ruptura».
 
+## Hecho (v79): «∑» en cada fórmula de la Resolución paso a paso → formulario en su sección y fila
+
+- Pedido: que cada fórmula de la Resolución paso a paso (P1–P7) abra el «∑ Formulario» en la sección y fila de esa fórmula, con la fila
+  resaltada y su «Desarrollo y ejemplo» abierto; en celular a pantalla completa y al cerrar volver al mismo paso; en computadora como panel.
+  No se cambió ningún número ni texto de los pasos, ni la plantilla de Word.
+- **Tabla** (script de la Resolución paso a paso, antes de «visor genérico»): `FXT` = clave → `[n.º de sección, texto que identifica la fila]`
+  (se busca en `section#fxsN > .fx-r` sin contar su `details.fx-ej`; o `'#id'`). 54 claves, p. ej. `KB:[12,'Ganancia en el punto de ruptura']`,
+  `RT3:[13,'Para s³ + as² + bs + (c + K)']`, `ZET:[10,'%OS → recta radial']`, `DIP:[16,'Aporte del dipolo en el punto']`, `PID:[18,'PID = K']`.
+  `fxTargets(id, paso)` decide fila por fila con la **clave del paso** (`k`: plant, eccar, rupt, lgdr, routh, zeta, ang/punto, mag, err, ver5,
+  dip, pdis, angd, cero/polo, kc/kpd/kad, ctrl, ver12, modos, sim45, ajuste…), la **etiqueta** (`l`) y el **TeX** (`t`). Sólo las filas con TeX
+  llevan botón; «Resultado» sin regla hereda la anterior; filas seguidas con la misma fila del formulario llevan un solo botón (`fxRows`).
+  Resumen: planteamiento → 9 (T(s)); polos → 3; ec. característica → 9; eje real/asíntotas/ruptura/K<sub>b</sub> → 12; Routh → 13 (3.er orden,
+  K crítica y cruce, regla general para 4.º orden); ζ y %OS → 10 y 6; ángulo/magnitud → 11; T<sub>s</sub>/T<sub>p</sub> → 6; tercer polo → 9 (suma de
+  polos) y 14 (5×); residuos → 7 y 14 (12 %); error → 15 (K<sub>p</sub>/K<sub>v</sub>; verificación = valor final); PI/atraso/dipolo/mejora → 16;
+  s<sub>d</sub> → 10; θ<sub>c</sub>, cero/polo, K con compensador, PD → 17; PID y adelanto‑atraso → 18; verificación/ajuste → 19; Simulink → 20 (tabla de bloques).
+  Si cambian las filas del formulario (v74/v76/v78), revisar que cada texto de `FXT` siga encontrando su fila: `window.__lgdrFxPasos.rowOf(clave)`.
+- Botón `button.fxgo[data-fxgo]` («∑ n», al final de `.fxl`; 32 px en táctil; oculto al imprimir y en `practicas.pdf`). Clic → `fxOpenAt` →
+  `window.__lgdrFx.openAt(secId, fila, 'Volver al paso n')` (nuevo en el script de v3): < 1000 px ventana modal (al cerrar vuelve al mismo
+  `scrollY`, el paso no cambia); ≥ 1000 px panel `.side` y `html.fxps` (el `body` deja `min(44%,460px)` a la derecha para seguir viendo el paso;
+  con la calculadora abierta se usa lo de v77). Luego `__lgdrFxFind.go()` cambia de parte y baja; la fila lleva `.fx-from` (marca fija), su
+  `details.fx-ej` se abre y arriba `div.fx-fromh` «Sección n · título» + «← Volver al paso n» (cierra). Al cerrar o al saltar a otra fila se quita
+  la marca y se cierra el desarrollo que se abrió solo. Depuración: `window.__lgdrFxPasos.{FXT, targets, rowOf, open}`.
+- Probado con Playwright en P1–P7 (todos los pasos, todos los botones: 338) a 390 px (táctil) y 1440 px, claro y oscuro: abre, fila correcta
+  y visible bajo la barra del formulario, desarrollo abierto, el panel no tapa la fórmula, cierra con ✕ / «Volver al paso» / Esc (panel),
+  regresa al mismo paso y posición, sin desbordes, consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z

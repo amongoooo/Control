@@ -77,7 +77,7 @@ const ANCHO = 718; // ancho útil de A4 con márgenes de 10 mm, en px CSS
     document.querySelectorAll('.card.bench').forEach(b => {
       const src = b.querySelector('.phead .src'); if (src) src.textContent = 'Captura con la K de diseño (en la página es interactivo)';
     });
-    document.querySelectorAll('.psnav, .psctl, .pasos [data-all], .mlbar, .fbar, .repbtn, .zbar, [data-mag], .kctl, .fxhead, [data-fx], .seg, [data-reset], [data-copy], .bd button, .bd .seg, .wreset, .wact, .wcopy, .wctls, .wsim-h')
+    document.querySelectorAll('.psnav, .psctl, .pasos [data-all], .mlbar, .fbar, .repbtn, .zbar, [data-mag], .kctl, .fxhead, [data-fx], .seg, [data-reset], [data-copy], .bd button, .bd .seg, .wreset, .wact, .wcopy, .wctls, .wsim-h, .fxgo')
       .forEach(e => { e.style.setProperty('display', 'none', 'important'); });
     document.querySelectorAll('details').forEach(d => { d.open = true; });
     // Número de sección por CSS para que los marcadores digan «Análisis…» y no «1Análisis…».

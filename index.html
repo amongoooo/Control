@@ -2030,6 +2030,19 @@ dialog.fxd.fx-srch .fx-s>.fx-r:not(.fx-fig):hover{background:var(--accent-soft);
 .fx-ejb .katex-display{margin:.15em 0;overflow-x:auto;overflow-y:hidden;padding:2px 0;scrollbar-width:thin}
 .fx-ejb .katex{font-size:1.04em}
 .fx-ejb code{font:12px var(--f-mono)}
+/* ---- v79 · ∑ junto a cada fórmula de la Resolución paso a paso → formulario en su sección y fila ---- */
+.fxl .fxgo{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:3px;min-height:26px;min-width:40px;justify-content:center;padding:0 8px;border:1px solid color-mix(in srgb,var(--accent) 45%,var(--line));border-radius:999px;background:var(--surface);color:var(--accent);font:700 12px/1 var(--f-mono);letter-spacing:0;text-transform:none;cursor:pointer;touch-action:manipulation}
+.fxl .fxgo:hover{background:var(--accent-soft);border-color:var(--accent)}
+.fxl .fxgo:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (pointer:coarse){.fxl .fxgo{min-height:32px;min-width:48px;font-size:13px}}
+.fx-r.fx-from{background:color-mix(in srgb,var(--accent) 9%,transparent);box-shadow:inset 3px 0 0 var(--accent);border-radius:6px}
+.fx-r.fx-from>.fx-m,.fx-r.fx-from>.fx-n{padding-left:6px}
+.fx-fromh{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 10px;margin:0 0 6px;padding:4px 0 6px 6px;border-bottom:1px dashed color-mix(in srgb,var(--accent) 40%,transparent);font:600 12px/1.3 var(--f-body);color:var(--accent);break-inside:avoid}
+.fx-fromh button{border:1px solid var(--accent);background:var(--surface);color:var(--accent);border-radius:999px;padding:4px 12px;min-height:30px;font:600 12.5px var(--f-body);cursor:pointer}
+.fx-fromh button:hover{background:var(--accent-soft)}
+.fx-fromh button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (min-width:1000px){html.fxps.fxside:not(.exm):not(.ccside) body{padding-right:min(44%,460px)}}
+@media print{.fxl .fxgo{display:none!important}}
 </style>
 
 <header class="appbar" id="appbar">
@@ -2120,10 +2133,11 @@ addEventListener('load',function(){if(!document.getElementById('sbar'))r.classLi
 <dialog class="sync ifd" id="infoDlg" aria-labelledby="infoTtl">
 <div class="sy-in">
   <div class="sy-hd"><h2 id="infoTtl">Laboratorio LGDR</h2><button type="button" class="abicon" data-if-close aria-label="Cerrar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 9/11/2026, 00:56 (hora del centro de México)">v1.9.11.0056</span> <span class="if-vd" data-if-date></span></div>
+  <div class="if-ver"><span class="if-vl">Versión</span> <span class="abver" id="abVer" title="Versión del 9/11/2026, 01:40 (hora del centro de México)">v1.9.11.0140</span> <span class="if-vd" data-if-date></span></div>
   <p class="if-p">Control · Nise, capítulos 8 y 9: lugar geométrico de las raíces y diseño de compensadores. Teoría con evaluaciones, Simulador, las 7 prácticas (P1–P7) con banco de pruebas y resolución paso a paso, Preguntas, Entrenar y PDF.</p>
   <h3 class="if-h">Lo nuevo</h3>
   <ul class="if-l">
+    <li><b>∑ en cada fórmula de la Resolución paso a paso (P1–P7):</b> el botoncito «∑ n» junto al nombre de la fórmula abre el formulario en la sección n, con la fila resaltada y su «Desarrollo y ejemplo» abierto. En el celular ocupa la pantalla y «← Volver al paso» (o ✕) te regresa al mismo paso; en computadora queda como panel al lado.</li>
     <li><b>Entrenar en el celular:</b> en el examen de varios ejercicios, barra fija abajo (anterior · n de N · siguiente / entregar) a la mano del pulgar; botones más grandes, casillas alineadas, las fórmulas de las soluciones ya no se salen de la pantalla (se acomodan en renglones) y el problema completo de P2 y P3 ya no pide dos veces los polos de lazo cerrado.</li>
     <li><b>Entrenar · etapa 6:</b> tema 16 «Problema completo» de principio a fin (referencia, diseño, verificación y Simulink) con el caso de P1–P7 y variantes; <b>examen de varios ejercicios</b> seguidos (4, 6 u 8; sin calificación hasta entregar, con tiempo, calificación final y revisión de cada uno) que, con 6 o más y 80 %, cuenta como simulacro en la Ruta; y <b>repaso de errores</b> con los ejercicios que más has fallado.</li>
     <li><b>Entrenar · temas 13–15 (etapa 5):</b> 9 ejercicios nuevos: PI (P2), atraso (P3), PD (P4), adelanto (P5), PID (P6) y adelanto‑atraso (P7) con el caso de cada práctica y variantes; verificación del diseño (ecuación final, polos, modos, simulación contra las metas y ajuste) y Simulink (parámetros de los bloques). En los temas 14 y 15 eliges la práctica con los botones P2…P7.</li>
@@ -8791,7 +8805,29 @@ window.__lgdrQR=qrcode;
     if(cu&&cu.isOpen()&&!(full&&dlg.open&&!(e.target&&e.target.closest&&e.target.closest('#ccDlg')))){ e.preventDefault(); cu.close(); return; }   /* Esc cierra primero la calculadora */
     if(!full){ if(dlg.open&&dlg.classList.contains('side')){ e.preventDefault(); closeFx(); } return; }
     e.preventDefault(); if(dlg.open) closeFx(); else quit(); });
-  window.__lgdrFx={close:closeFx,isSide:()=>dlg.open&&dlg.classList.contains('side'),isModal:()=>dlg.open&&dlg.matches(':modal'),toSide,full:()=>full};
+  /* v79 · abrir en una sección y fila (botón ∑ de las fórmulas de la Resolución paso a paso). En computadora (≥ 1000 px) como panel
+     al lado (html.fxps deja espacio a la página para seguir viendo el paso); en celular, ventana completa: al cerrarla se vuelve al
+     mismo lugar (keepY). La fila queda marcada (.fx-from) y su «Desarrollo y ejemplo» abierto hasta el siguiente salto o al cerrar. */
+  const wideM=matchMedia('(min-width:1000px)'); let fromRow=null, fromEj=null;
+  function unmark(){ if(fromRow){ fromRow.classList.remove('fx-from'); const h=fromRow.querySelector(':scope>.fx-fromh'); if(h) h.remove(); fromRow=null; } if(fromEj){ fromEj.open=false; fromEj=null; } }
+  dlg.addEventListener('close',()=>{ root.classList.remove('fxps'); unmark(); });
+  function openAt(id,row,back){ const sec=document.getElementById(id); if(!sec) return; const pane=sec.closest('[data-fx-pane]'), r=pane?pane.dataset.fxPane:part;
+    if(!dlg.open){ const cu=window.__lgdrCalcUI;
+      if(wideM.matches&&!full&&!(cu&&cu.isOpen())){ pick(r); dlg.classList.add('side'); root.classList.add('fxside','fxps'); dlg.show(); }
+      else openFx(r); }
+    unmark();
+    if(row){ const ej=row.querySelector(':scope>details.fx-ej'); if(ej&&!ej.open){ ej.open=true; fromEj=ej; } row.classList.add('fx-from'); fromRow=row;
+      /* cabecera: en qué sección está la fila (el título queda arriba, fuera de la vista) y cómo volver al paso */
+      const h3=sec.querySelector('h3'), sp=h3&&h3.querySelector('span'), nm=h3?h3.textContent.slice(sp?sp.textContent.length:0).trim():'';
+      const hd=document.createElement('div'); hd.className='fx-fromh';
+      hd.innerHTML=`<span>Sección ${sp?sp.textContent:''}${nm?' · '+nm.replace(/[<>&]/g,''):''}</span>${back?`<button type="button">← ${back.replace(/[<>&]/g,'')}</button>`:''}`;
+      const bb=hd.querySelector('button'); if(bb) bb.addEventListener('click',closeFx);
+      row.prepend(hd); }
+    const FF=window.__lgdrFxFind; if(FF) FF.go(id,row||undefined);
+    /* después del desplazamiento de go(): que el principio de la fila no quede bajo la barra fija del formulario */
+    if(row) requestAnimationFrame(()=>{ const bar=dlg.querySelector('.fx-top'), lim=dlg.getBoundingClientRect().top+(bar?bar.offsetHeight:0)+8, t=row.getBoundingClientRect().top;
+      if(t<lim) dlg.scrollTo({top:Math.max(0,dlg.scrollTop-(lim-t)),behavior:'instant'}); }); }
+  window.__lgdrFx={close:closeFx,isSide:()=>dlg.open&&dlg.classList.contains('side'),isModal:()=>dlg.open&&dlg.matches(':modal'),toSide,full:()=>full,openAt};
   addEventListener('hashchange',()=>{ if(full) leave(true); });
   upd();
 })();
@@ -13951,8 +13987,107 @@ PASOS.p7=()=>{
     steps};
 };
 
+/* ---- v79 · «∑» junto a cada fórmula de la Resolución paso a paso: abre el «∑ Formulario» en la sección y la fila de esa fórmula ----
+   FXT: clave → [n.º de sección (#fxsN), texto que identifica la fila (sin contar su «Desarrollo y ejemplo») o '#id'].
+   fxTargets(id, paso) decide, fórmula por fórmula, qué fila corresponde: por la clave del paso (k), la etiqueta (l) y el TeX (t).
+   Sólo las fórmulas con TeX llevan botón; «Resultado» sin regla propia hereda la de la fila anterior; filas seguidas con la misma
+   fila del formulario llevan un solo botón (en la primera). */
+const FXT={
+  POL:[3,'Polos (×)'], GRAL:[3,'Raíces de as² + bs + c'],
+  FS2:[5,'Con s² + bs + c'], WD:[5,'θ medido desde el eje real negativo'],
+  WN:[6,'ωn = √σ²'], OS:[6,'Sólo depende de ζ.'], TSP:[6,'Tp = medio periodo'], OSM:[6,'Así se mide en la simulación'],
+  RES:[7,'el factor del polo y evalúa'],
+  ZCAN:[8,'Cero cerca de un polo'],
+  TLC:[9,'Realimentación unitaria'], TKN:[9,'Con G = N/D'], EC:[9,'K = 0: polos de lazo abierto'], ECC:[9,'Ecuación característica con el compensador'],
+  KSIG:[9,'K que pone un polo de lazo cerrado'], SUMP:[9,'Suma y producto de los polos'],
+  ZET:[10,'%OS → recta radial'], SD:[10,'según qué tiempo pide'],
+  ANG:[11,'Dice si el punto está en el LGDR'], MAG:[11,'Dice qué K pone ahí un polo'], ATAN:[11,'Polo real en −a'], MAGK:[11,'Con G escrita con K = 1'],
+  MAG2:[11,'Ej.: 1/[s(s + 6)]'],
+  EJE:[12,'Eje real: pertenece'], ASI:[12,'Asíntotas.'], RUP:[12,'Ruptura / llegada'], KB:[12,'Ganancia en el punto de ruptura'], TRZ:[12,'9 pasos del trazo'],
+  RTS:[13,'Cambios de signo en la 1.ª columna'], RT3:[13,'Para s³ + as² + bs + (c + K)'], RTK:[13,'En K crítica la fila s¹ se hace cero'], RTG:[13,'Regla general'],
+  D5:[14,'Regla de 5×'], R12:[14,'Regla del residuo. P4'],
+  ERRT:[15,'Límites con s → 0'], ERRV:[15,'Teorema del valor final aplicado al error'], KV1:[15,'Producto de ceros y de polos sin el polo en el origen'],
+  ERRA:[15,'MATLAB: 1 − dcgain'],
+  PI:[16,'Sube el tipo en 1'], ATR:[16,'Dipolo cerca del origen'], DIP:[16,'Aporte del dipolo en el punto'], MEJ:[16,'Mejora del error con atraso'],
+  ZAT:[16,'Diseño del atraso'],
+  THC:[17,'Ángulo que falta y aporta el compensador'], ZPC:[17,'se fija uno y se calcula el otro'], LEAD:[17,'pc > zc'], PDK:[17,'PD en forma de ganancias'],
+  KCM:[17,'Condición de magnitud con el compensador'],
+  PID:[18,'PID = K'], K123:[18,'K3 = K'], ZATR:[18,'Primero el transitorio'], ZATR7:[18,'P7: 84.18/9.14'],
+  VER:[19,'Todos los polos · estabilidad'], AJU:[19,'No cumple el %OS'],
+  SL:[20,'#fxt-sl']};
+function fxTargets(id,s){
+  const k=s.k||'', out=[];
+  let prev=null;
+  (s.f||[]).forEach(r=>{
+    let T=null;
+    if(r.t){
+      const l=String(r.l||'').replace(/<[^>]+>/g,''), x=r.t, has=re=>re.test(x), L=re=>re.test(l), res=/^Resultado/.test(l);
+      const routh=()=>has(/s\^4/)?'RTG':has(/s\^3/)?'RT3':'RTS';
+      switch(k){
+        case 'plant': T=res?'TKN':'TLC'; break;
+        case 'specs': T=has(/T_\{[sp],d\}/)?'SD':has(/zeta|OS/)?'ZET':has(/K_\{v,meta\}/)?'ZAT':null; break;
+        case 'kref': T=L(/K = 1/)?'EC':res?'MAG':null; break;
+        case 'polos': T=L(/Ecuaci/)?'EC':L(/Reglas/)?'TRZ':res?null:'POL'; break;
+        case 'eccar': T=L(/Comparaci/)?'FS2':'EC'; break;
+        case 'eje': T='EJE'; break;
+        case 'asin': T='ASI'; break;
+        case 'rupt': T=L(/De dónde sale/)?'KSIG':L(/Ganancia/)||(res&&has(/K_b/))?'KB':'RUP'; break;
+        case 'lgdr': T=L(/Eje real/)?'EJE':L(/Asíntotas/)?'ASI':L(/Ruptura/)?'RUP':res&&has(/K_b/)?'KB':null; break;
+        case 'routh': T=L(/Arreglo|Con K/)?routh():L(/Fila/)?'RTG':L(/Condición|Cruce/)?'RTK':res?(has(/<K</)?'RTK':'RTS'):null; break;
+        case 'clref': T=L(/^Ecuación/)?'EC':L(/Par dominante/)?'WN':L(/Tercer polo|producto/)?'SUMP':L(/general/)?'GRAL':
+          res?(has(/r_3/)?'R12':has(/sigma/)?'D5':null):null; break;
+        case 'zeta': T=has(/\\ln/)?'ZET':has(/e\^\{/)?'OS':null; break;
+        case 'ang': case 'punto':
+          T=L(/Comprobación/)?'ANG':has(/\\theta_1=/)?'ATAN':has(/\\omega_n=\\dfrac\{(\\sigma|3\.5)/)?'WD':res?null:'ANG'; break;
+        case 'mag': T=res?null:has(/omega_n\^2|\(6\.7707\)/)?'MAG2':'MAG'; break;
+        case 'seg': case 'trans': T=res?null:'TSP'; break;
+        case 'err': T='ERRT'; break;
+        case 'ver5': T='ERRV'; break;
+        case 'errc': T='KV1'; break;
+        case 'p3': T=L(/Fórmulas/)?'TSP':res?'D5':'SUMP'; break;
+        case 'verif': T=L(/Sustitución/)?'TKN':has(/K_v/)?'ERRT':'OSM'; break;
+        case 'ctrl': T={p1:'TLC',p2:'PI',p3:'ATR',p4:'PDK',p5:'LEAD',p6:L(/Sustitución/)?'K123':'PID',p7:'ZATR'}[id]; if(res&&id==='p6') T='K123'; break;
+        case 'ver12': T=L(/Ecuación/)?'ECC':L(/raíces/)?'SUMP':L(/Routh/)?routh():L(/Rango/)?'RTG':res?'RTS':null; break;
+        case 'modos': T=has(/dfrac\{T\(s\)\}\{s\}/)||L(/Fórmula|Sustitución/)?'RES':L(/Ecuación/)?'ECC':L(/Raíces/)?'ZCAN':'R12'; break;
+        case 'sim45': T=L(/[Ee]rror simulado/)?'ERRA':res?(has(/ajusta/)?'AJU':'VER'):null; break;
+        case 'ajuste': T=id==='p3'?(L(/Compensador/)?'ATR':L(/búsqueda/)?'ANG':'MEJ'):id==='p5'&&L(/Para cada/)?'ZPC':id==='p7'&&L(/Elegido/)?'ZATR7':'AJU'; break;
+        case 'reverif': T=L(/Ecuación/)?'ECC':L(/Polos/)?'R12':'VER'; break;
+        case 'slmano': T='SL'; break;
+        case 'slcod': T=L(/Lazo/)?'TLC':'SL'; break;
+        case 'pi': T=has(/\\angle/)?'DIP':has(/lim|e_\{/)?'ERRT':'PI'; break;
+        case 'dip': T='DIP'; break;
+        case 'neweq': T=L(/Eje real/)?'EJE':L(/Asíntotas/)?'ASI':L(/Tercer polo/)?'SUMP':L(/Routh/)?routh():res?null:'ECC'; break;
+        case 'rebus': T=L(/ngulo|Fórmula|Punto/)?'ANG':L(/agnitud/)?'MAGK':L(/Tercer polo/)?'SUMP':L(/K_v/)?'KV1':null; break;
+        case 'polc': T=L(/^Ecuación/)?'ECC':L(/Raíces/)?'ZCAN':L(/Residuos/)?'RES':L(/Routh|Fila/)?'RTG':res?'RTK':null; break;
+        case 'k20': T=L(/Meta/)?'ERRT':L(/subir/)?'FS2':'OS'; break;
+        case 'atr': T=L(/Elección/)?'ZAT':'ATR'; break;
+        case 'mejora': T='MEJ'; break;
+        case 'pdis': T='SD'; break;
+        case 'angd': T='THC'; break;
+        case 'cero': case 'polo': T='ZPC'; break;
+        case 'kc': case 'kpd': T='KCM'; break;
+        case 'kad': T=L(/K_v|Kv/)?'KV1':res?null:'KCM'; break;
+        case 'verpd': T=L(/Ecuación/)?'ECC':L(/Polos/)?'ZCAN':'OSM'; break;
+        case 'eqpid': T=L(/Producto/)?'PID':L(/Ecuación/)?'ECC':L(/Routh/)?'RTG':'RTS'; break;
+        case 'atraso': T='ZATR7'; break;
+        case 'eqf': T=L(/Ecuación/)?'ECC':L(/Routh/)?'RTG':'RTS'; break;
+      }
+      if(!T&&res) T=prev;
+    }
+    out.push(T); if(T) prev=T; });
+  return out;
+}
+let FXN=null;
+const fxSecName=n=>{ if(!FXN){ FXN={}; document.querySelectorAll('#fxDlg section.fx-s').forEach(sec=>{ const h=sec.querySelector('h3'), sp=h&&h.querySelector('span'); if(h) FXN[sec.id]=h.textContent.slice(sp?sp.textContent.length:0).trim(); }); }
+  return FXN['fxs'+n]||''; };
+const FXI='<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.5 5H6.5l6.5 7-6.5 7h11"/></svg>';
+function fxGoBtn(key){ const t=FXT[key]; if(!t||!document.getElementById('fxs'+t[0])) return '';
+  const nm=fxSecName(t[0]), lab=`Abrir en el formulario: sección ${t[0]}${nm?' · '+nm:''}`;
+  return `<button type="button" class="fxgo" data-fxgo="${key}" title="${esc(lab)}" aria-label="${esc(lab)}">${FXI}<span>${t[0]}</span></button>`; }
 /* ---- visor genérico ---- */
-function fxRow(r){ return `<div class="fx${r.res?' res':''}"><div class="fxl">${r.l}</div><div class="fxm">${r.t?tx(r.t):r.h}</div>${r.n?`<div class="fxn">${r.n}</div>`:''}</div>`; }
+/* v79: una fila del formulario sólo se ofrece una vez seguida (la primera fórmula que la usa) */
+function fxRows(id,s){ const fk=fxTargets(id,s); let last=null; return s.f.map((r,j)=>{ const k=fk[j]&&fk[j]!==last?fk[j]:''; if(fk[j]) last=fk[j]; return fxRow(r,k); }).join(''); }
+function fxRow(r,fk){ return `<div class="fx${r.res?' res':''}"><div class="fxl">${r.l}${fk?fxGoBtn(fk):''}</div><div class="fxm">${r.t?tx(r.t):r.h}</div>${r.n?`<div class="fxn">${r.n}</div>`:''}</div>`; }
 /* v26 · cómo se obtiene cada gráfica en MATLAB/Simulink. El LGDR siempre con rlocus (el sistema que corresponde a cada etapa);
    las curvas de salida, con los bloques del modelo de Simulink del último paso.
    r: primer paso con rlocus (antes: pzmap) · z: desde aquí se agrega sgrid(zeta, 0) · s: [desde el paso, sistema(s) de rlocus, compensador en Simulink] */
@@ -13994,7 +14129,7 @@ function stepHTML(s,i,N,id,D,slI){
      (bloques, Simulink) siguen a todo lo ancho */
   const side=vis&&!(s.vis||[]).some(v=>v.svg);
   const A=`<p class="psq"><b>Qué se hace.</b> ${s.q}</p>
-    <div class="psf">${s.f.map(fxRow).join('')}</div>
+    <div class="psf">${fxRows(id,s)}</div>
     ${s.why?`<p class="why">${s.why}</p>`:''}
     ${s.wd?`<div class="pswd"><div class="fxl">Para el Word${s.w?` · ${s.w}`:''}</div><ul>${s.wd.map(([k,t])=>`<li><span class="wk ${WK(k)}">${k}</span><span>${t}</span></li>`).join('')}</ul></div>`:''}`, get=getHTML(s,i,N,id,D,slI);
   return `<article class="pstep" data-i="${i}" hidden>
@@ -14037,6 +14172,8 @@ function buildPasos(el){
     const c=e.target.closest('[data-cpg]'); if(!c) return; const txt=c.parentNode.querySelector('code').textContent, sp=c.querySelector('span');
     const done=t=>{ sp.textContent=t; setTimeout(()=>sp.textContent='Copiar',1500); };
     try{ navigator.clipboard.writeText(txt).then(()=>done('Copiado ✓'),()=>done('No se pudo')); }catch(err){ done('No se pudo'); } });
+  /* v79: ∑ de una fórmula → formulario en su sección y fila */
+  el.addEventListener('click',e=>{ const b=e.target.closest('[data-fxgo]'); if(b) fxOpenAt(b.dataset.fxgo,b); });
   el.addEventListener('toggle',e=>{ const t=e.target; if(!t.classList||!t.classList.contains('psml')) return; mlOpen=t.open; try{ localStorage.setItem('lgdr-psml',t.open?'1':'0'); }catch(err){} },true);
   el.addEventListener('click',e=>{ const b=e.target.closest('[data-cp]'); if(!b) return; const i=+b.closest('.pstep').dataset.i, body=S[i].ml.map(r=>r[0]).join('\n'), txt=D.script&&!S[i].noHdr?`%% Paso ${i+1} · ${plainT(S[i].t)}\n${body}`:body;
     const done=t=>{ b.textContent=t; setTimeout(()=>b.textContent='Copiar código del paso',1600); };
@@ -14055,6 +14192,14 @@ const redrawAll=()=>built.forEach(r=>r.redraw());
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawAll);
 new MutationObserver(redrawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.__PASOS=PASOS;
+/* v79: busca la fila (sin contar su «Desarrollo y ejemplo») y abre el formulario ahí */
+function fxRowOf(key){ const t=FXT[key], sec=t&&document.getElementById('fxs'+t[0]); if(!sec) return null;
+  if(t[1][0]==='#') return {sec, row:sec.querySelector(t[1])};
+  const nt=v=>v.replace(/\s+/g,' '), want=nt(t[1]);
+  const row=[...sec.querySelectorAll(':scope>.fx-r')].find(r=>nt([...r.children].filter(c=>!c.matches('details,.fx-fromh')).map(c=>c.textContent).join(' ')).includes(want));
+  return {sec, row:row||null}; }
+function fxOpenAt(key,btn){ const F=window.__lgdrFx, o=fxRowOf(key); if(!F||!F.openAt||!o) return; const st=btn&&btn.closest('.pstep'); F.openAt(o.sec.id,o.row,st?`Volver al paso ${+st.dataset.i+1}`:''); }
+window.__lgdrFxPasos={FXT,targets:fxTargets,rowOf:fxRowOf,open:fxOpenAt};
 })();
 </script>
 <script>
