@@ -796,17 +796,27 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
   $('[data-kp]').addEventListener('click',e=>{ const b=e.target.closest('[data-a]'); if(!b) return;
     let a=b.dataset.a; if(off){ key(a); return; } if(a==='@shift'){ setMod(!shift,false); return; }
     if(shift&&b.dataset.s) a=b.dataset.s;
-    setMod(false,false); if(a[0]==='!'){ say(NOTHAVE[a]||'No disponible',true); return; } key(a); });
+    setMod(false,false); if(a[0]==='!'){ say(NOTHAVE[a]||'No disponible',true); if(physSh) setMod(true,false); return; } key(a); if(physSh) setMod(true,false); });
   function setMod(s,a){ shift=s; alpha=a; root.classList.toggle('s-sh',s); root.classList.toggle('s-al',a); renderSt(); }
 
   /* ---------- teclado físico */
   const PK={Enter:'@exe',Backspace:'@del',Delete:'@del',ArrowLeft:'@left',ArrowRight:'@right',ArrowUp:'@up',ArrowDown:'@down',Home:'@home0',End:'@end0',
-    '+':'+','-':'−','*':'×','/':'÷','^':'#pow','(':'(',')':')',',':',',';':',','!':'!','.':'.','s':'sin(','c':'cos(','t':'tan(','l':'ln(','r':'#sqrt','p':'π','e':'e','i':'i','j':'i','x':'x','y':'y','z':'z','a':'Ans','M':'M','A':'A','B':'B','C':'C','D':'D','E':'E','F':'F','f':'f(','g':'g(','=':'='};
+    '+':'+','-':'−','*':'×','/':'#frac',':':'÷','÷':'÷','^':'#pow','(':'(',')':')',',':',',';':',','!':'!','.':'.','s':'sin(','c':'cos(','t':'tan(','l':'ln(','r':'#sqrt','p':'π','e':'e','i':'i','j':'i','x':'x','y':'y','z':'z','a':'Ans','M':'M','A':'A','B':'B','C':'C','D':'D','E':'E','F':'F','f':'f(','g':'g(','=':'='};
+  /* v77: ^ también con Ctrl+Alt+{ / AltGr (latinoamericano, puede llegar como tecla muerta) o Shift+` (España) */
+  root.addEventListener('keydown',e=>{ if(off) return; const ag=(e.ctrlKey&&e.altKey)||(e.getModifierState&&e.getModifierState('AltGraph'));
+    if(e.key==='^'||(e.key==='Dead'&&(ag||(e.shiftKey&&e.code==='BracketLeft')))){ e.preventDefault(); e.stopPropagation(); setMod(false,false); key('#pow'); if(physSh) setMod(true,false); } },true);
+  /* v77: mientras se mantiene presionado Shift en el teclado, el SHIFT de la calculadora también (2.ª función en pantalla) */
+  let physSh=false;
+  const shOn=()=>root.isConnected&&root.getClientRects().length>0;
+  const physKD=e=>{ if(e.key==='Shift'&&!e.repeat&&!physSh&&!off&&shOn()){ physSh=true; setMod(true,false); } };
+  const physKU=e=>{ if(e.key==='Shift'&&physSh){ physSh=false; setMod(false,false); } };
+  const physOut=()=>{ if(physSh){ physSh=false; setMod(false,false); } };
+  addEventListener('keydown',physKD,true); addEventListener('keyup',physKU,true); addEventListener('blur',physOut);
   root.addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey||off) return;
     if(e.key==='Escape'){ if(ov.length||/^(solve|eqn|eqedit|eqsol|tbrng|tbl|fdef)$/.test(view)||(view==='calc'&&hsel>=0)){ e.preventDefault(); e.stopPropagation(); key('@back'); } return; }
     let a=/^[0-9]$/.test(e.key)?e.key:PK[e.key]; if(!a) return;
     if(a==='='&&!(view==='solve'&&sFld===0)) a='@exe';
-    e.preventDefault(); setMod(false,false); key(a); });
+    e.preventDefault(); setMod(false,false); key(a); if(physSh) setMod(true,false); });
   root.addEventListener('paste',e=>{ const t=(e.clipboardData||window.clipboardData).getData('text'); const E=curEd(); if(!t||!E) return; e.preventDefault(); prepEdit(E,'1'); fromText(t).forEach(it=>{ E.row.splice(E.i,0,it); E.i++; }); render(); });
 
   /* ---------- editor activo de la vista */
@@ -830,12 +840,15 @@ function mount(host,opts){ opts=opts||{}; injectCSS();
       case '#logb': E.insT(tpl('logb'),'n'); break;
       case '#10x': E.insC('1'); E.insC('0'); E.insT(tpl('pow'),'a'); break;
       case '#ex': E.insC('e'); E.insT(tpl('pow'),'a'); break;
-      default: E.insC(a); } }
+      case ')': { const n=E.row[E.i]; if(n&&n.t==='c'&&n.v===')') E.i++; else E.insC(')'); break; }
+      default: E.insC(a); if(/\($/.test(a)){ E.insC(')'); E.i--; } } }
   /* teclas de edición comunes; devuelve true si las usó */
   function edKey(E,a){ if(!E) return false; if(a[0]==='@'&&a!=='@exe') E.repl=false;
     if(a==='@left'||a==='@right'){ if(E===main&&fresh){ fresh=false; hsel=-1; a==='@left'?main.end():main.home(); return true; } a==='@left'?E.left():E.right(); return true; }
     if(a==='@home0'){ E.home(); return true; } if(a==='@end0'){ E.end(); return true; }
-    if(a==='@del'){ if(E===main){ hsel=-1; if(fresh){ fresh=false; main.end(); } snap(); } E.del(); return true; }
+    if(a==='@del'){ if(E===main){ hsel=-1; if(fresh){ fresh=false; main.end(); } snap(); }
+      const r=E.row, i=E.i; if(i>0&&i<r.length&&r[i-1].t==='c'&&/\($/.test(r[i-1].v)&&r[i].t==='c'&&r[i].v===')') r.splice(i,1);
+      E.del(); return true; }
     if(a[0]!=='@'){ edInsert(E,a); return true; }
     return false; }
 

@@ -1362,6 +1362,26 @@ Aquí se guarda lo importante: preferencias del usuario, contexto y estado de la
   Routh abierta), evaluación en pantalla completa con el formulario abajo, buscador de v74 («sin amortiguamiento», «variables»), Esc,
   sin desbordes horizontales en las filas nuevas, consola sin errores.
 
+## Hecho (v77): calculadora con teclas del teclado español, formulario + calculadora a la vez en computadora y clic en la búsqueda
+
+- Pedido: botón de calculadora junto al del formulario (ya existía desde v62), los dos abiertos a la vez en computadora, y en la calculadora:
+  Shift+7 (`/`) = fracción grande, Ctrl+Alt+{ (`^`) = exponente, paréntesis que se cierran solos y el Shift del teclado reflejado en la
+  calculadora. Además: en el formulario, al buscar, tocar un resultado lleva a esa sección.
+- **`entrenar/calc.js` (`?v=6`):** `/` → `#frac` (jala el número de antes al numerador; `:` o `÷` = división en línea). Escucha en captura:
+  `^`, o tecla muerta (`Dead`) con Ctrl+Alt/AltGr (latinoamericano) o Shift+`BracketLeft` (España) → `#pow`. `(` (y `sin(`, `ln(`…) pone
+  también `)` y deja el cursor adentro; `)` sobre una `)` ya puesta solo avanza; ⌫ en «( )» vacío quita los dos. Shift físico (keydown/keyup
+  en `window`, con la calculadora a la vista) = `setMod(true)` mientras se mantiene (`physSh`; se vuelve a poner tras cada tecla o toque).
+- **Formulario + calculadora:** `wide` de v62 bajó de 1200 a **1000 px**. Fuera de la evaluación, si la calculadora está abierta el formulario se
+  abre como panel `.side` (no modal, bajo la barra superior; `body` deja espacio para los dos) y si el formulario ya estaba en ventana modal,
+  abrir la calculadora lo pasa a panel (`__lgdrFx.toSide()`, misma parte y posición); en < 1000 px lo cierra. Botón de calculadora
+  `[data-fx-cc]` en la cabecera del formulario (≥ 700 px). 1000–1199 px con los dos: formulario `min(34%,400px)`; 700–1199 px el panel del
+  formulario se compacta (título solo «∑», «Índice» solo ícono). Esc con el panel lateral fuera de la evaluación lo cierra.
+- **Búsqueda del formulario (v74):** con resultados, cada sección dice «Ir a la sección ›»; tocar la sección o un renglón llama a
+  `go(id, renglón)`: quita el filtro, cambia de parte, baja a la sección y resalta el renglón tocado (`.fx-pick`).
+- Probado con Playwright a 1440, 1100, 800 y 390 px: fracción/exponente/paréntesis (3⁄4 + 2³ + (1+1) = 43/4), tecla muerta simulada, Shift,
+  formulario modal → panel al abrir la calculadora, evaluación con los dos (1100 px: evaluación · calculadora · formulario), búsqueda con clic
+  en celular y computadora; consola limpia.
+
 ## Otros artefactos del usuario (galería de claude.ai)
 
 - Sensor Hall en el eje de un go-kart — https://claude.ai/artifact/W9LNnTHcewwiSPFtzXuj5z
